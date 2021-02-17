@@ -1,0 +1,41 @@
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\bin\Debug\BudgetManager.exe.config
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\bin\Debug\BudgetManager.exe
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\bin\Debug\BudgetManager.pdb
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csprojResolveAssemblyReference.cache
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\obj\Debug\BudgetManager.Properties.Resources.resources
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csproj.GenerateResource.Cache
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\obj\Debug\BudgetManager.exe
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\obj\Debug\BudgetManager.pdb
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\bin\Debug\MySql.Data.dll
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\bin\Debug\Google.Protobuf.dll
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\bin\Debug\BouncyCastle.Crypto.dll
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\bin\Debug\Ubiety.Dns.Core.dll
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\bin\Debug\Renci.SshNet.dll
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\bin\Debug\MySql.Data.xml
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\obj\Debug\BudgetManager.UserDashboard.resources
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\obj\Debug\BudgetManager.LoginForm.resources
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\obj\Debug\BudgetManager.UpdateUserDataForm.resources
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\obj\Debug\BudgetManager.RegisterForm.resources
+D:\Sistem\Documents\Visual Studio 2015\Projects\BudgetManager\BudgetManager\obj\Debug\BudgetManager.InsertDataForm.resources
+D:\IAP\Anul II\Semestrul II\Proiect final\MVC TEST\BudgetManager-TEST_MVC\BudgetManager\bin\Debug\BudgetManager.exe.config
+D:\IAP\Anul II\Semestrul II\Proiect final\MVC TEST\BudgetManager-TEST_MVC\BudgetManager\obj\Debug\BudgetManager.exe
+D:\IAP\Anul II\Semestrul II\Proiect final\MVC TEST\BudgetManager-TEST_MVC\BudgetManager\obj\Debug\BudgetManager.pdb
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\bin\Debug\BudgetManager.exe.config
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.exe
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.pdb
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\bin\Debug\BudgetManager.exe
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\bin\Debug\BudgetManager.pdb
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\bin\Debug\MySql.Data.dll
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\bin\Debug\Google.Protobuf.dll
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\bin\Debug\BouncyCastle.Crypto.dll
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\bin\Debug\Ubiety.Dns.Core.dll
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\bin\Debug\Renci.SshNet.dll
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\bin\Debug\MySql.Data.xml
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csprojResolveAssemblyReference.cache
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.InsertDataForm.resources
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.LoginForm.resources
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.RegisterForm.resources
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.UpdateUserDataForm.resources
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.UserDashboard.resources
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.Properties.Resources.resources
+D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csproj.GenerateResource.Cache
