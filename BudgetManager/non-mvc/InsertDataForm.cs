@@ -11,8 +11,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BudgetManager {
+
+    public enum BudgetItemType {
+        INCOME,
+        EXPENSE,
+        DEBT,
+        SAVING,
+        UNSPECIFIED
+    }
+
     public partial class InsertDataForm : Form {
-    
+     
         private int userID;
         private Control[] inputFields;
         private bool hasClearedFields = false;
@@ -43,6 +52,11 @@ namespace BudgetManager {
         private String sqlStatementInsertCreditor = @"INSERT INTO creditors(creditorName) VALUES(@paramCreditorName)";
         private String sqlStatementInsertCreditorID = @"INSERT INTO users_creditors(user_ID, creditor_ID) VALUES(@paramUserID, @paramCreditorID)";
 
+        //SQL phrases for getting the total value of budget elements for a month in order to allow further checks
+        private String sqlStatementSingleMonthIncomes = @"SELECT SUM(value) from incomes WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
+        private String sqlStatementSingleMonthExpenses = @"SELECT SUM(value) from expenses WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
+        private String sqlStatementSingleMonthDebts = @"SELECT SUM(value) from debts WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
+        private String sqlStatementSingleMonthSavings = @"SELECT SUM(value) from savings WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
 
         public InsertDataForm(int userID) {
             InitializeComponent();
@@ -179,6 +193,22 @@ namespace BudgetManager {
 
             if (userOption == DialogResult.No) {
                 return;
+            }
+
+            //Checks if the user has enough money left to insert the selected item value
+           
+
+            String selectedItem = budgetItemComboBox.Text;
+            if (!"Creditor".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase)) {
+                int insertedValue = Convert.ToInt32(valueTextBox.Text);
+                int selectedMonth = newEntryDateTimePicker.Value.Month;
+                int selectedYear = newEntryDateTimePicker.Value.Year;
+                QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
+
+                if (!hasEnoughMoney(insertedValue, paramContainer)) {
+                    MessageBox.Show( String.Format("The inserted value for the current {0} is higher than the available amount! You cannot exceed the maximum incomes for the current month.", selectedItem), "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+                    return;
+                }
             }
 
             int executionResult = 0;
@@ -403,14 +433,98 @@ namespace BudgetManager {
 
         }
 
-        private bool isPresentInUserCreditorList(MySqlCommand command) {      
+        private bool isPresentInUserCreditorList(MySqlCommand command) {
             DataTable creditorListPresenceTable = DBConnectionManager.getData(command);
 
             if (creditorListPresenceTable != null && creditorListPresenceTable.Rows.Count > 0) {
-                    return true;
+                return true;
             }
 
             return false;
+        }
+
+        private bool hasEnoughMoney(int valueToInsert, QueryData paramContainer) {        
+                    
+            int totalIncomes = getTotalValueForSelectedElement(BudgetItemType.INCOME, sqlStatementSingleMonthIncomes, paramContainer);
+            int totalExpenses = getTotalValueForSelectedElement(BudgetItemType.EXPENSE, sqlStatementSingleMonthExpenses, paramContainer);
+            int totalDebts = getTotalValueForSelectedElement(BudgetItemType.DEBT, sqlStatementSingleMonthDebts, paramContainer);
+            int totalSavings = getTotalValueForSelectedElement(BudgetItemType.SAVING, sqlStatementSingleMonthSavings, paramContainer);
+
+            int amountLeft = getAvailableAmount(totalIncomes,totalExpenses, totalDebts, totalSavings);
+
+            if (valueToInsert <= amountLeft) {
+                return true;
+            }
+
+            return false;
+        }
+
+
+        private int getAvailableAmount(int totalIncomes, int totalExpenses, int totalDebts, int totalSavings) {
+
+            return totalIncomes - (totalExpenses + totalDebts + totalSavings);
+
+        }
+
+
+        private int getTotalValueForSelectedElement(BudgetItemType itemType, String sqlStatement, QueryData paramContainer) {
+            int totalValue = 0;
+
+            MySqlCommand command = getCommand(itemType, sqlStatement, paramContainer);
+
+            if (command == null) {
+                return -1;
+            }
+
+            DataTable resultDataTable = DBConnectionManager.getData(command);
+
+            if (resultDataTable != null && resultDataTable.Rows.Count == 1) {
+                Object result = resultDataTable.Rows[0].ItemArray[0];
+                totalValue = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+
+                return totalValue;
+            }
+
+            return -1;
+
+        }
+        
+
+        private MySqlCommand getCommand(BudgetItemType itemType, String sqlStatement, QueryData paramContainer) {
+            switch (itemType) {
+                case BudgetItemType.INCOME:
+                    return SQLCommandBuilder.getSingleMonthCommand(sqlStatement, paramContainer);
+
+                case BudgetItemType.EXPENSE:
+                    return SQLCommandBuilder.getSingleMonthCommand(sqlStatement, paramContainer);
+
+                case BudgetItemType.DEBT:
+                    return SQLCommandBuilder.getSingleMonthCommand(sqlStatement, paramContainer);
+
+                case BudgetItemType.SAVING:
+                    return SQLCommandBuilder.getSingleMonthCommand(sqlStatement, paramContainer);
+
+                default:
+                    return null;
+            }
+        }
+
+        private BudgetItemType getSelectedType(ComboBox comboBox) {
+            int selectedIndex = comboBox.SelectedIndex;
+
+            switch (selectedIndex) {
+                case 1:
+                    return BudgetItemType.EXPENSE;
+
+                case 2:
+                    return BudgetItemType.DEBT;
+
+                case 3:
+                    return BudgetItemType.SAVING;
+
+                default:
+                    return BudgetItemType.UNSPECIFIED;
+            }
         }
     }
 }

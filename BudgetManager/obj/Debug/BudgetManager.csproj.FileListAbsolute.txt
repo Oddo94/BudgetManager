@@ -39,3 +39,22 @@ D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\
 D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.UserDashboard.resources
 D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.Properties.Resources.resources
 D:\IAP\Anul II\Semestrul II\Proiect final\Odenie Razvan\Aplicatie\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csproj.GenerateResource.Cache
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\bin\Debug\BudgetManager.exe.config
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.exe
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.pdb
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\bin\Debug\BudgetManager.exe
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\bin\Debug\BudgetManager.pdb
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\bin\Debug\MySql.Data.dll
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\bin\Debug\Google.Protobuf.dll
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\bin\Debug\BouncyCastle.Crypto.dll
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\bin\Debug\Ubiety.Dns.Core.dll
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\bin\Debug\Renci.SshNet.dll
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\bin\Debug\MySql.Data.xml
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csprojResolveAssemblyReference.cache
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.InsertDataForm.resources
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.LoginForm.resources
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.RegisterForm.resources
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.UpdateUserDataForm.resources
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.UserDashboard.resources
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.Properties.Resources.resources
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csproj.GenerateResource.Cache
