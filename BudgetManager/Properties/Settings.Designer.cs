@@ -58,5 +58,14 @@ namespace BudgetManager.Properties {
                 return ((string)(this["SenderPassword"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("ABCD")]
+        public string Setting {
+            get {
+                return ((string)(this["Setting"]));
+            }
+        }
     }
 }
