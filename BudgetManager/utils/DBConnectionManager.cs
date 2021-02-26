@@ -11,7 +11,8 @@ using System.Windows.Forms;
 namespace BudgetManager {
     //Clasa utilitara prin care se realizeaza conexiunea la baza de date si se obtin datele din aceasta sub forma de DataTable
     class DBConnectionManager {
-        public static readonly String BUDGET_MANAGER_CONN_STRING = "DataSource=localhost; UserID=root; database=budget_manager";
+        //public static readonly String BUDGET_MANAGER_CONN_STRING = "DataSource=localhost; UserID=root; database=budget_manager";
+        public static readonly String BUDGET_MANAGER_CONN_STRING = Properties.Settings.Default.BUDGET_MANAGER_CONN_STRING;
 
         //Creates a new connection
         public static MySqlConnection getConnection(String connString) {
