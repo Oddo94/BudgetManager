@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BudgetManager.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="BUDGET_MANAGER_CONN_STRING" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">DataSource=localhost; UserID=root; database=budget_manager</Value>
+    </Setting>
+    <Setting Name="SenderAddress" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">budget.manager.agent@gmail.com</Value>
+    </Setting>
+    <Setting Name="SenderUserName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">budget.manager.agent</Value>
+    </Setting>
+    <Setting Name="SenderPassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">As6(Fo9#Yb</Value>
+    </Setting>
+    <Setting Name="Setting" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">ABCD</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
