@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BudgetManager.non_mvc;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +22,7 @@ namespace BudgetManager {
         private DateTimePicker[] datePickers = new DateTimePicker[]{};
         private bool hasResetDatePickers = false;
 
+        
         public UserDashboard(int userID, String userName) {
             InitializeComponent();
             this.userID = userID;
@@ -880,6 +882,10 @@ namespace BudgetManager {
                 //Seteaza data reprezentand prima zi a lunii curente a anului curent in DateTimePicker
                 currentPicker.Value = new DateTime(year, month, day);
             }
+        }
+
+        private void createPlanToolStripMenuItem_Click(object sender, EventArgs e) {
+            new BudgetPlanCreator(userID).ShowDialog();
         }
     }
  }
