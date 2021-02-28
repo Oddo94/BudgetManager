@@ -17,9 +17,11 @@ namespace BudgetManager {
         
 
         public ConfirmationSender() {
-            this.senderAddress = "budget.manager.agent@gmail.com";
-            this.senderUserName = "budget.manager.agent";
-            this.senderPassword = "As6(Fo9#Yb";
+          
+            this.senderAddress = Properties.Settings.Default.SenderAddress;
+            this.senderUserName = Properties.Settings.Default.SenderUserName;
+            this.senderPassword = Properties.Settings.Default.SenderPassword;
+
             this.confirmationCodeSize = 32;
             confirmationCode = null;
         }
