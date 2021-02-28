@@ -102,5 +102,13 @@ namespace BudgetManager {
 
             return savingInsertionCommand;
         }
+
+        public static MySqlCommand getBudgetPlanCheckCommand(String sqlStatement, QueryData paramContainer) {
+            MySqlCommand budgetPlanCheckCommand = new MySqlCommand(sqlStatement);
+            budgetPlanCheckCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
+            budgetPlanCheckCommand.Parameters.AddWithValue("@paramStartDate", paramContainer.StartDate);
+
+            return budgetPlanCheckCommand;
+        }
     }
 }

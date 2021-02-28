@@ -1,8 +1,10 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -17,7 +19,7 @@ namespace BudgetManager.non_mvc {
         private bool hasResetLimits;
 
         //SQL statements for checking budget plan existence for the same time interval
-        private String sqlStatementCheckBudgetPlanExistence = @"SELECT planName, startDate, endDate FFROM budget_plans WHERE user_ID = @paramID AND date = @paramStartDate BETWEEN startDate AND endDate";
+        private String sqlStatementCheckBudgetPlanExistence = @"SELECT planName, startDate, endDate FROM budget_plans WHERE user_ID = @paramID AND @paramStartDate BETWEEN startDate AND endDate";
 
         public BudgetPlanCreator(int userID) {
             InitializeComponent();
@@ -25,6 +27,8 @@ namespace BudgetManager.non_mvc {
            
             this.userID = userID;
             hasResetLimits = false;
+
+            startMonthNumericUpDown.Minimum = DateTime.Now.Month;
 
             //fillCombobox(startMonthNumericUpDown, 1, 13);
             //fillCombobox(expensesLimitComboBox, 0, 101);
@@ -95,7 +99,7 @@ namespace BudgetManager.non_mvc {
             //Checks if the total value of the set percentages is equal to 100
             int totalPercentageValue = Convert.ToInt32(expensesNumericUpDown.Value) + Convert.ToInt32(debtsNumericUpDown.Value) + Convert.ToInt32(savingsNumericUpDown.Value);
             if (totalPercentageValue < 100) {
-                MessageBox.Show("The total value of the set percentages must be equal to 100! Please fill in the remaining value by assigning it to one or more elements.", "Budget plan creator");
+                MessageBox.Show("The total value of the set percentages must be equal to 100! Please fill in the remaining value by assigning it to one or more elements.", "Budget plan creator", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -104,7 +108,11 @@ namespace BudgetManager.non_mvc {
                 return;
             }
 
-
+            int selectedMonth = Convert.ToInt32(startMonthNumericUpDown.Value);
+            if (hasPlanForCurrenMonthSelection(userID, selectedMonth)) {
+                MessageBox.Show("A budget plan already exists for the selected interval! Please select another interval or modify/delete the existing plan", "Budget plan creator", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                return;
+            }
 
 
         }
@@ -199,12 +207,23 @@ namespace BudgetManager.non_mvc {
             return false;
         }
 
-        private bool hasPlanForCurrenMonthSelection(int month, int userID) {            
+
+        private bool hasPlanForCurrenMonthSelection(int userID, int month) {            
             int year = DateTime.Now.Year;
             int day = 1;
             DateTime selectedValueDate = new DateTime(year, month, day);
+            //DateTime sqlFormatDate = DateTime.ParseExact(selectedValueDate.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-            return true;
+            QueryData paramContainer = new QueryData(userID, selectedValueDate.ToString("yyyy-MM-dd"));
+            MySqlCommand budgetPlanCheckCommand = SQLCommandBuilder.getBudgetPlanCheckCommand(sqlStatementCheckBudgetPlanExistence, paramContainer);
+
+            DataTable budgetPlanDataTable = DBConnectionManager.getData(budgetPlanCheckCommand);
+
+            if (budgetPlanDataTable != null && budgetPlanDataTable.Rows.Count > 0) {
+                return true;
+            }
+
+            return false;
         }
       
     }

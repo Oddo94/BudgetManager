@@ -62,6 +62,11 @@ namespace BudgetManager {
 
         }
 
+        public QueryData(int userID, String startDate) {
+            this.userID = userID;
+            this.startDate = startDate;
+        }
+
         ////Constructorul care initializeaza datele pt un obiect de tip query pt mai multe luni
         public QueryData(int userID, String startDate, String endDate) {
             this.userID = userID;
