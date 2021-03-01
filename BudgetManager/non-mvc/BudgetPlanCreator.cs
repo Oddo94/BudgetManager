@@ -19,7 +19,7 @@ namespace BudgetManager.non_mvc {
         private bool hasResetLimits;
 
         //SQL statements for checking budget plan existence for the same time interval
-        private String sqlStatementCheckBudgetPlanExistence = @"SELECT planName, startDate, endDate FROM budget_plans WHERE user_ID = @paramID AND @paramStartDate BETWEEN startDate AND endDate";
+        private String sqlStatementCheckBudgetPlanExistence = @"SELECT planName, startDate, endDate FROM budget_plans WHERE user_ID = @paramID AND @paramDate BETWEEN startDate AND endDate";
 
         public BudgetPlanCreator(int userID) {
             InitializeComponent();
@@ -211,20 +211,48 @@ namespace BudgetManager.non_mvc {
         private bool hasPlanForCurrenMonthSelection(int userID, int month) {            
             int year = DateTime.Now.Year;
             int day = 1;
-            DateTime selectedValueDate = new DateTime(year, month, day);
+            DateTime startDate = new DateTime(year, month, day);
             //DateTime sqlFormatDate = DateTime.ParseExact(selectedValueDate.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-            QueryData paramContainer = new QueryData(userID, selectedValueDate.ToString("yyyy-MM-dd"));
-            MySqlCommand budgetPlanCheckCommand = SQLCommandBuilder.getBudgetPlanCheckCommand(sqlStatementCheckBudgetPlanExistence, paramContainer);
+            if (oneMonthCheckBox.Checked == true) {
+                QueryData paramContainer = new QueryData(userID, startDate.ToString("yyyy-MM-dd"));
+                MySqlCommand budgetPlanStartDateCheckCommand = SQLCommandBuilder.getBudgetPlanCheckCommand(sqlStatementCheckBudgetPlanExistence, paramContainer);
 
-            DataTable budgetPlanDataTable = DBConnectionManager.getData(budgetPlanCheckCommand);
+                DataTable budgetPlanDataTable = DBConnectionManager.getData(budgetPlanStartDateCheckCommand);
 
-            if (budgetPlanDataTable != null && budgetPlanDataTable.Rows.Count > 0) {
-                return true;
+                if (budgetPlanDataTable != null && budgetPlanDataTable.Rows.Count > 0) {
+                    return true;
+                }
+
+            } else if (sixMonthsCheckBox.Checked == true) {               
+                int endMonth = month + 6;                
+                int lastDayOfEndMonth = DateTime.DaysInMonth(year, endMonth);
+                DateTime endDate = new DateTime(year, endMonth, lastDayOfEndMonth);
+
+                QueryData paramContainerStartDate = new QueryData(userID, startDate.ToString("yyyy-MM-dd"));
+                MySqlCommand budgetPlanStartDateCheckCommand = SQLCommandBuilder.getBudgetPlanCheckCommand(sqlStatementCheckBudgetPlanExistence, paramContainerStartDate);
+
+                QueryData paramContainerEndDate = new QueryData(userID, endDate.ToString("yyyy-MM-dd"));
+                MySqlCommand budgetPlanEndDateCheckCommand = SQLCommandBuilder.getBudgetPlanCheckCommand(sqlStatementCheckBudgetPlanExistence, paramContainerEndDate);
+
+                DataTable budgetPlanDataTableStart = DBConnectionManager.getData(budgetPlanStartDateCheckCommand);
+                DataTable budgetPlanDataTableEnd = DBConnectionManager.getData(budgetPlanEndDateCheckCommand);
+
+                if (budgetPlanDataTableStart != null && budgetPlanDataTableStart.Rows.Count > 0 || budgetPlanDataTableEnd != null && budgetPlanDataTableEnd.Rows.Count > 0) {                    
+                        return true;                                    
+                }
             }
 
             return false;
         }
-      
+
+        private void alarmCheckBox_CheckedChanged(object sender, EventArgs e) {
+            if (alarmCheckBox.Checked == true) {
+                thresholdNumericUpDown.Enabled = true;
+
+            } else {
+                thresholdNumericUpDown.Enabled = false;
+            }
+        }
     }
 }

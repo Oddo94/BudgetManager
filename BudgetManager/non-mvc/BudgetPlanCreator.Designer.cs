@@ -41,10 +41,17 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.alarmCheckBox = new System.Windows.Forms.CheckBox();
+            this.thresholdNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label14 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.startMonthNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.expensesNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.debtsNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.savingsNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.thresholdNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -126,7 +133,7 @@
             // createPlanButton
             // 
             this.createPlanButton.Enabled = false;
-            this.createPlanButton.Location = new System.Drawing.Point(169, 427);
+            this.createPlanButton.Location = new System.Drawing.Point(181, 582);
             this.createPlanButton.Name = "createPlanButton";
             this.createPlanButton.Size = new System.Drawing.Size(75, 23);
             this.createPlanButton.TabIndex = 12;
@@ -239,11 +246,82 @@
             this.label10.TabIndex = 22;
             this.label10.Text = "%";
             // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(9, 424);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(51, 13);
+            this.label11.TabIndex = 23;
+            this.label11.Text = "Set alarm";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(10, 495);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(115, 13);
+            this.label12.TabIndex = 24;
+            this.label12.Text = "Set triggering threshold";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(11, 523);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(54, 13);
+            this.label13.TabIndex = 25;
+            this.label13.Text = "Threshold";
+            // 
+            // alarmCheckBox
+            // 
+            this.alarmCheckBox.AutoSize = true;
+            this.alarmCheckBox.Location = new System.Drawing.Point(12, 458);
+            this.alarmCheckBox.Name = "alarmCheckBox";
+            this.alarmCheckBox.Size = new System.Drawing.Size(146, 17);
+            this.alarmCheckBox.TabIndex = 26;
+            this.alarmCheckBox.Text = "Enable budget plan alarm";
+            this.alarmCheckBox.UseVisualStyleBackColor = true;
+            this.alarmCheckBox.CheckedChanged += new System.EventHandler(this.alarmCheckBox_CheckedChanged);
+            // 
+            // thresholdNumericUpDown
+            // 
+            this.thresholdNumericUpDown.Enabled = false;
+            this.thresholdNumericUpDown.Location = new System.Drawing.Point(93, 516);
+            this.thresholdNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.thresholdNumericUpDown.Name = "thresholdNumericUpDown";
+            this.thresholdNumericUpDown.Size = new System.Drawing.Size(120, 20);
+            this.thresholdNumericUpDown.TabIndex = 27;
+            this.thresholdNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(219, 518);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(15, 13);
+            this.label14.TabIndex = 28;
+            this.label14.Text = "%";
+            // 
             // BudgetPlanCreator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(412, 478);
+            this.ClientSize = new System.Drawing.Size(455, 617);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.thresholdNumericUpDown);
+            this.Controls.Add(this.alarmCheckBox);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.label11);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
@@ -268,6 +346,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.expensesNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.debtsNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.savingsNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.thresholdNumericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -293,5 +372,11 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.CheckBox alarmCheckBox;
+        private System.Windows.Forms.NumericUpDown thresholdNumericUpDown;
+        private System.Windows.Forms.Label label14;
     }
 }

@@ -106,7 +106,7 @@ namespace BudgetManager {
         public static MySqlCommand getBudgetPlanCheckCommand(String sqlStatement, QueryData paramContainer) {
             MySqlCommand budgetPlanCheckCommand = new MySqlCommand(sqlStatement);
             budgetPlanCheckCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
-            budgetPlanCheckCommand.Parameters.AddWithValue("@paramStartDate", paramContainer.StartDate);
+            budgetPlanCheckCommand.Parameters.AddWithValue("@paramDate", paramContainer.StartDate);
 
             return budgetPlanCheckCommand;
         }
