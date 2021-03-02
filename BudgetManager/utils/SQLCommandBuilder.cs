@@ -110,5 +110,28 @@ namespace BudgetManager {
 
             return budgetPlanCheckCommand;
         }
+
+        public static MySqlCommand getTypeIDForItemCommand(String sqlStatement, QueryData paramContainer) {
+            MySqlCommand getTypeIDCommand = new MySqlCommand(sqlStatement);
+            getTypeIDCommand.Parameters.AddWithValue("@paramTypeName", paramContainer.TypeName);
+
+            return getTypeIDCommand;
+        } 
+
+        public static MySqlCommand getBudgetPlanCreationCommand(String sqlStatement, QueryData paramContainer) {
+            MySqlCommand budgetPlanCreationCommand = new MySqlCommand(sqlStatement);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramPlanName", paramContainer.BudgetPlanName);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramExpenseLimit", paramContainer.ExpenseLimit);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramDebtLimit", paramContainer.DebtLimit);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramSavingLimit", paramContainer.SavingLimit);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramPlanTypeID", paramContainer.PlanTypeID);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramThresholdPercentage", paramContainer.ThresholdPercentage);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramAlarmExistence", paramContainer.AlarmExistenceValue);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramStartDate", paramContainer.StartDate);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramEndDate", paramContainer.EndDate);
+
+            return budgetPlanCreationCommand;
+        }
     }
 }

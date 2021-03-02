@@ -12,6 +12,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BudgetManager.non_mvc {
+
+    public enum BudgetPlanType {
+        ONE_MONTH,
+        SIX_MONTHS
+    }
+
     public partial class BudgetPlanCreator : Form {
         private CheckBox[] checkBoxes;
         private ComboBox[] comboBoxes;
@@ -20,6 +26,9 @@ namespace BudgetManager.non_mvc {
 
         //SQL statements for checking budget plan existence for the same time interval
         private String sqlStatementCheckBudgetPlanExistence = @"SELECT planName, startDate, endDate FROM budget_plans WHERE user_ID = @paramID AND @paramDate BETWEEN startDate AND endDate";
+        private String sqlStatementInsertNewPlanData = @"INSERT INTO budget_plans(user_ID, planName, expenseLimit, debtLimit, savingLimit, planType, thresholdPercentage, hasAlarm, startDate, endDate) VALUES(@paramID, @paramPlanName, @paramExpenseLimit, @paramDebtLimit, @paramSavingLimit, @paramPlanTypeID, @paramThresholdPercentage, @paramAlarmExistence, @paramStartDate, @paramEndDate)";
+        private String sqlStatementGetBudgetPlanTypeID = @"SELECT typeID FROM plan_types WHERE typeName = @paramTypeName";
+
 
         public BudgetPlanCreator(int userID) {
             InitializeComponent();
@@ -114,6 +123,18 @@ namespace BudgetManager.non_mvc {
                 return;
             }
 
+            QueryData paramContainer = getDataForBudgetPlanCreation(userID);
+            MySqlCommand budgetPlanCreationCommand = SQLCommandBuilder.getBudgetPlanCreationCommand(sqlStatementInsertNewPlanData, paramContainer);
+
+            int executionResult = DBConnectionManager.insertData(budgetPlanCreationCommand);
+
+            if (executionResult != -1) {
+                MessageBox.Show("Your new budget plan was successfully created!", "Budget plan creator", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } else {
+                MessageBox.Show("Unable to create the new budget plan! Please try again", "Budget plan creator", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            //MySqlCommand budgetPlanCreationCommand = SQLCommandBuilder.get
 
         }
 
@@ -252,6 +273,106 @@ namespace BudgetManager.non_mvc {
 
             } else {
                 thresholdNumericUpDown.Enabled = false;
+            }
+        }
+
+        private QueryData getDataForBudgetPlanCreation(int userID) {    
+            String budgetPlanTypeName = oneMonthCheckBox.Checked == true ? "One month" : "Six months";
+            String budgetPlanName = planNameTextBox.Text;
+            int expenseLimit = Convert.ToInt32(expensesNumericUpDown.Value);
+            int debtLimit = Convert.ToInt32(debtsNumericUpDown.Value);
+            int savingLimit = Convert.ToInt32(savingsNumericUpDown.Value);
+            int planTypeID = getBudgetTypeID(budgetPlanTypeName);
+            int thresholdPercentage = alarmCheckBox.Checked == true ? Convert.ToInt32(thresholdNumericUpDown.Value) : 0;
+            int alarmSelectionValue = getAlarmSelectionValue();
+            String startDate = getDate(getPlanType(), DateType.START_DATE);
+            String endDate = getDate(getPlanType(), DateType.END_DATE);
+
+            QueryData paramContainer = new QueryData(userID, budgetPlanName, expenseLimit, debtLimit, savingLimit, planTypeID, thresholdPercentage, alarmSelectionValue, startDate, endDate);
+
+            return paramContainer;
+        }
+
+        private int getBudgetTypeID(String budgetPlanTypeName) {
+            QueryData paramContainer = new QueryData(budgetPlanTypeName);
+            MySqlCommand getTypeIDCommand = SQLCommandBuilder.getTypeIDForItemCommand(sqlStatementGetBudgetPlanTypeID, paramContainer);
+            
+            DataTable typeIDDataTable = DBConnectionManager.getData(getTypeIDCommand);
+
+            if (typeIDDataTable != null && typeIDDataTable.Rows.Count == 1) {
+
+                int typeID = typeIDDataTable.Rows[0].ItemArray[0] != DBNull.Value ? Convert.ToInt32(typeIDDataTable.Rows[0].ItemArray[0]) : -1;
+
+                return typeID;
+            }
+
+            return -1;
+
+        }
+
+        private int getAlarmSelectionValue() {
+            int alarmSelectionValue = 0;
+
+            //The hasAlarm column in the budget_plans table is set to boolean(or actually tiny int) so the sero value represents false and non-zero values represent true(here 1 is used as a general accepted value for true)
+            if (alarmCheckBox.Checked == true) {
+                alarmSelectionValue = 1;
+            }
+
+            return alarmSelectionValue;
+        }
+
+        private String getDate(BudgetPlanType planType, DateType dateType) {
+            String resultDate = "";
+
+            if (planType == BudgetPlanType.ONE_MONTH) {
+                if (dateType == DateType.START_DATE) {
+                    int day = 1;
+                    int month = Convert.ToInt32(startMonthNumericUpDown.Value);
+                    int year = DateTime.Now.Year;
+
+                    DateTime startDate = new DateTime(year, month, day);
+
+                    resultDate = startDate.ToString("yyyy-MM-dd");
+
+                } else if (dateType == DateType.END_DATE) {                 
+                    int month = Convert.ToInt32(startMonthNumericUpDown.Value);
+                    int year = DateTime.Now.Year;
+                    int day = DateTime.DaysInMonth(year, month);
+
+                    DateTime startDate = new DateTime(year, month, day);
+
+                    resultDate = startDate.ToString("yyyy-MM-dd");
+                }
+            } else if (planType == BudgetPlanType.SIX_MONTHS) {
+                if (dateType == DateType.START_DATE) {
+                    int day = 1;
+                    int month = Convert.ToInt32(startMonthNumericUpDown.Value);
+                    int year = DateTime.Now.Year;
+
+                    DateTime startDate = new DateTime(year, month, day);
+
+                    resultDate = startDate.ToString("yyyy-MM-dd");
+
+                } else if (dateType == DateType.END_DATE) {
+                    int month = Convert.ToInt32(startMonthNumericUpDown.Value) + 6;
+                    int year = DateTime.Now.Year;
+                    int day = DateTime.DaysInMonth(year, month);
+
+                    DateTime startDate = new DateTime(year, month, day);
+
+                    resultDate = startDate.ToString("yyyy-MM-dd");
+                }
+            }
+
+            return resultDate;
+        }
+
+        private BudgetPlanType getPlanType() {           
+
+            if (oneMonthCheckBox.Checked == true) {
+                return BudgetPlanType.ONE_MONTH;
+            } else {
+                return BudgetPlanType.SIX_MONTHS;
             }
         }
     }
