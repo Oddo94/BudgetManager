@@ -50,6 +50,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="mvc\models\BudgetSummaryModel.cs" />
+    <Compile Include="non-mvc\BudgetPlanCreator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="non-mvc\BudgetPlanCreator.Designer.cs">
+      <DependentUpon>BudgetPlanCreator.cs</DependentUpon>
+    </Compile>
     <Compile Include="utils\ConfirmationSender.cs" />
     <Compile Include="utils\DBConnectionManager.cs" />
     <Compile Include="mvc\models\DebtsModel.cs" />
@@ -101,6 +107,9 @@
     <Compile Include="utils\QueryData.cs" />
     <Compile Include="utils\SQLCommandBuilder.cs" />
     <Compile Include="utils\ViewCalculator.cs" />
+    <EmbeddedResource Include="non-mvc\BudgetPlanCreator.resx">
+      <DependentUpon>BudgetPlanCreator.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\InsertDataForm.resx">
       <DependentUpon>InsertDataForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -125,7 +134,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

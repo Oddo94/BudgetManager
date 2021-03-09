@@ -93,6 +93,7 @@ namespace BudgetManager {
             return debtInsertionCommand;
         }
 
+        //Method for getting the command necessary for inserting savings in the DB table
         public static MySqlCommand getSavingInsertionCommand(String sqlStatement, int userID, String savingName, int savingValue, String savingDate) {
             MySqlCommand savingInsertionCommand = new MySqlCommand(sqlStatement);
             savingInsertionCommand.Parameters.AddWithValue("@paramID", userID);
@@ -101,6 +102,40 @@ namespace BudgetManager {
             savingInsertionCommand.Parameters.AddWithValue("@paramSavingDate", savingDate);
 
             return savingInsertionCommand;
+        }
+
+        //Method for getting the command that helps check if there is an existing budget plan for the specified time interval
+        public static MySqlCommand getBudgetPlanCheckCommand(String sqlStatement, QueryData paramContainer) {
+            MySqlCommand budgetPlanCheckCommand = new MySqlCommand(sqlStatement);
+            budgetPlanCheckCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
+            budgetPlanCheckCommand.Parameters.AddWithValue("@paramDate", paramContainer.StartDate);
+
+            return budgetPlanCheckCommand;
+        }
+
+        //Method for retrieving the ID of a specified element type from the DB (e.g. budget plan)
+        public static MySqlCommand getTypeIDForItemCommand(String sqlStatement, QueryData paramContainer) {
+            MySqlCommand getTypeIDCommand = new MySqlCommand(sqlStatement);
+            getTypeIDCommand.Parameters.AddWithValue("@paramTypeName", paramContainer.TypeName);
+
+            return getTypeIDCommand;
+        } 
+
+        //Method for getting the command used to insert a new budget plan into the DB
+        public static MySqlCommand getBudgetPlanCreationCommand(String sqlStatement, QueryData paramContainer) {
+            MySqlCommand budgetPlanCreationCommand = new MySqlCommand(sqlStatement);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramPlanName", paramContainer.BudgetPlanName);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramExpenseLimit", paramContainer.ExpenseLimit);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramDebtLimit", paramContainer.DebtLimit);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramSavingLimit", paramContainer.SavingLimit);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramPlanTypeID", paramContainer.PlanTypeID);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramThresholdPercentage", paramContainer.ThresholdPercentage);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramAlarmExistence", paramContainer.AlarmExistenceValue);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramStartDate", paramContainer.StartDate);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramEndDate", paramContainer.EndDate);
+
+            return budgetPlanCreationCommand;
         }
     }
 }
