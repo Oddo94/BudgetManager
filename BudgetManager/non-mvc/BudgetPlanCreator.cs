@@ -20,9 +20,9 @@ namespace BudgetManager.non_mvc {
 
     public partial class BudgetPlanCreator : Form {
         private CheckBox[] checkBoxes;
-        private ComboBox[] comboBoxes;
+        //private ComboBox[] comboBoxes;
         private int userID;
-        private bool hasResetLimits;
+        //private bool hasResetLimits;
 
         //SQL statements for checking budget plan existence for the same time interval
         private String sqlStatementCheckBudgetPlanExistence = @"SELECT planName, startDate, endDate FROM budget_plans WHERE user_ID = @paramID AND @paramDate BETWEEN startDate AND endDate";
@@ -37,7 +37,7 @@ namespace BudgetManager.non_mvc {
             checkBoxes = new CheckBox[] { oneMonthCheckBox, sixMonthsCheckBox };
            
             this.userID = userID;
-            hasResetLimits = false;
+            //hasResetLimits = false;
 
             //Sets the month selection control to the current month(budget plans cannot be created starting from the past)
             startMonthNumericUpDown.Minimum = DateTime.Now.Month;
@@ -238,7 +238,9 @@ namespace BudgetManager.non_mvc {
 
             if (oneMonthCheckBox.Checked == true) {
                 //Creates a data container which will be passed to the MySqlCommand builder method(the date is transformed into a string having the format required by the MySql database)
-                QueryData paramContainer = new QueryData(userID, startDate.ToString("yyyy-MM-dd"));            
+                //QueryData paramContainer = new QueryData(userID, startDate.ToString("yyyy-MM-dd"));
+                QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate.ToString("yyyy-MM-dd")).build(); //CHANGE
+
                 MySqlCommand budgetPlanStartDateCheckCommand = SQLCommandBuilder.getBudgetPlanCheckCommand(sqlStatementCheckBudgetPlanExistence, paramContainer);
 
                 //Executes a MySqlCommand for checking the existence of a budget plan for the selected interval
@@ -257,10 +259,12 @@ namespace BudgetManager.non_mvc {
                 DateTime endDate = new DateTime(year, endMonth, lastDayOfEndMonth);
 
                 //SQL commands are created for the start month and end month of the interval
-                QueryData paramContainerStartDate = new QueryData(userID, startDate.ToString("yyyy-MM-dd"));
+                //QueryData paramContainerStartDate = new QueryData(userID, startDate.ToString("yyyy-MM-dd"));
+                QueryData paramContainerStartDate = new QueryData.Builder(userID).addStartDate(startDate.ToString("yyyy-MM-dd")).build(); //CHANGE
                 MySqlCommand budgetPlanStartDateCheckCommand = SQLCommandBuilder.getBudgetPlanCheckCommand(sqlStatementCheckBudgetPlanExistence, paramContainerStartDate);
 
-                QueryData paramContainerEndDate = new QueryData(userID, endDate.ToString("yyyy-MM-dd"));
+                //QueryData paramContainerEndDate = new QueryData(userID, endDate.ToString("yyyy-MM-dd"));
+                QueryData paramContainerEndDate = new QueryData.Builder(userID).addEndDate(endDate.ToString("yyyy-MM-dd")).build();//CHANGE
                 MySqlCommand budgetPlanEndDateCheckCommand = SQLCommandBuilder.getBudgetPlanCheckCommand(sqlStatementCheckBudgetPlanExistence, paramContainerEndDate);
 
                 //The commands are executed against the DB
@@ -295,15 +299,27 @@ namespace BudgetManager.non_mvc {
             String startDate = getDate(getPlanType(), DateType.START_DATE);
             String endDate = getDate(getPlanType(), DateType.END_DATE);
 
-            QueryData paramContainer = new QueryData(userID, budgetPlanName, expenseLimit, debtLimit, savingLimit, planTypeID, thresholdPercentage, alarmSelectionValue, startDate, endDate);
+            //QueryData paramContainer = new QueryData(userID, budgetPlanName, expenseLimit, debtLimit, savingLimit, planTypeID, thresholdPercentage, alarmSelectionValue, startDate, endDate);
+            QueryData paramContainer = new QueryData.Builder(userID)
+                .addBudgetPlanName(budgetPlanName)
+                .addExpenseLimit(expenseLimit)
+                .addDebtLimit(debtLimit)
+                .addSavingLimit(savingLimit)
+                .addPlanTypeID(planTypeID)
+                .addThresholdPercentage(thresholdPercentage)
+                .addAlarmExistenceValue(alarmSelectionValue)
+                .addStartDate(startDate)
+                .addEndDate(endDate)
+                .build(); //CHANGE
+
 
             return paramContainer;
         }
 
         //Method for retrieving the ID for the selected budget plan type
         private int getBudgetTypeID(String budgetPlanTypeName) {
-            QueryData paramContainer = new QueryData(budgetPlanTypeName);
-            MySqlCommand getTypeIDCommand = SQLCommandBuilder.getTypeIDForItemCommand(sqlStatementGetBudgetPlanTypeID, paramContainer);
+            //QueryData paramContainer = new QueryData(budgetPlanTypeName);
+            MySqlCommand getTypeIDCommand = SQLCommandBuilder.getTypeIDForItemCommand(sqlStatementGetBudgetPlanTypeID, budgetPlanTypeName); //CHANGE
             
             DataTable typeIDDataTable = DBConnectionManager.getData(getTypeIDCommand);
 

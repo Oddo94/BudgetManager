@@ -85,12 +85,14 @@ namespace BudgetManager {
                 option = QueryType.SINGLE_MONTH;
                 int currentMonth = dateTimePickerTimeSpanSelection.Value.Month;
                 int currentYear = dateTimePickerTimeSpanSelection.Value.Year;
-                paramContainer = new QueryData(userID, currentMonth, currentYear, tableName);
+                //paramContainer = new QueryData(userID, currentMonth, currentYear, tableName);
+                paramContainer = new QueryData.Builder(userID).addMonth(currentMonth).addYear(currentYear).addTableName(tableName).build(); //CHANGE
             } else if (yearRecordsCheckBox.Checked == true) {
                 option = QueryType.FULL_YEAR;
                 int currentMonth = dateTimePickerTimeSpanSelection.Value.Month;
                 int currentYear = dateTimePickerTimeSpanSelection.Value.Year;
-                paramContainer = new QueryData(userID,currentYear, tableName);
+                //paramContainer = new QueryData(userID,currentYear, tableName);
+                paramContainer = new QueryData.Builder(userID).addYear(currentYear).addTableName(tableName).build(); //CHANGE
             }
 
             //Obtinerea sursei de date a tabelului afisat in interfata
@@ -224,7 +226,8 @@ namespace BudgetManager {
                 int selectedYear = datePicker.Value.Year;
                 String tableName = itemComboBox.Text;
                 //Creare obiect de stocare a datelor ce vor fi transmise catre controller
-                QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear, tableName);
+                //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear, tableName);
+                QueryData paramContainer = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addTableName(tableName).build(); //CHANGE
 
                 controller.requestData(option, paramContainer);
          
@@ -235,7 +238,8 @@ namespace BudgetManager {
                 int selectedYear = datePicker.Value.Year;
                 String tableName = itemComboBox.Text;
 
-                QueryData paramContainer = new QueryData(userID, selectedYear,tableName);
+                //QueryData paramContainer = new QueryData(userID, selectedYear,tableName);
+                QueryData paramContainer = new QueryData.Builder(userID).addYear(selectedYear).addTableName(tableName).build(); //CHANGE
 
                 controller.requestData(option, paramContainer);
             }

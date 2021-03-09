@@ -104,63 +104,190 @@ namespace BudgetManager {
                 return this.budgetPlanName;
             }
         }
-        //Constructorul care initializeaza datele pt un obiect de tip query pt un an intreg
-        public QueryData(int userID, int year) {
-            this.userID = userID;
-            this.year = year;
+
+        private QueryData() {
+
         }
+        //Constructorul care initializeaza datele pt un obiect de tip query pt un an intreg
+        //public QueryData(int userID, int year) {
+        //    this.userID = userID;
+        //    this.year = year;
+        //}
 
         //Constructorul care initializeaza datele pt un obiect de tip query pt o singura luna
-        public QueryData(int userID, int month, int year) {
-            this.userID = userID;
-            this.month = month;
-            this.year = year;
+        //public QueryData(int userID, int month, int year) {
+        //    this.userID = userID;
+        //    this.month = month;
+        //    this.year = year;
 
-        }
+        //}
 
-        public QueryData(int userID, String startDate) {
-            this.userID = userID;
-            this.startDate = startDate;
-        }
+        //public QueryData(int userID, String startDate) {
+        //    this.userID = userID;
+        //    this.startDate = startDate;
+        //}
 
-        ////Constructorul care initializeaza datele pt un obiect de tip query pt mai multe luni
-        public QueryData(int userID, String startDate, String endDate) {
-            this.userID = userID;
-            this.startDate = startDate;
-            this.endDate = endDate;
+        //////Constructorul care initializeaza datele pt un obiect de tip query pt mai multe luni
+        //public QueryData(int userID, String startDate, String endDate) {
+        //    this.userID = userID;
+        //    this.startDate = startDate;
+        //    this.endDate = endDate;
             
-        }
+        //}
 
-        public QueryData(int userID, int month, int year, String tableName) {
-            this.userID = userID;
-            this.month = month;
-            this.year = year;
-            this.tableName = tableName;
+        //public QueryData(int userID, int month, int year, String tableName) {
+        //    this.userID = userID;
+        //    this.month = month;
+        //    this.year = year;
+        //    this.tableName = tableName;
 
-        }
+        //}
 
-        public QueryData(int userID,int year, String tableName) {
-            this.userID = userID;          
-            this.year = year;
-            this.tableName = tableName;
+        //public QueryData(int userID,int year, String tableName) {
+        //    this.userID = userID;          
+        //    this.year = year;
+        //    this.tableName = tableName;
 
-        }
+        //}
 
-        public QueryData (String typeName) {
-            this.typeName = typeName;
-        }
+        //public QueryData (String typeName) {
+        //    this.typeName = typeName;
+        //}
 
-        public QueryData(int userID, String planName, int expenseLimit, int debtLimit, int savingLimit, int planTypeID, int thresholdPercentage, int alarmExistenceValue, String startDate, String endDate) {
-            this.userID = userID;
-            this.budgetPlanName = planName;
-            this.expenseLimit = expenseLimit;
-            this.debtLimit = debtLimit;
-            this.savingLimit = savingLimit;
-            this.planTypeID = planTypeID;
-            this.thresholdPercentage = thresholdPercentage;
-            this.alarmExistenceValue = alarmExistenceValue;
-            this.startDate = startDate;
-            this.endDate = endDate;
+        //public QueryData(int userID, String planName, int expenseLimit, int debtLimit, int savingLimit, int planTypeID, int thresholdPercentage, int alarmExistenceValue, String startDate, String endDate) {
+        //    this.userID = userID;
+        //    this.budgetPlanName = planName;
+        //    this.expenseLimit = expenseLimit;
+        //    this.debtLimit = debtLimit;
+        //    this.savingLimit = savingLimit;
+        //    this.planTypeID = planTypeID;
+        //    this.thresholdPercentage = thresholdPercentage;
+        //    this.alarmExistenceValue = alarmExistenceValue;
+        //    this.startDate = startDate;
+        //    this.endDate = endDate;
+        //}
+
+        public class Builder {
+            private int userID;
+            private int month;
+            private int year;
+            private String startDate;
+            private String endDate;
+            private String tableName;
+            private String budgetPlanName;
+            private String typeName;
+            private int expenseLimit;
+            private int debtLimit;
+            private int savingLimit;
+            private int planTypeID;
+            private int thresholdPercentage;
+            private int alarmExistenceValue;
+
+
+            public Builder(int userID) {
+                this.userID = userID;
+            }
+
+            public Builder addMonth(int month) {
+                this.month = month;
+
+                return this;
+            }
+
+            public Builder addYear(int year) {
+                this.year = year;
+
+                return this;
+            }
+
+
+            public Builder addStartDate(String startDate) {
+                this.startDate = startDate;
+
+                return this;
+            }
+
+
+            public Builder addEndDate(String endDate) {
+                this.endDate = endDate;
+
+                return this;
+            }
+
+            public Builder addTableName(String tableName) {
+                this.tableName = tableName;
+
+                return this;
+            }
+
+            public Builder addBudgetPlanName(String budgetPlanName) {
+                this.budgetPlanName = budgetPlanName;
+
+                return this;
+            }
+
+            public Builder addTypeName(String typeName) {
+                this.typeName = typeName;
+
+                return this;
+            }
+
+            public Builder addExpenseLimit(int expenseLimit) {
+                this.expenseLimit = expenseLimit;
+
+                return this;
+            }
+
+            public Builder addDebtLimit(int debtLimit) {
+                this.debtLimit = debtLimit;
+
+                return this;
+            }
+
+            public Builder addSavingLimit(int savingLimit) {
+                this.savingLimit = savingLimit;
+
+                return this;
+            }
+
+            public Builder addPlanTypeID(int planTypeID) {
+                this.planTypeID = planTypeID;
+
+                return this;
+            }
+
+            public Builder addThresholdPercentage(int thresholdPercentage) {
+                this.thresholdPercentage = thresholdPercentage;
+
+                return this;
+            }
+
+            public Builder addAlarmExistenceValue(int alarmExistenceValue) {
+                this.alarmExistenceValue = alarmExistenceValue;
+
+                return this;
+            }
+
+            public QueryData build() {
+                return new QueryData {
+                    userID = this.userID,
+                    month = this.month,
+                    year = this.year,
+                    startDate = this.startDate,
+                    endDate = this.endDate,
+                    tableName = this.tableName,
+                    budgetPlanName = this.budgetPlanName,
+                    typeName = this.typeName,
+                    expenseLimit = this.expenseLimit,
+                    debtLimit = this.debtLimit,
+                    savingLimit = this.savingLimit,
+                    planTypeID = this.planTypeID,
+                    thresholdPercentage = this.thresholdPercentage,
+                    alarmExistenceValue = this.alarmExistenceValue
+                };
+            }
+
+
         }
     }
 }

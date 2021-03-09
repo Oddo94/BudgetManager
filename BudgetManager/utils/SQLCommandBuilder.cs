@@ -114,9 +114,9 @@ namespace BudgetManager {
         }
 
         //Method for retrieving the ID of a specified element type from the DB (e.g. budget plan)
-        public static MySqlCommand getTypeIDForItemCommand(String sqlStatement, QueryData paramContainer) {
+        public static MySqlCommand getTypeIDForItemCommand(String sqlStatement, String typeName) {
             MySqlCommand getTypeIDCommand = new MySqlCommand(sqlStatement);
-            getTypeIDCommand.Parameters.AddWithValue("@paramTypeName", paramContainer.TypeName);
+            getTypeIDCommand.Parameters.AddWithValue("@paramTypeName", typeName);
 
             return getTypeIDCommand;
         } 

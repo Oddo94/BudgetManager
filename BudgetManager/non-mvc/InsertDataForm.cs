@@ -199,7 +199,8 @@ namespace BudgetManager {
                 int insertedValue = Convert.ToInt32(valueTextBox.Text);
                 int selectedMonth = newEntryDateTimePicker.Value.Month;
                 int selectedYear = newEntryDateTimePicker.Value.Year;
-                QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
+                //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
+                QueryData paramContainer = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build(); //CHANGE
 
                 if (!hasEnoughMoney(insertedValue, paramContainer)) {
                     MessageBox.Show( String.Format("The inserted value for the current {0} is higher than the available amount! You cannot exceed the maximum incomes for the current month.", selectedItem.ToLower()), "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);

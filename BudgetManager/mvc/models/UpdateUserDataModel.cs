@@ -177,9 +177,9 @@ namespace BudgetManager {
                 //Creaza comanda SQL adecvata in functie de selectia din dateTimePicker(comanda pt o luna/un an intreg)
                 case "Incomes":
                     if (option == QueryType.SINGLE_MONTH) {
-                        return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthIncomes, new QueryData(userID, selectedMonth, selectedYear));
+                        return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthIncomes, new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build());
                     } else if (option == QueryType.FULL_YEAR) {
-                        return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearIncomes, new QueryData(userID, selectedYear));
+                        return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearIncomes, new QueryData.Builder(userID).addYear(selectedYear).build()); //CHANGE
                     } else {
                         return null;
                     }
@@ -187,9 +187,9 @@ namespace BudgetManager {
 
                 case "Expenses":
                     if (option == QueryType.SINGLE_MONTH) {
-                        return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthExpenses, new QueryData(userID, selectedMonth, selectedYear));
+                        return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthExpenses, new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build());
                     } else if (option == QueryType.FULL_YEAR) {
-                        return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearExpenses, new QueryData(userID, selectedYear));
+                        return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearExpenses, new QueryData.Builder(userID).addYear(selectedYear).build());
                     } else {
                         return null;
                     }
@@ -197,9 +197,9 @@ namespace BudgetManager {
 
                 case "Debts":
                     if (option == QueryType.SINGLE_MONTH) {
-                        return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthDebts, new QueryData(userID, selectedMonth, selectedYear));
+                        return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthDebts, new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build());
                     } else if (option == QueryType.FULL_YEAR) {
-                        return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearDebts, new QueryData(userID, selectedYear));
+                        return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearDebts, new QueryData.Builder(userID).addYear(selectedYear).build());
                     } else {
                         return null;
                     }
@@ -207,9 +207,9 @@ namespace BudgetManager {
 
                 case "Savings":
                     if (option == QueryType.SINGLE_MONTH) {
-                        return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthSavings, new QueryData(userID, selectedMonth, selectedYear));
+                        return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthSavings, new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build());
                     } else if (option == QueryType.FULL_YEAR) {
-                        return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearSavings, new QueryData(userID, selectedYear));
+                        return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearSavings, new QueryData.Builder(userID).addYear(selectedYear).build());
                     } else {
                         return null;
                     }
