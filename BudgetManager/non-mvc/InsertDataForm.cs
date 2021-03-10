@@ -194,7 +194,7 @@ namespace BudgetManager {
                       
             String selectedItem = budgetItemComboBox.Text;
             //If the user wants to insert a creditor then the available amount check is no longer performed
-            if (!"Creditor".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase)) {
+            if (!"Creditor".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase) && !"Income".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase)) {
                 //Checks if the user has enough money left to insert the selected item value
                 int insertedValue = Convert.ToInt32(valueTextBox.Text);
                 int selectedMonth = newEntryDateTimePicker.Value.Month;
@@ -203,7 +203,7 @@ namespace BudgetManager {
                 QueryData paramContainer = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build(); //CHANGE
 
                 if (!hasEnoughMoney(insertedValue, paramContainer)) {
-                    MessageBox.Show( String.Format("The inserted value for the current {0} is higher than the available amount! You cannot exceed the maximum incomes for the current month.", selectedItem.ToLower()), "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+                    MessageBox.Show( String.Format("The inserted value for the current {0} is higher than the money left! You cannot exceed the maximum incomes for the current month.", selectedItem.ToLower()), "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
                     return;
                 }
             }
@@ -297,7 +297,7 @@ namespace BudgetManager {
                         creditorInsertCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
                         executionResult = DBConnectionManager.insertData(creditorInsertCommand);
 
-                        //Inserting the d of the newly created creditor in he users_creditors table of the database
+                        //Inserting the ID of the newly created creditor in he users_creditors table of the database
                         MySqlCommand creditorIDInsertCommand = new MySqlCommand(sqlStatementInsertCreditorID);
                         creditorIDInsertCommand.Parameters.AddWithValue("@paramUserID", userID);
                         creditorIDInsertCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));

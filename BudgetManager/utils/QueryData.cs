@@ -22,6 +22,10 @@ namespace BudgetManager {
         private int thresholdPercentage;
         private int alarmExistenceValue;
 
+        private QueryData() {
+
+        }
+
         public int UserID {
             get {
                 return this.userID;
@@ -105,67 +109,6 @@ namespace BudgetManager {
             }
         }
 
-        private QueryData() {
-
-        }
-        //Constructorul care initializeaza datele pt un obiect de tip query pt un an intreg
-        //public QueryData(int userID, int year) {
-        //    this.userID = userID;
-        //    this.year = year;
-        //}
-
-        //Constructorul care initializeaza datele pt un obiect de tip query pt o singura luna
-        //public QueryData(int userID, int month, int year) {
-        //    this.userID = userID;
-        //    this.month = month;
-        //    this.year = year;
-
-        //}
-
-        //public QueryData(int userID, String startDate) {
-        //    this.userID = userID;
-        //    this.startDate = startDate;
-        //}
-
-        //////Constructorul care initializeaza datele pt un obiect de tip query pt mai multe luni
-        //public QueryData(int userID, String startDate, String endDate) {
-        //    this.userID = userID;
-        //    this.startDate = startDate;
-        //    this.endDate = endDate;
-            
-        //}
-
-        //public QueryData(int userID, int month, int year, String tableName) {
-        //    this.userID = userID;
-        //    this.month = month;
-        //    this.year = year;
-        //    this.tableName = tableName;
-
-        //}
-
-        //public QueryData(int userID,int year, String tableName) {
-        //    this.userID = userID;          
-        //    this.year = year;
-        //    this.tableName = tableName;
-
-        //}
-
-        //public QueryData (String typeName) {
-        //    this.typeName = typeName;
-        //}
-
-        //public QueryData(int userID, String planName, int expenseLimit, int debtLimit, int savingLimit, int planTypeID, int thresholdPercentage, int alarmExistenceValue, String startDate, String endDate) {
-        //    this.userID = userID;
-        //    this.budgetPlanName = planName;
-        //    this.expenseLimit = expenseLimit;
-        //    this.debtLimit = debtLimit;
-        //    this.savingLimit = savingLimit;
-        //    this.planTypeID = planTypeID;
-        //    this.thresholdPercentage = thresholdPercentage;
-        //    this.alarmExistenceValue = alarmExistenceValue;
-        //    this.startDate = startDate;
-        //    this.endDate = endDate;
-        //}
 
         public class Builder {
             private int userID;
@@ -200,13 +143,11 @@ namespace BudgetManager {
                 return this;
             }
 
-
             public Builder addStartDate(String startDate) {
                 this.startDate = startDate;
 
                 return this;
             }
-
 
             public Builder addEndDate(String endDate) {
                 this.endDate = endDate;
