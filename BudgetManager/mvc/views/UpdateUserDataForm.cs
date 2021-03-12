@@ -36,67 +36,68 @@ namespace BudgetManager {
             this.model = paramModel;
             this.controller = paramController;
 
-            //Am inversat apelul metodelor pt a evita NPE
+            //Reversing the method calls
             controller.setView(this);
             controller.setModel(model);
 
             model.addObserver(this);
         }
 
-        private void tableSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e) {          
-            //Creare obiect ce stocheaza tipul de selector
+        private void tableSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e) {                     
+            //Creating the object that will hold the DateTimePicker selector type
             DateTimePickerType pickerType = 0;
-
-            //Daca e bifat checbox-ul obtinere de date pe o lună se atribuie obiectului creat anterior valoarea MONTHLY_PICKER
-            //altfel se atribuie valoarea YEARLY_PICKER
+          
+            //If the checkbox for getting data for a single month is selected then the previously created object is assigned the MONTHLY_PICKER value
+            //else it is assigned the YEARLY_PICKER value
             if (monthRecordsCheckBox.Checked == true) {
                 pickerType = DateTimePickerType.MONTHLY_PICKER;
             } else if (yearRecordsCheckBox.Checked == true) {
                 pickerType = DateTimePickerType.YEARLY_PICKER;
             }
 
-            //Trimitere date catre metoda specializata de comunicare cu controllerul
+            //Sending data to the specialized method for communicating with the controller
             sendDataToController(pickerType, tableSelectionComboBox, dateTimePickerTimeSpanSelection);
 
         }
 
-        private void submitButton_Click(object sender, EventArgs e) {          
-            //Verifica daca sunt selectate checkbox-urile pentru alegerea intervalului de timp, anterior selectarii butonului Submit changes 
+        private void submitButton_Click(object sender, EventArgs e) {                      
+            //Checks if the timespan selection combobxes are selected before the Submit button is pressed
             if (monthRecordsCheckBox.Checked == false && yearRecordsCheckBox.Checked == false) {              
                 MessageBox.Show("Please select a time interval first!", "Update data");
                 return;
             }
-
-            //Afisare mesaj de confirmare a intentiei de a modifica datele si obtinerea raspunsului utilizatorului
+          
+            //Displaying a message asking the user to confirm his intention of modifying the data and getting the result of his selection 
             DialogResult userOption = MessageBox.Show("Are you sure that you want to submit the changes to the database?", "Data update form", MessageBoxButtons.YesNo);
 
             if(userOption == DialogResult.No) {
                 return;
             }
-        
-            //Obtinerea numelui tabelului selectat
+                    
+            //Getting the currently selected table name
             String tableName = tableSelectionComboBox.SelectedItem.ToString();
  
             QueryType option = 0;
             QueryData paramContainer = null;
-            
-            //Obtinere date pentru refacerea comenzii SQL de afisare a datelor din tabel
+          
+            //Getting the necessary data for restoring the SQL query used for displaying the data present in the table
+            //(for generating the commands that will automatically update th DB with the changes that the user made in the GUI)
             if (monthRecordsCheckBox.Checked == true) {
                 option = QueryType.SINGLE_MONTH;
                 int currentMonth = dateTimePickerTimeSpanSelection.Value.Month;
-                int currentYear = dateTimePickerTimeSpanSelection.Value.Year;
-                paramContainer = new QueryData(userID, currentMonth, currentYear, tableName);
+                int currentYear = dateTimePickerTimeSpanSelection.Value.Year;                
+                paramContainer = new QueryData.Builder(userID).addMonth(currentMonth).addYear(currentYear).addTableName(tableName).build(); //CHANGE
             } else if (yearRecordsCheckBox.Checked == true) {
                 option = QueryType.FULL_YEAR;
                 int currentMonth = dateTimePickerTimeSpanSelection.Value.Month;
-                int currentYear = dateTimePickerTimeSpanSelection.Value.Year;
-                paramContainer = new QueryData(userID,currentYear, tableName);
+                int currentYear = dateTimePickerTimeSpanSelection.Value.Year;              
+                paramContainer = new QueryData.Builder(userID).addYear(currentYear).addTableName(tableName).build(); //CHANGE
             }
 
-            //Obtinerea sursei de date a tabelului afisat in interfata
+            //Getting the data source of the table displayed in the GUI
             DataTable sourceDataTable = (DataTable)dataGridViewTableDisplay.DataSource;
 
-            //Trimitere date catre controller si verificare rezultat executie
+            //Sending data to controller and checking the execution result
             int executionResult = controller.requestUpdate(option, paramContainer, sourceDataTable);
             if (executionResult != -1) {
                 MessageBox.Show("The selected data was updated successfully!", "Update data");
@@ -104,13 +105,13 @@ namespace BudgetManager {
                 MessageBox.Show("Unable to update the selected data! Please try again.", "Update data");
             }
 
-            submitButton.Enabled = false;//Dezactiveaza butonul de submit dupa modificarea datelor din tabel
-            deleteButton.Enabled = false;//Dezactiveaza butonul de delete dupa modificarea datelor din tabel
+            submitButton.Enabled = false;//Disables the Submit button after deleting data from the table
+            deleteButton.Enabled = false;//Disables the Delete button after deleting data from the table
         }
 
 
         private void dataGridViewTableDisplay_CellValueChanged(object sender, DataGridViewCellEventArgs e) {
-            //MODIFICARE
+           
             if (monthRecordsCheckBox.Checked == true || yearRecordsCheckBox.Checked == true) {
                 submitButton.Enabled = true;
             }
@@ -118,40 +119,39 @@ namespace BudgetManager {
         }
 
         private void deleteButton_Click(object sender, EventArgs e) {
-            //Se obtine indexul randului selectat
+            //Getting the selected row index
             int selectedRowIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
-       
-            //MessageBox.Show("Current selected row item index " + itemID);
+                   
             String confirmationMessage = String.Format("Are you sure that you want to delete row number {0}?", selectedRowIndex);
             DialogResult userOption1 = MessageBox.Show(confirmationMessage, "Data update form", MessageBoxButtons.YesNo);
 
             if (userOption1 == DialogResult.No) {
                 return;
             }
-           
-            //Obținere nume tabel curent
+                    
+            //Getting the currently selected table name
             String tableName = tableSelectionComboBox.Text;
-
-            //Obținere id înregistrare din obiectul DataTable ce reprezinta sursa de date a tabelului curent
+           
+            //Getting the ID of the selected record from the DataTable object that represents the data source of the table displayed in the GUI
             CurrencyManager currencyManager = (CurrencyManager)dataGridViewTableDisplay.BindingContext[dataGridViewTableDisplay.DataSource, dataGridViewTableDisplay.DataMember];
             DataRowView selectedDataRow = (DataRowView)currencyManager.Current;
             int itemID = selectedDataRow.Row.ItemArray[0] != null ? Convert.ToInt32(selectedDataRow.Row.ItemArray[0]) : -1;
-          
-            //Obtinere rezultat executie prin apelul metodei requestDelete a controllerului
+                     
+            //Getting the result of executing the delete command by calling the requestDelete method of the controller (which in turn calls the delete method of the model)
             int executionResult = controller.requestDelete(tableName, itemID);
-            
-            //Afișare mesaj de informare legat de execuția operației de stergere
+                       
+            //Displaying info message regarding the delete operation result
             if (executionResult != -1) {
-                MessageBox.Show("The selected data was successfully deleted !", "Data update");
-                //Stergere rand din tabelul prezent in interfata
+                MessageBox.Show("The selected data was successfully deleted !", "Data update");                
+                //Deleting row from the table displayed in the GUI if the delete operation was successfull
                 dataGridViewTableDisplay.Rows.RemoveAt(selectedRowIndex);
             } else {
                 MessageBox.Show("Unable to delete the selected data! Please try again.", "Data update");
             } 
 
 
-            submitButton.Enabled = false;//Dezactiveaza butonul de submit dupa stergerea datelor din tabel
-            deleteButton.Enabled = false;//Dezactiveaza butonul de delete dupa stergerea datelor din tabel
+            submitButton.Enabled = false;//Disables the Submit button after deleting data from the table
+            deleteButton.Enabled = false;//Disables the Delete button after deleting data from the table
         }
 
 
@@ -163,14 +163,14 @@ namespace BudgetManager {
             if(monthRecordsCheckBox.Checked == true) {
                yearRecordsCheckBox.Checked = false;
                yearRecordsCheckBox.Enabled = false;
-               dateTimePickerTimeSpanSelection.CustomFormat = "MM/yyyy";//Selectare format dateTimePicker
-               dateTimePickerTimeSpanSelection.Enabled = true;//Activare dateTimePicker
-               tableSelectionComboBox.Enabled = true;//Activare combobox selectare tabel
+               dateTimePickerTimeSpanSelection.CustomFormat = "MM/yyyy";//DateTimePicker format setting
+               dateTimePickerTimeSpanSelection.Enabled = true;//DateTimePicker control enabling
+                tableSelectionComboBox.Enabled = true;//Table selection combobox enabling
                
             } else {
-               dateTimePickerTimeSpanSelection.Enabled = false;//Dezactivare dateTimePicker
+               dateTimePickerTimeSpanSelection.Enabled = false;//DateTimePicker disabling
                yearRecordsCheckBox.Enabled = true;
-               tableSelectionComboBox.Enabled = false;//Dezactivare combobox selectare tabel            
+               tableSelectionComboBox.Enabled = false;//Table selection combobox disabling          
             }           
         }
 
@@ -207,51 +207,55 @@ namespace BudgetManager {
         }
 
         private void fillDataGridView(DataGridView gridView, DataTable inputDataTable) {
-            if (inputDataTable != null && inputDataTable.Rows.Count > 0) {
-                //Impune sursa de date pentru tabel
-                gridView.DataSource = inputDataTable;
-                //Dezactiveaza ediatrea primei coloane care contine intotdeauna cheile primare ale inregistrarilor
+            //Null check and row count check(the condition for row count is set to >= 0 so that if a user selects an item with no available records, 
+            //an empty table will be displayed and it will be easier to understand the current status of that item for the selected month)
+            if (inputDataTable != null && inputDataTable.Rows.Count >= 0) {
+                //Sets the data source for the table
+                gridView.DataSource = inputDataTable;             
+                //Deactivates the editing for the first table column because it will always contain the primary keys of the records and modifying these values would alter the DB structure
                 dataGridViewTableDisplay.Columns[0].ReadOnly = true;
             }
         }
 
         private void sendDataToController(DateTimePickerType pickerType, ComboBox itemComboBox, DateTimePicker datePicker) {
-            //Obtinere date pe o singură lună
+            //Single month data selection
             if (pickerType == DateTimePickerType.MONTHLY_PICKER) {
                 QueryType option = QueryType.SINGLE_MONTH;
 
                 int selectedMonth = datePicker.Value.Month;
                 int selectedYear = datePicker.Value.Year;
-                String tableName = itemComboBox.Text;
-                //Creare obiect de stocare a datelor ce vor fi transmise catre controller
-                QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear, tableName);
+                String tableName = itemComboBox.Text;               
+                //Creating the storage object for the data that will be passed to the controller
+                //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear, tableName);
+                QueryData paramContainer = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addTableName(tableName).build(); //CHANGE
 
                 controller.requestData(option, paramContainer);
          
-              //Obtinere date pe mai multe luni
+              //Multiple months data selection
             } else if (pickerType == DateTimePickerType.YEARLY_PICKER) {
                 QueryType option = QueryType.FULL_YEAR;
 
                 int selectedYear = datePicker.Value.Year;
                 String tableName = itemComboBox.Text;
 
-                QueryData paramContainer = new QueryData(userID, selectedYear,tableName);
+                //QueryData paramContainer = new QueryData(userID, selectedYear,tableName);
+                QueryData paramContainer = new QueryData.Builder(userID).addYear(selectedYear).addTableName(tableName).build(); //CHANGE
 
                 controller.requestData(option, paramContainer);
             }
         }
 
-        private void setDateTimePickerDefaultDate(DateTimePicker[] dateTimePickers) {
-            //Creaza o instanta a datei curente
+        private void setDateTimePickerDefaultDate(DateTimePicker[] dateTimePickers) {            
+            //Creating an instance of the current date
             DateTime defaultDate = DateTime.Now;
-
-            //Obtine valoarea anului si a lunii din obiectul creat si seteaza valoarea zilei la 1
+           
+            //Getting the value of the month and year from the created object and setting the value of the day to 1 (start of the month)
             int month = defaultDate.Month;
             int year = defaultDate.Year;
             int day = 1;
 
-            foreach (DateTimePicker currentPicker in dateTimePickers) {                      
-                //Seteaza data reprezentand prima zi a lunii curente a anului curent in DateTimePicker
+            foreach (DateTimePicker currentPicker in dateTimePickers) {                                     
+                //Sets the DateTimePicker date to the first day of the current month from the current year
                 currentPicker.Value = new DateTime(year, month, day);
             }
         }

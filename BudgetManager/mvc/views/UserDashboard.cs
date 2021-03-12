@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using static BudgetManager.QueryData;
 
 namespace BudgetManager {
     public partial class UserDashboard : Form, IView {     
@@ -785,8 +786,9 @@ namespace BudgetManager {
                     String startDate = getDateStringInSQLFormat(startPicker, DateType.START_DATE);
                     String endDate = getDateStringInSQLFormat(endPicker, DateType.END_DATE);
 
-                    //Se configurează obiectul de stocare al datelor si se trimit controllerului tipul de interogare și respectivul obiect
-                    QueryData paramContainer = new QueryData(userID, startDate, endDate);
+                    //Se configurează obiectul de stocare al datelor si se trimit controllerului tipul de interogare și respectivul obiect                  
+                    QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).build(); //CHANGE
+
                     controller.requestData(option, paramContainer);
                   
                 } else {
@@ -797,8 +799,9 @@ namespace BudgetManager {
                     int month = startPicker.Value.Month;
                     int year = startPicker.Value.Year;
 
-                    //Se configurează obiectul de stocare al datelor si se trimit controllerului tipul de interogare și respectivul obiect
-                    QueryData paramContainer = new QueryData(userID, month, year);
+                    //Se configurează obiectul de stocare al datelor si se trimit controllerului tipul de interogare și respectivul obiect                    
+                    QueryData paramContainer = new QueryData.Builder(userID).addMonth(month).addYear(year).build(); //CHANGE
+                    
                     controller.requestData(option, paramContainer);
 
 
@@ -809,8 +812,8 @@ namespace BudgetManager {
 
                 String startDate = getDateStringInSQLFormat(startPicker, DateType.START_DATE);
                 String endDate = getDateStringInSQLFormat(endPicker, DateType.END_DATE);
-
-                QueryData paramContainer = new QueryData(userID, startDate, endDate);
+               
+                QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).build(); //CHANGE
                 controller.requestData(option, paramContainer);
 
             } else if(pickerType == DateTimePickerType.MONTHLY_PICKER) {
@@ -821,8 +824,8 @@ namespace BudgetManager {
                 int month = startPicker.Value.Month;
                 int year = startPicker.Value.Year;
 
-                //Se trimit datele
-                QueryData paramContainerTest = new QueryData(userID, month, year);
+                //Se trimit datele               
+                QueryData paramContainerTest = new QueryData.Builder(userID).addMonth(month).addYear(year).build(); //CHANGE
                 controller.requestData(option, paramContainerTest);
             }
         }
