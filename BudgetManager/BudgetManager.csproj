@@ -56,6 +56,7 @@
     <Compile Include="non-mvc\BudgetPlanCreator.Designer.cs">
       <DependentUpon>BudgetPlanCreator.cs</DependentUpon>
     </Compile>
+    <Compile Include="utils\BudgetPlanChecker.cs" />
     <Compile Include="utils\ConfirmationSender.cs" />
     <Compile Include="utils\DBConnectionManager.cs" />
     <Compile Include="mvc\models\DebtsModel.cs" />
