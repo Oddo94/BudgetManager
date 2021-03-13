@@ -19,15 +19,13 @@ namespace BudgetManager.non_mvc {
     }
 
     public partial class BudgetPlanCreator : Form {
-        private CheckBox[] checkBoxes;
-        //private ComboBox[] comboBoxes;
-        private int userID;
-        //private bool hasResetLimits;
+        private CheckBox[] checkBoxes;        
+        private int userID;       
 
         //SQL statements for checking budget plan existence for the same time interval
         private String sqlStatementCheckBudgetPlanExistence = @"SELECT planName, startDate, endDate FROM budget_plans WHERE user_ID = @paramID AND @paramDate BETWEEN startDate AND endDate";
         //SQL statement for inserting a new budget plan into the DB
-        private String sqlStatementInsertNewPlanData = @"INSERT INTO budget_plans(user_ID, planName, expenseLimit, debtLimit, savingLimit, planType, thresholdPercentage, hasAlarm, startDate, endDate) VALUES(@paramID, @paramPlanName, @paramExpenseLimit, @paramDebtLimit, @paramSavingLimit, @paramPlanTypeID, @paramThresholdPercentage, @paramAlarmExistence, @paramStartDate, @paramEndDate)";
+        private String sqlStatementInsertNewPlanData = @"INSERT INTO budget_plans(user_ID, planName, expenseLimit, debtLimit, savingLimit, estimatedIncome, planType, thresholdPercentage, hasAlarm, startDate, endDate) VALUES(@paramID, @paramPlanName, @paramExpenseLimit, @paramDebtLimit, @paramSavingLimit, @paramEstimatedIncome, @paramPlanTypeID, @paramThresholdPercentage, @paramAlarmExistence, @paramStartDate, @paramEndDate)";
         //SQL statement for getting the ID for the selected plan type(in order to fill in the data for the previous INSERT statement)
         private String sqlStatementGetBudgetPlanTypeID = @"SELECT typeID FROM plan_types WHERE typeName = @paramTypeName";
 
@@ -36,8 +34,7 @@ namespace BudgetManager.non_mvc {
             InitializeComponent();
             checkBoxes = new CheckBox[] { oneMonthCheckBox, sixMonthsCheckBox };
            
-            this.userID = userID;
-            //hasResetLimits = false;
+            this.userID = userID;           
 
             //Sets the month selection control to the current month(budget plans cannot be created starting from the past)
             startMonthNumericUpDown.Minimum = DateTime.Now.Month;
@@ -127,6 +124,12 @@ namespace BudgetManager.non_mvc {
                 MessageBox.Show("A budget plan already exists for the selected interval! Please select another interval or modify/delete the existing plan", "Budget plan creator", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
                 return;
             }
+
+            //Asks the user to confirm his intention of creating a new budget plan
+            DialogResult createPlanOption = MessageBox.Show("Are you sure that you want to create a new budget plan using the provided data?", "Budget plan creator", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (createPlanOption == DialogResult.No) {
+                return;
+            } 
 
             QueryData paramContainer = getDataForBudgetPlanCreation(userID);
             MySqlCommand budgetPlanCreationCommand = SQLCommandBuilder.getBudgetPlanCreationCommand(sqlStatementInsertNewPlanData, paramContainer);
@@ -286,6 +289,8 @@ namespace BudgetManager.non_mvc {
             int expenseLimit = Convert.ToInt32(expensesNumericUpDown.Value);
             int debtLimit = Convert.ToInt32(debtsNumericUpDown.Value);
             int savingLimit = Convert.ToInt32(savingsNumericUpDown.Value);
+            //Gets the estimated income for the plan that is about to be created(the arguments send to the calculation method are the plan type and the estimated value specified by the user)
+            int estimatedIncome = calculateTotalEstimatedIncome(getPlanType(), Convert.ToInt32(incomeEstimationNumericUpDown.Value));
             //The ID for the selected plan type 
             int planTypeID = getBudgetTypeID(budgetPlanTypeName);
             //Indicates if the alarm is activated(0-false; 1-true)
@@ -301,6 +306,7 @@ namespace BudgetManager.non_mvc {
                 .addExpenseLimit(expenseLimit)
                 .addDebtLimit(debtLimit)
                 .addSavingLimit(savingLimit)
+                .addEstimatedIncome(estimatedIncome)
                 .addPlanTypeID(planTypeID)
                 .addThresholdPercentage(thresholdPercentage)
                 .addAlarmExistenceValue(alarmSelectionValue)
@@ -403,5 +409,16 @@ namespace BudgetManager.non_mvc {
                 return BudgetPlanType.SIX_MONTHS;
             }
         }
+
+        //Method for calculating the total estimaed income based on user input value and budget plan type selection
+        private int calculateTotalEstimatedIncome(BudgetPlanType planType, int monthlyEstimatedValue) {
+            if (planType == BudgetPlanType.ONE_MONTH) {
+                return monthlyEstimatedValue;
+            } else if (planType == BudgetPlanType.SIX_MONTHS) {
+                return monthlyEstimatedValue * 6;
+            }
+
+            return 1;
+        } 
     }
 }
