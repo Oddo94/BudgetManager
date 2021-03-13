@@ -41,6 +41,19 @@ namespace BudgetManager.utils {
             return false;
         }
 
+        private int calculateMaxLimitValue(int totalIncomes, int itemPercentage) {
+            if (totalIncomes < 0) {
+                return -1;
+            }
+
+            return (totalIncomes * itemPercentage) / 100;
+
+        }
+
+        private bool isAboveThresholdValue(int totalItemValue, int userInsertedValue, int thresholdValue) {
+
+            return totalItemValue + userInsertedValue > thresholdValue;
+        }
 
     }
 }
