@@ -129,6 +129,7 @@ namespace BudgetManager {
             budgetPlanCreationCommand.Parameters.AddWithValue("@paramExpenseLimit", paramContainer.ExpenseLimit);
             budgetPlanCreationCommand.Parameters.AddWithValue("@paramDebtLimit", paramContainer.DebtLimit);
             budgetPlanCreationCommand.Parameters.AddWithValue("@paramSavingLimit", paramContainer.SavingLimit);
+            budgetPlanCreationCommand.Parameters.AddWithValue("@paramEstimatedIncome", paramContainer.EstimatedIncome);
             budgetPlanCreationCommand.Parameters.AddWithValue("@paramPlanTypeID", paramContainer.PlanTypeID);
             budgetPlanCreationCommand.Parameters.AddWithValue("@paramThresholdPercentage", paramContainer.ThresholdPercentage);
             budgetPlanCreationCommand.Parameters.AddWithValue("@paramAlarmExistence", paramContainer.AlarmExistenceValue);

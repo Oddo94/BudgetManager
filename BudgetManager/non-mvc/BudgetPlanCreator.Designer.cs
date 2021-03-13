@@ -47,11 +47,14 @@
             this.alarmCheckBox = new System.Windows.Forms.CheckBox();
             this.thresholdNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.incomeEstimationNumericUpDown = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.startMonthNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.expensesNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.debtsNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.savingsNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.thresholdNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.incomeEstimationNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -97,7 +100,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(10, 253);
+            this.label3.Location = new System.Drawing.Point(9, 257);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(183, 13);
             this.label3.TabIndex = 4;
@@ -133,7 +136,7 @@
             // createPlanButton
             // 
             this.createPlanButton.Enabled = false;
-            this.createPlanButton.Location = new System.Drawing.Point(181, 582);
+            this.createPlanButton.Location = new System.Drawing.Point(204, 644);
             this.createPlanButton.Name = "createPlanButton";
             this.createPlanButton.Size = new System.Drawing.Size(75, 23);
             this.createPlanButton.TabIndex = 12;
@@ -249,7 +252,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(9, 424);
+            this.label11.Location = new System.Drawing.Point(9, 496);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(51, 13);
             this.label11.TabIndex = 23;
@@ -258,7 +261,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(10, 495);
+            this.label12.Location = new System.Drawing.Point(9, 572);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(115, 13);
             this.label12.TabIndex = 24;
@@ -267,7 +270,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(11, 523);
+            this.label13.Location = new System.Drawing.Point(9, 604);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(54, 13);
             this.label13.TabIndex = 25;
@@ -276,7 +279,7 @@
             // alarmCheckBox
             // 
             this.alarmCheckBox.AutoSize = true;
-            this.alarmCheckBox.Location = new System.Drawing.Point(12, 458);
+            this.alarmCheckBox.Location = new System.Drawing.Point(12, 526);
             this.alarmCheckBox.Name = "alarmCheckBox";
             this.alarmCheckBox.Size = new System.Drawing.Size(146, 17);
             this.alarmCheckBox.TabIndex = 26;
@@ -287,7 +290,7 @@
             // thresholdNumericUpDown
             // 
             this.thresholdNumericUpDown.Enabled = false;
-            this.thresholdNumericUpDown.Location = new System.Drawing.Point(93, 516);
+            this.thresholdNumericUpDown.Location = new System.Drawing.Point(93, 597);
             this.thresholdNumericUpDown.Minimum = new decimal(new int[] {
             1,
             0,
@@ -305,17 +308,45 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(219, 518);
+            this.label14.Location = new System.Drawing.Point(219, 599);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(15, 13);
             this.label14.TabIndex = 28;
             this.label14.Text = "%";
             // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(9, 424);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(147, 13);
+            this.label15.TabIndex = 29;
+            this.label15.Text = "Set estimated monthly income";
+            // 
+            // incomeEstimationNumericUpDown
+            // 
+            this.incomeEstimationNumericUpDown.Location = new System.Drawing.Point(12, 457);
+            this.incomeEstimationNumericUpDown.Maximum = new decimal(new int[] {
+            60000,
+            0,
+            0,
+            0});
+            this.incomeEstimationNumericUpDown.Name = "incomeEstimationNumericUpDown";
+            this.incomeEstimationNumericUpDown.Size = new System.Drawing.Size(120, 20);
+            this.incomeEstimationNumericUpDown.TabIndex = 30;
+            this.incomeEstimationNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
             // BudgetPlanCreator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(455, 617);
+            this.ClientSize = new System.Drawing.Size(518, 680);
+            this.Controls.Add(this.incomeEstimationNumericUpDown);
+            this.Controls.Add(this.label15);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.thresholdNumericUpDown);
             this.Controls.Add(this.alarmCheckBox);
@@ -347,6 +378,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.debtsNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.savingsNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.thresholdNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.incomeEstimationNumericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -378,5 +410,7 @@
         private System.Windows.Forms.CheckBox alarmCheckBox;
         private System.Windows.Forms.NumericUpDown thresholdNumericUpDown;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.NumericUpDown incomeEstimationNumericUpDown;
     }
 }
