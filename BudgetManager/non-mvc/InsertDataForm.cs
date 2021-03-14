@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using BudgetManager.utils;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -226,16 +227,17 @@ namespace BudgetManager {
 
                 //Expense insertion
                 case 1:
-                    //Getting the necessary data
-                    String expenseName = nameTextBox.Text;
-                    int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
-                    int expenseValue = Convert.ToInt32(valueTextBox.Text);
-                    String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Obtinere data sub forma de String
+                    ////Getting the necessary data
+                    //String expenseName = nameTextBox.Text;
+                    //int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
+                    //int expenseValue = Convert.ToInt32(valueTextBox.Text);
+                    //String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Obtinere data sub forma de String
 
-                    //Creating command for expense insertion
-                    MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertExpense, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
-                    //Rezultat executie comanda
-                    executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
+                    ////Creating command for expense insertion
+                    //MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertExpense, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
+                    ////Rezultat executie comanda
+                    //executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
+                    executionResult = insertExpense();
                     break;
 
                 //Debt insertion
@@ -511,6 +513,40 @@ namespace BudgetManager {
             }
         }
 
+
+        private int insertExpense() {
+            //Getting the necessary data
+            String expenseName = nameTextBox.Text;
+            int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
+            int expenseValue = Convert.ToInt32(valueTextBox.Text);
+            String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Obtinere data sub forma de String
+
+            BudgetPlanChecker planChecker = new BudgetPlanChecker(userID, expenseDate);
+
+            if (planChecker.hasBudgetPlanForSelectedMonth()) {
+                DataTable budgetPlanDataTable = planChecker.getBudgetPlanData();
+                String[] budgetPlanBoundaries = planChecker.getBudgetPlanBoundaries(budgetPlanDataTable);
+
+                if (budgetPlanBoundaries != null) {
+                    int totalIncomes = planChecker.getTotalIncomes(budgetPlanBoundaries[0], budgetPlanBoundaries[1]);
+                    int percentageLimitForItem = planChecker.getPercentageLimitForItem(BudgetItemType.EXPENSE);
+                    int limitValueForSelectedItem = planChecker.calculateMaxLimitValue(totalIncomes, percentageLimitForItem);
+                    //Console.WriteLine("EXPENSE VALUE LIMIT IS: " + limitValueForSelectedItem);
+
+                    if (planChecker.exceedsItemLimitValue(expenseValue, limitValueForSelectedItem, BudgetItemType.EXPENSE, budgetPlanBoundaries[0], budgetPlanBoundaries[1])) {
+                        MessageBox.Show("Cannot insert the provided expense since it would exceed the limit imposed by the currently applicable budget plan! Please revise the plan or insert a lower value.", "Insert data form", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return -1;
+                    }
+                }
+            }
+
+            //Creating command for expense insertion
+            MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertExpense, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
+            //Rezultat executie comanda
+            int executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
+
+            return executionResult;
+        }
         //private BudgetItemType getSelectedType(ComboBox comboBox) {
         //    int selectedIndex = comboBox.SelectedIndex;
 

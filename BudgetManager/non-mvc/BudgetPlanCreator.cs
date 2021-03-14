@@ -22,10 +22,10 @@ namespace BudgetManager.non_mvc {
         private CheckBox[] checkBoxes;        
         private int userID;       
 
-        //SQL statements for checking budget plan existence for the same time interval
+        //SQL statement for checking budget plan existence for the same time interval
         private String sqlStatementCheckBudgetPlanExistence = @"SELECT planName, startDate, endDate FROM budget_plans WHERE user_ID = @paramID AND @paramDate BETWEEN startDate AND endDate";
         //SQL statement for inserting a new budget plan into the DB
-        private String sqlStatementInsertNewPlanData = @"INSERT INTO budget_plans(user_ID, planName, expenseLimit, debtLimit, savingLimit, estimatedIncome, planType, thresholdPercentage, hasAlarm, startDate, endDate) VALUES(@paramID, @paramPlanName, @paramExpenseLimit, @paramDebtLimit, @paramSavingLimit, @paramEstimatedIncome, @paramPlanTypeID, @paramThresholdPercentage, @paramAlarmExistence, @paramStartDate, @paramEndDate)";
+        private String sqlStatementInsertNewPlanData = @"INSERT INTO budget_plans(user_ID, planName, expenseLimit, debtLimit, savingLimit, estimatedIncome, planType, hasAlarm, thresholdPercentage, startDate, endDate) VALUES(@paramID, @paramPlanName, @paramExpenseLimit, @paramDebtLimit, @paramSavingLimit, @paramEstimatedIncome, @paramPlanTypeID, @paramAlarmExistence, @paramThresholdPercentage, @paramStartDate, @paramEndDate)";
         //SQL statement for getting the ID for the selected plan type(in order to fill in the data for the previous INSERT statement)
         private String sqlStatementGetBudgetPlanTypeID = @"SELECT typeID FROM plan_types WHERE typeName = @paramTypeName";
 
@@ -308,8 +308,8 @@ namespace BudgetManager.non_mvc {
                 .addSavingLimit(savingLimit)
                 .addEstimatedIncome(estimatedIncome)
                 .addPlanTypeID(planTypeID)
-                .addThresholdPercentage(thresholdPercentage)
                 .addAlarmExistenceValue(alarmSelectionValue)
+                .addThresholdPercentage(thresholdPercentage)                
                 .addStartDate(startDate)
                 .addEndDate(endDate)
                 .build(); //CHANGE
