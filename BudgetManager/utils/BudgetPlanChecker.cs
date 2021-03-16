@@ -59,6 +59,15 @@ namespace BudgetManager.utils {
 
         }
 
+        //Possible generic method
+        public int calculateValueFromPercentage(int totalValue, int percentage) {
+            if (totalValue < 0) {
+                return -1;
+            }
+
+            return (totalValue * percentage) / 100;
+        }
+
         private bool isAboveThresholdValue(int totalItemValue, int userInsertedValue, int thresholdValue) {
 
             return totalItemValue + userInsertedValue > thresholdValue;
@@ -101,6 +110,25 @@ namespace BudgetManager.utils {
             return -1;
         }
 
+        //Method for retrieving the total value for the item that the user wants to insert into the DB(for the period between the start and end date of the budget plan)
+        public int getTotalValueForSelectedItem(BudgetItemType itemType, String startDate, String endDate) {           
+            MySqlCommand getSelectedItemTotalValueCommand = getCorrectSqlCommand(itemType, startDate, endDate);
+
+            if (getSelectedItemTotalValueCommand == null) {
+                return -1;
+            }
+
+            DataTable itemTotalValueDataTable = DBConnectionManager.getData(getSelectedItemTotalValueCommand);
+
+            if (itemTotalValueDataTable != null && itemTotalValueDataTable.Rows.Count == 1) {
+                int totalItemValue = itemTotalValueDataTable.Rows[0].ItemArray[0] != DBNull.Value ? Convert.ToInt32(itemTotalValueDataTable.Rows[0].ItemArray[0] != DBNull.Value) : 0;
+
+                return totalItemValue;
+            }
+
+            return -1;
+        }
+
         public int getPercentageLimitForItem(BudgetItemType itemType) {
             //Gets the budget plan data
             DataTable budgetPlanDataTable = getBudgetPlanData();
@@ -127,6 +155,17 @@ namespace BudgetManager.utils {
             }
 
             return percentageLimit;
+        }
+
+        //Method for retrieving the threshold percentage from the budget plan
+        public int getThresholdPercentage(DataTable budgetPlanDataTable) {
+            if (budgetPlanDataTable != null && budgetPlanDataTable.Rows.Count == 1) {
+                int thresholdPercentage = budgetPlanDataTable.Rows[0].ItemArray[5] != DBNull.Value ? Convert.ToInt32(budgetPlanDataTable.Rows[0].ItemArray[5]) : 0;
+
+                return thresholdPercentage;
+            }
+
+            return -1;
         }
 
         //Method for checking if adding the user input value to the total value of the selected item would result in exceeding the imposed limit
@@ -173,6 +212,39 @@ namespace BudgetManager.utils {
 
             return getTotalItemValueCommand;
 
+        }
+
+        public bool hasBudgetPlanAlarm(DataTable budgetPlanDataTable) {
+            //Checks if the provided DataTable contains data
+            if (budgetPlanDataTable != null && budgetPlanDataTable.Rows.Count == 1) {
+                //If the value present in the hasAlarm column of the table is not null then the variable is assigned that value else it is assigned 0
+                int alarmValue = budgetPlanDataTable.Rows[0].ItemArray[4] != DBNull.Value ? Convert.ToInt32(budgetPlanDataTable.Rows[0].ItemArray[4]) : 0;
+
+                if (alarmValue == 1) {
+                    return true;
+                }               
+            }
+
+            return false;
+        }
+
+        //Method for checking if the current item total value is above threshold but is lower than max limit set through the budget plan
+        public bool isBetweenThresholdAndMaxLimit(int currentItemTotalValue, int thresholdValue, int maxLimitValue) {
+            if (currentItemTotalValue > thresholdValue && currentItemTotalValue <= maxLimitValue) {
+                return true;
+            }
+
+            return false;
+        }
+
+        //Method for calculating the percentage of the current item total value from the imposed limit value
+        public int calculateCurrentItemPercentageValue(int currentItemTotalValue, int limitValue) {
+
+            if (currentItemTotalValue > limitValue) {
+                return -1;
+            }
+       
+            return (currentItemTotalValue * 100) / limitValue;
         }
 
     }
