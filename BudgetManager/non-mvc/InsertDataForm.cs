@@ -515,7 +515,8 @@ namespace BudgetManager {
 
 
         private int insertExpense() {
-            int executionResult = 0;
+            int executionResult = -1;
+            bool canInsertData = true;
             //Getting the necessary data
             String expenseName = nameTextBox.Text;
             int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
@@ -541,30 +542,44 @@ namespace BudgetManager {
 
                         int futureItemTotalValue = currentItemTotalValue + expenseValue;
                         if (planChecker.isBetweenThresholdAndMaxLimit(futureItemTotalValue, thresholdValue, limitValueForSelectedItem)) {
-                            int currentItemPercentageValue = planChecker.calculateCurrentItemPercentageValue(currentItemTotalValue, limitValueForSelectedItem);
+                            int currentItemPercentageValue = planChecker.calculateCurrentItemPercentageValue(futureItemTotalValue, limitValueForSelectedItem);
                             int percentageDifference = currentItemPercentageValue - thresholdPercentage;
                             DialogResult userOption = MessageBox.Show(String.Format("By inserting the current expense you will exceed the alarm threshold by {0}%. Are you sure that you want to continue?", percentageDifference), "Insert data", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
                             if (userOption == DialogResult.No) {
-                                return -1;
+                                canInsertData = false;
                             }
                         } else {
                             if (planChecker.exceedsItemLimitValue(expenseValue, limitValueForSelectedItem, BudgetItemType.EXPENSE, budgetPlanBoundaries[0], budgetPlanBoundaries[1])) {
                                 MessageBox.Show("Cannot insert the provided expense since it would exceed the limit imposed by the currently applicable budget plan! Please revise the plan or insert a lower value.", "Insert data form", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                return -1;
+                                canInsertData = false;
                             }
+                        }
+                    } else {
+                        if (planChecker.exceedsItemLimitValue(expenseValue, limitValueForSelectedItem, BudgetItemType.EXPENSE, budgetPlanBoundaries[0], budgetPlanBoundaries[1])) {
+                            MessageBox.Show("Cannot insert the provided expense since it would exceed the limit imposed by the currently applicable budget plan! Please revise the plan or insert a lower value.", "Insert data form", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            canInsertData = false;
                         }
                     }
 
+                } else {
+                    canInsertData = false;
                 }
             }
+
+            if (canInsertData) {
                 //Creating command for expense insertion
                 MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertExpense, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
                 //Rezultat executie comanda
                 executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
 
                 return executionResult;
+            } else {
+                return -1;
             }
+
+
+        }
             //private BudgetItemType getSelectedType(ComboBox comboBox) {
             //    int selectedIndex = comboBox.SelectedIndex;
 

@@ -84,8 +84,11 @@ namespace BudgetManager.utils {
             String budgetPlanStartDate = budgetPlanDataTable.Rows[0].ItemArray[6] != DBNull.Value ? Convert.ToString(budgetPlanDataTable.Rows[0].ItemArray[6]) : null;
             String budgetPlanEndDate = budgetPlanDataTable.Rows[0].ItemArray[7] != DBNull.Value ? Convert.ToString(budgetPlanDataTable.Rows[0].ItemArray[7]) : null;
 
-            budgetPlanBoundaries[0] = budgetPlanStartDate;
-            budgetPlanBoundaries[1] = budgetPlanEndDate;
+            String sqlFormatStartDate = DateTime.Parse(budgetPlanStartDate).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            String sqlFormatEndDate = DateTime.Parse(budgetPlanEndDate).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+            budgetPlanBoundaries[0] = sqlFormatStartDate;
+            budgetPlanBoundaries[1] = sqlFormatEndDate;
 
             return budgetPlanBoundaries;
         }
@@ -121,7 +124,7 @@ namespace BudgetManager.utils {
             DataTable itemTotalValueDataTable = DBConnectionManager.getData(getSelectedItemTotalValueCommand);
 
             if (itemTotalValueDataTable != null && itemTotalValueDataTable.Rows.Count == 1) {
-                int totalItemValue = itemTotalValueDataTable.Rows[0].ItemArray[0] != DBNull.Value ? Convert.ToInt32(itemTotalValueDataTable.Rows[0].ItemArray[0] != DBNull.Value) : 0;
+                int totalItemValue = itemTotalValueDataTable.Rows[0].ItemArray[0] != DBNull.Value ? Convert.ToInt32(itemTotalValueDataTable.Rows[0].ItemArray[0]) : 0;
 
                 return totalItemValue;
             }
