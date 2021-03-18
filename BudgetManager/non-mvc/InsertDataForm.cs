@@ -186,7 +186,7 @@ namespace BudgetManager {
             //The index of the currently selected element
             int selectedItemIndex = budgetItemComboBox.SelectedIndex;
 
-            DialogResult userOption = MessageBox.Show("Are you sure that you want to insert the provided data?", "Data insertion", MessageBoxButtons.YesNo);
+            DialogResult userOption = MessageBox.Show("Are you sure that you want to insert the provided data?", "Data insertion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (userOption == DialogResult.No) {
                 return;
@@ -194,7 +194,7 @@ namespace BudgetManager {
 
 
             String selectedItem = budgetItemComboBox.Text;
-            //If the user wants to insert a creditor then the available amount check is no longer performed
+            //If the user wants to insert a creditor or an income then the available amount check is no longer performed
             if (!"Creditor".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase) && !"Income".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase)) {
                 //Checks if the user has enough money left to insert the selected item value
                 int insertedValue = Convert.ToInt32(valueTextBox.Text);
@@ -413,6 +413,145 @@ namespace BudgetManager {
 
             return -1;
         }
+
+        private int insertSelectedItem(int selectedItemIndex) {
+            int executionResult = -1;
+            switch (selectedItemIndex) {
+                //Income insertion
+                case 0:              
+                    executionResult = insertIncome();
+                    break;
+
+                //Expense insertion
+                case 1:                
+                    executionResult = insertExpense2();               
+                    break;
+
+                //Debt insertion
+                case 2:                   
+                    executionResult = insertDebt();
+                    break;
+
+                //Saving insertion
+                case 3:                 
+                    executionResult = insertSaving();                
+                    break;
+
+                //New creditor insertion
+                case 4:
+                    executionResult = insertCreditor();
+                    break;
+
+                default:                
+                    break;
+            }
+
+            return executionResult;
+        }
+
+        private int insertIncome() {
+            //Getting the necessary data
+            String incomeName = nameTextBox.Text;
+            int incomeTypeID = getID(sqlStatementSelectIncomeTypeID, incomeTypeComboBox.Text);//Ia ca argumente fraza SQL si denumirea tipului de venit selectat
+            int incomeValue = Convert.ToInt32(valueTextBox.Text);
+            String incomeDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd"); //Obtinere data sub forma de String
+
+            //Creating command for income insertion
+            MySqlCommand incomeInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertIncome, userID, incomeName, incomeTypeID, incomeValue, incomeDate);
+            //Rezultat executie comanda
+            int executionResult = DBConnectionManager.insertData(incomeInsertionCommand);
+
+            return executionResult;
+        }
+
+
+        private int insertExpense2() {
+            //Getting the necessary data
+            String expenseName = nameTextBox.Text;
+            int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
+            int expenseValue = Convert.ToInt32(valueTextBox.Text);
+            String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Obtinere data sub forma de String
+
+            //Creating command for expense insertion
+            MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertExpense, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
+            //Rezultat executie comanda
+            int executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
+
+            return executionResult;
+        }
+
+        private int insertDebt() {
+            //Getting the necessary data
+            String debtName = nameTextBox.Text;
+            int debtValue = Convert.ToInt32(valueTextBox.Text);
+            int creditorID = getID(sqlStatementSelectCreditorID, creditorNameComboBox.Text);
+            String debtDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+
+            //Creating command for debt insertion
+            MySqlCommand debtInsertionCommand = SQLCommandBuilder.getDebtInsertionCommand(sqlStatementInsertDebt, userID, debtName, debtValue, creditorID, debtDate);
+            int executionResult = DBConnectionManager.insertData(debtInsertionCommand);
+
+            return executionResult;
+        }
+
+        private int insertSaving() {
+            //Getting the necessary data
+            String savingName = nameTextBox.Text;
+            int savingValue = Convert.ToInt32(valueTextBox.Text);
+            String savingDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+
+            //Creating command for saving insertion
+            MySqlCommand savingInsertionCommand = SQLCommandBuilder.getSavingInsertionCommand(sqlStatementInsertSaving, userID, savingName, savingValue, savingDate);
+            int executionResult = DBConnectionManager.insertData(savingInsertionCommand);
+
+            return executionResult;
+        }
+
+        private int insertCreditor() {
+            int executionResult = -1;
+            //Checks if the entered creditor name exists in the database
+            MySqlCommand creditorSelectionCommand = new MySqlCommand(sqlStatementCheckCreditorExistence);
+            creditorSelectionCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
+            if (entryIsPresent(creditorSelectionCommand, nameTextBox.Text)) {
+                DialogResult userChoice = MessageBox.Show("The provided creditor name already exists. Do you want to add it to your creditors list?", "Data insertion", MessageBoxButtons.YesNoCancel);
+                if (userChoice == DialogResult.Yes) {
+                    //Checks if the creditor is already present in the current user creditors' list
+                    MySqlCommand creditorPresenceInListCommand = new MySqlCommand(sqlStatementCheckCreditorExistenceInUserList);
+                    creditorPresenceInListCommand.Parameters.AddWithValue("@paramUserID", userID);
+                    creditorPresenceInListCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));//Looks for the id of the creditor whose name was inserted
+                    if (isPresentInUserCreditorList(creditorPresenceInListCommand)) {
+                        MessageBox.Show("The provided creditor is already present in your creditor list and cannot be assigned again! Please enter a different creditor", "Data insertion");
+                        return -1;
+                    } else {
+                        //If the creditor aleady exists but is assigned to the current user a new entry will be created in the users_creditors table of the database
+                        MySqlCommand creditorIDInsertCommandForExistingEntry = new MySqlCommand(sqlStatementInsertCreditorID);
+                        creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramUserID", userID);
+                        creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
+                        executionResult = DBConnectionManager.insertData(creditorIDInsertCommandForExistingEntry);
+
+                    }
+
+                } else {
+                    //If the user option is 'No' we return from the method
+                    return -1;
+                }
+            } else {
+                //Inserting a new creditor in the creditors table of the database
+                MySqlCommand creditorInsertCommand = new MySqlCommand(sqlStatementInsertCreditor);
+                creditorInsertCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
+                executionResult = DBConnectionManager.insertData(creditorInsertCommand);
+
+                //Inserting the ID of the newly created creditor in he users_creditors table of the database
+                MySqlCommand creditorIDInsertCommand = new MySqlCommand(sqlStatementInsertCreditorID);
+                creditorIDInsertCommand.Parameters.AddWithValue("@paramUserID", userID);
+                creditorIDInsertCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
+                executionResult = DBConnectionManager.insertData(creditorIDInsertCommand);
+            }
+
+            return executionResult;
+        }
+
+
 
         private bool entryIsPresent(MySqlCommand command, String entryName) {
             //Executes the data retrieval command using the name of the specified creditor        
