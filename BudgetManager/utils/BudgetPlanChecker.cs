@@ -139,7 +139,7 @@ namespace BudgetManager.utils {
             //Sets the default value for the percentage limit
             int percentageLimit = 1;
 
-            //Checks if the specified item type is an expense, debt or saving and sets the percentage limit accordingly (if the percentage limit retrieved from the Db is null the default value of 1 is set)
+            //Checks if the specified item type is an expense, debt or saving and sets the percentage limit accordingly (if the percentage limit retrieved from the DB is null the default value of 1 is set)
             switch (itemType) {
                 case BudgetItemType.EXPENSE:
                     percentageLimit = budgetPlanDataTable.Rows[0].ItemArray[1] != DBNull.Value ? Convert.ToInt32(budgetPlanDataTable.Rows[0].ItemArray[1]) : 1;
