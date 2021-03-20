@@ -81,9 +81,12 @@ namespace BudgetManager.utils {
 
             String[] budgetPlanBoundaries = new String[2];
 
+            //Retrieves the start date and end date of the budget plan from the DataTable object containing the data
             String budgetPlanStartDate = budgetPlanDataTable.Rows[0].ItemArray[6] != DBNull.Value ? Convert.ToString(budgetPlanDataTable.Rows[0].ItemArray[6]) : null;
             String budgetPlanEndDate = budgetPlanDataTable.Rows[0].ItemArray[7] != DBNull.Value ? Convert.ToString(budgetPlanDataTable.Rows[0].ItemArray[7]) : null;
 
+            //Converts the date from MM/dd/yyyy format to yyyy-MM-dd format so that it can be correctly processed by the MySql database
+            //If the format is not changed to yyyy-MM-dd then the database will return no results even if there are records for the specified time interval
             String sqlFormatStartDate = DateTime.Parse(budgetPlanStartDate).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             String sqlFormatEndDate = DateTime.Parse(budgetPlanEndDate).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
@@ -248,6 +251,20 @@ namespace BudgetManager.utils {
             }
        
             return (currentItemTotalValue * 100) / limitValue;
+        }
+
+        //Method for checking if the budget plan start date or end date are filled with 0'(e.g.-0000-00-00)
+        public bool hasZeroFilledDate(String[] budgetPlanBoundaries) {
+            //If the string cotains more/less than two elements no check is made and false is returned
+            if (budgetPlanBoundaries == null || budgetPlanBoundaries.Length != 2) {
+                return false;
+            }
+
+            //Checks if the start and end dates for zero filled values
+            bool hasZeroFilledStartDate = "0000-00-00".Equals(budgetPlanBoundaries[0]);
+            bool hasZeroFilledEndDate = "0000-00-00".Equals(budgetPlanBoundaries[1]);
+
+            return hasZeroFilledStartDate || hasZeroFilledEndDate;
         }
 
     }
