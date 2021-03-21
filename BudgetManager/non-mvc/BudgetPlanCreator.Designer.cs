@@ -57,7 +57,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 20);
+            this.label1.Location = new System.Drawing.Point(9, 22);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(51, 13);
             this.label1.TabIndex = 0;
@@ -97,7 +97,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(10, 253);
+            this.label3.Location = new System.Drawing.Point(9, 257);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(183, 13);
             this.label3.TabIndex = 4;
@@ -133,7 +133,7 @@
             // createPlanButton
             // 
             this.createPlanButton.Enabled = false;
-            this.createPlanButton.Location = new System.Drawing.Point(181, 582);
+            this.createPlanButton.Location = new System.Drawing.Point(203, 596);
             this.createPlanButton.Name = "createPlanButton";
             this.createPlanButton.Size = new System.Drawing.Size(75, 23);
             this.createPlanButton.TabIndex = 12;
@@ -144,7 +144,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(12, 125);
+            this.label7.Location = new System.Drawing.Point(10, 121);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(57, 13);
             this.label7.TabIndex = 13;
@@ -249,7 +249,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(9, 424);
+            this.label11.Location = new System.Drawing.Point(9, 423);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(51, 13);
             this.label11.TabIndex = 23;
@@ -258,7 +258,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(10, 495);
+            this.label12.Location = new System.Drawing.Point(9, 500);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(115, 13);
             this.label12.TabIndex = 24;
@@ -267,7 +267,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(11, 523);
+            this.label13.Location = new System.Drawing.Point(14, 537);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(54, 13);
             this.label13.TabIndex = 25;
@@ -276,7 +276,7 @@
             // alarmCheckBox
             // 
             this.alarmCheckBox.AutoSize = true;
-            this.alarmCheckBox.Location = new System.Drawing.Point(12, 458);
+            this.alarmCheckBox.Location = new System.Drawing.Point(13, 456);
             this.alarmCheckBox.Name = "alarmCheckBox";
             this.alarmCheckBox.Size = new System.Drawing.Size(146, 17);
             this.alarmCheckBox.TabIndex = 26;
@@ -287,7 +287,7 @@
             // thresholdNumericUpDown
             // 
             this.thresholdNumericUpDown.Enabled = false;
-            this.thresholdNumericUpDown.Location = new System.Drawing.Point(93, 516);
+            this.thresholdNumericUpDown.Location = new System.Drawing.Point(93, 535);
             this.thresholdNumericUpDown.Minimum = new decimal(new int[] {
             1,
             0,
@@ -305,7 +305,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(219, 518);
+            this.label14.Location = new System.Drawing.Point(219, 537);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(15, 13);
             this.label14.TabIndex = 28;
@@ -315,7 +315,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(455, 617);
+            this.ClientSize = new System.Drawing.Size(500, 638);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.thresholdNumericUpDown);
             this.Controls.Add(this.alarmCheckBox);

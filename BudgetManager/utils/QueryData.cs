@@ -17,7 +17,8 @@ namespace BudgetManager {
         private String typeName;
         private int expenseLimit;
         private int debtLimit;
-        private int savingLimit;        
+        private int savingLimit;
+        private int estimatedIncome;        
         private int planTypeID;
         private int thresholdPercentage;
         private int alarmExistenceValue;
@@ -79,6 +80,12 @@ namespace BudgetManager {
             }
         }
 
+        public int EstimatedIncome {
+            get {
+                return this.estimatedIncome;
+            }
+        }
+
         public int PlanTypeID {
             get {
                 return this.planTypeID;
@@ -122,6 +129,7 @@ namespace BudgetManager {
             private int expenseLimit;
             private int debtLimit;
             private int savingLimit;
+            private int estimatedIncome;
             private int planTypeID;
             private int thresholdPercentage;
             private int alarmExistenceValue;
@@ -191,6 +199,12 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addEstimatedIncome(int estimatedIncome) {
+                this.estimatedIncome = estimatedIncome;
+
+                return this;
+            }
+
             public Builder addPlanTypeID(int planTypeID) {
                 this.planTypeID = planTypeID;
 
@@ -222,6 +236,7 @@ namespace BudgetManager {
                     expenseLimit = this.expenseLimit,
                     debtLimit = this.debtLimit,
                     savingLimit = this.savingLimit,
+                    estimatedIncome = this.estimatedIncome,
                     planTypeID = this.planTypeID,
                     thresholdPercentage = this.thresholdPercentage,
                     alarmExistenceValue = this.alarmExistenceValue

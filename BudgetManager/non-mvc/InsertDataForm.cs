@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using BudgetManager.utils;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,11 +22,11 @@ namespace BudgetManager {
     }
 
     public partial class InsertDataForm : Form {
-     
+
         private int userID;
         private Control[] inputFields;
         private bool hasClearedFields = false;
-      
+
         //SQL queries used for selecting the values that fill comboboxes
         private String sqlStatementSelectIncomeTypes = @"SELECT typeName FROM income_types";
         private String sqlStatementSelectExpenseTypes = @"SELECT categoryName FROM expense_types";
@@ -39,7 +40,7 @@ namespace BudgetManager {
         private String sqlStatementSelectIncomeTypeID = @"SELECT typeID FROM income_types WHERE typeName = @paramTypeName";
         private String sqlStatementSelectExpenseTypeID = @"SELECT categoryID FROM expense_types WHERE categoryName = @paramTypeName";
         private String sqlStatementSelectCreditorID = @"SELECT creditorID FROM creditors WHERE creditorName = @paramTypeName";
-       
+
         //SQL queries for checking the existence of a creditor in the current user creditor list
         private String sqlStatementCheckCreditorExistenceInUserList = @"SELECT user_ID, creditor_ID FROM users_creditors WHERE user_ID = @paramUserID AND creditor_ID = @paramCreditorID";
 
@@ -61,7 +62,7 @@ namespace BudgetManager {
             InitializeComponent();
             this.userID = userID;
             inputFields = new Control[] { nameTextBox, valueTextBox, incomeTypeComboBox, expenseTypeComboBox, creditorNameComboBox };
-          
+
             //Filling incomeTypeComboBox with income types
             MySqlCommand fillIncomeTypesCommand = new MySqlCommand(sqlStatementSelectIncomeTypes);
             DataTable dTableIncomeTypes = DBConnectionManager.getData(fillIncomeTypesCommand);
@@ -73,7 +74,7 @@ namespace BudgetManager {
             DataTable dTableExpenseTypes = DBConnectionManager.getData(fillExpenseTypesCommand);
 
             fillComboBox(expenseTypeComboBox, dTableExpenseTypes);
-        
+
             fillCreditorsComboBox();
 
             //Deactivating data input fields
@@ -85,7 +86,7 @@ namespace BudgetManager {
         //When selecting a new option all the data input fields are cleared and then only the necessary fields for entering the selected element are activated       
         private void budgetItemComboBox_SelectedIndexChanged(object sender, EventArgs e) {
             int selectedIndex = budgetItemComboBox.SelectedIndex;
-                      
+
             switch (selectedIndex) {
                 //Incomes
                 case 0:
@@ -99,7 +100,7 @@ namespace BudgetManager {
                 case 1:
                     clearFields(inputFields);
                     toggleInputFormFieldsState(inputFields, true);
-                    incomeTypeComboBox.Enabled = false;                    
+                    incomeTypeComboBox.Enabled = false;
                     creditorNameComboBox.Enabled = false;
                     break;
 
@@ -109,7 +110,7 @@ namespace BudgetManager {
                     fillCreditorsComboBox();
                     toggleInputFormFieldsState(inputFields, true);
                     incomeTypeComboBox.Enabled = false;
-                    expenseTypeComboBox.Enabled = false;                    
+                    expenseTypeComboBox.Enabled = false;
                     break;
 
                 //Savings
@@ -130,7 +131,7 @@ namespace BudgetManager {
                     expenseTypeComboBox.Enabled = false;
                     creditorNameComboBox.Enabled = false;
                     break;
-            }        
+            }
         }
 
         private void nameTextBox_TextChanged(object sender, EventArgs e) {
@@ -144,7 +145,7 @@ namespace BudgetManager {
         private void valueTextBox_TextChanged(object sender, EventArgs e) {
             //Regex for matching digits
             Regex numberRegex = new Regex("\\b[\\d]+\\b", RegexOptions.Compiled);
-                 
+
             //If the input contains any other characters apart from digits then the textbox content will be cleared automatically
             if (!numberRegex.IsMatch(valueTextBox.Text)) {
                 valueTextBox.Text = "";
@@ -182,18 +183,19 @@ namespace BudgetManager {
         }
 
         private void addEntryButton_Click(object sender, EventArgs e) {
+            int executionResult = -1;
             //The index of the currently selected element
             int selectedItemIndex = budgetItemComboBox.SelectedIndex;
 
-            DialogResult userOption = MessageBox.Show("Are you sure that you want to insert the provided data?", "Data insertion", MessageBoxButtons.YesNo);
+            DialogResult userOptionConfirmInsertion = MessageBox.Show("Are you sure that you want to insert the provided data?", "Data insertion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (userOption == DialogResult.No) {
+            if (userOptionConfirmInsertion == DialogResult.No) {
                 return;
             }
 
-                      
-            String selectedItem = budgetItemComboBox.Text;
-            //If the user wants to insert a creditor then the available amount check is no longer performed
+
+            String selectedItem = budgetItemComboBox.Text;            
+            //If the user wants to insert a creditor or an income then the available amount check is no longer performed
             if (!"Creditor".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase) && !"Income".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase)) {
                 //Checks if the user has enough money left to insert the selected item value
                 int insertedValue = Convert.ToInt32(valueTextBox.Text);
@@ -202,120 +204,101 @@ namespace BudgetManager {
                 //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
                 QueryData paramContainer = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build(); //CHANGE
 
+                //GENERAL CHECK(item value(expense, debt, saving) > available amount)
+                //Checks if the inserted item value is greater than the amount of money left 
                 if (!hasEnoughMoney(insertedValue, paramContainer)) {
-                    MessageBox.Show( String.Format("The inserted value for the current {0} is higher than the money left! You cannot exceed the maximum incomes for the current month.", selectedItem.ToLower()), "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(String.Format("The inserted value for the current {0} is higher than the money left! You cannot exceed the maximum incomes for the current month.", selectedItem.ToLower()), "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
                     return;
                 }
-            }
 
-            int executionResult = 0;
-            switch (selectedItemIndex) {
-                //Income insertion
-                case 0:
-                    //Getting the necessary data
-                    String incomeName = nameTextBox.Text;
-                    int incomeTypeID = getID(sqlStatementSelectIncomeTypeID, incomeTypeComboBox.Text);//Ia ca argumente fraza SQL si denumirea tipului de venit selectat
-                    int incomeValue = Convert.ToInt32(valueTextBox.Text);
-                    String incomeDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd"); //Obtinere data sub forma de String
+                //BUDGET PLAN CHECKS
+                String entryDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+                int entryValue = Convert.ToInt32(valueTextBox.Text);
 
-                    //Creating command for income insertion
-                    MySqlCommand incomeInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertIncome, userID, incomeName, incomeTypeID, incomeValue, incomeDate);
-                    //Rezultat executie comanda
-                    executionResult = DBConnectionManager.insertData(incomeInsertionCommand);
-                    break;
+                BudgetPlanChecker planChecker = new BudgetPlanChecker(userID, entryDate);
 
-                //Expense insertion
-                case 1:
-                    //Getting the necessary data
-                    String expenseName = nameTextBox.Text;
-                    int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
-                    int expenseValue = Convert.ToInt32(valueTextBox.Text);
-                    String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Obtinere data sub forma de String
+                //Checks if a budget plan exists for the month selected when inserting the item
+                if (planChecker.hasBudgetPlanForSelectedMonth()) {
+                    //Gets the plan data for the currently applicable budget plan
+                    DataTable budgetPlanDataTable = planChecker.getBudgetPlanData();
+                    //Extracts the start date and end date of the budget plan into a String array
+                    String[] budgetPlanBoundaries = planChecker.getBudgetPlanBoundaries(budgetPlanDataTable);                 
 
-                    //Creating command for expense insertion
-                    MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertExpense, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
-                    //Rezultat executie comanda
-                    executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
-                    break;
+                    //Checks if the array containing the budget plan start and end date contains data
+                    if (budgetPlanBoundaries != null) {
+                        //Calculates the total incomes for the selected time interval
+                        int totalIncomes = planChecker.getTotalIncomes(budgetPlanBoundaries[0], budgetPlanBoundaries[1]);
+                        //Extracts the percentage limit that was set in the budget plan for the currently selected item
+                        int percentageLimitForItem = planChecker.getPercentageLimitForItem(getSelectedType(budgetItemComboBox));
+                        //Calculates the actual limit value for the currently selected item based on the previously extracted percentage
+                        int limitValueForSelectedItem = planChecker.calculateMaxLimitValue(totalIncomes, percentageLimitForItem);
+                     
+                        //Checks if an alarm was set for the current budget plan
+                        if (planChecker.hasBudgetPlanAlarm(budgetPlanDataTable)) {
+                            //Extracts the threshold percentage set in the budget plan for the triggering of the alarm
+                            int thresholdPercentage = planChecker.getThresholdPercentage(budgetPlanDataTable);
+                            //Calculates the sum of the existing database records for the currently selected item(expense, debt, saving) in the specified time interval
+                            int currentItemTotalValue = planChecker.getTotalValueForSelectedItem(getSelectedType(budgetItemComboBox), budgetPlanBoundaries[0], budgetPlanBoundaries[1]);
+                            //Calculates the actual threshold value at which the alarm will be triggered
+                            int thresholdValue = planChecker.calculateValueFromPercentage(limitValueForSelectedItem, thresholdPercentage);
 
-                //Debt insertion
-                case 2:
-                    //Getting the necessary data
-                    String debtName = nameTextBox.Text;
-                    int debtValue = Convert.ToInt32(valueTextBox.Text);
-                    int creditorID = getID(sqlStatementSelectCreditorID, creditorNameComboBox.Text);
-                    String debtDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+                            //Calculates the value which will result after adding the current user input value for the selected item to the sum of the existing database records
+                            int futureItemTotalValue = currentItemTotalValue + entryValue;
 
-                    //Creating command for debt insertion
-                    MySqlCommand debtInsertionCommand = SQLCommandBuilder.getDebtInsertionCommand(sqlStatementInsertDebt, userID, debtName, debtValue, creditorID, debtDate);
-                    executionResult = DBConnectionManager.insertData(debtInsertionCommand);
-                    break;
+                            //Checks if the previously calculated value is between the threshold value and the max limit for the selected item(as calculated based on the percentage set in the budget plan)
+                            if (planChecker.isBetweenThresholdAndMaxLimit(futureItemTotalValue, thresholdValue, limitValueForSelectedItem)) {
+                                //Calculates the percentage of the futureItemTotalValue
+                                int currentItemPercentageValue = planChecker.calculateCurrentItemPercentageValue(futureItemTotalValue, limitValueForSelectedItem);
+                                //Calculates the difference between the previous percentage value and the threshold percentage(in order to show the percentage by which the threshold is exceeded) 
+                                int percentageDifference = currentItemPercentageValue - thresholdPercentage;
+                                DialogResult userOptionExceedThreshold = MessageBox.Show(String.Format("By inserting the current {0} you will exceed the alarm threshold by {1}%. Are you sure that you want to continue?", selectedItem.ToLower(), percentageDifference), "Insert data", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
-                //Saving insertion
-                case 3:
-                    //Getting the necessary data
-                    String savingName = nameTextBox.Text;
-                    int savingValue = Convert.ToInt32(valueTextBox.Text);
-                    String savingDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+                                if (userOptionExceedThreshold == DialogResult.No) {
+                                   return;
+                                } else {
+                                    //If the user confirms that he agrees to exceed the threshold the value is inserted in the DB
+                                    executionResult = insertSelectedItem(selectedItemIndex);
+                                }
 
-                    //Creating command for saving insertion
-                    MySqlCommand savingInsertionCommand = SQLCommandBuilder.getSavingInsertionCommand(sqlStatementInsertSaving, userID, savingName, savingValue, savingDate);               
-                    executionResult = DBConnectionManager.insertData(savingInsertionCommand);
-                    break;
-
-                //New creditor insertion
-                case 4:                                     
-                    //Checks if the entered creditor name exists in the database
-                    MySqlCommand creditorSelectionCommand = new MySqlCommand(sqlStatementCheckCreditorExistence);
-                    creditorSelectionCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
-                    if (entryIsPresent(creditorSelectionCommand, nameTextBox.Text)) {
-                        DialogResult userChoice = MessageBox.Show("The provided creditor name already exists. Do you want to add it to your creditors list?", "Data insertion", MessageBoxButtons.YesNoCancel);
-                        if (userChoice == DialogResult.Yes) {                           
-                            //Checks if the creditor is already present in the current user creditors' list
-                            MySqlCommand creditorPresenceInListCommand = new MySqlCommand(sqlStatementCheckCreditorExistenceInUserList);
-                            creditorPresenceInListCommand.Parameters.AddWithValue("@paramUserID", userID);
-                            creditorPresenceInListCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));//Looks for the id of the creditor whose name was inserted
-                            if (isPresentInUserCreditorList(creditorPresenceInListCommand)) {
-                                MessageBox.Show("The provided creditor is already present in your creditor list and cannot be assigned again! Please enter a different creditor", "Data insertion");
-                                return;
-                            } else {                            
-                                //If the creditor aleady exists but is assigned to the current user a new entry will be created in the users_creditors table of the database
-                                MySqlCommand creditorIDInsertCommandForExistingEntry = new MySqlCommand(sqlStatementInsertCreditorID);
-                                creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramUserID", userID);
-                                creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
-                                executionResult = DBConnectionManager.insertData(creditorIDInsertCommandForExistingEntry);
-
+                            } else {
+                                //If the futureItemTotalValue is above the limit set in the budget plan a warning message is shown and no value is inserted
+                                if (planChecker.exceedsItemLimitValue(entryValue, limitValueForSelectedItem, getSelectedType(budgetItemComboBox), budgetPlanBoundaries[0], budgetPlanBoundaries[1])) {
+                                    MessageBox.Show(String.Format("Cannot insert the provided {0} since it would exceed the {1}% limit imposed by the currently applicable budget plan! Please revise the plan or insert a lower value.", selectedItem.ToLower(), percentageLimitForItem), "Insert data form", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return;
+                                //If the futureItemTotalValue is not between threshold limit and limit value and it doesn't exceed the limit value for the selected item it means that it can be inserted in the DB
+                                } else {
+                                    executionResult = insertSelectedItem(selectedItemIndex);
+                                }
                             }
-                                                    
                         } else {
-                            //If the user option is 'No' we return from the method
-                            return;
+                            //If the plan doesn't contain an alarm a check is made to see if the future total value for the item (user input value + sum of existing database records for the selected item) is greater than the max limit for the selected item(as calculated based on the percentage set in the budget plan)
+                            if (planChecker.exceedsItemLimitValue(entryValue, limitValueForSelectedItem, getSelectedType(budgetItemComboBox), budgetPlanBoundaries[0], budgetPlanBoundaries[1])) {
+                                MessageBox.Show(String.Format("Cannot insert the provided {0} since it would exceed the {1}% limit imposed by the currently applicable budget plan! Please revise the plan or insert a lower value.", selectedItem.ToLower(), percentageLimitForItem), "Insert data form", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            //If the value is less than the limit then it is inserted in the DB
+                            } else {
+                                executionResult = insertSelectedItem(selectedItemIndex);
+                            }
                         }
-                    } else {                    
-                        //Inserting a new creditor in the creditors table of the database
-                        MySqlCommand creditorInsertCommand = new MySqlCommand(sqlStatementInsertCreditor);
-                        creditorInsertCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
-                        executionResult = DBConnectionManager.insertData(creditorInsertCommand);
-
-                        //Inserting the ID of the newly created creditor in he users_creditors table of the database
-                        MySqlCommand creditorIDInsertCommand = new MySqlCommand(sqlStatementInsertCreditorID);
-                        creditorIDInsertCommand.Parameters.AddWithValue("@paramUserID", userID);
-                        creditorIDInsertCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
-                        executionResult = DBConnectionManager.insertData(creditorIDInsertCommand);
+                    //If the String array containing the start and end dates for the budget plan is null then no record is inserted in the database since no check can be performed to see if the limits imposed through it are respected
+                    } else {
+                        MessageBox.Show("Unable to retrieve the start and end dates of the current budget plan! Please revise the plan before trying to insert new data.", "Insert data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
-                    break;
-
-
-
-                default:
-                    MessageBox.Show("Invalid option", "Warning");
-                    break;
+                //If there is no budget plan for the selected month/the existing budget plan doesn't have proper start/end dates it means that no additional checks are made and the value can be inserted(the general check is already passed at this point)
+                } else {                   
+                    executionResult = insertSelectedItem(selectedItemIndex);
+                }
+            //If the user wants to insert a creditor or an income in the database no additional checks are made and the value is inserted
+            } else {                
+                executionResult = insertSelectedItem(selectedItemIndex);
             }
 
+            //Checks the execution result resturned by the insertion method(positive value mean success while -1 means the failure of the operation)
             if (executionResult != -1) {
-                MessageBox.Show("Data inserted successfully!", "Data insertion");
+                MessageBox.Show("Data inserted successfully!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } else {
-                MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion");
+                MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
         }
@@ -387,7 +370,7 @@ namespace BudgetManager {
 
         }
 
-        private void fillCreditorsComboBox() {     
+        private void fillCreditorsComboBox() {
             MySqlCommand fillCreditorsCommand = new MySqlCommand(sqlStatementSelectCreditors);
             fillCreditorsCommand.Parameters.AddWithValue("@paramUserID", userID);
 
@@ -397,28 +380,167 @@ namespace BudgetManager {
             creditorNameComboBox.DisplayMember = "creditorName";
         }
 
-        private int getID(String sqlStatement, String typeName) {       
+        private int getID(String sqlStatement, String typeName) {
             MySqlCommand getTypeIDCommand = new MySqlCommand(sqlStatement);
             getTypeIDCommand.Parameters.AddWithValue("@paramTypeName", typeName);
-           
+
             DataTable typeIDTable = DBConnectionManager.getData(getTypeIDCommand);
 
-            if (typeIDTable!= null && typeIDTable.Rows.Count == 1) {
-               int typeID = Convert.ToInt32(typeIDTable.Rows[0].ItemArray[0]);
+            if (typeIDTable != null && typeIDTable.Rows.Count == 1) {
+                int typeID = Convert.ToInt32(typeIDTable.Rows[0].ItemArray[0]);
                 return typeID;
             }
-            
+
 
             return -1;
         }
 
+        private int insertSelectedItem(int selectedItemIndex) {
+            int executionResult = -1;
+            switch (selectedItemIndex) {
+                //Income insertion
+                case 0:              
+                    executionResult = insertIncome();
+                    break;
+
+                //Expense insertion
+                case 1:                
+                    executionResult = insertExpense();               
+                    break;
+
+                //Debt insertion
+                case 2:                   
+                    executionResult = insertDebt();
+                    break;
+
+                //Saving insertion
+                case 3:                 
+                    executionResult = insertSaving();                
+                    break;
+
+                //New creditor insertion
+                case 4:
+                    executionResult = insertCreditor();
+                    break;
+
+                default:                
+                    break;
+            }
+
+            return executionResult;
+        }
+
+        private int insertIncome() {
+            //Getting the necessary data
+            String incomeName = nameTextBox.Text;
+            int incomeTypeID = getID(sqlStatementSelectIncomeTypeID, incomeTypeComboBox.Text);//Ia ca argumente fraza SQL si denumirea tipului de venit selectat
+            int incomeValue = Convert.ToInt32(valueTextBox.Text);
+            String incomeDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd"); //Obtinere data sub forma de String
+
+            //Creating command for income insertion
+            MySqlCommand incomeInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertIncome, userID, incomeName, incomeTypeID, incomeValue, incomeDate);
+            //Rezultat executie comanda
+            int executionResult = DBConnectionManager.insertData(incomeInsertionCommand);
+
+            return executionResult;
+        }
+
+
+        private int insertExpense() {
+            //Getting the necessary data
+            String expenseName = nameTextBox.Text;
+            int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
+            int expenseValue = Convert.ToInt32(valueTextBox.Text);
+            String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Obtinere data sub forma de String
+
+            //Creating command for expense insertion
+            MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertExpense, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
+            //Rezultat executie comanda
+            int executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
+
+            return executionResult;
+        }
+
+        private int insertDebt() {
+            //Getting the necessary data
+            String debtName = nameTextBox.Text;
+            int debtValue = Convert.ToInt32(valueTextBox.Text);
+            int creditorID = getID(sqlStatementSelectCreditorID, creditorNameComboBox.Text);
+            String debtDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+
+            //Creating command for debt insertion
+            MySqlCommand debtInsertionCommand = SQLCommandBuilder.getDebtInsertionCommand(sqlStatementInsertDebt, userID, debtName, debtValue, creditorID, debtDate);
+            int executionResult = DBConnectionManager.insertData(debtInsertionCommand);
+
+            return executionResult;
+        }
+
+        private int insertSaving() {
+            //Getting the necessary data
+            String savingName = nameTextBox.Text;
+            int savingValue = Convert.ToInt32(valueTextBox.Text);
+            String savingDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+
+            //Creating command for saving insertion
+            MySqlCommand savingInsertionCommand = SQLCommandBuilder.getSavingInsertionCommand(sqlStatementInsertSaving, userID, savingName, savingValue, savingDate);
+            int executionResult = DBConnectionManager.insertData(savingInsertionCommand);
+
+            return executionResult;
+        }
+
+        private int insertCreditor() {
+            int executionResult = -1;
+            //Checks if the entered creditor name exists in the database
+            MySqlCommand creditorSelectionCommand = new MySqlCommand(sqlStatementCheckCreditorExistence);
+            creditorSelectionCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
+            if (entryIsPresent(creditorSelectionCommand, nameTextBox.Text)) {
+                DialogResult userChoice = MessageBox.Show("The provided creditor name already exists. Do you want to add it to your creditors list?", "Data insertion", MessageBoxButtons.YesNoCancel);
+                if (userChoice == DialogResult.Yes) {
+                    //Checks if the creditor is already present in the current user creditors' list
+                    MySqlCommand creditorPresenceInListCommand = new MySqlCommand(sqlStatementCheckCreditorExistenceInUserList);
+                    creditorPresenceInListCommand.Parameters.AddWithValue("@paramUserID", userID);
+                    creditorPresenceInListCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));//Looks for the id of the creditor whose name was inserted
+                    if (isPresentInUserCreditorList(creditorPresenceInListCommand)) {
+                        MessageBox.Show("The provided creditor is already present in your creditor list and cannot be assigned again! Please enter a different creditor", "Data insertion");
+                        return -1;
+                    } else {
+                        //If the creditor aleady exists but is assigned to the current user a new entry will be created in the users_creditors table of the database
+                        MySqlCommand creditorIDInsertCommandForExistingEntry = new MySqlCommand(sqlStatementInsertCreditorID);
+                        creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramUserID", userID);
+                        creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
+                        executionResult = DBConnectionManager.insertData(creditorIDInsertCommandForExistingEntry);
+
+                    }
+
+                } else {
+                    //If the user option is 'No' we return from the method
+                    return -1;
+                }
+            } else {
+                //Inserting a new creditor in the creditors table of the database
+                MySqlCommand creditorInsertCommand = new MySqlCommand(sqlStatementInsertCreditor);
+                creditorInsertCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
+                executionResult = DBConnectionManager.insertData(creditorInsertCommand);
+
+                //Inserting the ID of the newly created creditor in he users_creditors table of the database
+                MySqlCommand creditorIDInsertCommand = new MySqlCommand(sqlStatementInsertCreditorID);
+                creditorIDInsertCommand.Parameters.AddWithValue("@paramUserID", userID);
+                creditorIDInsertCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
+                executionResult = DBConnectionManager.insertData(creditorIDInsertCommand);
+            }
+
+            return executionResult;
+        }
+
+
+
         private bool entryIsPresent(MySqlCommand command, String entryName) {
             //Executes the data retrieval command using the name of the specified creditor        
             DataTable entryDataTable = DBConnectionManager.getData(command);
-           
+
             if (entryDataTable != null) {
                 if (entryDataTable.Rows.Count > 0) {
-                    for (int i = 0; i < entryDataTable.Rows.Count; i++) {                       
+                    for (int i = 0; i < entryDataTable.Rows.Count; i++) {
                         //Checks if the name of the creditor that was obtained after the execution of the command is the same as the one that the users tries to insert(case insensitive string comparison)
                         if (entryName.Equals(entryDataTable.Rows[i].ItemArray[0].ToString(), StringComparison.InvariantCultureIgnoreCase)) {
                             return true;
@@ -441,7 +563,7 @@ namespace BudgetManager {
             return false;
         }
 
-        private bool hasEnoughMoney(int valueToInsert, QueryData paramContainer) {        
+        private bool hasEnoughMoney(int valueToInsert, QueryData paramContainer) {
             //Getting the total value for each budget element        
             int totalIncomes = getTotalValueForSelectedElement(BudgetItemType.INCOME, sqlStatementSingleMonthIncomes, paramContainer);
             int totalExpenses = getTotalValueForSelectedElement(BudgetItemType.EXPENSE, sqlStatementSingleMonthExpenses, paramContainer);
@@ -449,7 +571,7 @@ namespace BudgetManager {
             int totalSavings = getTotalValueForSelectedElement(BudgetItemType.SAVING, sqlStatementSingleMonthSavings, paramContainer);
 
             //Calculating the amount left to spend
-            int amountLeft = getAvailableAmount(totalIncomes,totalExpenses, totalDebts, totalSavings);
+            int amountLeft = getAvailableAmount(totalIncomes, totalExpenses, totalDebts, totalSavings);
 
             if (valueToInsert <= amountLeft) {
                 return true;
@@ -490,7 +612,7 @@ namespace BudgetManager {
             return -1;
 
         }
-        
+
         //Method that returns the correct SQL command according to the type of selected item 
         private MySqlCommand getCommand(BudgetItemType itemType, String sqlStatement, QueryData paramContainer) {
             switch (itemType) {
@@ -511,22 +633,90 @@ namespace BudgetManager {
             }
         }
 
-        //private BudgetItemType getSelectedType(ComboBox comboBox) {
-        //    int selectedIndex = comboBox.SelectedIndex;
 
-        //    switch (selectedIndex) {
-        //        case 1:
-        //            return BudgetItemType.EXPENSE;
+        //private int insertExpense() {
+        //    int executionResult = -1;
+        //    bool canInsertData = true;
+        //    //Getting the necessary data
+        //    String expenseName = nameTextBox.Text;
+        //    int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
+        //    int expenseValue = Convert.ToInt32(valueTextBox.Text);
+        //    String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Obtinere data sub forma de String
 
-        //        case 2:
-        //            return BudgetItemType.DEBT;
+        //    BudgetPlanChecker planChecker = new BudgetPlanChecker(userID, expenseDate);
 
-        //        case 3:
-        //            return BudgetItemType.SAVING;
+        //    if (planChecker.hasBudgetPlanForSelectedMonth()) {
+        //        DataTable budgetPlanDataTable = planChecker.getBudgetPlanData();
+        //        String[] budgetPlanBoundaries = planChecker.getBudgetPlanBoundaries(budgetPlanDataTable);
 
-        //        default:
-        //            return BudgetItemType.UNSPECIFIED;
+        //        if (budgetPlanBoundaries != null) {
+        //            int totalIncomes = planChecker.getTotalIncomes(budgetPlanBoundaries[0], budgetPlanBoundaries[1]);
+        //            int percentageLimitForItem = planChecker.getPercentageLimitForItem(BudgetItemType.EXPENSE);
+        //            int limitValueForSelectedItem = planChecker.calculateMaxLimitValue(totalIncomes, percentageLimitForItem);
+        //            //Console.WriteLine("EXPENSE VALUE LIMIT IS: " + limitValueForSelectedItem);
+
+        //            if (planChecker.hasBudgetPlanAlarm(budgetPlanDataTable)) {
+        //                int thresholdPercentage = planChecker.getThresholdPercentage(budgetPlanDataTable);
+        //                int currentItemTotalValue = planChecker.getTotalValueForSelectedItem(BudgetItemType.EXPENSE, budgetPlanBoundaries[0], budgetPlanBoundaries[1]);
+        //                int thresholdValue = planChecker.calculateValueFromPercentage(limitValueForSelectedItem, thresholdPercentage);
+
+        //                int futureItemTotalValue = currentItemTotalValue + expenseValue;
+        //                if (planChecker.isBetweenThresholdAndMaxLimit(futureItemTotalValue, thresholdValue, limitValueForSelectedItem)) {
+        //                    int currentItemPercentageValue = planChecker.calculateCurrentItemPercentageValue(futureItemTotalValue, limitValueForSelectedItem);
+        //                    int percentageDifference = currentItemPercentageValue - thresholdPercentage;
+        //                    DialogResult userOption = MessageBox.Show(String.Format("By inserting the current expense you will exceed the alarm threshold by {0}%. Are you sure that you want to continue?", percentageDifference), "Insert data", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+        //                    if (userOption == DialogResult.No) {
+        //                        canInsertData = false;
+        //                    }
+        //                } else {
+        //                    if (planChecker.exceedsItemLimitValue(expenseValue, limitValueForSelectedItem, BudgetItemType.EXPENSE, budgetPlanBoundaries[0], budgetPlanBoundaries[1])) {
+        //                        MessageBox.Show("Cannot insert the provided expense since it would exceed the limit imposed by the currently applicable budget plan! Please revise the plan or insert a lower value.", "Insert data form", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //                        canInsertData = false;
+        //                    }
+        //                }
+        //            } else {
+        //                if (planChecker.exceedsItemLimitValue(expenseValue, limitValueForSelectedItem, BudgetItemType.EXPENSE, budgetPlanBoundaries[0], budgetPlanBoundaries[1])) {
+        //                    MessageBox.Show("Cannot insert the provided expense since it would exceed the limit imposed by the currently applicable budget plan! Please revise the plan or insert a lower value.", "Insert data form", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //                    canInsertData = false;
+        //                }
+        //            }
+
+        //        } else {
+        //            canInsertData = false;
+        //        }
         //    }
+
+        //    if (canInsertData) {
+        //        //Creating command for expense insertion
+        //        MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertExpense, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
+        //        //Rezultat executie comanda
+        //        executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
+
+        //        return executionResult;
+        //    } else {
+        //        return -1;
+        //    }
+
+
         //}
+        private BudgetItemType getSelectedType(ComboBox comboBox) {
+            int selectedIndex = comboBox.SelectedIndex;
+
+            switch (selectedIndex) {
+                case 1:
+                    return BudgetItemType.EXPENSE;
+
+                case 2:
+                    return BudgetItemType.DEBT;
+
+                case 3:
+                    return BudgetItemType.SAVING;
+
+                default:
+                    return BudgetItemType.UNSPECIFIED;
+            }
+        }
     }
-}
+    }
+

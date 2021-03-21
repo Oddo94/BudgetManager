@@ -19,15 +19,13 @@ namespace BudgetManager.non_mvc {
     }
 
     public partial class BudgetPlanCreator : Form {
-        private CheckBox[] checkBoxes;
-        //private ComboBox[] comboBoxes;
-        private int userID;
-        //private bool hasResetLimits;
+        private CheckBox[] checkBoxes;        
+        private int userID;       
 
-        //SQL statements for checking budget plan existence for the same time interval
+        //SQL statement for checking budget plan existence for the same time interval
         private String sqlStatementCheckBudgetPlanExistence = @"SELECT planName, startDate, endDate FROM budget_plans WHERE user_ID = @paramID AND @paramDate BETWEEN startDate AND endDate";
         //SQL statement for inserting a new budget plan into the DB
-        private String sqlStatementInsertNewPlanData = @"INSERT INTO budget_plans(user_ID, planName, expenseLimit, debtLimit, savingLimit, planType, thresholdPercentage, hasAlarm, startDate, endDate) VALUES(@paramID, @paramPlanName, @paramExpenseLimit, @paramDebtLimit, @paramSavingLimit, @paramPlanTypeID, @paramThresholdPercentage, @paramAlarmExistence, @paramStartDate, @paramEndDate)";
+        private String sqlStatementInsertNewPlanData = @"INSERT INTO budget_plans(user_ID, planName, expenseLimit, debtLimit, savingLimit, planType, hasAlarm, thresholdPercentage, startDate, endDate) VALUES(@paramID, @paramPlanName, @paramExpenseLimit, @paramDebtLimit, @paramSavingLimit, @paramPlanTypeID, @paramAlarmExistence, @paramThresholdPercentage, @paramStartDate, @paramEndDate)";
         //SQL statement for getting the ID for the selected plan type(in order to fill in the data for the previous INSERT statement)
         private String sqlStatementGetBudgetPlanTypeID = @"SELECT typeID FROM plan_types WHERE typeName = @paramTypeName";
 
@@ -36,8 +34,7 @@ namespace BudgetManager.non_mvc {
             InitializeComponent();
             checkBoxes = new CheckBox[] { oneMonthCheckBox, sixMonthsCheckBox };
            
-            this.userID = userID;
-            //hasResetLimits = false;
+            this.userID = userID;           
 
             //Sets the month selection control to the current month(budget plans cannot be created starting from the past)
             startMonthNumericUpDown.Minimum = DateTime.Now.Month;
@@ -125,6 +122,20 @@ namespace BudgetManager.non_mvc {
             int selectedMonth = Convert.ToInt32(startMonthNumericUpDown.Value);
             if (hasPlanForCurrenMonthSelection(userID, selectedMonth)) {
                 MessageBox.Show("A budget plan already exists for the selected interval! Please select another interval or modify/delete the existing plan", "Budget plan creator", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                return;
+            }
+
+            //Asks the user to confirm his intention of creating a new budget plan
+            DialogResult createPlanOption = MessageBox.Show("Are you sure that you want to create a new budget plan using the provided data?", "Budget plan creator", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (createPlanOption == DialogResult.No) {
+                return;
+            }
+           
+            //Asks the uer if he wants to use the default value of the budget item limit percentage
+            NumericUpDown[] budgetItemLimitControls = new NumericUpDown[] { expensesNumericUpDown, debtsNumericUpDown, savingsNumericUpDown };
+            DialogResult useDefaultValueOption = MessageBox.Show("One or more controls used for setting the budget item limit percentage is/are set to the default value. By using this value you will limit your possibility of entering records for that item. Are you sure that you want to continue?", "Insert data form", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if(useDefaultValueOption == DialogResult.No) {
                 return;
             }
 
@@ -285,7 +296,7 @@ namespace BudgetManager.non_mvc {
             String budgetPlanName = planNameTextBox.Text;
             int expenseLimit = Convert.ToInt32(expensesNumericUpDown.Value);
             int debtLimit = Convert.ToInt32(debtsNumericUpDown.Value);
-            int savingLimit = Convert.ToInt32(savingsNumericUpDown.Value);
+            int savingLimit = Convert.ToInt32(savingsNumericUpDown.Value);          
             //The ID for the selected plan type 
             int planTypeID = getBudgetTypeID(budgetPlanTypeName);
             //Indicates if the alarm is activated(0-false; 1-true)
@@ -300,10 +311,10 @@ namespace BudgetManager.non_mvc {
                 .addBudgetPlanName(budgetPlanName)
                 .addExpenseLimit(expenseLimit)
                 .addDebtLimit(debtLimit)
-                .addSavingLimit(savingLimit)
+                .addSavingLimit(savingLimit)              
                 .addPlanTypeID(planTypeID)
-                .addThresholdPercentage(thresholdPercentage)
                 .addAlarmExistenceValue(alarmSelectionValue)
+                .addThresholdPercentage(thresholdPercentage)                
                 .addStartDate(startDate)
                 .addEndDate(endDate)
                 .build(); //CHANGE
@@ -402,6 +413,17 @@ namespace BudgetManager.non_mvc {
             } else {
                 return BudgetPlanType.SIX_MONTHS;
             }
+        }
+
+        //Method for checking if any of the controls used for setting budget item percentage limits are set to default value(which is 1)
+        private bool hasDefaultLimitForItem(NumericUpDown[] budgetItemLimitControls) {
+            foreach (NumericUpDown limitControl in budgetItemLimitControls) {
+                if (limitControl.Value == limitControl.Minimum) {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
