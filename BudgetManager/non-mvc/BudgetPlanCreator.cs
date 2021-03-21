@@ -25,7 +25,7 @@ namespace BudgetManager.non_mvc {
         //SQL statement for checking budget plan existence for the same time interval
         private String sqlStatementCheckBudgetPlanExistence = @"SELECT planName, startDate, endDate FROM budget_plans WHERE user_ID = @paramID AND @paramDate BETWEEN startDate AND endDate";
         //SQL statement for inserting a new budget plan into the DB
-        private String sqlStatementInsertNewPlanData = @"INSERT INTO budget_plans(user_ID, planName, expenseLimit, debtLimit, savingLimit, estimatedIncome, planType, hasAlarm, thresholdPercentage, startDate, endDate) VALUES(@paramID, @paramPlanName, @paramExpenseLimit, @paramDebtLimit, @paramSavingLimit, @paramEstimatedIncome, @paramPlanTypeID, @paramAlarmExistence, @paramThresholdPercentage, @paramStartDate, @paramEndDate)";
+        private String sqlStatementInsertNewPlanData = @"INSERT INTO budget_plans(user_ID, planName, expenseLimit, debtLimit, savingLimit, planType, hasAlarm, thresholdPercentage, startDate, endDate) VALUES(@paramID, @paramPlanName, @paramExpenseLimit, @paramDebtLimit, @paramSavingLimit, @paramPlanTypeID, @paramAlarmExistence, @paramThresholdPercentage, @paramStartDate, @paramEndDate)";
         //SQL statement for getting the ID for the selected plan type(in order to fill in the data for the previous INSERT statement)
         private String sqlStatementGetBudgetPlanTypeID = @"SELECT typeID FROM plan_types WHERE typeName = @paramTypeName";
 
@@ -129,7 +129,15 @@ namespace BudgetManager.non_mvc {
             DialogResult createPlanOption = MessageBox.Show("Are you sure that you want to create a new budget plan using the provided data?", "Budget plan creator", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (createPlanOption == DialogResult.No) {
                 return;
-            } 
+            }
+           
+            //Asks the uer if he wants to use the default value of the budget item limit percentage
+            NumericUpDown[] budgetItemLimitControls = new NumericUpDown[] { expensesNumericUpDown, debtsNumericUpDown, savingsNumericUpDown };
+            DialogResult useDefaultValueOption = MessageBox.Show("One or more controls used for setting the budget item limit percentage is/are set to the default value. By using this value you will limit your possibility of entering records for that item. Are you sure that you want to continue?", "Insert data form", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if(useDefaultValueOption == DialogResult.No) {
+                return;
+            }
 
             QueryData paramContainer = getDataForBudgetPlanCreation(userID);
             MySqlCommand budgetPlanCreationCommand = SQLCommandBuilder.getBudgetPlanCreationCommand(sqlStatementInsertNewPlanData, paramContainer);
@@ -288,9 +296,7 @@ namespace BudgetManager.non_mvc {
             String budgetPlanName = planNameTextBox.Text;
             int expenseLimit = Convert.ToInt32(expensesNumericUpDown.Value);
             int debtLimit = Convert.ToInt32(debtsNumericUpDown.Value);
-            int savingLimit = Convert.ToInt32(savingsNumericUpDown.Value);
-            //Gets the estimated income for the plan that is about to be created(the arguments send to the calculation method are the plan type and the estimated value specified by the user)
-            int estimatedIncome = calculateTotalEstimatedIncome(getPlanType(), Convert.ToInt32(incomeEstimationNumericUpDown.Value));
+            int savingLimit = Convert.ToInt32(savingsNumericUpDown.Value);          
             //The ID for the selected plan type 
             int planTypeID = getBudgetTypeID(budgetPlanTypeName);
             //Indicates if the alarm is activated(0-false; 1-true)
@@ -305,8 +311,7 @@ namespace BudgetManager.non_mvc {
                 .addBudgetPlanName(budgetPlanName)
                 .addExpenseLimit(expenseLimit)
                 .addDebtLimit(debtLimit)
-                .addSavingLimit(savingLimit)
-                .addEstimatedIncome(estimatedIncome)
+                .addSavingLimit(savingLimit)              
                 .addPlanTypeID(planTypeID)
                 .addAlarmExistenceValue(alarmSelectionValue)
                 .addThresholdPercentage(thresholdPercentage)                
@@ -410,15 +415,15 @@ namespace BudgetManager.non_mvc {
             }
         }
 
-        //Method for calculating the total estimaed income based on user input value and budget plan type selection
-        private int calculateTotalEstimatedIncome(BudgetPlanType planType, int monthlyEstimatedValue) {
-            if (planType == BudgetPlanType.ONE_MONTH) {
-                return monthlyEstimatedValue;
-            } else if (planType == BudgetPlanType.SIX_MONTHS) {
-                return monthlyEstimatedValue * 6;
+        //Method for checking if any of the controls used for setting budget item percentage limits are set to default value(which is 1)
+        private bool hasDefaultLimitForItem(NumericUpDown[] budgetItemLimitControls) {
+            foreach (NumericUpDown limitControl in budgetItemLimitControls) {
+                if (limitControl.Value == limitControl.Minimum) {
+                    return true;
+                }
             }
 
-            return 1;
-        } 
+            return false;
+        }
     }
 }
