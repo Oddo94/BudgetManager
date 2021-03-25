@@ -25,7 +25,7 @@ namespace BudgetManager {
         DYNAMIC_DATASOURCE_2,
         STATIC_DATASOURCE
     }
-
+    
     public interface IModel {
         DataTable[] DataSources { get; set; }
              

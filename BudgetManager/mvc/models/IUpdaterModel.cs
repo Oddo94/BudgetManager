@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BudgetManager {
     interface IUpdaterModel : IModel {
-
+        
         int updateData(QueryType option, QueryData paramContainer, DataTable sourceDataTable);
         int deleteData(String tableName, int itemID);
 
