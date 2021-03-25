@@ -19,6 +19,19 @@ namespace BudgetManager.mvc.controllers {
 
         }
 
+        //NEEDS FURTHER CHECKS!! WHAT HAPPENS IF A MODEL IMPLEMENTING IMODEL CLASS IS CASTED TO A MODEL IMPLEMENTING IUPDATERMODEL? WHAT HAPPENS TO THE UPDATE AND DELETE METHODS?
+        public void setModel(IModel model) {
+            this.model = (IUpdaterModel)model;
+
+            if (!model.hasDBConnection()) {
+                view.disableControls();
+            }
+        }
+
+        public void setView(IView view) {
+            this.view = view;
+        }
+
         public void disableViewControls() {
             view.disableControls();
         }
@@ -28,14 +41,16 @@ namespace BudgetManager.mvc.controllers {
         }
 
         public void requestData(QueryType option, QueryData paramContainer) {
+            //Retrieving the DataTable object containing the data from the DB
             DataTable staticDataTable = model.getNewData(option, paramContainer, SelectedDataSource.STATIC_DATASOURCE);
+
+            //Retrieving the array containing the DataTable objects from the model
             DataTable[] updatedDataSources = model.DataSources;
+            //Updating the element at index 0
             updatedDataSources[0] = staticDataTable;
-        }
 
-
-        public void setView(IView view) {
-            this.view = view;
+            //Setting the DataSource array reference from the model to point to the updated array(this will trigger the notifyObservers method which will update the view)
+            model.DataSources = updatedDataSources;
         }
 
         public int requestUpdate(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
@@ -48,15 +63,6 @@ namespace BudgetManager.mvc.controllers {
             int executionResult = model.deleteData(tableName, itemID);
 
             return executionResult;
-        }
-
-        //NEEDS FURTHER CHECKS!! WHAT HAPPENS IF A MODEL IMPLEMENTING IMODEL CLASS IS CASTED TO A MODEL IMPLEMENTING IUPDATERMODEL? WHAT HAPPENS TO THE UPDATE AND DELETE METHODS?
-        public void setModel(IModel model) {
-            this.model = (IUpdaterModel) model;
-
-            if (!model.hasDBConnection()) {
-                view.disableControls();
-            }         
         }
     }
 }

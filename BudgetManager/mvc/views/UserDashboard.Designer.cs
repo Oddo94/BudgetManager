@@ -1172,15 +1172,16 @@
             // createPlanToolStripMenuItem
             // 
             this.createPlanToolStripMenuItem.Name = "createPlanToolStripMenuItem";
-            this.createPlanToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.createPlanToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.createPlanToolStripMenuItem.Text = "Create plan";
             this.createPlanToolStripMenuItem.Click += new System.EventHandler(this.createPlanToolStripMenuItem_Click);
             // 
             // editDeleteExistingPlansToolStripMenuItem
             // 
             this.editDeleteExistingPlansToolStripMenuItem.Name = "editDeleteExistingPlansToolStripMenuItem";
-            this.editDeleteExistingPlansToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.editDeleteExistingPlansToolStripMenuItem.Text = "Edit/Delete existing plans";
+            this.editDeleteExistingPlansToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.editDeleteExistingPlansToolStripMenuItem.Text = "Edit/Delete budget plans";
+            this.editDeleteExistingPlansToolStripMenuItem.Click += new System.EventHandler(this.editDeleteExistingPlansToolStripMenuItem_Click);
             // 
             // UserDashboard
             // 

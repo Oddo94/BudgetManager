@@ -16,13 +16,17 @@ namespace BudgetManager.mvc.models {
         private String sqlStatementSelectBudgetPlansForTheWholeYear = @"SELECT planID AS 'ID', planName AS 'Plan name', expenseLimit AS 'Expense limit', debtLimit  AS 'Debt limit', savingLimit  AS 'Saving limit', (SELECT typeName FROM plan_types WHERE typeID = planType) AS 'Plan type', hasAlarm 'Alarm state', thresholdPercentage AS 'Alarm threshold', startDate AS 'Start date', endDate AS 'End date' FROM budget_plans WHERE user_ID = @paramID AND YEAR(startDate) = @paramYear";
         private String sqlStatementDeleteBudgetPlan = @"DELETE FROM budget_plans WHERE planID = @paramItemID";
 
+        public BudgetPlanManagementModel() {
+
+        }
+
         public DataTable[] DataSources {
             get {
                 return this.dataSources;
             }
 
             set {
-               this.dataSources = value;
+                this.dataSources = value;
                 notifyObservers();
             }
         }
@@ -42,7 +46,6 @@ namespace BudgetManager.mvc.models {
         }
 
         
-
         public int deleteData(string tableName, int itemID) {
             MySqlCommand deleteBudgetPlanCommand = new MySqlCommand(sqlStatementDeleteBudgetPlan);
             deleteBudgetPlanCommand.Parameters.AddWithValue("paramItemID", itemID);
@@ -117,10 +120,12 @@ namespace BudgetManager.mvc.models {
                 MySqlCommand singleMonthBudgetPlanCommand = SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectBudgetPlanForASingleMonth, paramContainer);
 
                 return singleMonthBudgetPlanCommand;
+
             } else if (option == QueryType.FULL_YEAR) {
                 MySqlCommand fullYearBudgetPlansCommand = SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectBudgetPlansForTheWholeYear, paramContainer);
 
                 return fullYearBudgetPlansCommand;
+
             } else {
                 return null;
             }

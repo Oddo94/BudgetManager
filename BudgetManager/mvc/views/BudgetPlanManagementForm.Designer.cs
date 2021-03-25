@@ -82,34 +82,38 @@
             this.dataGridViewBPManagement.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewBPManagement.Location = new System.Drawing.Point(24, 198);
             this.dataGridViewBPManagement.Name = "dataGridViewBPManagement";
-            this.dataGridViewBPManagement.Size = new System.Drawing.Size(409, 168);
+            this.dataGridViewBPManagement.Size = new System.Drawing.Size(669, 220);
             this.dataGridViewBPManagement.TabIndex = 4;
+            this.dataGridViewBPManagement.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewBPManagement_CellMouseClick);
+            this.dataGridViewBPManagement.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewBPManagement_CellValueChanged);
             // 
             // submitButtonBPManagement
             // 
             this.submitButtonBPManagement.Enabled = false;
-            this.submitButtonBPManagement.Location = new System.Drawing.Point(29, 416);
+            this.submitButtonBPManagement.Location = new System.Drawing.Point(33, 450);
             this.submitButtonBPManagement.Name = "submitButtonBPManagement";
             this.submitButtonBPManagement.Size = new System.Drawing.Size(106, 23);
             this.submitButtonBPManagement.TabIndex = 5;
             this.submitButtonBPManagement.Text = "Submit changes";
             this.submitButtonBPManagement.UseVisualStyleBackColor = true;
+            this.submitButtonBPManagement.Click += new System.EventHandler(this.submitButtonBPManagement_Click);
             // 
             // deleteButtonBPManagement
             // 
             this.deleteButtonBPManagement.Enabled = false;
-            this.deleteButtonBPManagement.Location = new System.Drawing.Point(341, 416);
+            this.deleteButtonBPManagement.Location = new System.Drawing.Point(564, 450);
             this.deleteButtonBPManagement.Name = "deleteButtonBPManagement";
             this.deleteButtonBPManagement.Size = new System.Drawing.Size(92, 23);
             this.deleteButtonBPManagement.TabIndex = 6;
             this.deleteButtonBPManagement.Text = "Delete record";
             this.deleteButtonBPManagement.UseVisualStyleBackColor = true;
+            this.deleteButtonBPManagement.Click += new System.EventHandler(this.deleteButtonBPManagement_Click);
             // 
             // BudgetPlanManagementForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(485, 517);
+            this.ClientSize = new System.Drawing.Size(720, 521);
             this.Controls.Add(this.deleteButtonBPManagement);
             this.Controls.Add(this.submitButtonBPManagement);
             this.Controls.Add(this.dataGridViewBPManagement);

@@ -1,4 +1,5 @@
-﻿using BudgetManager.non_mvc;
+﻿using BudgetManager.mvc.views;
+using BudgetManager.non_mvc;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -889,6 +890,10 @@ namespace BudgetManager {
 
         private void createPlanToolStripMenuItem_Click(object sender, EventArgs e) {
             new BudgetPlanCreator(userID).ShowDialog();
+        }
+
+        private void editDeleteExistingPlansToolStripMenuItem_Click(object sender, EventArgs e) {
+            new BudgetPlanManagementForm(userID).ShowDialog();
         }
     }
  }
