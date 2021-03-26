@@ -28,22 +28,7 @@ namespace BudgetManager.mvc.views {
             wireUp(controller, model);        
         }
 
-        private void wireUp(IUpdaterControl paramController, IUpdaterModel paramModel) {
-            if (model != null) {
-                model.removeObserver(this);
-            }
-
-            this.controller = paramController;
-            this.model = paramModel;
-
-            controller.setModel(model);
-            controller.setView(this);
-
-            model.addObserver(this);
-        }
-
-
-
+        //CONTROLS METHODS
         private void monthRecordsCheckboxBP_CheckedChanged(object sender, EventArgs e) {
             if (monthRecordsCheckboxBP.Checked == true) {
                 yearRecordsCheckboxBP.Checked = false;
@@ -81,6 +66,63 @@ namespace BudgetManager.mvc.views {
 
         }
 
+        //The method that activates the delete button when a cell from the dataGridView is clicked
+        private void dataGridViewBPManagement_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e) {
+            deleteButtonBPManagement.Enabled = true;
+        }
+
+        //the method that activates the submit button when the value of a cell from the dataGridView changes and one of the timespan selection checkboxes is checked
+        private void dataGridViewBPManagement_CellValueChanged(object sender, DataGridViewCellEventArgs e) {
+            if (monthRecordsCheckboxBP.Checked == true || yearRecordsCheckboxBP.Checked == true) {
+                submitButtonBPManagement.Enabled = true;
+            }
+        }
+
+        //VIEW METHODS
+        //Method for setting the data source of the DataTable displayed in the GUI
+        private void fillDataGridViewBP(DataTable inputDataTable) {
+
+            dataGridViewBPManagement.DataSource = inputDataTable;            
+        }
+
+        public void updateView(IModel model) {
+            fillDataGridViewBP(model.DataSources[0]);
+            disableDataGridViewRows(dataGridViewBPManagement);
+
+            //Array containing the indexes of the columns that will be made non-editable(currently only the record ID(primary key) and budget plan type are included)
+            int[] columnIndexes = new int[] {0, 5 };
+            disableDataGridViewColumns(dataGridViewBPManagement, columnIndexes);
+        }
+
+        public void disableControls() {
+            foreach (Button currentButton in buttons) {
+                currentButton.Enabled = false;
+            }
+        }
+
+        public void enableControls() {
+            foreach (Button currentButton in buttons) {
+                currentButton.Enabled = true;
+            }
+        }
+
+        private void wireUp(IUpdaterControl paramController, IUpdaterModel paramModel) {
+            if (model != null) {
+                model.removeObserver(this);
+            }
+
+            this.controller = paramController;
+            this.model = paramModel;
+
+            controller.setModel(model);
+            controller.setView(this);
+
+            model.addObserver(this);
+        }
+
+
+
+        //UTIL METHODS
         private DateTimePickerType getDateTimePickerType(DateTimePicker dateTimePicker) {
             DateTimePickerType pickerType = 0;
             
@@ -116,27 +158,6 @@ namespace BudgetManager.mvc.views {
             controller.requestData(option, paramContainer);
         }
 
-        //Method for setting the data source of the DataTable displayed in the GUI
-        private void fillDataGridViewBP(DataTable inputDataTable) {
-
-            dataGridViewBPManagement.DataSource = inputDataTable;
-        }
-
-        public void updateView(IModel model) {
-            fillDataGridViewBP(model.DataSources[0]);
-        }
-
-        public void disableControls() {
-            foreach (Button currentButton in buttons) {
-                currentButton.Enabled = false;
-            }
-        }
-
-        public void enableControls() {
-            foreach (Button currentButton in buttons) {
-                currentButton.Enabled = true;
-            }
-        }
 
         private void submitButtonBPManagement_Click(object sender, EventArgs e) {
             //Asksfor user to confirm the update decision
@@ -193,6 +214,10 @@ namespace BudgetManager.mvc.views {
 
             if (executionResult != -1) {
                 MessageBox.Show("The selected budget plan was successfully deleted!", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //Retrieves the row index of the currrently selected cell
+                int selectedIndex = dataGridViewBPManagement.CurrentCell.RowIndex;
+                //Removes the row at the selected index from the GUI table
+                dataGridViewBPManagement.Rows.RemoveAt(selectedIndex);
             } else {
                 MessageBox.Show("Unable to delete the selected budget plan! Please try again.", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -209,6 +234,7 @@ namespace BudgetManager.mvc.views {
             return 0;
         }
 
+        //Method for creating the correctly configured QueryData object(data container) according to the timespan selection(single month/full year)
         private QueryData getDataContainer(QueryType option, DateTimePicker dateTimePicker) {
             if (option == QueryType.SINGLE_MONTH) {
                 int month = dateTimePicker.Value.Month;
@@ -235,16 +261,73 @@ namespace BudgetManager.mvc.views {
             return itemID;
         }
 
-        //The method that activates the delete button when a cell from the dataGridView is clicked
-        private void dataGridViewBPManagement_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e) {
-            deleteButtonBPManagement.Enabled = true;
-        }
+        //Method for making data grid view rows that contain budget plans for which the start and end dates don't meet the specified criteria non-editable
+        private void disableDataGridViewRows(DataGridView dataGridView) {
+            foreach (DataGridViewRow currentRow in dataGridView.Rows) {
+                if (currentRow == null) {
+                    return;
+                }
+                //Retrieves the date strings from the current row of the DataGridView
+                String startDateString = currentRow.Cells[8].Value != null ? currentRow.Cells[8].FormattedValue.ToString() : "";
+                String endDateString = currentRow.Cells[9].Value != null ? currentRow.Cells[9].FormattedValue.ToString() : "";
 
-        //the method that activates the submit button when the value of a cell from the dataGridView changes and one of the timespan selection checkboxes is checked
-        private void dataGridViewBPManagement_CellValueChanged(object sender, DataGridViewCellEventArgs e) {
-            if (monthRecordsCheckboxBP.Checked == true || yearRecordsCheckboxBP.Checked == true) {
-                submitButtonBPManagement.Enabled = true;
+                if ("".Equals(startDateString) || "".Equals(endDateString)) {
+                    currentRow.ReadOnly = true;
+                    return;
+                }
+
+                DateTime startDate = DateTime.Parse(startDateString);
+                DateTime endDate = DateTime.Parse(endDateString);
+
+                if (!isEditableBasedOnDate(startDate, endDate)) {
+                    currentRow.ReadOnly = true;
+                }
             }
         }
+
+        //Method for disabling specific columns from the DataGridGriew(the arguments are the specified DataGridView and an array containing the indexes of the columns which need to be non-editable)
+        private void disableDataGridViewColumns(DataGridView dataGridView, int[] columnIndexes) {
+            if (dataGridView == null || columnIndexes == null) {
+                return;
+            }
+            //Each index from the array is checked to see if is higher than the index of the last column in the DataGridView
+            foreach (int currentIndex in columnIndexes) {
+                if(currentIndex > dataGridView.Columns.Count - 1) {
+                    return;
+                }
+
+                dataGridView.Columns[currentIndex].ReadOnly = true;
+            }
+        }
+
+
+        //Method for checking if the budget plan contained in a DataGridView row can be edited
+        //Editing is allowed only for current budget plans, future budget plans and for plans that started in the past but will continue for some time in the future after the start of the current month 
+        private bool isEditableBasedOnDate(DateTime startDate, DateTime endDate) {
+            //Gets the current date
+            DateTime currentDate = DateTime.Now;
+            //Creates a DateTime object representing the date of the first day of the current month and year 
+            DateTime startOfCurrentMonthDate =new DateTime(currentDate.Year, currentDate.Month, 1);
+
+            //Compares the two dates with the startOfCurrentMonthDate value
+            int comparisonResultStartDate = DateTime.Compare(startDate, startOfCurrentMonthDate);
+            int comparisonResultEndDate = DateTime.Compare(endDate, startOfCurrentMonthDate);
+
+            //Case 1- start date and end date are both before the start of the current month
+            if (comparisonResultStartDate < 0 && comparisonResultEndDate < 0) {
+                return false;
+            //Case 2- start date and end date are both after the start of the current month
+            } else if (comparisonResultStartDate > 0 && comparisonResultEndDate > 0) {
+                return true;
+            //Case 3- start date is before the start of the current month and end date is after the start of the current month
+            } else if (comparisonResultStartDate < 0 && comparisonResultEndDate > 0) {
+                return true;
+            //Case 4- start date is the the same as the start of the current month and the end date if after the start of the current month
+            } else if (comparisonResultStartDate == 0 && comparisonResultEndDate > 0) {
+                return true;
+            }
+
+            return false;
+        }   
     }
 }

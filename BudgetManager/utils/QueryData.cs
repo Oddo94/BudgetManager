@@ -242,8 +242,6 @@ namespace BudgetManager {
                     alarmExistenceValue = this.alarmExistenceValue
                 };
             }
-
-
         }
     }
 }
