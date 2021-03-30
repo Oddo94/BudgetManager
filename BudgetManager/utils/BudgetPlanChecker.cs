@@ -21,6 +21,10 @@ namespace BudgetManager.utils {
         private String sqlStatementGetTotalExpenses = @"SELECT SUM(value) AS Total_expenses FROM expenses WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate";
         private String sqlStatementGetTotalDebts = @"SELECT SUM(value) AS Total_debts FROM debts WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate";
         private String sqlStatementGetTotalSavings = @"SELECT SUM(value) AS Total_savings FROM savings WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate";
+        //SQL statement that retrieves the sum of records for all budget item in a single query
+        private String sqlStatementGetTotalValuesForAllItems = @"SELECT(SELECT SUM(value) FROM expenses WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate) AS 'Total expenses',
+                                                                (SELECT SUM(value) FROM debts WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate)  AS 'Total debts',
+                                                                (SELECT SUM(value) FROM savings WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate)  AS 'Total savings'";
 
 
         public BudgetPlanChecker(int userID, String currentDate) {
@@ -29,6 +33,7 @@ namespace BudgetManager.utils {
             this.currentDate = currentDate;
         }
 
+        //Method that retrieves the budget plan data(if the plan exists) based on the specified currentDate(it is actually the date that the user selects for the new entry which is checked to see if it overlaps any existing budget plan timespan)
         public DataTable getBudgetPlanData() {
             QueryData paramContainer = new QueryData.Builder(userID).addStartDate(currentDate).build();
             MySqlCommand budgetPlanExistenceCheckCommand = SQLCommandBuilder.getBudgetPlanCheckCommand(sqlStatementCheckBudgetPlanExistence, paramContainer);
@@ -133,6 +138,36 @@ namespace BudgetManager.utils {
             }
 
             return -1;
+        }
+
+        public int[] getTotalValuesForAllBudgetItems(String startDate, String endDate) {
+            //Arguments checks
+            if (startDate == null || endDate == null) {
+                return null;
+            }
+ 
+            if ("".Equals(startDate) || "".Equals(endDate)) {
+                return null;
+            }
+            //Data container object and MySqlCommand creation
+            QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).build();
+            MySqlCommand getTotalValuesForAllItemsCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementGetTotalValuesForAllItems, paramContainer);
+
+            DataTable itemsTotalValuesDataTable = DBConnectionManager.getData(getTotalValuesForAllItemsCommand);
+            //Null and row count check on the resulted DataTable object
+            if (itemsTotalValuesDataTable == null || itemsTotalValuesDataTable.Rows.Count <= 0) {
+                return null;
+            }
+
+            //DataTable values conversion to int
+            int expensesTotalValue = itemsTotalValuesDataTable.Rows[0].ItemArray[0] != DBNull.Value ? Convert.ToInt32(itemsTotalValuesDataTable.Rows[0].ItemArray[0]) : 0;
+            int debtsTotalValue = itemsTotalValuesDataTable.Rows[0].ItemArray[1] != DBNull.Value ? Convert.ToInt32(itemsTotalValuesDataTable.Rows[1].ItemArray[0]) : 0;
+            int savingsTotalValue = itemsTotalValuesDataTable.Rows[0].ItemArray[2] != DBNull.Value ? Convert.ToInt32(itemsTotalValuesDataTable.Rows[2].ItemArray[0]) : 0;
+
+            //Creating the array containing the total values for each budget item
+            int[] budgetItemsTotals = new int[] { expensesTotalValue, debtsTotalValue, savingsTotalValue };
+
+            return budgetItemsTotals;
         }
 
         public int getPercentageLimitForItem(BudgetItemType itemType) {

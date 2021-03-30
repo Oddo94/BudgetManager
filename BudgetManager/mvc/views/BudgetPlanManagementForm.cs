@@ -1,10 +1,12 @@
 ﻿using BudgetManager.mvc.controllers;
 using BudgetManager.mvc.models;
+using BudgetManager.utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -79,6 +81,11 @@ namespace BudgetManager.mvc.views {
             }
 
            selectedRowIndex = dataGridViewBPManagement.CurrentCell.RowIndex;//gets the index of the currently selected row
+        }
+
+        private void dataGridViewBPManagement_DataError(object sender, DataGridViewDataErrorEventArgs e) {
+            MessageBox.Show("Invalid data inserted into one/more cells of the DataGridView! Please amend it before continuing.", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            return;
         }
 
         //VIEW METHODS
@@ -176,6 +183,19 @@ namespace BudgetManager.mvc.views {
                 MessageBox.Show("The sum of the specified percentages for budget items does not equal 100%! Please amend the necessary limits before continuing.", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 return;
             }
+            //Creates the planChecker object for accessing the methods inside the BudgetPlanChecker class
+            BudgetPlanChecker planChecker = new BudgetPlanChecker(userID, DateTime.Now.ToString("yyyy-MM-dd"));
+            String[] selectedRowDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+
+            if (selectedRowDates == null || selectedRowDates.Length < 2) {
+                return;
+            }
+
+            String startDate = selectedRowDates[0];
+            String endDate = selectedRowDates[1];
+
+            //Retrieves the 
+            String[] budgetPlanBoundaries = planChecker.getBudgetPlanBoundaries((DataTable)dataGridViewBPManagement.DataSource);
 
 
             QueryType option = getQueryTypeOption();
@@ -340,6 +360,34 @@ namespace BudgetManager.mvc.views {
 
             return false;
         } 
+
+        //Method for retrieving the start and end date from the currently selected row of the DataGridView
+        private String[] getDatesFromSelectedRow(int selectedRowIndex, DataGridView dataGridView) {
+            //Arguments checks
+            if(dataGridView == null) {
+                return null;
+            }
+
+            if (selectedRowIndex < 0 || selectedRowIndex > dataGridView.Rows.Count) {
+                return null;
+            }
+
+            //Getting the selected row
+            DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
+
+            //Gets the dates from the selected row as String objects
+            String startDateString = selectedRow.Cells[8].Value != null ? selectedRow.Cells[8].Value.ToString() : "";
+            String endDateString = selectedRow.Cells[9].Value != null ? selectedRow.Cells[9].Value.ToString() : "";
+
+            //Changes the format of the date string from MM/dd/yyyy to yyyy/MM/dd so that they can correctly processed by the MySql database
+            String sqlFormatStartDate = DateTime.Parse(startDateString).ToString("yyyy-MM-dd");
+            String sqlFormatEndDate = DateTime.Parse(endDateString).ToString("yyyy-MM-dd");
+
+            String[] selectedRowDates = new String[] { sqlFormatStartDate, sqlFormatEndDate };
+
+            return selectedRowDates;
+
+        }
         
         //Method for calculating the sum of percentages limit for all budget items
         private int calculatePercentagesSum(int selectedRowIndex, DataGridView dataGridView) {
@@ -364,9 +412,6 @@ namespace BudgetManager.mvc.views {
 
         }
 
-        private void dataGridViewBPManagement_DataError(object sender, DataGridViewDataErrorEventArgs e) {
-            MessageBox.Show("Invalid data inserted into one/more cells of the DataGridView! Please amend it before continuing.", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-            return;
-        }
+      
     }
 }
