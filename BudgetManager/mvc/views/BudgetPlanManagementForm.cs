@@ -16,6 +16,7 @@ namespace BudgetManager.mvc.views {
         private Button[] buttons;
         private IUpdaterControl controller;
         private IUpdaterModel model;
+        private int selectedRowIndex;//the variable that hold the value of the DataGridView row that contains the user edited value
 
 
         public BudgetPlanManagementForm(int userID) {
@@ -76,6 +77,8 @@ namespace BudgetManager.mvc.views {
             if (monthRecordsCheckboxBP.Checked == true || yearRecordsCheckboxBP.Checked == true) {
                 submitButtonBPManagement.Enabled = true;
             }
+
+           selectedRowIndex = dataGridViewBPManagement.CurrentCell.RowIndex;//gets the index of the currently selected row
         }
 
         //VIEW METHODS
@@ -161,12 +164,20 @@ namespace BudgetManager.mvc.views {
 
         private void submitButtonBPManagement_Click(object sender, EventArgs e) {
             //Asksfor user to confirm the update decision
-            DialogResult userOptionConfirmUpdate = MessageBox.Show("Are you sure that you want to updatethe selected budget plan?", "Budget plan mamagement", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult userOptionConfirmUpdate = MessageBox.Show("Are you sure that you want to update the selected budget plan?", "Budget plan mamagement", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             //If the user selects the 'No' option then no budget plan is updated
             if (userOptionConfirmUpdate == DialogResult.No) {
                 return;
             }
+
+            //Checks if the percentage limit for items were correctly set (if the total sum equals 100%)          
+            if (calculatePercentagesSum(selectedRowIndex, dataGridViewBPManagement) < 100 || calculatePercentagesSum(selectedRowIndex, dataGridViewBPManagement) > 100) {
+                MessageBox.Show("The sum of the specified percentages for budget items does not equal 100%! Please amend the necessary limits before continuing.", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                return;
+            }
+
+
             QueryType option = getQueryTypeOption();
 
             //If the option is equal to 0 it means that something went wrong and the control is returns from the method
@@ -328,6 +339,34 @@ namespace BudgetManager.mvc.views {
             }
 
             return false;
-        }   
+        } 
+        
+        //Method for calculating the sum of percentages limit for all budget items
+        private int calculatePercentagesSum(int selectedRowIndex, DataGridView dataGridView) {
+            if (dataGridView == null || dataGridView.Rows.Count == 0) {
+                return -1;
+            }
+
+            if (selectedRowIndex < 0 || selectedRowIndex > dataGridView.Rows.Count) {
+                return -1;
+            }
+
+            //Gets the selected row from the DataGridView
+            DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
+            //Converts the value at the respective cell and if this value is null the result will be 0
+            int expensePercentage = selectedRow.Cells[2].Value != DBNull.Value ? Convert.ToInt32(selectedRow.Cells[2].Value) : 0;
+            int debtPercentage = selectedRow.Cells[3].Value != DBNull.Value ? Convert.ToInt32(selectedRow.Cells[3].Value) : 0;
+            int savingPercentage = selectedRow.Cells[4].Value != DBNull.Value ? Convert.ToInt32(selectedRow.Cells[4].Value) : 0;
+
+            int percentagesSum = expensePercentage + debtPercentage + savingPercentage;
+
+            return percentagesSum;
+
+        }
+
+        private void dataGridViewBPManagement_DataError(object sender, DataGridViewDataErrorEventArgs e) {
+            MessageBox.Show("Invalid data inserted into one/more cells of the DataGridView! Please amend it before continuing.", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            return;
+        }
     }
 }

@@ -86,6 +86,7 @@
             this.dataGridViewBPManagement.TabIndex = 4;
             this.dataGridViewBPManagement.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewBPManagement_CellMouseClick);
             this.dataGridViewBPManagement.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewBPManagement_CellValueChanged);
+            this.dataGridViewBPManagement.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dataGridViewBPManagement_DataError);
             // 
             // submitButtonBPManagement
             // 
