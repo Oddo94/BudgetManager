@@ -18,16 +18,23 @@ namespace BudgetManager.mvc.views {
         private Button[] buttons;
         private IUpdaterControl controller;
         private IUpdaterModel model;
-        private int selectedRowIndex;//the variable that hold the value of the DataGridView row that contains the user edited value
+        private DateTimePicker[] datePickers;
+        private int selectedRowIndex;//the variable that holds the value of the DataGridView row that contains the user edited value
 
 
         public BudgetPlanManagementForm(int userID) {
             InitializeComponent();
             this.userID = userID;
             this.buttons = new Button[] {submitButtonBPManagement, deleteButtonBPManagement};
+            this.datePickers = new DateTimePicker[] { dateTimePickerBPManagement};
+
+            //Sets the default date of the date time picker as the first day of the current month of the current year
+            setDateTimePickerDefaultDate(datePickers);
+
             controller = new BudgetPlanManagementController();
             model = new BudgetPlanManagementModel();
 
+         
             wireUp(controller, model);        
         }
 
@@ -194,8 +201,19 @@ namespace BudgetManager.mvc.views {
             String startDate = selectedRowDates[0];
             String endDate = selectedRowDates[1];
 
-            //Retrieves the 
-            String[] budgetPlanBoundaries = planChecker.getBudgetPlanBoundaries((DataTable)dataGridViewBPManagement.DataSource);
+            int[] itemTotals = planChecker.getTotalValuesForAllBudgetItems(startDate, endDate);
+
+            if (itemTotals == null || itemTotals.Length != 3) {
+                return;
+            }
+
+            int[] userSetPercentages = getItemsPercentagesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+
+            //Checks to see if the percentage set by the user is higher/equal to the percentage of the current item total value calculated in relation to the total incomes from the timespan between start date and end date
+            if (!planChecker.isLowerThanCurrentItemPercentage(userSetPercentages, itemTotals, startDate, endDate)) {
+                MessageBox.Show("One of the modified item percentages is lower than the actual percentage calculated based on the current item total value! The percentage that you set must be higher or at least equal to the current percentage.", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
 
             QueryType option = getQueryTypeOption();
@@ -388,6 +406,28 @@ namespace BudgetManager.mvc.views {
             return selectedRowDates;
 
         }
+
+        private int[] getItemsPercentagesFromSelectedRow(int selectedRowIndex, DataGridView dataGridView) {
+            //Arguments checks
+            if (dataGridView == null) {
+                return null;
+            }
+
+            if (selectedRowIndex < 0 || selectedRowIndex > dataGridView.Rows.Count) {
+                return null;
+            }
+
+            //Getting the selected row
+            DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
+
+            int expensesPercentage = selectedRow.Cells[2].Value != null ? Convert.ToInt32(selectedRow.Cells[2].Value) : 0;
+            int debtsPercentage = selectedRow.Cells[3].Value != null ? Convert.ToInt32(selectedRow.Cells[3].Value) : 0;
+            int savingsPercentage = selectedRow.Cells[4].Value != null ? Convert.ToInt32(selectedRow.Cells[4].Value) : 0;
+
+            int[] userSetPercentages = new int[] {expensesPercentage, debtsPercentage, savingsPercentage};
+
+            return userSetPercentages;
+        }
         
         //Method for calculating the sum of percentages limit for all budget items
         private int calculatePercentagesSum(int selectedRowIndex, DataGridView dataGridView) {
@@ -412,6 +452,25 @@ namespace BudgetManager.mvc.views {
 
         }
 
-      
+        //Seteaza data curenta a obiectelor de tip DateTimePicker ca prima zi a lunii curente a anului curent
+        private void setDateTimePickerDefaultDate(DateTimePicker[] dateTimePickers) {
+            //Creaza o instanta a datei curente
+            DateTime defaultDate = DateTime.Now;
+
+            //Obtine valoarea anului si a lunii din obiectul creat ca argument si seteaza valoarea zilei la 1
+            int month = defaultDate.Month;
+            int year = defaultDate.Year;
+            int day = 1;
+
+            foreach (DateTimePicker currentPicker in dateTimePickers) {
+                //Seteaza valoarea variabilei la true ca sa nu se apeleze metoda asociata atunci cand se modifica data
+                //hasResetDatePickers = true;
+
+                //Seteaza data reprezentand prima zi a lunii curente a anului curent in DateTimePicker
+                currentPicker.Value = new DateTime(year, month, day);
+            }
+        }
+
+
     }
 }

@@ -278,16 +278,7 @@ namespace BudgetManager.utils {
             return false;
         }
 
-        //Method for calculating the percentage of the current item total value from the imposed limit value
-        public int calculateCurrentItemPercentageValue(int currentItemTotalValue, int limitValue) {
-
-            if (currentItemTotalValue > limitValue) {
-                return -1;
-            }
-       
-            return (currentItemTotalValue * 100) / limitValue;
-        }
-
+  
         //Method for checking if the budget plan start date or end date are filled with 0'(e.g.-0000-00-00)
         public bool hasZeroFilledDate(String[] budgetPlanBoundaries) {
             //If the string cotains more/less than two elements no check is made and false is returned
@@ -300,6 +291,42 @@ namespace BudgetManager.utils {
             bool hasZeroFilledEndDate = "0000-00-00".Equals(budgetPlanBoundaries[1]);
 
             return hasZeroFilledStartDate || hasZeroFilledEndDate;
+        }
+
+        public bool isLowerThanCurrentItemPercentage(int[] userSetPercentages, int[] itemTotals, String startDate, String endDate) {
+            if (userSetPercentages == null || itemTotals == null) {
+                return false;
+            }
+
+            if (userSetPercentages.Length != 3 || itemTotals.Length != 3) {
+                return false;
+            }
+
+            int totalIncomes = getTotalIncomes(startDate, endDate);
+            int currentExpensePercentage = calculateCurrentItemPercentageValue(itemTotals[0], totalIncomes);// current expense percentage calculation(the sum of expenses in relation to the total available incomes for the timespan between start date and end date)
+            int currentDebtsPercentage = calculateCurrentItemPercentageValue(itemTotals[1], totalIncomes);
+            int currentSavingsPercentage = calculateCurrentItemPercentageValue(itemTotals[2], totalIncomes);
+
+            //Checks to see if the percentages set by user in the DataGridView are lower or equal to the current item percentage that was calculated for each item
+            if (currentExpensePercentage <= userSetPercentages[0] && currentDebtsPercentage <= userSetPercentages[1] && currentSavingsPercentage < userSetPercentages[2]) {
+                return true;
+            }
+
+            return false;
+
+        }
+
+
+
+
+        //Method for calculating the percentage of the current item total value from the imposed limit value
+        public int calculateCurrentItemPercentageValue(int currentItemTotalValue, int limitValue) {
+
+            if (currentItemTotalValue > limitValue || limitValue == 0) {
+                return -1;
+            }
+
+            return (currentItemTotalValue * 100) / limitValue;
         }
 
     }
