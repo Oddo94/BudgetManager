@@ -106,8 +106,8 @@ namespace BudgetManager.mvc.views {
             fillDataGridViewBP(model.DataSources[0]);
             disableDataGridViewRows(dataGridViewBPManagement);
 
-            //Array containing the indexes of the columns that will be made non-editable(currently only the record ID(primary key) and budget plan type are included)
-            int[] columnIndexes = new int[] {0, 5 };
+            //Array containing the indexes of the columns that will be made non-editable(currently the record ID(primary key), budget plan type, start date and end date are included)
+            int[] columnIndexes = new int[] {0, 5, 8, 9 };
             disableDataGridViewColumns(dataGridViewBPManagement, columnIndexes);
         }
 
@@ -167,8 +167,8 @@ namespace BudgetManager.mvc.views {
 
             QueryType option = getQueryTypeOption();
 
-            //If there is no data in the paramContainer or the option is equal to 0 then the control will return from the method and no data will be sent to the controller
-            if (paramContainer == null || option == 0) {
+            //If there is no data in the paramContainer or the option is UNDEFINED then the control will return from the method and no data will be sent to the controller
+            if (paramContainer == null || option == QueryType.UNDEFINED) {
                 return;
             }
 
@@ -280,7 +280,7 @@ namespace BudgetManager.mvc.views {
                 return QueryType.FULL_YEAR;
             }
 
-            return 0;
+            return QueryType.UNDEFINED;
         }
 
         //Method for creating the correctly configured QueryData object(data container) according to the timespan selection(single month/full year)

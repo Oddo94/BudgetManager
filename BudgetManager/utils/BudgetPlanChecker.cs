@@ -161,8 +161,8 @@ namespace BudgetManager.utils {
 
             //DataTable values conversion to int
             int expensesTotalValue = itemsTotalValuesDataTable.Rows[0].ItemArray[0] != DBNull.Value ? Convert.ToInt32(itemsTotalValuesDataTable.Rows[0].ItemArray[0]) : 0;
-            int debtsTotalValue = itemsTotalValuesDataTable.Rows[0].ItemArray[1] != DBNull.Value ? Convert.ToInt32(itemsTotalValuesDataTable.Rows[1].ItemArray[0]) : 0;
-            int savingsTotalValue = itemsTotalValuesDataTable.Rows[0].ItemArray[2] != DBNull.Value ? Convert.ToInt32(itemsTotalValuesDataTable.Rows[2].ItemArray[0]) : 0;
+            int debtsTotalValue = itemsTotalValuesDataTable.Rows[0].ItemArray[1] != DBNull.Value ? Convert.ToInt32(itemsTotalValuesDataTable.Rows[0].ItemArray[1]) : 0;
+            int savingsTotalValue = itemsTotalValuesDataTable.Rows[0].ItemArray[2] != DBNull.Value ? Convert.ToInt32(itemsTotalValuesDataTable.Rows[0].ItemArray[2]) : 0;
 
             //Creating the array containing the total values for each budget item
             int[] budgetItemsTotals = new int[] { expensesTotalValue, debtsTotalValue, savingsTotalValue };
