@@ -55,6 +55,7 @@ namespace BudgetManager.utils {
             return false;
         }
 
+       //Method for calculating the maximum allowed value for the provided item percentage limit
        public int calculateMaxLimitValue(int totalIncomes, int itemPercentage) {
             if (totalIncomes < 0) {
                 return -1;
@@ -110,6 +111,7 @@ namespace BudgetManager.utils {
             QueryData paramContainer = new QueryData.Builder(userID).addStartDate(sqlFormatStartDate).addEndDate(sqlFormatEndDate).build();
             MySqlCommand getTotalIncomesCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementGetTotalIncomes, paramContainer);
 
+            //The DataTable object that contains the total incomes value for the specified time interval
             DataTable totalIncomesDataTable = DBConnectionManager.getData(getTotalIncomesCommand);
 
             if (totalIncomesDataTable != null && totalIncomesDataTable.Rows.Count == 1) {
@@ -293,6 +295,7 @@ namespace BudgetManager.utils {
             return hasZeroFilledStartDate || hasZeroFilledEndDate;
         }
 
+        //Method for checking if the user has set percentages that are lower than the calculated percentage of the item based on its total value of records
         public bool isLowerThanCurrentItemPercentage(int[] userSetPercentages, int[] itemTotals, String startDate, String endDate) {
             if (userSetPercentages == null || itemTotals == null) {
                 return false;

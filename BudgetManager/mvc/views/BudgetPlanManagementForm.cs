@@ -66,8 +66,8 @@ namespace BudgetManager.mvc.views {
         private void dateTimePickerBPManagement_ValueChanged(object sender, EventArgs e) {
             DateTimePickerType pickerType = getDateTimePickerType(dateTimePickerBPManagement);
 
-            //If the returned value is 0 it means that something went wrong and the control returns from the method
-            if ( pickerType == 0) {
+            //If the returned value is UNDEFINED it means that something went wrong the control returns from the method meaning and as a result no data is sent to the controller
+            if (pickerType == DateTimePickerType.UNDEFINED) {
                 return;
             }
 
@@ -141,7 +141,8 @@ namespace BudgetManager.mvc.views {
 
         //UTIL METHODS
         private DateTimePickerType getDateTimePickerType(DateTimePicker dateTimePicker) {
-            DateTimePickerType pickerType = 0;
+            //Sets the default value for the picker type
+            DateTimePickerType pickerType = DateTimePickerType.UNDEFINED;
             
             if ("MM/yyyy".Equals(dateTimePicker.CustomFormat)) {
                 pickerType = DateTimePickerType.MONTHLY_PICKER;
