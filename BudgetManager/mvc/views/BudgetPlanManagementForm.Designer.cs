@@ -30,7 +30,16 @@
             this.dataGridViewBPManagement = new System.Windows.Forms.DataGridView();
             this.submitButtonBPManagement = new System.Windows.Forms.Button();
             this.deleteButtonBPManagement = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.dataGridViewSelectedPlanInfo = new System.Windows.Forms.DataGridView();
+            this.ItemTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TotalValueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PercentageFromLimitColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PercentageLimitColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MaxValueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TotalIncomesColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewBPManagement)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewSelectedPlanInfo)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -91,7 +100,7 @@
             // submitButtonBPManagement
             // 
             this.submitButtonBPManagement.Enabled = false;
-            this.submitButtonBPManagement.Location = new System.Drawing.Point(33, 450);
+            this.submitButtonBPManagement.Location = new System.Drawing.Point(22, 686);
             this.submitButtonBPManagement.Name = "submitButtonBPManagement";
             this.submitButtonBPManagement.Size = new System.Drawing.Size(106, 23);
             this.submitButtonBPManagement.TabIndex = 5;
@@ -102,7 +111,7 @@
             // deleteButtonBPManagement
             // 
             this.deleteButtonBPManagement.Enabled = false;
-            this.deleteButtonBPManagement.Location = new System.Drawing.Point(564, 450);
+            this.deleteButtonBPManagement.Location = new System.Drawing.Point(578, 686);
             this.deleteButtonBPManagement.Name = "deleteButtonBPManagement";
             this.deleteButtonBPManagement.Size = new System.Drawing.Size(92, 23);
             this.deleteButtonBPManagement.TabIndex = 6;
@@ -110,11 +119,76 @@
             this.deleteButtonBPManagement.UseVisualStyleBackColor = true;
             this.deleteButtonBPManagement.Click += new System.EventHandler(this.deleteButtonBPManagement_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(24, 461);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(252, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Information about the currently selected budget plan";
+            // 
+            // dataGridViewSelectedPlanInfo
+            // 
+            this.dataGridViewSelectedPlanInfo.AllowUserToAddRows = false;
+            this.dataGridViewSelectedPlanInfo.AllowUserToDeleteRows = false;
+            this.dataGridViewSelectedPlanInfo.AllowUserToOrderColumns = true;
+            this.dataGridViewSelectedPlanInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewSelectedPlanInfo.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ItemTypeColumn,
+            this.TotalValueColumn,
+            this.PercentageFromLimitColumn,
+            this.PercentageLimitColumn,
+            this.MaxValueColumn,
+            this.TotalIncomesColumn});
+            this.dataGridViewSelectedPlanInfo.Location = new System.Drawing.Point(27, 494);
+            this.dataGridViewSelectedPlanInfo.Name = "dataGridViewSelectedPlanInfo";
+            this.dataGridViewSelectedPlanInfo.Size = new System.Drawing.Size(643, 150);
+            this.dataGridViewSelectedPlanInfo.TabIndex = 8;
+            // 
+            // ItemTypeColumn
+            // 
+            this.ItemTypeColumn.HeaderText = "Item type";
+            this.ItemTypeColumn.Name = "ItemTypeColumn";
+            this.ItemTypeColumn.ReadOnly = true;
+            // 
+            // TotalValueColumn
+            // 
+            this.TotalValueColumn.HeaderText = "Current total value";
+            this.TotalValueColumn.Name = "TotalValueColumn";
+            this.TotalValueColumn.ReadOnly = true;
+            // 
+            // PercentageFromLimitColumn
+            // 
+            this.PercentageFromLimitColumn.HeaderText = "Percentage from limit value";
+            this.PercentageFromLimitColumn.Name = "PercentageFromLimitColumn";
+            this.PercentageFromLimitColumn.ReadOnly = true;
+            // 
+            // PercentageLimitColumn
+            // 
+            this.PercentageLimitColumn.HeaderText = "Percentage limit";
+            this.PercentageLimitColumn.Name = "PercentageLimitColumn";
+            this.PercentageLimitColumn.ReadOnly = true;
+            // 
+            // MaxValueColumn
+            // 
+            this.MaxValueColumn.HeaderText = "Max value limit";
+            this.MaxValueColumn.Name = "MaxValueColumn";
+            this.MaxValueColumn.ReadOnly = true;
+            // 
+            // TotalIncomesColumn
+            // 
+            this.TotalIncomesColumn.HeaderText = "Total incomes";
+            this.TotalIncomesColumn.Name = "TotalIncomesColumn";
+            this.TotalIncomesColumn.ReadOnly = true;
+            // 
             // BudgetPlanManagementForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(720, 521);
+            this.ClientSize = new System.Drawing.Size(742, 777);
+            this.Controls.Add(this.dataGridViewSelectedPlanInfo);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.deleteButtonBPManagement);
             this.Controls.Add(this.submitButtonBPManagement);
             this.Controls.Add(this.dataGridViewBPManagement);
@@ -125,6 +199,7 @@
             this.Name = "BudgetPlanManagementForm";
             this.Text = "Budget plan management";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewBPManagement)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewSelectedPlanInfo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -139,5 +214,13 @@
         private System.Windows.Forms.DataGridView dataGridViewBPManagement;
         private System.Windows.Forms.Button submitButtonBPManagement;
         private System.Windows.Forms.Button deleteButtonBPManagement;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.DataGridView dataGridViewSelectedPlanInfo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ItemTypeColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn TotalValueColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PercentageFromLimitColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PercentageLimitColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MaxValueColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn TotalIncomesColumn;
     }
 }

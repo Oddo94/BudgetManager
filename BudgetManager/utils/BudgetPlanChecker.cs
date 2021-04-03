@@ -33,6 +33,10 @@ namespace BudgetManager.utils {
             this.currentDate = currentDate;
         }
 
+        public BudgetPlanChecker() {
+
+        }
+
         //Method that retrieves the budget plan data(if the plan exists) based on the specified currentDate(it is actually the date that the user selects for the new entry which is checked to see if it overlaps any existing budget plan timespan)
         public DataTable getBudgetPlanData() {
             QueryData paramContainer = new QueryData.Builder(userID).addStartDate(currentDate).build();

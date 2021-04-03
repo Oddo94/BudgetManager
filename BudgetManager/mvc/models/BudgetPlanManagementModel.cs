@@ -15,6 +15,13 @@ namespace BudgetManager.mvc.models {
         private String sqlStatementSelectBudgetPlanForASingleMonth = @"SELECT planID AS 'ID', planName AS 'Plan name', expenseLimit AS 'Expense limit', debtLimit  AS 'Debt limit', savingLimit  AS 'Saving limit', (SELECT typeName FROM plan_types WHERE typeID = planType) AS 'Plan type', hasAlarm 'Set alarm', thresholdPercentage AS 'Alarm threshold', startDate AS 'Start date', endDate AS 'End date' FROM budget_plans WHERE user_ID = @paramID AND (MONTH(startDate) = @paramMonth AND YEAR(startDate) = @paramYear)";
         private String sqlStatementSelectBudgetPlansForTheWholeYear = @"SELECT planID AS 'ID', planName AS 'Plan name', expenseLimit AS 'Expense limit', debtLimit  AS 'Debt limit', savingLimit  AS 'Saving limit', (SELECT typeName FROM plan_types WHERE typeID = planType) AS 'Plan type', hasAlarm 'Set alarm', thresholdPercentage AS 'Alarm threshold', startDate AS 'Start date', endDate AS 'End date' FROM budget_plans WHERE user_ID = @paramID AND YEAR(startDate) = @paramYear";
         private String sqlStatementDeleteBudgetPlan = @"DELETE FROM budget_plans WHERE planID = @paramItemID";
+        private String sqlStatementGetItemValuesForSelectedPlan = @"SELECT(SELECT SUM(value) FROM expenses WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate) AS 'Total expenses',
+                (SELECT expenseLimit from budget_plans WHERE user_ID = @paramID AND startDate = @paramStartDate AND endDate = @paramEndDate) AS 'Expense percentage limit', 
+                (SELECT SUM(value) FROM debts WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate) AS 'Total debts',
+                (SELECT debtLimit from budget_plans WHERE user_ID = @paramID AND startDate = @paramStartDate AND endDate = @paramEndDate) AS 'Debt percentage limit', 
+                (SELECT SUM(value) FROM savings WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate) AS 'Total savings',
+                (SELECT savingLimit from budget_plans WHERE user_ID = @paramID AND startDate = @paramStartDate AND endDate = @paramEndDate) AS 'Saving percentage limit', 
+                (SELECT SUM(value) FROM incomes WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate) AS 'Total incomes'";
 
         public BudgetPlanManagementModel() {
 

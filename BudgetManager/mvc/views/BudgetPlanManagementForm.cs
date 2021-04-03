@@ -34,7 +34,9 @@ namespace BudgetManager.mvc.views {
             controller = new BudgetPlanManagementController();
             model = new BudgetPlanManagementModel();
 
-         
+            //TEST
+            fillDataGridViewWithCustomData(prepareDataForInfoGridView(new int[] { 1800,45,300,12,1500,43,4000}));
+
             wireUp(controller, model);        
         }
 
@@ -472,6 +474,99 @@ namespace BudgetManager.mvc.views {
             }
         }
 
+        private void fillDataGridViewWithCustomData(Tuple<String, int, int, int, int, int>[] gridViewData) {
+            //the total number of rows for the info data GridView
+            int rowCount = 3;
+       
+           
+            for (int i = 0; i < rowCount; i++) {
+                //Gets the ID of the nelw created row
+                int rowID = dataGridViewSelectedPlanInfo.Rows.Add();
+
+                //Gets the row based on ID
+                DataGridViewRow currentRow = dataGridViewSelectedPlanInfo.Rows[rowID];
+          
+                //Fills each cell of the current row with the corresponding data from the tuple at the i-th index of the tuple array provided as argument(e.g. first cell of the row gets the first value of the tuple at index 0 from the array)
+                for (int j = 0; j < currentRow.Cells.Count; j++) {
+                   switch (j) {
+                        case 0:
+                            currentRow.Cells[j].Value = gridViewData[i].Item1;
+                            break;
+                        case 1:
+                            currentRow.Cells[j].Value = gridViewData[i].Item2;
+                            break;
+                        case 2:
+                            currentRow.Cells[j].Value = gridViewData[i].Item3;
+                            break;
+                        case 3:
+                            currentRow.Cells[j].Value = gridViewData[i].Item4;
+                            break;
+                        case 4:
+                            currentRow.Cells[j].Value = gridViewData[i].Item5;
+                            break;
+                        case 5:
+                            currentRow.Cells[j].Value = gridViewData[i].Item6;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+         
+            }
+        }
+
+        //Method for creating a tuple array based on the data extracted from the DataTable object
+        private Tuple<String, int, int, int, int, int>[] prepareDataForInfoGridView(int[] extractedData)  {
+           if (extractedData == null) {
+                return null;
+            }
+
+
+            BudgetPlanChecker planChecker = new BudgetPlanChecker();
+            String item1 = "Expenses";
+            String item2 = "Debts";     
+            String item3 = "Savings";
+
+            //Data extracted from the array provided as argument
+            int totalExpenses = extractedData[0];
+            int expensesPercentageLimit = extractedData[1];
+            int totalDebts = extractedData[2];
+            int debtsPercentageLimit = extractedData[3];
+            int totalSavings = extractedData[4];
+            int savingsPercentageLimit = extractedData[5];
+            int totalIncomes = extractedData[6];
+
+            //Max value limit calculation for each item
+            int maxValueExpenses = planChecker.calculateMaxLimitValue(totalIncomes, expensesPercentageLimit);
+            int maxValueDebts = planChecker.calculateMaxLimitValue(totalIncomes, debtsPercentageLimit);
+            int maxValueSavings = planChecker.calculateMaxLimitValue(totalIncomes, savingsPercentageLimit);
+
+            //Calculating the current percentage of each item from the previously calculated max limit value
+            int expensesPercentageFromMaxValue = planChecker.calculateCurrentItemPercentageValue(totalExpenses, maxValueExpenses);        
+            int debtsPercentageFromMaxValue = planChecker.calculateCurrentItemPercentageValue(totalDebts, maxValueDebts);
+            int savingsPercentageFromMaxValue = planChecker.calculateCurrentItemPercentageValue(totalSavings, maxValueSavings);
+
+            //Creating the tuple containing the data that will be used to fill the DataGridView containing the info about the currently selected budget plan 
+            Tuple<String, int, int, int, int, int>[] gridViewData = {
+                  new Tuple<String, int, int, int, int, int> (item1, totalExpenses, expensesPercentageFromMaxValue, expensesPercentageLimit, maxValueExpenses, totalIncomes),
+                  new Tuple<String, int, int, int, int, int> (item2, totalDebts, debtsPercentageFromMaxValue, debtsPercentageLimit, maxValueDebts, totalIncomes),
+                  new Tuple<String, int, int, int, int, int> (item3, totalSavings, savingsPercentageFromMaxValue, savingsPercentageLimit, maxValueSavings, totalIncomes)
+            };
+
+
+            return gridViewData;
+        }
+
+        //Method for extracting the data from the provided DataTable object
+        private int[] extractData(DataTable dataTable) {
+            if (dataTable == null || dataTable.Rows.Count == 0) {
+                return null;
+            }
+   
+            int[] extractedData = Array.ConvertAll(dataTable.Rows[0].ItemArray, x => x != DBNull.Value ? Convert.ToInt32(x) : 0);
+
+            return extractedData;
+        }
 
     }
 }
