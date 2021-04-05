@@ -38,6 +38,7 @@
             this.PercentageLimitColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MaxValueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TotalIncomesColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.planManagementCalculatorButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewBPManagement)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewSelectedPlanInfo)).BeginInit();
             this.SuspendLayout();
@@ -182,11 +183,22 @@
             this.TotalIncomesColumn.Name = "TotalIncomesColumn";
             this.TotalIncomesColumn.ReadOnly = true;
             // 
+            // planManagementCalculatorButton
+            // 
+            this.planManagementCalculatorButton.Location = new System.Drawing.Point(281, 686);
+            this.planManagementCalculatorButton.Name = "planManagementCalculatorButton";
+            this.planManagementCalculatorButton.Size = new System.Drawing.Size(107, 23);
+            this.planManagementCalculatorButton.TabIndex = 9;
+            this.planManagementCalculatorButton.Text = "Show calculator";
+            this.planManagementCalculatorButton.UseVisualStyleBackColor = true;
+            this.planManagementCalculatorButton.Click += new System.EventHandler(this.planManagementCalculatorButton_Click);
+            // 
             // BudgetPlanManagementForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(742, 777);
+            this.Controls.Add(this.planManagementCalculatorButton);
             this.Controls.Add(this.dataGridViewSelectedPlanInfo);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.deleteButtonBPManagement);
@@ -222,5 +234,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn PercentageLimitColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn MaxValueColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn TotalIncomesColumn;
+        private System.Windows.Forms.Button planManagementCalculatorButton;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BudgetManager.mvc.controllers;
 using BudgetManager.mvc.models;
+using BudgetManager.non_mvc;
 using BudgetManager.utils;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace BudgetManager.mvc.views {
         private IUpdaterModel model;
         private DateTimePicker[] datePickers;
         private int selectedRowIndex;//the variable that holds the value of the DataGridView row that contains the user edited value
+        private BudgetPlanManagementCalculator planCalculator;
 
 
         public BudgetPlanManagementForm(int userID) {
@@ -625,5 +627,10 @@ namespace BudgetManager.mvc.views {
             return extractedData;
         }
 
+        private void planManagementCalculatorButton_Click(object sender, EventArgs e) {
+            planCalculator = new BudgetPlanManagementCalculator();
+
+            planCalculator.Show(this);
+        }
     }
 }
