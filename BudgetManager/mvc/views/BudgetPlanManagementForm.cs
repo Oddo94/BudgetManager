@@ -26,7 +26,7 @@ namespace BudgetManager.mvc.views {
             InitializeComponent();
             this.userID = userID;
             this.buttons = new Button[] {submitButtonBPManagement, deleteButtonBPManagement};
-            this.datePickers = new DateTimePicker[] { dateTimePickerBPManagement};
+            this.datePickers = new DateTimePicker[] { dateTimePickerBPManagement};  
 
             //Sets the default date of the date time picker as the first day of the current month of the current year
             setDateTimePickerDefaultDate(datePickers);
@@ -35,7 +35,7 @@ namespace BudgetManager.mvc.views {
             model = new BudgetPlanManagementModel();
 
             //TEST
-            fillDataGridViewWithCustomData(prepareDataForInfoGridView(new int[] { 1800,45,300,12,1500,43,4000}));
+            //fillBPInfoDataGridView(prepareDataForInfoGridView(new int[] { 1800,45,300,12,1500,43,4000}));
 
             wireUp(controller, model);        
         }
@@ -73,14 +73,42 @@ namespace BudgetManager.mvc.views {
                 return;
             }
 
-            sendDataToController(pickerType, dateTimePickerBPManagement);
+            bool hasClickedCell = false;
+            sendDataToController(pickerType, dateTimePickerBPManagement, hasClickedCell);
 
 
         }
 
         //The method that activates the delete button when a cell from the dataGridView is clicked
+        //ADD METHOD FOR BUDGET PLAN DETAILS GRID VIEW FILLING
         private void dataGridViewBPManagement_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e) {
+            selectedRowIndex = dataGridViewBPManagement.CurrentCell.RowIndex; //Gets the index of the selected cell's parent row 
             deleteButtonBPManagement.Enabled = true;
+
+            DateTimePickerType pickerType = getDateTimePickerType(dateTimePickerBPManagement);
+            QueryData paramContainer = null;
+
+
+            if (pickerType == DateTimePickerType.MONTHLY_PICKER) {
+                int selectedMonth = dateTimePickerBPManagement.Value.Month;
+                int selectedYear = dateTimePickerBPManagement.Value.Year;
+
+                paramContainer = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build();
+              
+
+            } else if (pickerType == DateTimePickerType.YEARLY_PICKER) {
+                String[] selectedPlanDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+
+                if (selectedPlanDates == null) {
+                    return;
+                }
+
+                paramContainer = new QueryData.Builder(userID).addStartDate(selectedPlanDates[0]).addEndDate(selectedPlanDates[1]).build();
+            }
+
+            bool hasClickedCell = true;
+            sendDataToController(pickerType, dateTimePickerBPManagement, hasClickedCell);
+      
         }
 
         //the method that activates the submit button when the value of a cell from the dataGridView changes and one of the timespan selection checkboxes is checked
@@ -89,7 +117,7 @@ namespace BudgetManager.mvc.views {
                 submitButtonBPManagement.Enabled = true;
             }
 
-           selectedRowIndex = dataGridViewBPManagement.CurrentCell.RowIndex;//gets the index of the currently selected row
+           //selectedRowIndex = dataGridViewBPManagement.CurrentCell.RowIndex;//gets the index of the currently selected row
         }
 
         private void dataGridViewBPManagement_DataError(object sender, DataGridViewDataErrorEventArgs e) {
@@ -111,6 +139,19 @@ namespace BudgetManager.mvc.views {
             //Array containing the indexes of the columns that will be made non-editable(currently the record ID(primary key), budget plan type, start date and end date are included)
             int[] columnIndexes = new int[] {0, 5, 8, 9 };
             disableDataGridViewColumns(dataGridViewBPManagement, columnIndexes);
+
+            //Clears the DataGridView current rows
+            dataGridViewSelectedPlanInfo.Rows.Clear();
+            dataGridViewSelectedPlanInfo.Refresh();
+
+            //The budget plan info DataGridView is filled only if the source DataTable contains data(DataSources[1])
+            if (model.DataSources[1] != null) {             
+                //Extracting the data from the DataTable containing the selected budget plan item information
+                int[] extractedData = extractData(model.DataSources[1]);
+                //Filling the DataGridView used to display the budget plan info with data
+                fillBPInfoDataGridView(prepareDataForInfoGridView(extractedData));
+            }
+         
         }
 
         public void disableControls() {
@@ -158,17 +199,30 @@ namespace BudgetManager.mvc.views {
 
 
         //Method for sending the correct data to the controller acording to user timespan selection
-        private void sendDataToController(DateTimePickerType pickerType, DateTimePicker dateTimePicker) {
+        private void sendDataToController(DateTimePickerType pickerType, DateTimePicker dateTimePicker, bool hasClickedCell) {
             QueryData paramContainer = null;
             //If the month records checkbox is selected then the month and year is retrieved from the provided dateTimePicker and the QueryData object is created
             if (pickerType == DateTimePickerType.MONTHLY_PICKER) {
                 paramContainer = new QueryData.Builder(userID).addMonth(dateTimePicker.Value.Month).addYear(dateTimePicker.Value.Year).build();
-            //If the year record checkbox is selected then only the year is retrieved from the prvided dateTimePicker and the QueryData object is created
+                //If the year record checkbox is selected then only the year is retrieved from the prvided dateTimePicker and the QueryData object is created
             } else if (pickerType == DateTimePickerType.YEARLY_PICKER) {
-                 paramContainer = new QueryData.Builder(userID).addYear(dateTimePicker.Value.Year).build();
+                //If a DataGridView cell was clicked  then it means that the start and end dates of the selected budget plan have to be retrieved in order to create the paramContainer object
+                if (hasClickedCell) {
+                    string[] selectedPlanDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+
+                    if (selectedPlanDates == null) {
+                        return;
+                    }
+
+                    paramContainer = new QueryData.Builder(userID).addStartDate(selectedPlanDates[0]).addEndDate(selectedPlanDates[1]).build();
+                } else {
+                    //ParamContainer object created when the user has not selected a DataGridView cell(e.g the user just changes the DateTimePicker control value)
+                    paramContainer = new QueryData.Builder(userID).addYear(dateTimePicker.Value.Year).build();
+                }
+
             }
 
-            QueryType option = getQueryTypeOption();
+            QueryType option = getQueryTypeOption(hasClickedCell);
 
             //If there is no data in the paramContainer or the option is UNDEFINED then the control will return from the method and no data will be sent to the controller
             if (paramContainer == null || option == QueryType.UNDEFINED) {
@@ -218,8 +272,8 @@ namespace BudgetManager.mvc.views {
                 return;
             }
 
-
-            QueryType option = getQueryTypeOption();
+            bool hasClickedCell = false;
+            QueryType option = getQueryTypeOption(hasClickedCell);
 
             //If the option is equal to 0 it means that something went wrong and the control is returns from the method
             if (option == 0) {
@@ -275,8 +329,11 @@ namespace BudgetManager.mvc.views {
             }
         }
 
-        private QueryType getQueryTypeOption() {
-            if (monthRecordsCheckboxBP.Checked == true) {
+        private QueryType getQueryTypeOption(bool hasClickedCell) {
+            if (monthRecordsCheckboxBP.Checked == true || yearRecordsCheckboxBP.Checked == true && hasClickedCell) {
+                return QueryType.BUDGET_PLAN_INFO;
+
+            } else if (monthRecordsCheckboxBP.Checked == true) {
                 return QueryType.SINGLE_MONTH;
 
             } else if (yearRecordsCheckboxBP.Checked == true) {
@@ -474,7 +531,7 @@ namespace BudgetManager.mvc.views {
             }
         }
 
-        private void fillDataGridViewWithCustomData(Tuple<String, int, int, int, int, int>[] gridViewData) {
+        private void fillBPInfoDataGridView(Tuple<String, int, int, int, int, int>[] gridViewData) {
             //the total number of rows for the info data GridView
             int rowCount = 3;
        

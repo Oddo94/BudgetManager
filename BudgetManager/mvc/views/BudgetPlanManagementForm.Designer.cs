@@ -143,7 +143,7 @@
             this.TotalIncomesColumn});
             this.dataGridViewSelectedPlanInfo.Location = new System.Drawing.Point(27, 494);
             this.dataGridViewSelectedPlanInfo.Name = "dataGridViewSelectedPlanInfo";
-            this.dataGridViewSelectedPlanInfo.Size = new System.Drawing.Size(643, 150);
+            this.dataGridViewSelectedPlanInfo.Size = new System.Drawing.Size(643, 103);
             this.dataGridViewSelectedPlanInfo.TabIndex = 8;
             // 
             // ItemTypeColumn
