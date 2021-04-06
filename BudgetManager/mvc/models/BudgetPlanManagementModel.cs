@@ -16,14 +16,6 @@ namespace BudgetManager.mvc.models {
         private String sqlStatementSelectBudgetPlansForTheWholeYear = @"SELECT planID AS 'ID', planName AS 'Plan name', expenseLimit AS 'Expense limit', debtLimit  AS 'Debt limit', savingLimit  AS 'Saving limit', (SELECT typeName FROM plan_types WHERE typeID = planType) AS 'Plan type', hasAlarm 'Set alarm', thresholdPercentage AS 'Alarm threshold', startDate AS 'Start date', endDate AS 'End date' FROM budget_plans WHERE user_ID = @paramID AND YEAR(startDate) = @paramYear";
         private String sqlStatementDeleteBudgetPlan = @"DELETE FROM budget_plans WHERE planID = @paramItemID";
 
-        //private String sqlStatementGetItemValuesForSingleMonthPlan = @"SELECT(SELECT SUM(value) FROM expenses WHERE user_ID = @paramID AND MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) AS 'Total expenses',
-        //        (SELECT expenseLimit from budget_plans WHERE user_ID = @paramID AND MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) AS 'Expense percentage limit', 
-        //        (SELECT SUM(value) FROM debts WHERE user_ID = @paramID AND MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) AS 'Total debts',
-        //        (SELECT debtLimit from budget_plans WHERE user_ID = @paramID AND MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) AS 'Debt percentage limit', 
-        //        (SELECT SUM(value) FROM savings WHERE user_ID = @paramID AND MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) AS 'Total savings',
-        //        (SELECT savingLimit from budget_plans WHERE user_ID = @paramID AND MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) AS 'Saving percentage limit', 
-        //        (SELECT SUM(value) FROM incomes WHERE user_ID = @paramID AND MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) AS 'Total incomes'";
-
         private String sqlStatementGetItemValuesForMultipleMonthsPlan = @"SELECT(SELECT SUM(value) FROM expenses WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate) AS 'Total expenses',
                 (SELECT expenseLimit from budget_plans WHERE user_ID = @paramID AND startDate = @paramStartDate AND endDate = @paramEndDate) AS 'Expense percentage limit', 
                 (SELECT SUM(value) FROM debts WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate) AS 'Total debts',
@@ -33,8 +25,6 @@ namespace BudgetManager.mvc.models {
                 (SELECT SUM(value) FROM incomes WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate) AS 'Total incomes'";
 
       
-
-
         public BudgetPlanManagementModel() {
 
         }
@@ -123,8 +113,7 @@ namespace BudgetManager.mvc.models {
                         command = getCorrectSqlCommandForDataDisplay(option, paramContainer);
                         break;
 
-                    case SelectedDataSource.STATIC_DATASOURCE:
-                        //command = getCorrectSqlCommandForDataDisplay(option, paramContainer);
+                    case SelectedDataSource.STATIC_DATASOURCE:                       
                         break;
 
                     default:
@@ -166,26 +155,15 @@ namespace BudgetManager.mvc.models {
                 return fullYearBudgetPlansCommand;
 
             } else if (option == QueryType.BUDGET_PLAN_INFO) {
-                //Checks the data present in the data container object to decide if it wil create a command for single or multiple months
-                //if (paramContainer.Month != 0 && paramContainer.Year != 0) {
-                //    MySqlCommand singleMonthBudgetPlanInfoCommand = SQLCommandBuilder.getSingleMonthCommand(sqlStatementGetItemValuesForSingleMonthPlan, paramContainer);
-
-                //    return singleMonthBudgetPlanInfoCommand;
-
-                //} else if (paramContainer.StartDate != null && paramContainer.EndDate != null) {
-                //    MySqlCommand multipleMonthsBudgetPlanInfoCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementGetItemValuesForMultipleMonthsPlan, paramContainer);
-
-                //    return multipleMonthsBudgetPlanInfoCommand;
-                //}
-
+                                        
+                //Gets the budget plan info retrieval command by using the getMultipleMonthsCommand method for both single month and multiple months budget plans because in both cases the startDate and endDate are used to identify the plan so there was no point in creating a different SQL statement for each case. 
+                //It was also more efficient to reuse the getMultipleMonthsCommand() method which already could handle the userID, startDate and endDate parameters than to create a different method
                 MySqlCommand budgetPlanInfoCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementGetItemValuesForMultipleMonthsPlan, paramContainer);
 
                 return budgetPlanInfoCommand;
             }
-
-       
-                return null;
-            
+      
+                return null;           
         }     
     }
 }

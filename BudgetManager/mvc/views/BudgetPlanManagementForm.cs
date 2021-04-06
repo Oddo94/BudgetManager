@@ -21,7 +21,6 @@ namespace BudgetManager.mvc.views {
         private IUpdaterModel model;
         private DateTimePicker[] datePickers;
         private int selectedRowIndex;//the variable that holds the value of the DataGridView row that contains the user edited value
-        private BudgetPlanManagementCalculator planCalculator;
 
 
         public BudgetPlanManagementForm(int userID) {
@@ -30,26 +29,25 @@ namespace BudgetManager.mvc.views {
             this.buttons = new Button[] {submitButtonBPManagement, deleteButtonBPManagement};
             this.datePickers = new DateTimePicker[] { dateTimePickerBPManagement};  
 
-            //Sets the default date of the date time picker as the first day of the current month of the current year
+            //Sets the default date of the date time picker as the first day of the current month of the current year(before the MVC is set up so the date setting action does not trigger the data retrieval method from the model)
             setDateTimePickerDefaultDate(datePickers);
 
             controller = new BudgetPlanManagementController();
             model = new BudgetPlanManagementModel();
-
-            //TEST
-            //fillBPInfoDataGridView(prepareDataForInfoGridView(new int[] { 1800,45,300,12,1500,43,4000}));
 
             wireUp(controller, model);        
         }
 
         //CONTROLS METHODS
         private void monthRecordsCheckboxBP_CheckedChanged(object sender, EventArgs e) {
+            //If the month records checkbox is checked then the year records checkbox is unchecked and disabled, the DateTimePicker format is set to month and year and this control is enabled
             if (monthRecordsCheckboxBP.Checked == true) {
                 yearRecordsCheckboxBP.Checked = false;
                 yearRecordsCheckboxBP.Enabled = false;
                 dateTimePickerBPManagement.CustomFormat = "MM/yyyy";
                 dateTimePickerBPManagement.Enabled = true;
             } else {
+                //Otherwise the year records checkbox is enabled(both controls become enabled and unchecked) and the DateTimePicker is disabled since no timespan selection is made
                 yearRecordsCheckboxBP.Enabled = true;
                 dateTimePickerBPManagement.Enabled = false;
             }
@@ -70,7 +68,7 @@ namespace BudgetManager.mvc.views {
         private void dateTimePickerBPManagement_ValueChanged(object sender, EventArgs e) {
             DateTimePickerType pickerType = getDateTimePickerType(dateTimePickerBPManagement);
 
-            //If the returned value is UNDEFINED it means that something went wrong the control returns from the method meaning and as a result no data is sent to the controller
+            //If the returned value is UNDEFINED it means that something went wrong and the control returns from the method meaning and as a result no data is sent to the controller
             if (pickerType == DateTimePickerType.UNDEFINED) {
                 return;
             }
@@ -87,26 +85,7 @@ namespace BudgetManager.mvc.views {
             selectedRowIndex = dataGridViewBPManagement.CurrentCell.RowIndex; //Gets the index of the selected cell's parent row 
             deleteButtonBPManagement.Enabled = true;
 
-            DateTimePickerType pickerType = getDateTimePickerType(dateTimePickerBPManagement);
-            QueryData paramContainer = null;
-
-
-            if (pickerType == DateTimePickerType.MONTHLY_PICKER) {
-                int selectedMonth = dateTimePickerBPManagement.Value.Month;
-                int selectedYear = dateTimePickerBPManagement.Value.Year;
-
-                paramContainer = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build();
-              
-
-            } else if (pickerType == DateTimePickerType.YEARLY_PICKER) {
-                String[] selectedPlanDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
-
-                if (selectedPlanDates == null) {
-                    return;
-                }
-
-                paramContainer = new QueryData.Builder(userID).addStartDate(selectedPlanDates[0]).addEndDate(selectedPlanDates[1]).build();
-            }
+            DateTimePickerType pickerType = getDateTimePickerType(dateTimePickerBPManagement);       
 
             bool hasClickedCell = true;
             sendDataToController(pickerType, dateTimePickerBPManagement, hasClickedCell);
@@ -205,7 +184,19 @@ namespace BudgetManager.mvc.views {
             QueryData paramContainer = null;
             //If the month records checkbox is selected then the month and year is retrieved from the provided dateTimePicker and the QueryData object is created
             if (pickerType == DateTimePickerType.MONTHLY_PICKER) {
-                paramContainer = new QueryData.Builder(userID).addMonth(dateTimePicker.Value.Month).addYear(dateTimePicker.Value.Year).build();
+                //paramContainer = new QueryData.Builder(userID).addMonth(dateTimePicker.Value.Month).addYear(dateTimePicker.Value.Year).build();
+                if (hasClickedCell) {
+                    string[] selectedPlanDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+
+                    if (selectedPlanDates == null) {
+                        return;
+                    }
+
+                    paramContainer = new QueryData.Builder(userID).addStartDate(selectedPlanDates[0]).addEndDate(selectedPlanDates[1]).build();
+                } else {
+                    //ParamContainer object created when the user has not selected a DataGridView cell(e.g the user just changes the DateTimePicker control value)
+                    paramContainer = new QueryData.Builder(userID).addMonth(dateTimePicker.Value.Month).addYear(dateTimePicker.Value.Year).build();
+                }
                 //If the year record checkbox is selected then only the year is retrieved from the prvided dateTimePicker and the QueryData object is created
             } else if (pickerType == DateTimePickerType.YEARLY_PICKER) {
                 //If a DataGridView cell was clicked  then it means that the start and end dates of the selected budget plan have to be retrieved in order to create the paramContainer object
@@ -332,16 +323,20 @@ namespace BudgetManager.mvc.views {
         }
 
         private QueryType getQueryTypeOption(bool hasClickedCell) {
-            if (monthRecordsCheckboxBP.Checked == true || yearRecordsCheckboxBP.Checked == true && hasClickedCell) {
+            //If any of the timespan selection checkBoxes is checked and the flag for DataGridView cell clicking is true then the query for retrieving budget plan info about the selected plan will be selected
+            if ((monthRecordsCheckboxBP.Checked == true || yearRecordsCheckboxBP.Checked == true) && hasClickedCell) {
                 return QueryType.BUDGET_PLAN_INFO;
 
+            //If only the month records checkBox is selected then the query type for retrieving the budget plan for the specified month will be selected
             } else if (monthRecordsCheckboxBP.Checked == true) {
                 return QueryType.SINGLE_MONTH;
 
+             //If only the year records checkBox is selected then the query type for retrieving the budget plans for the specified year will be selected
             } else if (yearRecordsCheckboxBP.Checked == true) {
                 return QueryType.FULL_YEAR;
             }
 
+            //If all the conditions fail then UNDEFINED value will be returned to the calling method
             return QueryType.UNDEFINED;
         }
 
@@ -455,9 +450,15 @@ namespace BudgetManager.mvc.views {
             //Getting the selected row
             DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
 
-            //Gets the dates from the selected row as String objects
-            String startDateString = selectedRow.Cells[8].Value != null ? selectedRow.Cells[8].Value.ToString() : "";
-            String endDateString = selectedRow.Cells[9].Value != null ? selectedRow.Cells[9].Value.ToString() : "";
+        
+            //Gets the dates from the selected row as String objects(if the date cells are empty the null value is assigned)
+            String startDateString = !"".Equals(selectedRow.Cells[8].FormattedValue)  ? selectedRow.Cells[8].Value.ToString() : null;
+            String endDateString = !"".Equals(selectedRow.Cells[8].FormattedValue) ? selectedRow.Cells[9].Value.ToString() : null;
+
+            //Checks for the null value of any of the two string dates and if so returns(to avoid NPE)
+            if (startDateString == null || endDateString == null) {
+                return null;
+            }
 
             //Changes the format of the date string from MM/dd/yyyy to yyyy/MM/dd so that they can correctly processed by the MySql database
             String sqlFormatStartDate = DateTime.Parse(startDateString).ToString("yyyy-MM-dd");
@@ -516,36 +517,34 @@ namespace BudgetManager.mvc.views {
 
         //Seteaza data curenta a obiectelor de tip DateTimePicker ca prima zi a lunii curente a anului curent
         private void setDateTimePickerDefaultDate(DateTimePicker[] dateTimePickers) {
-            //Creaza o instanta a datei curente
+            //Creates an istance of the curent date
             DateTime defaultDate = DateTime.Now;
-
-            //Obtine valoarea anului si a lunii din obiectul creat ca argument si seteaza valoarea zilei la 1
+     
+            //Retrieves the year and month value from the DateTime object and sets the day value to 1(start of the month)
             int month = defaultDate.Month;
             int year = defaultDate.Year;
             int day = 1;
 
             foreach (DateTimePicker currentPicker in dateTimePickers) {
-                //Seteaza valoarea variabilei la true ca sa nu se apeleze metoda asociata atunci cand se modifica data
-                //hasResetDatePickers = true;
-
-                //Seteaza data reprezentand prima zi a lunii curente a anului curent in DateTimePicker
+              
+                //Sets the date as the first day of the current month in the DateTimePicker
                 currentPicker.Value = new DateTime(year, month, day);
             }
         }
 
         private void fillBPInfoDataGridView(Tuple<String, int, int, int, int, int>[] gridViewData) {
-            //the total number of rows for the info data GridView
+            //The total number of rows for DataGridView showing info abut the selected budget plan
             int rowCount = 3;
        
            
             for (int i = 0; i < rowCount; i++) {
-                //Gets the ID of the nelw created row
+                //Gets the ID of the newly created row
                 int rowID = dataGridViewSelectedPlanInfo.Rows.Add();
 
                 //Gets the row based on ID
                 DataGridViewRow currentRow = dataGridViewSelectedPlanInfo.Rows[rowID];
           
-                //Fills each cell of the current row with the corresponding data from the tuple at the i-th index of the tuple array provided as argument(e.g. first cell of the row gets the first value of the tuple at index 0 from the array)
+                //Fills each cell of the current row with the corresponding data from the tuple at the i-th index of the tuple array provided as argument(e.g. first cell of the row gets the first value of the tuple at index 0 from the array and so on)
                 for (int j = 0; j < currentRow.Cells.Count; j++) {
                    switch (j) {
                         case 0:
@@ -605,7 +604,7 @@ namespace BudgetManager.mvc.views {
             int debtsPercentageFromMaxValue = planChecker.calculateCurrentItemPercentageValue(totalDebts, maxValueDebts);
             int savingsPercentageFromMaxValue = planChecker.calculateCurrentItemPercentageValue(totalSavings, maxValueSavings);
 
-            //Creating the tuple containing the data that will be used to fill the DataGridView containing the info about the currently selected budget plan 
+            //Creating the tuple containing the data that will be used to fill the DataGridView that displays the info about the currently selected budget plan 
             Tuple<String, int, int, int, int, int>[] gridViewData = {
                   new Tuple<String, int, int, int, int, int> (item1, totalExpenses, expensesPercentageFromMaxValue, expensesPercentageLimit, maxValueExpenses, totalIncomes),
                   new Tuple<String, int, int, int, int, int> (item2, totalDebts, debtsPercentageFromMaxValue, debtsPercentageLimit, maxValueDebts, totalIncomes),
@@ -622,15 +621,16 @@ namespace BudgetManager.mvc.views {
                 return null;
             }
    
+            //Converts all the elements of the object array containing the DataTable row elements to int 
             int[] extractedData = Array.ConvertAll(dataTable.Rows[0].ItemArray, x => x != DBNull.Value ? Convert.ToInt32(x) : 0);
 
             return extractedData;
         }
 
         private void planManagementCalculatorButton_Click(object sender, EventArgs e) {
-            planCalculator = new BudgetPlanManagementCalculator();
-
-            planCalculator.Show(this);
+            //Displays the calculator window and sets the owner window as the BudgetPlanManagementForm so that when the this is closed the calculator window will also be closed
+            //The calculator window is designed to work in parallel with the BudgetPlanManagementForm so that the user can utilize them at the same time
+            new BudgetPlanManagementCalculator().Show(this);
         }
     }
 }

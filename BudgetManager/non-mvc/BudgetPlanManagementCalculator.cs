@@ -17,7 +17,7 @@ namespace BudgetManager.non_mvc {
 
         public BudgetPlanManagementCalculator() {
             InitializeComponent();
-            //creates an array of text boxes for further use by the reset button
+            //Creates an array of text boxes for further use by the reset button and hasDataOnActiveFields() method
             textBoxes = new TextBox[] { inputValueOrPercentageTextBox, totalIncomesTextBox};
             //Sets the calculation mode combobox item to the first item present in the list
             calculationModeComboBox.SelectedIndex = 0;
@@ -28,6 +28,7 @@ namespace BudgetManager.non_mvc {
         private void inputValueOrPercentageTextBox_TextChanged(object sender, EventArgs e) {
             checkTextBox(inputValueOrPercentageTextBox);
             
+            //Checks if the input fields contain data and if so enables the "Calculate" button
             if (hasDataOnActiveFields(textBoxes)) {
                 calculateButton.Enabled = true;
             } else {
@@ -54,15 +55,15 @@ namespace BudgetManager.non_mvc {
 
               //Input percentage to value option selected
             } else if (selectedIndex == 1) {
-                //Sets the text value of the text box used to input the percentage or value
+                //Sets the text value of the label near the textbox used to input the percentage or value
                 inputPercentageOrValueLabel.Text = "Input percentage";
                 //Sets the result label text
                 resultLabel.Text = "Result value";
-                //Shows the percentage value label
+                //Shows the percentage value label on the result field
                 percentSymbolLabel1.Visible = true;
                 percentSymbolLabel2.Visible = false;
 
-                //Input value to percentage option selected
+              //Input value to percentage option selected
             } else if (selectedIndex == 2) {
                 inputPercentageOrValueLabel.Text = "Input value";
                 resultLabel.Text = "Result percentage";
@@ -90,15 +91,14 @@ namespace BudgetManager.non_mvc {
             if (calculationModeComboBox.SelectedIndex == 1) {
                 int inputPercentage = Convert.ToInt32(inputValueOrPercentageTextBox.Text);
 
+                //Checks if the percentage input value exceds 100%(only if the "Input percentage to value" mode is selected)
                 if (inputPercentage > 100) {
                     MessageBox.Show("The input percentage cannot exceed 100%! Please change the value and try again.", "Plan management calculator", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                int totalIncomes = Convert.ToInt32(totalIncomesTextBox.Text);
-                //int percentageLimit = Convert.ToInt32(itemPercentageLimitTextBox.Text);
-
-                
+                int totalIncomes = Convert.ToInt32(totalIncomesTextBox.Text);              
+              
                 int result = planChecker.calculateValueFromPercentage(totalIncomes, inputPercentage);
 
                 resultTextBox.Text = Convert.ToString(result);
@@ -106,8 +106,7 @@ namespace BudgetManager.non_mvc {
             } else if (calculationModeComboBox.SelectedIndex == 2) {
                 int inputValue = Convert.ToInt32(inputValueOrPercentageTextBox.Text);
                 int totalIncomes = Convert.ToInt32(totalIncomesTextBox.Text);
-                //int percentageLimit = Convert.ToInt32(itemPercentageLimitTextBox.Text);
-
+                
                 int result = planChecker.calculateCurrentItemPercentageValue(inputValue, totalIncomes);
 
                 resultTextBox.Text = Convert.ToString(result);
@@ -120,7 +119,7 @@ namespace BudgetManager.non_mvc {
             if (textBox == null) {
                 return;
             }
-            //Checks to see if the text box contains only digits
+            //Regex to check if the text box contains only digits
             Regex inputDataChecker = new Regex("\\b\\d+\\b");
 
             //If the input contains any other characters apart from digits then the textbox content will be cleared automatically
@@ -128,6 +127,7 @@ namespace BudgetManager.non_mvc {
                 textBox.Text = "";
             }
         }
+
 
         private bool hasDataOnActiveFields(TextBox[] fields) {
             if (hasClearedFields) {
@@ -142,7 +142,6 @@ namespace BudgetManager.non_mvc {
             }
 
             return true;
-        }
-     
+        }     
     }
 }
