@@ -78,5 +78,9 @@ namespace BudgetManager.mvc.controllers {
 
             return executionResult;
         }
+
+        public int requestDelete2(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
+            throw new NotImplementedException();
+        }
     }
 }

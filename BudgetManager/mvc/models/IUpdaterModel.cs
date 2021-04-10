@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace BudgetManager {
         
         int updateData(QueryType option, QueryData paramContainer, DataTable sourceDataTable);
         int deleteData(String tableName, int itemID);
+        int deleteData2(QueryType option, QueryData paramContainer,DataTable sourceDataTable);
 
     }
 }

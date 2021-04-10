@@ -164,6 +164,10 @@ namespace BudgetManager.mvc.models {
             }
       
                 return null;           
-        }     
+        }
+
+        public int deleteData2(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
+            throw new NotImplementedException();
+        }
     }
 }

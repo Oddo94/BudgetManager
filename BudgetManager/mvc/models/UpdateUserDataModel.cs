@@ -142,6 +142,14 @@ namespace BudgetManager {
 
         }
 
+        //CHANGE!!!!!
+        public int deleteData2(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
+            MySqlCommand updateTableCommand = getCorrectSqlCommandForDataDisplay(option, paramContainer);
+            int executionResult = DBConnectionManager.deleteData2(updateTableCommand, sourceDataTable);
+
+            return executionResult;
+        }
+
         public bool hasDBConnection() {
             return DBConnectionManager.hasConnection();
         }

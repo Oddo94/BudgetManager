@@ -170,6 +170,42 @@ namespace BudgetManager {
             return -1;
         }
 
+        //CHANGE!!!!
+        public static int deleteData2(MySqlCommand command, DataTable sourceDataTable) {
+            MySqlConnection conn = getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
+
+            command.Connection = conn;
+            conn.Open();
+
+            MySqlTransaction tx = conn.BeginTransaction();
+            command.Transaction = tx;
+
+            MySqlDataAdapter dataAdapter = getDataAdapter(command);
+            MySqlCommandBuilder commandBuilder = new MySqlCommandBuilder(dataAdapter);
+
+            int executionResult = -1;
+            try {
+
+                executionResult = dataAdapter.Update(sourceDataTable);
+                sourceDataTable.AcceptChanges();
+                tx.Commit();
+
+            }catch(MySqlException ex) {
+                MessageBox.Show(ex.Message);
+                tx.Rollback();
+
+            } catch(DBConcurrencyException ex) {
+                MessageBox.Show(ex.Message);
+                tx.Rollback();
+
+            } finally {
+               conn.Close();
+            }
+
+            return executionResult;
+
+        }
+
         public static bool hasConnection() {
             MySqlConnection conn = getConnection(BUDGET_MANAGER_CONN_STRING);
 
