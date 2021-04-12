@@ -73,14 +73,16 @@ namespace BudgetManager.mvc.controllers {
             return executionResult;
         }
 
-        public int requestDelete(string tableName, int itemID) {
-            int executionResult = model.deleteData(tableName, itemID);
+        //public int requestDelete(string tableName, int itemID) {
+        //    int executionResult = model.deleteData(tableName, itemID);
+
+        //    return executionResult;
+        //}
+
+        public int requestDelete(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
+            int executionResult = model.deleteData(option, paramContainer, sourceDataTable);
 
             return executionResult;
-        }
-
-        public int requestDelete2(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
-            throw new NotImplementedException();
         }
     }
 }

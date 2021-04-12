@@ -55,11 +55,20 @@ namespace BudgetManager.mvc.models {
         }
 
         
-        public int deleteData(string tableName, int itemID) {
-            MySqlCommand deleteBudgetPlanCommand = new MySqlCommand(sqlStatementDeleteBudgetPlan);
-            deleteBudgetPlanCommand.Parameters.AddWithValue("paramItemID", itemID);
+        //public int deleteData(string tableName, int itemID) {
+        //    MySqlCommand deleteBudgetPlanCommand = new MySqlCommand(sqlStatementDeleteBudgetPlan);
+        //    deleteBudgetPlanCommand.Parameters.AddWithValue("paramItemID", itemID);
 
-            int executionResult = DBConnectionManager.deleteData(deleteBudgetPlanCommand);
+        //    int executionResult = DBConnectionManager.deleteData(deleteBudgetPlanCommand);
+
+        //    return executionResult;
+        //}
+
+        public int deleteData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
+            //Recreating the command object used to display the data in the DataGridView
+            MySqlCommand deleteBudgetPlanCommand = getCorrectSqlCommandForDataDisplay(option, paramContainer);
+
+            int executionResult = DBConnectionManager.deleteData2(deleteBudgetPlanCommand, sourceDataTable);
 
             return executionResult;
         }
@@ -166,8 +175,6 @@ namespace BudgetManager.mvc.models {
                 return null;           
         }
 
-        public int deleteData2(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
-            throw new NotImplementedException();
-        }
+      
     }
 }

@@ -126,24 +126,24 @@ namespace BudgetManager {
 
         }
 
-        public int deleteData(String tableName, int itemID) {
-            int executionResult = 0;
-            //Creare comandă de ștergere
-            MySqlCommand deleteCommand = getCorrectSqlCommandForDeletion(tableName, itemID);
-            //executionResult = DBConnectionManager.deleteData(deleteCommand);//MODIFICARE DENUMIRE COMANDA
-            //Obtinere rezultat executie
-            executionResult = DBConnectionManager.deleteData(deleteCommand);
+        //public int deleteData(String tableName, int itemID) {
+        //    int executionResult = 0;
+        //    //Creare comandă de ștergere
+        //    MySqlCommand deleteCommand = getCorrectSqlCommandForDeletion(tableName, itemID);
+        //    //executionResult = DBConnectionManager.deleteData(deleteCommand);//MODIFICARE DENUMIRE COMANDA
+        //    //Obtinere rezultat executie
+        //    executionResult = DBConnectionManager.deleteData(deleteCommand);
 
-            if (executionResult > 0) {
-                return executionResult;
-            }
+        //    if (executionResult > 0) {
+        //        return executionResult;
+        //    }
 
-            return -1;
+        //    return -1;
 
-        }
+        //}
 
         //CHANGE!!!!!
-        public int deleteData2(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
+        public int deleteData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
             MySqlCommand updateTableCommand = getCorrectSqlCommandForDataDisplay(option, paramContainer);
             int executionResult = DBConnectionManager.deleteData2(updateTableCommand, sourceDataTable);
 

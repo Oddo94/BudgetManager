@@ -307,16 +307,30 @@ namespace BudgetManager.mvc.views {
 
             if (itemID == -1) {
                 return;
-            } 
+            }
 
-            int executionResult = controller.requestDelete("budget_plans", itemID);
+            //int executionResult = controller.requestDelete("budget_plans", itemID);
+
+            //Providing the false value to the method makes sure that only SINGLE_MONTH/FULL_YEAR options are returned(here we're not interested in the BUDGET_PLAN_INFO option we just want to recreate the query used to fill the main DataGridView)
+            //As a result we'll have to get one of the two values used for that, SINGLE_MONTH/FULL_YEAR
+            QueryType option = getQueryTypeOption(false);
+            //Data container that stores the actual SQL query parameters
+            QueryData paramContainer = getDataContainer(option, dateTimePickerBPManagement);
+            //The DataTable object that represents the data source of the DataGridView containing the list of budget plans
+            DataTable sourceDataTable = (DataTable) dataGridViewBPManagement.DataSource;
+
+            //Deletes the selected row from the DataTable object representing the data source for the DataGridView
+            sourceDataTable.Rows[selectedRowIndex].Delete();
+
+            int executionResult = controller.requestDelete(option, paramContainer, sourceDataTable);
+
 
             if (executionResult != -1) {
                 MessageBox.Show("The selected budget plan was successfully deleted!", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 //Retrieves the row index of the currrently selected cell
                 int selectedIndex = dataGridViewBPManagement.CurrentCell.RowIndex;
                 //Removes the row at the selected index from the GUI table
-                dataGridViewBPManagement.Rows.RemoveAt(selectedIndex);
+                //dataGridViewBPManagement.Rows.RemoveAt(selectedIndex);
             } else {
                 MessageBox.Show("Unable to delete the selected budget plan! Please try again.", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }

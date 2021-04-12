@@ -10,8 +10,8 @@ namespace BudgetManager {
     interface IUpdaterModel : IModel {
         
         int updateData(QueryType option, QueryData paramContainer, DataTable sourceDataTable);
-        int deleteData(String tableName, int itemID);
-        int deleteData2(QueryType option, QueryData paramContainer,DataTable sourceDataTable);
+        //int deleteData(String tableName, int itemID);
+        int deleteData(QueryType option, QueryData paramContainer,DataTable sourceDataTable);
 
     }
 }

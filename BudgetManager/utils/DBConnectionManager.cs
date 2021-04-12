@@ -139,36 +139,36 @@ namespace BudgetManager {
         }
 
 
-        public static int deleteData(MySqlCommand command) {
-            //Creare conexiune și impunerea acesteia comenzii primite ca argument
-            MySqlConnection conn = getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
-            command.Connection = conn;
-            conn.Open();
-            //Creare tranzactie si impunerea acesteia comenzii
-            MySqlTransaction tx = conn.BeginTransaction();
-            command.Transaction = tx;
+        //public static int deleteData(MySqlCommand command) {
+        //    //Creare conexiune și impunerea acesteia comenzii primite ca argument
+        //    MySqlConnection conn = getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
+        //    command.Connection = conn;
+        //    conn.Open();
+        //    //Creare tranzactie si impunerea acesteia comenzii
+        //    MySqlTransaction tx = conn.BeginTransaction();
+        //    command.Transaction = tx;
 
-            int executionResult = 0;
-            try {
-                //Obtinere rezultat executie și confirmarea modificării in baza de date
-                executionResult = command.ExecuteNonQuery();
-                //Confirmarea modificarii in baza de date
-                tx.Commit();
+        //    int executionResult = 0;
+        //    try {
+        //        //Obtinere rezultat executie și confirmarea modificării in baza de date
+        //        executionResult = command.ExecuteNonQuery();
+        //        //Confirmarea modificarii in baza de date
+        //        tx.Commit();
 
-            } catch (MySqlException ex) {
-                MessageBox.Show(ex.Message, "DBConnectionManager");
-                tx.Rollback();//Se readuce baza de date la starea initiala daca s-a generat o exceptie
-            } finally {
-                conn.Close();// Inchidere conexiune
-            }
+        //    } catch (MySqlException ex) {
+        //        MessageBox.Show(ex.Message, "DBConnectionManager");
+        //        tx.Rollback();//Se readuce baza de date la starea initiala daca s-a generat o exceptie
+        //    } finally {
+        //        conn.Close();// Inchidere conexiune
+        //    }
 
-            //Daca executia comenzii a avut loc cu succes se returneaza numarul de randuri afectate din tabel iar in caz contrar se returneaza -1 ceea ce indica esuarea operatiunii
-            if (executionResult != 0) {                
-                return executionResult;
-            }
+        //    //Daca executia comenzii a avut loc cu succes se returneaza numarul de randuri afectate din tabel iar in caz contrar se returneaza -1 ceea ce indica esuarea operatiunii
+        //    if (executionResult != 0) {                
+        //        return executionResult;
+        //    }
 
-            return -1;
-        }
+        //    return -1;
+        //}
 
         //CHANGE!!!!
         public static int deleteData2(MySqlCommand command, DataTable sourceDataTable) {

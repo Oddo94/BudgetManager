@@ -156,11 +156,13 @@ namespace BudgetManager {
                 paramContainer = new QueryData.Builder(userID).addYear(currentYear).addTableName(tableName).build(); //CHANGE
             }
 
+            //Retrieves the DataTable object representing the data source of the DataGridView
             DataTable sourceDataTable = (DataTable) dataGridViewTableDisplay.DataSource;
+
             sourceDataTable.Rows[selectedRowIndex].Delete();//Deletes the row from the DataTable object
             
 
-            int executionResult = controller.requestDelete2(option, paramContainer, sourceDataTable);
+            int executionResult = controller.requestDelete(option, paramContainer, sourceDataTable);
                
            //CHANGE!!!
                     
