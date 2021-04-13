@@ -145,7 +145,7 @@ namespace BudgetManager {
         //CHANGE!!!!!
         public int deleteData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
             MySqlCommand updateTableCommand = getCorrectSqlCommandForDataDisplay(option, paramContainer);
-            int executionResult = DBConnectionManager.deleteData2(updateTableCommand, sourceDataTable);
+            int executionResult = DBConnectionManager.deleteData(updateTableCommand, sourceDataTable);
 
             return executionResult;
         }

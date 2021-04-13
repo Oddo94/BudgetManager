@@ -68,7 +68,7 @@ namespace BudgetManager.mvc.models {
             //Recreating the command object used to display the data in the DataGridView
             MySqlCommand deleteBudgetPlanCommand = getCorrectSqlCommandForDataDisplay(option, paramContainer);
 
-            int executionResult = DBConnectionManager.deleteData2(deleteBudgetPlanCommand, sourceDataTable);
+            int executionResult = DBConnectionManager.deleteData(deleteBudgetPlanCommand, sourceDataTable);
 
             return executionResult;
         }

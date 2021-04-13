@@ -171,7 +171,7 @@ namespace BudgetManager {
         //}
 
         //CHANGE!!!!
-        public static int deleteData2(MySqlCommand command, DataTable sourceDataTable) {
+        public static int deleteData(MySqlCommand command, DataTable sourceDataTable) {
             MySqlConnection conn = getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
 
             command.Connection = conn;
