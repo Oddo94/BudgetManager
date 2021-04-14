@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 namespace BudgetManager {
     interface IUpdaterControl : IControl {
 
+        //CHECK AND CORRECT IMPLEMENTATION IN THE IUPDATERCONTROLLER CLASS
+        //void setModel(IUpdaterModel model);
         int requestUpdate(QueryType option, QueryData paramContainer, DataTable sourceDataTable);
-        int requestDelete(String tableName, int itemID);
+        //int requestDelete(String tableName, int itemID);
+        int requestDelete(QueryType option, QueryData paramContainer, DataTable sourceDataTable);
     }
 }

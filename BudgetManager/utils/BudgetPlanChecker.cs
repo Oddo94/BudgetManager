@@ -21,6 +21,10 @@ namespace BudgetManager.utils {
         private String sqlStatementGetTotalExpenses = @"SELECT SUM(value) AS Total_expenses FROM expenses WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate";
         private String sqlStatementGetTotalDebts = @"SELECT SUM(value) AS Total_debts FROM debts WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate";
         private String sqlStatementGetTotalSavings = @"SELECT SUM(value) AS Total_savings FROM savings WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate";
+        //SQL statement that retrieves the sum of records for all budget item in a single query
+        private String sqlStatementGetTotalValuesForAllItems = @"SELECT(SELECT SUM(value) FROM expenses WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate) AS 'Total expenses',
+                                                                (SELECT SUM(value) FROM debts WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate)  AS 'Total debts',
+                                                                (SELECT SUM(value) FROM savings WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate)  AS 'Total savings'";
 
 
         public BudgetPlanChecker(int userID, String currentDate) {
@@ -29,6 +33,11 @@ namespace BudgetManager.utils {
             this.currentDate = currentDate;
         }
 
+        public BudgetPlanChecker() {
+
+        }
+
+        //Method that retrieves the budget plan data(if the plan exists) based on the specified currentDate(it is actually the date that the user selects for the new entry which is checked to see if it overlaps any existing budget plan timespan)
         public DataTable getBudgetPlanData() {
             QueryData paramContainer = new QueryData.Builder(userID).addStartDate(currentDate).build();
             MySqlCommand budgetPlanExistenceCheckCommand = SQLCommandBuilder.getBudgetPlanCheckCommand(sqlStatementCheckBudgetPlanExistence, paramContainer);
@@ -50,6 +59,7 @@ namespace BudgetManager.utils {
             return false;
         }
 
+       //Method for calculating the maximum allowed value for the provided item percentage limit
        public int calculateMaxLimitValue(int totalIncomes, int itemPercentage) {
             if (totalIncomes < 0) {
                 return -1;
@@ -105,6 +115,7 @@ namespace BudgetManager.utils {
             QueryData paramContainer = new QueryData.Builder(userID).addStartDate(sqlFormatStartDate).addEndDate(sqlFormatEndDate).build();
             MySqlCommand getTotalIncomesCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementGetTotalIncomes, paramContainer);
 
+            //The DataTable object that contains the total incomes value for the specified time interval
             DataTable totalIncomesDataTable = DBConnectionManager.getData(getTotalIncomesCommand);
 
             if (totalIncomesDataTable != null && totalIncomesDataTable.Rows.Count == 1) {
@@ -133,6 +144,36 @@ namespace BudgetManager.utils {
             }
 
             return -1;
+        }
+
+        public int[] getTotalValuesForAllBudgetItems(String startDate, String endDate) {
+            //Arguments checks
+            if (startDate == null || endDate == null) {
+                return null;
+            }
+ 
+            if ("".Equals(startDate) || "".Equals(endDate)) {
+                return null;
+            }
+            //Data container object and MySqlCommand creation
+            QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).build();
+            MySqlCommand getTotalValuesForAllItemsCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementGetTotalValuesForAllItems, paramContainer);
+
+            DataTable itemsTotalValuesDataTable = DBConnectionManager.getData(getTotalValuesForAllItemsCommand);
+            //Null and row count check on the resulted DataTable object
+            if (itemsTotalValuesDataTable == null || itemsTotalValuesDataTable.Rows.Count <= 0) {
+                return null;
+            }
+
+            //DataTable values conversion to int
+            int expensesTotalValue = itemsTotalValuesDataTable.Rows[0].ItemArray[0] != DBNull.Value ? Convert.ToInt32(itemsTotalValuesDataTable.Rows[0].ItemArray[0]) : 0;
+            int debtsTotalValue = itemsTotalValuesDataTable.Rows[0].ItemArray[1] != DBNull.Value ? Convert.ToInt32(itemsTotalValuesDataTable.Rows[0].ItemArray[1]) : 0;
+            int savingsTotalValue = itemsTotalValuesDataTable.Rows[0].ItemArray[2] != DBNull.Value ? Convert.ToInt32(itemsTotalValuesDataTable.Rows[0].ItemArray[2]) : 0;
+
+            //Creating the array containing the total values for each budget item
+            int[] budgetItemsTotals = new int[] { expensesTotalValue, debtsTotalValue, savingsTotalValue };
+
+            return budgetItemsTotals;
         }
 
         public int getPercentageLimitForItem(BudgetItemType itemType) {
@@ -243,16 +284,7 @@ namespace BudgetManager.utils {
             return false;
         }
 
-        //Method for calculating the percentage of the current item total value from the imposed limit value
-        public int calculateCurrentItemPercentageValue(int currentItemTotalValue, int limitValue) {
-
-            if (currentItemTotalValue > limitValue) {
-                return -1;
-            }
-       
-            return (currentItemTotalValue * 100) / limitValue;
-        }
-
+  
         //Method for checking if the budget plan start date or end date are filled with 0'(e.g.-0000-00-00)
         public bool hasZeroFilledDate(String[] budgetPlanBoundaries) {
             //If the string cotains more/less than two elements no check is made and false is returned
@@ -265,6 +297,43 @@ namespace BudgetManager.utils {
             bool hasZeroFilledEndDate = "0000-00-00".Equals(budgetPlanBoundaries[1]);
 
             return hasZeroFilledStartDate || hasZeroFilledEndDate;
+        }
+
+        //Method for checking if the user has set percentages that are lower than the calculated percentage of the item based on its total value of records
+        public bool isLowerThanCurrentItemPercentage(int[] userSetPercentages, int[] itemTotals, String startDate, String endDate) {
+            if (userSetPercentages == null || itemTotals == null) {
+                return false;
+            }
+
+            if (userSetPercentages.Length != 3 || itemTotals.Length != 3) {
+                return false;
+            }
+
+            int totalIncomes = getTotalIncomes(startDate, endDate);
+            int currentExpensePercentage = calculateCurrentItemPercentageValue(itemTotals[0], totalIncomes);// current expense percentage calculation(the sum of expenses in relation to the total available incomes for the timespan between start date and end date)
+            int currentDebtsPercentage = calculateCurrentItemPercentageValue(itemTotals[1], totalIncomes);
+            int currentSavingsPercentage = calculateCurrentItemPercentageValue(itemTotals[2], totalIncomes);
+
+            //Checks to see if the percentages set by user in the DataGridView are lower or equal to the current item percentage that was calculated for each item
+            if (currentExpensePercentage <= userSetPercentages[0] && currentDebtsPercentage <= userSetPercentages[1] && currentSavingsPercentage < userSetPercentages[2]) {
+                return true;
+            }
+
+            return false;
+
+        }
+
+
+
+
+        //Method for calculating the percentage of the current item total value from the imposed limit value
+        public int calculateCurrentItemPercentageValue(int currentItemTotalValue, int limitValue) {
+
+            if (currentItemTotalValue > limitValue || limitValue == 0) {
+                return -1;
+            }
+
+            return (currentItemTotalValue * 100) / limitValue;
         }
 
     }

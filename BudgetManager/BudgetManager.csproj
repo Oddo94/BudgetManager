@@ -49,12 +49,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="mvc\controllers\BudgetPlanManagementController.cs" />
+    <Compile Include="mvc\models\BudgetPlanManagementModel.cs" />
     <Compile Include="mvc\models\BudgetSummaryModel.cs" />
+    <Compile Include="mvc\views\BudgetPlanManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="mvc\views\BudgetPlanManagementForm.Designer.cs">
+      <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="non-mvc\BudgetPlanCreator.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="non-mvc\BudgetPlanCreator.Designer.cs">
       <DependentUpon>BudgetPlanCreator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="non-mvc\BudgetPlanManagementCalculator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="non-mvc\BudgetPlanManagementCalculator.Designer.cs">
+      <DependentUpon>BudgetPlanManagementCalculator.cs</DependentUpon>
     </Compile>
     <Compile Include="utils\BudgetPlanChecker.cs" />
     <Compile Include="utils\ConfirmationSender.cs" />
@@ -108,8 +122,14 @@
     <Compile Include="utils\QueryData.cs" />
     <Compile Include="utils\SQLCommandBuilder.cs" />
     <Compile Include="utils\ViewCalculator.cs" />
+    <EmbeddedResource Include="mvc\views\BudgetPlanManagementForm.resx">
+      <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\BudgetPlanCreator.resx">
       <DependentUpon>BudgetPlanCreator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="non-mvc\BudgetPlanManagementCalculator.resx">
+      <DependentUpon>BudgetPlanManagementCalculator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\InsertDataForm.resx">
       <DependentUpon>InsertDataForm.cs</DependentUpon>

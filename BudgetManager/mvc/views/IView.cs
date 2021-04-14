@@ -18,7 +18,8 @@ namespace BudgetManager {
         START_PICKER,
         END_PICKER,
         MONTHLY_PICKER,
-        YEARLY_PICKER
+        YEARLY_PICKER,
+        UNDEFINED
     }
     public interface IView {
         void updateView(IModel model);

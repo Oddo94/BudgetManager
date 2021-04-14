@@ -28,8 +28,15 @@ namespace BudgetManager {
 
         }
 
-        public int requestDelete(string tableName, int itemID) {
-           int executionResult = model.deleteData(tableName, itemID);
+        //public int requestDelete(string tableName, int itemID) {
+        //   int executionResult = model.deleteData(tableName, itemID);          
+
+        //   return executionResult;
+        //}
+
+        //CHANGE!!!!
+        public int requestDelete(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
+            int executionResult = model.deleteData(option, paramContainer, sourceDataTable);
 
             return executionResult;
         }

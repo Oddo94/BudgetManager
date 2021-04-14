@@ -13,7 +13,9 @@ namespace BudgetManager {
         SINGLE_MONTH,
         MULTIPLE_MONTHS,
         MONTHLY_TOTALS,
-        FULL_YEAR //optiune adaugata pentru modelul folosit la actualizarea datelor       
+        FULL_YEAR,//optiune adaugata pentru modelul folosit la actualizarea datelor
+        BUDGET_PLAN_INFO,//option added for the queries that retrieve data for the currently selected budget plan
+        UNDEFINED  //option added as default value to return when the conditios for the other option are not met     
     }
 
     //Enum pt sursa de date ce urmeaza a fi populata
@@ -25,7 +27,7 @@ namespace BudgetManager {
         DYNAMIC_DATASOURCE_2,
         STATIC_DATASOURCE
     }
-
+    
     public interface IModel {
         DataTable[] DataSources { get; set; }
              

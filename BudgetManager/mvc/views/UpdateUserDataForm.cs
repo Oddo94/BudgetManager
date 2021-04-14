@@ -136,15 +136,41 @@ namespace BudgetManager {
             CurrencyManager currencyManager = (CurrencyManager)dataGridViewTableDisplay.BindingContext[dataGridViewTableDisplay.DataSource, dataGridViewTableDisplay.DataMember];
             DataRowView selectedDataRow = (DataRowView)currencyManager.Current;
             int itemID = selectedDataRow.Row.ItemArray[0] != null ? Convert.ToInt32(selectedDataRow.Row.ItemArray[0]) : -1;
-                     
+
             //Getting the result of executing the delete command by calling the requestDelete method of the controller (which in turn calls the delete method of the model)
-            int executionResult = controller.requestDelete(tableName, itemID);
-                       
+            //int executionResult = controller.requestDelete(tableName, itemID);
+
+            //CHANGE!!!!
+            QueryType option = 0;
+            QueryData paramContainer = null;
+
+            if (monthRecordsCheckBox.Checked == true) {
+                option = QueryType.SINGLE_MONTH;
+                int currentMonth = dateTimePickerTimeSpanSelection.Value.Month;
+                int currentYear = dateTimePickerTimeSpanSelection.Value.Year;
+                paramContainer = new QueryData.Builder(userID).addMonth(currentMonth).addYear(currentYear).addTableName(tableName).build(); //CHANGE
+            } else if (yearRecordsCheckBox.Checked == true) {
+                option = QueryType.FULL_YEAR;
+                int currentMonth = dateTimePickerTimeSpanSelection.Value.Month;
+                int currentYear = dateTimePickerTimeSpanSelection.Value.Year;
+                paramContainer = new QueryData.Builder(userID).addYear(currentYear).addTableName(tableName).build(); //CHANGE
+            }
+
+            //Retrieves the DataTable object representing the data source of the DataGridView
+            DataTable sourceDataTable = (DataTable) dataGridViewTableDisplay.DataSource;
+
+            sourceDataTable.Rows[selectedRowIndex].Delete();//Deletes the row from the DataTable object
+            
+
+            int executionResult = controller.requestDelete(option, paramContainer, sourceDataTable);
+               
+           //CHANGE!!!
+                    
             //Displaying info message regarding the delete operation result
             if (executionResult != -1) {
                 MessageBox.Show("The selected data was successfully deleted !", "Data update");                
                 //Deleting row from the table displayed in the GUI if the delete operation was successfull
-                dataGridViewTableDisplay.Rows.RemoveAt(selectedRowIndex);
+                //dataGridViewTableDisplay.Rows.RemoveAt(selectedRowIndex);
             } else {
                 MessageBox.Show("Unable to delete the selected data! Please try again.", "Data update");
             } 
