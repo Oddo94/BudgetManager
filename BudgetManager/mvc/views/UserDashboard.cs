@@ -254,7 +254,7 @@ namespace BudgetManager {
                     pieChartBS.Series[0].Points[lastPointIndex].LegendText = pointNames[i];
 
                     //Calculare procentaj pt fiecare tip prezent prin raportare la valoarea totala calculata anterior                  
-                    int percentage = ViewCalculator.calculatePercentage(finalPieChartValues[i], totalAmount);
+                    double percentage = ViewCalculator.calculatePercentage(finalPieChartValues[i], totalAmount);
                     if (percentage > 0) {
                         //Daca procentajul e mai mare ca 0 se adauga valoarea respectiva ca eticheta                     
                         pieChartBS.Series[0].Points[lastPointIndex].Label = percentage + "%";
@@ -590,7 +590,7 @@ namespace BudgetManager {
                     chart.Series[0].Points[i].LegendText = typeNames[i];
 
                     //Calculare procentaj pt fiecare tip prezent prin raportare la valoarea totala calculata anterior
-                    int percentage = ViewCalculator.calculatePercentage(itemTypeSums[i], totalAmount);
+                    double percentage = ViewCalculator.calculatePercentage(itemTypeSums[i], totalAmount);
                     if (percentage > 0) {
                         //Adaugare eticheta pentru elementul curent
                         chart.Series[0].Points[i].Label = percentage + "%";
@@ -625,7 +625,7 @@ namespace BudgetManager {
                     chart.Series[0].Points[i].LegendText = currentCreditorName;
 
                     //Calculare procentaj datorie din valoarea totala a datoriilor
-                    int percentage = ViewCalculator.calculatePercentage(debtValueForCurrentCreditor, totalAmount);
+                    double percentage = ViewCalculator.calculatePercentage(debtValueForCurrentCreditor, totalAmount);
 
                     //Adaugare eticheta pentru punctul curent
                     if (percentage > 0) {
