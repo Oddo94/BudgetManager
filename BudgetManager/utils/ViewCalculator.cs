@@ -23,9 +23,9 @@ namespace BudgetManager {
                 return 0;
             }
 
-            int sum = 0;
-            foreach (int currentElement in inputArray) {
-                sum += currentElement;
+            int sum = 0;         
+            foreach (int currentValue in inputArray) {
+                sum += currentValue;
             }
 
             return sum;

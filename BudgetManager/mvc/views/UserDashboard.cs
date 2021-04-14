@@ -574,8 +574,15 @@ namespace BudgetManager {
                     return;
                 }
 
-                //
-                int totalAmount = ViewCalculator.calculateSum(itemTypeSums);
+                int totalAmount = 0;
+                //For the expense and incomes pie charts the total value is calculated by adding all the item values present in the array while for the savings the total value is represented by the total income sum(the array contains only two values, total savings and total incomes)
+                if ("pieChartExpenses".Equals(chart.Name) || "pieChartIncomes".Equals(chart.Name)) {
+                    totalAmount = ViewCalculator.calculateSum(itemTypeSums);
+                } else if ("pieChartSavings".Equals(chart.Name)) {
+                    totalAmount = itemTypeSums[itemTypeSums.Length - 1];
+                }
+              
+
 
                 //Adaugare puncte pe grafic
                 for (int i = 0; i < typeNames.Length; i++) {
