@@ -17,8 +17,8 @@ namespace BudgetManager {
             //Calculates the percentage result as a decimal values
             double result = (value * 100) / (double)total;
 
-            //Limits the number of decimal places of the result to 1 (by rounding)
-            return Math.Round(result, 1);
+            //Limits the number of decimal places of the result to 2 (by rounding)
+            return Math.Round(result, 2);
         }
 
         public static int calculateSum(int[] inputArray) {
