@@ -14,7 +14,7 @@ namespace BudgetManager {
         private String endDate;
         private String tableName;
         private String budgetPlanName;
-        private String typeName;
+        private String typeName;        
         private int expenseLimit;
         private int debtLimit;
         private int savingLimit;
@@ -22,6 +22,7 @@ namespace BudgetManager {
         private int planTypeID;
         private int thresholdPercentage;
         private int alarmExistenceValue;
+        private int itemValue;
 
         private QueryData() {
 
@@ -44,7 +45,7 @@ namespace BudgetManager {
             }         
         }
      
-          public String StartDate {
+        public String StartDate {
                get {
                 return this.startDate;
               }
@@ -104,6 +105,12 @@ namespace BudgetManager {
             }
         }
 
+        public int ItemValue {
+            get {
+                return this.itemValue;
+            }
+        }
+
         public String TypeName {
             get {
                 return this.typeName;
@@ -133,6 +140,7 @@ namespace BudgetManager {
             private int planTypeID;
             private int thresholdPercentage;
             private int alarmExistenceValue;
+            private int itemValue;
 
 
             public Builder(int userID) {
@@ -223,6 +231,12 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addItemValue(int itemValue) {
+                this.itemValue = itemValue;
+
+                return this;
+            }
+
             public QueryData build() {
                 return new QueryData {
                     userID = this.userID,
@@ -239,7 +253,8 @@ namespace BudgetManager {
                     estimatedIncome = this.estimatedIncome,
                     planTypeID = this.planTypeID,
                     thresholdPercentage = this.thresholdPercentage,
-                    alarmExistenceValue = this.alarmExistenceValue
+                    alarmExistenceValue = this.alarmExistenceValue,
+                    itemValue = this.itemValue
                 };
             }
         }

@@ -120,6 +120,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="utils\QueryData.cs" />
+    <Compile Include="utils\SavingAccountBalanceManager.cs" />
     <Compile Include="utils\SQLCommandBuilder.cs" />
     <Compile Include="utils\ViewCalculator.cs" />
     <EmbeddedResource Include="mvc\views\BudgetPlanManagementForm.resx">

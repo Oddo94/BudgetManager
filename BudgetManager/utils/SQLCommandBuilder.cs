@@ -104,6 +104,16 @@ namespace BudgetManager {
             return savingInsertionCommand;
         }
 
+        public static MySqlCommand getBalanceRecordInsertionCommand(String sqlStatement, QueryData paramContainer) {
+            MySqlCommand balanceRecordInsertionCommand = new MySqlCommand(sqlStatement);
+            balanceRecordInsertionCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
+            balanceRecordInsertionCommand.Parameters.AddWithValue("@paramValue", paramContainer.ItemValue);
+            balanceRecordInsertionCommand.Parameters.AddWithValue("paramMonth", paramContainer.Month);
+            balanceRecordInsertionCommand.Parameters.AddWithValue("paramYear", paramContainer.Year);
+
+            return balanceRecordInsertionCommand;
+        }
+
         //Method for getting the command that helps check if there is an existing budget plan for the specified time interval
         public static MySqlCommand getBudgetPlanCheckCommand(String sqlStatement, QueryData paramContainer) {
             MySqlCommand budgetPlanCheckCommand = new MySqlCommand(sqlStatement);
