@@ -328,11 +328,25 @@ namespace BudgetManager {
 
 
 
-            //Checks the execution result resturned by the insertion method(positive value mean success while -1 means the failure of the operation)
+            //Checks the execution result returned by the insertion method(positive value mean success while -1 means the failure of the operation)
             if (executionResult != -1) {
                 MessageBox.Show("Data inserted successfully!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } else {
                 MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            //Checks if the user wants to insert an expense using the saving account as the income source or wants to insert a new saving 
+            if (getIncomeSource() == IncomeSource.SAVING_ACCOUNT || getSelectedType(budgetItemComboBox) == BudgetItemType.SAVING) {
+                String recordName = nameTextBox.Text;
+                int recordValue = Convert.ToInt32(valueTextBox.Text);
+                int selectedMonth = newEntryDateTimePicker.Value.Month;
+                int selectedYear = newEntryDateTimePicker.Value.Year;
+                DateTime selectedDate = newEntryDateTimePicker.Value.Date;
+
+                //Shows a warning message if the saving account balance record update process has failed
+                if (updateSavingAccountBalanceTable(userID, recordName, recordValue, selectedMonth, selectedYear, selectedDate) == -1) {
+                    MessageBox.Show("Unable to update the saving account balance record.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
 
         }  
@@ -733,6 +747,42 @@ namespace BudgetManager {
 
             return incomeSource;
         }
+
+        private int updateSavingAccountBalanceTable(int userID, String recordName, int recordValue, int month, int year, DateTime date) {
+            int executionResult = -1;
+
+            SavingAccountBalanceManager balanceManager = new SavingAccountBalanceManager(userID, month, year, recordValue, date);
+            if (getIncomeSource() == IncomeSource.SAVING_ACCOUNT) {
+                if (balanceManager.hasBalanceRecord()) {
+                    //Subtracts the value of the inserted expense from the existing record value and updates it accordingly
+                    executionResult = balanceManager.updateBalanceRecord(balanceManager.getRecordValue() - recordValue);
+                } else {
+                    //If there is no balance record created and the user tries to insert an expense having the saving account selected as the income source, first the expense will be inserted into the saving account expense table
+                    //If the insertion is successfull then the balance record table will be updated with the newly inserted value                  
+                    if (balanceManager.createSavingAccountExpenseRecord(recordName, recordValue, getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text)) != -1) {
+                        //Creates a new balance record with a negative value since an expense is inserted into the DB 
+                        executionResult = balanceManager.createBalanceRecord(-recordValue);
+                    }               
+                }
+            } else if (getSelectedType(budgetItemComboBox) == BudgetItemType.SAVING) {
+                if (balanceManager.hasBalanceRecord()) {
+                    //If a record balance is already present then its value is updated by adding the new value to the previous record value
+                    int currentRecordValue = balanceManager.getRecordValue();
+
+                    if (currentRecordValue != -1) {
+                        int finalRecordValue = currentRecordValue + recordValue;
+                        executionResult = balanceManager.updateBalanceRecord(finalRecordValue);
+                    }                  
+                } else {
+                    //If a record balance doesn't exist then it is created using the record value provided by the user
+                    executionResult = balanceManager.createBalanceRecord(recordValue);
+                }               
+            }
+
+            return executionResult;
+        }
+
+
 
         private void InsertDataForm_Load(object sender, EventArgs e) {
 
