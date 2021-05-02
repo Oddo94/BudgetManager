@@ -9,12 +9,7 @@ namespace BudgetManager {
     public class QueryData {
         private int userID;
         private int month;
-        private int year;
-        private String startDate;
-        private String endDate;
-        private String tableName;
-        private String budgetPlanName;
-        private String typeName;        
+        private int year;            
         private int expenseLimit;
         private int debtLimit;
         private int savingLimit;
@@ -23,6 +18,12 @@ namespace BudgetManager {
         private int thresholdPercentage;
         private int alarmExistenceValue;
         private int itemValue;
+        private String startDate;
+        private String endDate;
+        private String tableName;
+        private String budgetPlanName;
+        private String typeName;
+        private String itemName;
 
         private QueryData() {
 
@@ -44,25 +45,7 @@ namespace BudgetManager {
                 return this.year;
             }         
         }
-     
-        public String StartDate {
-               get {
-                return this.startDate;
-              }
-         }
-
-        public String EndDate {
-            get {
-                return this.endDate;
-            }
-        }
-
-        public String TableName {
-            get {
-                return this.tableName;
-            }
-        }
-
+           
         public int ExpenseLimit {
             get {
                 return this.expenseLimit;
@@ -111,9 +94,21 @@ namespace BudgetManager {
             }
         }
 
-        public String TypeName {
+        public String StartDate {
             get {
-                return this.typeName;
+                return this.startDate;
+            }
+        }
+
+        public String EndDate {
+            get {
+                return this.endDate;
+            }
+        }
+
+        public String TableName {
+            get {
+                return this.tableName;
             }
         }
 
@@ -124,15 +119,25 @@ namespace BudgetManager {
         }
 
 
+        public String TypeName {
+            get {
+                return this.typeName;
+            }
+        }
+
+        public String ItemName {
+            get {
+                return this.itemName;
+            }
+        }
+
+      
+
+
         public class Builder {
             private int userID;
             private int month;
-            private int year;
-            private String startDate;
-            private String endDate;
-            private String tableName;
-            private String budgetPlanName;
-            private String typeName;
+            private int year;            
             private int expenseLimit;
             private int debtLimit;
             private int savingLimit;
@@ -141,6 +146,12 @@ namespace BudgetManager {
             private int thresholdPercentage;
             private int alarmExistenceValue;
             private int itemValue;
+            private String startDate;
+            private String endDate;
+            private String tableName;
+            private String budgetPlanName;
+            private String typeName;
+            private String itemName;
 
 
             public Builder(int userID) {
@@ -158,37 +169,7 @@ namespace BudgetManager {
 
                 return this;
             }
-
-            public Builder addStartDate(String startDate) {
-                this.startDate = startDate;
-
-                return this;
-            }
-
-            public Builder addEndDate(String endDate) {
-                this.endDate = endDate;
-
-                return this;
-            }
-
-            public Builder addTableName(String tableName) {
-                this.tableName = tableName;
-
-                return this;
-            }
-
-            public Builder addBudgetPlanName(String budgetPlanName) {
-                this.budgetPlanName = budgetPlanName;
-
-                return this;
-            }
-
-            public Builder addTypeName(String typeName) {
-                this.typeName = typeName;
-
-                return this;
-            }
-
+       
             public Builder addExpenseLimit(int expenseLimit) {
                 this.expenseLimit = expenseLimit;
 
@@ -237,6 +218,42 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addStartDate(String startDate) {
+                this.startDate = startDate;
+
+                return this;
+            }
+
+            public Builder addEndDate(String endDate) {
+                this.endDate = endDate;
+
+                return this;
+            }
+
+            public Builder addTableName(String tableName) {
+                this.tableName = tableName;
+
+                return this;
+            }
+
+            public Builder addBudgetPlanName(String budgetPlanName) {
+                this.budgetPlanName = budgetPlanName;
+
+                return this;
+            }
+
+            public Builder addTypeName(String typeName) {
+                this.typeName = typeName;
+
+                return this;
+            }
+
+            public Builder addItemName(String itemName) {
+                this.itemName = itemName;
+
+                return this;
+            }
+
             public QueryData build() {
                 return new QueryData {
                     userID = this.userID,
@@ -254,7 +271,8 @@ namespace BudgetManager {
                     planTypeID = this.planTypeID,
                     thresholdPercentage = this.thresholdPercentage,
                     alarmExistenceValue = this.alarmExistenceValue,
-                    itemValue = this.itemValue
+                    itemValue = this.itemValue,
+                    itemName = this.itemName
                 };
             }
         }

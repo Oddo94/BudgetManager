@@ -138,6 +138,31 @@ namespace BudgetManager {
 
         }
 
+        public static int updateData(MySqlCommand command) {
+            int executionResult = -1;//The default value for the execution result
+
+            //Creates connection and assigns it to the provided command
+            MySqlConnection conn = getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
+            command.Connection = conn;
+
+            try {
+                //Opens the connection
+                conn.Open();
+                //Executes the command
+                executionResult = command.ExecuteNonQuery();
+
+
+            } catch(MySqlException ex) {
+                MessageBox.Show(ex.Message, "DBConnectionManager");
+
+            } finally {
+                //Closes the connection irrespective of the execution result
+                conn.Close();
+            }
+
+            return executionResult;
+        }
+
 
         //public static int deleteData(MySqlCommand command) {
         //    //Creare conexiune și impunerea acesteia comenzii primite ca argument
