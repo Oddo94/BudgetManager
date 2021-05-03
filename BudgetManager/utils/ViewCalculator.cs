@@ -8,13 +8,17 @@ namespace BudgetManager {
     class ViewCalculator {
 
 
-        public static int calculatePercentage(int value, int total) {
+        public static double calculatePercentage(int value, int total) {
 
             if (total == 0 || value < 0) {
                 return 0;
             }
 
-            return (value * 100) / total;
+            //Calculates the percentage result as a decimal values
+            double result = (value * 100) / (double)total;
+
+            //Limits the number of decimal places of the result to 2 (by rounding)
+            return Math.Round(result, 2);
         }
 
         public static int calculateSum(int[] inputArray) {
