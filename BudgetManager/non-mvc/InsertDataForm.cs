@@ -66,7 +66,7 @@ namespace BudgetManager {
         private String sqlStatementSingleMonthSavings = @"SELECT SUM(value) from savings WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
 
         //SQL query to get the saving account current balance value in order to allow further checks when the user selects the saving account as the income source for the inserted expense
-        private String sqlStatementGetSavingAccountBalance = @"SELECT SUM(value) FROM saving_account_balance WHERE user_ID = @paramID AND year <= @paramYear";
+        private String sqlStatementGetSavingAccountBalance = @"SELECT SUM(value) FROM saving_account_balance WHERE user_ID = @paramID";
 
         public InsertDataForm(int userID) {
             InitializeComponent();
@@ -333,18 +333,23 @@ namespace BudgetManager {
                 MessageBox.Show("Data inserted successfully!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } else {
                 MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
             }
 
             //Checks if the user wants to insert an expense using the saving account as the income source or wants to insert a new saving 
-            if (getIncomeSource() == IncomeSource.SAVING_ACCOUNT || getSelectedType(budgetItemComboBox) == BudgetItemType.SAVING) {
+            if (getIncomeSource() == IncomeSource.SAVING_ACCOUNT || getSelectedType(budgetItemComboBox) == BudgetItemType.SAVING) {                        
                 String recordName = nameTextBox.Text;
                 int recordValue = Convert.ToInt32(valueTextBox.Text);
                 int selectedMonth = newEntryDateTimePicker.Value.Month;
                 int selectedYear = newEntryDateTimePicker.Value.Year;
                 DateTime selectedDate = newEntryDateTimePicker.Value.Date;
 
+                //The saving account balance table update operation result
+                int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, recordName, recordValue, selectedMonth, selectedYear, selectedDate);
+
                 //Shows a warning message if the saving account balance record update process has failed
-                if (updateSavingAccountBalanceTable(userID, recordName, recordValue, selectedMonth, selectedYear, selectedDate) == -1) {
+                //If the operation is successfull no message is shwon because this is secondary operation
+                if (savingAccountBalanceUpdateResult == -1) {
                     MessageBox.Show("Unable to update the saving account balance record.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
@@ -678,11 +683,12 @@ namespace BudgetManager {
 
         //Method for retrieving the total saving amount
         private int getSavingAccountCurrentBalance(String sqlStatement, QueryData paramContainer) {
+            //Setting the default value for current balance.If data cannot be retrieved for any reason then 0 will be returned since it is not be allowed for the saving account to have negative balance
             int currentBalance = 0;
-
-            MySqlCommand getCurrentBalanceCommand = new MySqlCommand(sqlStatement);
-            getCurrentBalanceCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
-            getCurrentBalanceCommand.Parameters.AddWithValue("@paramYear", paramContainer.Year);
+           
+            MySqlCommand getCurrentBalanceCommand = SQLCommandBuilder.getRecordSumValueCommand(sqlStatementGetSavingAccountBalance, paramContainer);
+            //getCurrentBalanceCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
+            //getCurrentBalanceCommand.Parameters.AddWithValue("@paramYear", paramContainer.Year);
 
             DataTable resultDataTable = DBConnectionManager.getData(getCurrentBalanceCommand);
 
@@ -693,7 +699,7 @@ namespace BudgetManager {
                 return currentBalance;
             }
 
-            return -1;
+            return currentBalance;
         }
 
         //Method that returns the correct SQL command according to the type of selected item 
@@ -716,7 +722,7 @@ namespace BudgetManager {
             }
         }
 
-
+        //Method for retrieving the user selected budget item type 
         private BudgetItemType getSelectedType(ComboBox comboBox) {
             int selectedIndex = comboBox.SelectedIndex;
 
@@ -735,27 +741,38 @@ namespace BudgetManager {
             }
         }
 
+        //Method for retrieving the user selected income source
         private IncomeSource getIncomeSource() {
             //Setting the default value for the income source
             IncomeSource incomeSource = IncomeSource.UNDEFINED;
             
             if (generalIncomesRadioButton.Checked == true) {
-                incomeSource = IncomeSource.GENERAL_INCOMES;//income source representing the active/passive incomes
+                incomeSource = IncomeSource.GENERAL_INCOMES;//Income source representing the active/passive incomes
             } else if (savingAccountRadioButton.Checked == true) {
-                incomeSource = IncomeSource.SAVING_ACCOUNT;//income source representing the savings that the user currently owns
+                incomeSource = IncomeSource.SAVING_ACCOUNT;//Income source representing the savings that the user currently owns
             }
 
             return incomeSource;
         }
 
+        //Method for updating the records in the saving account balance table and creating records in the saving account expense table when needed(secondary task)  
         private int updateSavingAccountBalanceTable(int userID, String recordName, int recordValue, int month, int year, DateTime date) {
             int executionResult = -1;
 
-            SavingAccountBalanceManager balanceManager = new SavingAccountBalanceManager(userID, month, year, recordValue, date);
-            if (getIncomeSource() == IncomeSource.SAVING_ACCOUNT) {
+            //Object that manages the update of the tables that are part of the saving account system
+            SavingAccountBalanceManager balanceManager = new SavingAccountBalanceManager(userID, month, year, date);
+
+            //Checks if the user wants to insert an expense and the selected income source is the saving account
+            if (getSelectedType(budgetItemComboBox) == BudgetItemType.EXPENSE && getIncomeSource() == IncomeSource.SAVING_ACCOUNT) {
                 if (balanceManager.hasBalanceRecord()) {
                     //Subtracts the value of the inserted expense from the existing record value and updates it accordingly
-                    executionResult = balanceManager.updateBalanceRecord(balanceManager.getRecordValue() - recordValue);
+                    int currentRecordValue = balanceManager.getRecordValue();
+
+                    if (currentRecordValue != -1) {
+                        int finalRecordValue = currentRecordValue - recordValue;
+                        executionResult = balanceManager.updateBalanceRecord(finalRecordValue);
+                    }
+                    
                 } else {
                     //If there is no balance record created and the user tries to insert an expense having the saving account selected as the income source, first the expense will be inserted into the saving account expense table
                     //If the insertion is successfull then the balance record table will be updated with the newly inserted value                  

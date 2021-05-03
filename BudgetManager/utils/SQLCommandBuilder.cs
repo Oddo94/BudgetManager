@@ -104,6 +104,7 @@ namespace BudgetManager {
             return savingInsertionCommand;
         }
 
+        //Method for creating a command that will insert or update a record in the balance record table
         public static MySqlCommand getBalanceRecordInsertUpdateCommand(String sqlStatement, QueryData paramContainer) {
             MySqlCommand balanceRecordInsertionCommand = new MySqlCommand(sqlStatement);
             balanceRecordInsertionCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
@@ -113,6 +114,14 @@ namespace BudgetManager {
             balanceRecordInsertionCommand.Parameters.AddWithValue("paramYear", paramContainer.Year);
 
             return balanceRecordInsertionCommand;
+        }
+
+        //Method for creating a command that can be used to check the sum of a table values for a user(can be used to check current balance or other limits on item insertion into the DB)
+        public static MySqlCommand getRecordSumValueCommand(String sqlStatement, QueryData paramContainer) {
+            MySqlCommand recordSumValueCommand = new MySqlCommand(sqlStatement);
+            recordSumValueCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
+
+            return recordSumValueCommand;
         }
 
         //public static MySqlCommand getBalanceRecordUpdateCommand(String sqlStatement, QueryData paramContainer) {
