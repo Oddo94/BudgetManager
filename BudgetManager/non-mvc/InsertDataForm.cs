@@ -13,9 +13,11 @@ using System.Windows.Forms;
 
 namespace BudgetManager {
 
+    //Note: GENERAL_EXPENSE refers to the usual expenses that the user inserts into the DB while SAVING_ACCOUNT_EXPENSE refers to the expenses made from the saving account available balance(the difference comes from the income source selected at the creation time)
     public enum BudgetItemType {
         INCOME,
-        EXPENSE,
+        GENERAL_EXPENSE,
+        SAVING_ACCOUNT_EXPENSE,
         DEBT,
         SAVING,
         UNDEFINED
@@ -235,7 +237,7 @@ namespace BudgetManager {
 
                 } else if (getIncomeSource() == IncomeSource.GENERAL_INCOMES) {
                     /****GENERAL INCOMES SOURCE****/
-                    //GENERAL CHECK(item value(expense, debt, saving) > available amount)
+                    //GENERAL CHECK(item value(general expense, debt, saving) > available amount)
                     //Checks if the inserted item value is greater than the amount of money left 
                     if (!hasEnoughMoney(IncomeSource.GENERAL_INCOMES, insertedValue, paramContainer)) {
                         MessageBox.Show(String.Format("The inserted value for the current {0} is higher than the money left! You cannot exceed the maximum incomes for the current month.", selectedItem.ToLower()), "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
@@ -625,7 +627,8 @@ namespace BudgetManager {
             if (incomeSource == IncomeSource.GENERAL_INCOMES) {
                 //Getting the total value for each budget element        
                 int totalIncomes = getTotalValueForSelectedElement(BudgetItemType.INCOME, sqlStatementSingleMonthIncomes, paramContainer);
-                int totalExpenses = getTotalValueForSelectedElement(BudgetItemType.EXPENSE, sqlStatementSingleMonthExpenses, paramContainer);
+                //int totalExpenses = getTotalValueForSelectedElement(BudgetItemType.EXPENSE, sqlStatementSingleMonthExpenses, paramContainer);
+                int totalExpenses = getTotalValueForSelectedElement(BudgetItemType.GENERAL_EXPENSE, sqlStatementSingleMonthExpenses, paramContainer);
                 int totalDebts = getTotalValueForSelectedElement(BudgetItemType.DEBT, sqlStatementSingleMonthDebts, paramContainer);
                 int totalSavings = getTotalValueForSelectedElement(BudgetItemType.SAVING, sqlStatementSingleMonthSavings, paramContainer);
 
@@ -708,7 +711,8 @@ namespace BudgetManager {
                 case BudgetItemType.INCOME:
                     return SQLCommandBuilder.getSingleMonthCommand(sqlStatement, paramContainer);
 
-                case BudgetItemType.EXPENSE:
+                //CHANGE!!!(from EXPENSE TO GENERAL_EXPENSE)
+                case BudgetItemType.GENERAL_EXPENSE:
                     return SQLCommandBuilder.getSingleMonthCommand(sqlStatement, paramContainer);
 
                 case BudgetItemType.DEBT:
@@ -728,7 +732,8 @@ namespace BudgetManager {
 
             switch (selectedIndex) {
                 case 1:
-                    return BudgetItemType.EXPENSE;
+                    //return BudgetItemType.EXPENSE;
+                    return BudgetItemType.GENERAL_EXPENSE;//CHANGE(FROM EXPENSE TO GENERAL_EXPENSE)
 
                 case 2:
                     return BudgetItemType.DEBT;
@@ -762,8 +767,9 @@ namespace BudgetManager {
             //Object that manages the update of the tables that are part of the saving account system
             SavingAccountBalanceManager balanceManager = new SavingAccountBalanceManager(userID, month, year, date);
 
-            //Checks if the user wants to insert an expense and the selected income source is the saving account
-            if (getSelectedType(budgetItemComboBox) == BudgetItemType.EXPENSE && getIncomeSource() == IncomeSource.SAVING_ACCOUNT) {
+            //Checks if the user wants to insert a general expense and the selected income source is the saving account
+            //CHANGE(FROM EXPENSE TO GENERAL EXPENSE)
+            if (getSelectedType(budgetItemComboBox) == BudgetItemType.GENERAL_EXPENSE && getIncomeSource() == IncomeSource.SAVING_ACCOUNT) {
                 if (balanceManager.hasBalanceRecord()) {
                     //Subtracts the value of the inserted expense from the existing record value and updates it accordingly
                     int currentRecordValue = balanceManager.getRecordValue();

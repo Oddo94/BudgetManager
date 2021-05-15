@@ -79,6 +79,7 @@
             this.dataGridViewTableDisplay.Name = "dataGridViewTableDisplay";
             this.dataGridViewTableDisplay.Size = new System.Drawing.Size(550, 258);
             this.dataGridViewTableDisplay.TabIndex = 3;
+            this.dataGridViewTableDisplay.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellEnter);
             this.dataGridViewTableDisplay.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewTableDisplay_CellMouseClick);
             this.dataGridViewTableDisplay.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellValueChanged);
             // 

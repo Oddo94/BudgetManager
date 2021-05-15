@@ -17,12 +17,23 @@ namespace BudgetManager {
         private ArrayList controls = new ArrayList();
         private DateTimePicker[] dateTimePickers = new DateTimePicker[] { };
         private int userID;
+        //The variable holding the value of the last modifed row
+        //private int changedRowIndex;
+        //The variables holding the new and old values of the modified record
+        private int oldRecordValue;
+        private int newRecordValue;
+        //The variables holding the new and old dates of the modified record 
+        private DateTime oldRecordDate;
+        private DateTime newRecordDate;
+
+        //private DataTable oldDataSource;      
 
         public UpdateUserDataForm(int userID) {
             InitializeComponent();
             this.userID = userID;
             controls = new ArrayList() { tableSelectionComboBox, deleteButton, submitButton };
             dateTimePickers = new DateTimePicker[] { dateTimePickerTimeSpanSelection };
+            //changedRowIndex = -1;
             setDateTimePickerDefaultDate(dateTimePickers);
             wireUp(controller, model);
 
@@ -109,9 +120,58 @@ namespace BudgetManager {
             deleteButton.Enabled = false;//Disables the Delete button after deleting data from the table
         }
 
+        //Saving the original values of value and date columns when the saving account expenses data is shown in the DataGridView and one of these cells is clicked
+        private void dataGridViewTableDisplay_CellEnter(object sender, DataGridViewCellEventArgs e) {
+            if ("Saving account expenses".Equals(tableSelectionComboBox.Text)) {                          
+                //changedRowIndex = e.RowIndex;
+                //Retrieving the column index of the modified cell
+                int currentCellColumn = e.ColumnIndex;
 
-        private void dataGridViewTableDisplay_CellValueChanged(object sender, DataGridViewCellEventArgs e) {
-           
+                //The variable used for storing the value of the modified cell(the values are saved only if changes are performed to the value or date columns)
+                object selectedCellValue = null;
+                if (currentCellColumn == 3) {
+                    selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
+                    oldRecordValue = selectedCellValue != DBNull.Value ? Convert.ToInt32(selectedCellValue) : -1;
+                    //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
+                } else if (currentCellColumn == 4) {
+                    selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
+                    oldRecordDate = selectedCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
+                    //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
+                }
+            }
+        }
+
+        //Saving the new values of value and date columns when the saving account expenses data is shown in the DataGridView and one of these cells' content is modified
+        private void dataGridViewTableDisplay_CellValueChanged(object sender, DataGridViewCellEventArgs e) {           
+            if ("Saving account expenses".Equals(tableSelectionComboBox.Text)) {
+                //if (changedRowIndex != -1 && e.RowIndex != changedRowIndex) {
+                //    MessageBox.Show("You can modify only one row at a time!", "Data update form", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                //    dataGridViewTableDisplay.DataSource = oldDataSource;
+
+                //    submitButton.Enabled = false;
+                //    return;
+                //}
+
+                //changedRowIndex = e.RowIndex;
+                //Retrieving the column index of the modified cell(the new values are saved only if changes are performed to the value or date columns) 
+                int changedCellColumn = e.ColumnIndex;
+
+                object changedCellValue = null;
+                if (changedCellColumn == 3) {
+                    changedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
+                    newRecordValue = changedCellValue != DBNull.Value ? Convert.ToInt32(changedCellValue) : -1;
+                    //MessageBox.Show(String.Format("New record value: {0} \n New record date: {1}", newRecordValue, Convert.ToString(newRecordDate)));
+                } else if (changedCellColumn == 4) {
+                    changedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
+                    newRecordDate = changedCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(changedCellValue)) : DateTime.MinValue;
+                    //MessageBox.Show(String.Format("New record value:{0} \n New record date: {1}", newRecordValue, Convert.ToString(newRecordDate)));
+                }
+
+                setRowsEditableProperty(dataGridViewTableDisplay, true, e.RowIndex);//Makes all the rows of the DataGridView non-editable except for the one containing the changed values 
+
+            }
+
             if (monthRecordsCheckBox.Checked == true || yearRecordsCheckBox.Checked == true) {
                 submitButton.Enabled = true;
             }
@@ -240,6 +300,8 @@ namespace BudgetManager {
                 gridView.DataSource = inputDataTable;             
                 //Deactivates the editing for the first table column because it will always contain the primary keys of the records and modifying these values would alter the DB structure
                 dataGridViewTableDisplay.Columns[0].ReadOnly = true;
+
+                //oldDataSource = inputDataTable;//CHANGE!!!
             }
         }
 
@@ -283,6 +345,19 @@ namespace BudgetManager {
             foreach (DateTimePicker currentPicker in dateTimePickers) {                                     
                 //Sets the DateTimePicker date to the first day of the current month from the current year
                 currentPicker.Value = new DateTime(year, month, day);
+            }
+        }
+
+        //Method for enabling/disabling all DataGridView rows except for the specified one(if all rows need to be made editable then -1 value can be provided as value for the exceptedRowIndex alongside true as the value for isEditable flag)
+        private void setRowsEditableProperty(DataGridView dataGridView, bool isEditable, int exceptedRowIndex) {
+            if (dataGridView == null && dataGridView.Rows.Count == 0) {
+                return;
+            }
+
+            for(int i = 0; i < dataGridView.Rows.Count; i++) {
+                if (exceptedRowIndex != i) {
+                    dataGridView.Rows[i].ReadOnly = isEditable;
+                }
             }
         }
     }
