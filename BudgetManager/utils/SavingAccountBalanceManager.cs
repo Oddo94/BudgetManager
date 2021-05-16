@@ -124,5 +124,17 @@ namespace BudgetManager.utils {
 
             return false;
         }
+
+        public int compareRecordValues(int newRecordValue, int oldRecordValue) {
+            if (newRecordValue < oldRecordValue) {
+                return -1;
+            } else if (newRecordValue == oldRecordValue) {
+                return 0;
+            } else if (newRecordValue > oldRecordValue) {
+                return 1;
+            }
+
+            return -2;
+        }
     }
 }
