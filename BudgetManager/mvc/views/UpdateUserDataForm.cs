@@ -30,6 +30,8 @@ namespace BudgetManager {
         private bool hasChangedSavingExpenseValue;
         private bool hasChangedSavingExpenseDate;
 
+
+
         public UpdateUserDataForm(int userID) {
             InitializeComponent();
             this.userID = userID;
@@ -138,7 +140,7 @@ namespace BudgetManager {
 
         //Saving the original values of value and date columns when the saving account expenses data is shown in the DataGridView and one of these cells is clicked
         private void dataGridViewTableDisplay_CellEnter(object sender, DataGridViewCellEventArgs e) {
-            if ("Saving account expenses".Equals(tableSelectionComboBox.Text)) {                                         
+            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {                                         
                 //Retrieving the column index of the modified cell
                 int currentCellColumn = e.ColumnIndex;
 
@@ -162,7 +164,7 @@ namespace BudgetManager {
 
         //Saving the new values of value and date columns when the saving account expenses data is shown in the DataGridView and one of these cells' content is modified
         private void dataGridViewTableDisplay_CellValueChanged(object sender, DataGridViewCellEventArgs e) {           
-            if ("Saving account expenses".Equals(tableSelectionComboBox.Text)) {
+            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
                 //changedRowIndex = e.RowIndex;//Retrieving the index of the modified cell's row               
                 //Retrieving the column index of the modified cell(the new values are saved only if changes are performed to the value or date columns) 
                 int changedCellColumn = e.ColumnIndex;
@@ -207,6 +209,15 @@ namespace BudgetManager {
             if (userOption1 == DialogResult.No) {
                 return;
             }
+
+           
+            //DataRow currentRow = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[selectedRowIndex];
+            //int currentRowPrimaryKey = getPrimaryKeyFromRow(currentRow);
+            if (hasChangedRows()) {
+                MessageBox.Show("You cannot delete the selected row before submitting or discarding the currently pending change/s!", "Data update form", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
                     
             //Getting the currently selected table name
             String tableName = tableSelectionComboBox.Text;
@@ -260,10 +271,13 @@ namespace BudgetManager {
             hasChangedSavingExpenseValue = false;
             hasChangedSavingExpenseDate = false;
             //changedRowIndex = -1;
+                            
         }
 
 
+
         private void dataGridViewTableDisplay_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e) {
+            
             deleteButton.Enabled = true;
         }
 
@@ -438,8 +452,70 @@ namespace BudgetManager {
             }
         }
 
-        
+        //Method for checking if the selected row for deletion was previously changed
+        private bool hasChangedRows() {
+            //Retrieves the DataTable object containing the modified rows from the DataGridView
+            DataTable changedRowsDataTable = ((DataTable)dataGridViewTableDisplay.DataSource).GetChanges();
 
+            //If the DataTable is not null it means that there are pending changes so the method will return true
+            if (changedRowsDataTable != null) {
+                return true;
+            }
+
+            //DataRowCollection changedRowsCollection = changedRowsDataTable.Rows;
+          
+            ////Checks to see if the selected row is part of the modified collection of rows
+            //foreach(DataRow currentRow in changedRowsCollection) {
+            //    int currentRowPrimaryKey = getPrimaryKeyFromRow(currentRow);
+
+            //    if(currentRowPrimaryKey == selectedRowPrimaryKey) {
+            //        return true;
+            //    }
+            //}
+
+            return false;
+        }
+
+        //Method for retrieving the primary key from the provided DataRow object
+        //private int getPrimaryKeyFromRow(DataRow inputRow) {
+        //    if(inputRow == null) {
+        //        return -1;
+        //    }
+
+        //    int primaryKey = -1;
+
+        //    object retrievedValue = inputRow.ItemArray[0];
+        //    primaryKey = retrievedValue != DBNull.Value ? Convert.ToInt32(retrievedValue) : -1;
+
+        //    return primaryKey;
+    
+        // }
+
+        private BudgetItemType getSelectedBudgetItemType() {
+            int selectedIndex = tableSelectionComboBox.SelectedIndex;
+
+            switch(selectedIndex) {
+                case 0:
+                    return BudgetItemType.INCOME;
+                    
+                case 1:
+                    return BudgetItemType.GENERAL_EXPENSE;
+
+                case 2:
+                    return BudgetItemType.SAVING_ACCOUNT_EXPENSE;
+
+                case 3:
+                    return BudgetItemType.DEBT;
+
+                case 4:
+                    return BudgetItemType.SAVING;
+
+                default:
+                    return BudgetItemType.UNDEFINED;
+
+            }
+
+        }
     }
 }
 
