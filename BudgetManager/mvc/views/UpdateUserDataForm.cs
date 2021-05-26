@@ -123,9 +123,30 @@ namespace BudgetManager {
                 MessageBox.Show("Unable to update the selected data! Please try again.", "Update data");
             }
 
-            if (newRecordValue != oldRecordValue) {
-                int month = oldRecordDate.Month;
-                int year = oldRecordDate.Year;
+            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE || getSelectedBudgetItemType() == BudgetItemType.SAVING) {
+                if (hasChangedRecordDate && !hasChangedRecordValue) { 
+                    newRecordValue = getSelectedRecordValue();
+                 
+                }
+
+                int month = 0;
+                int year = 0;
+
+                if(hasChangedRecordDate) {
+                    month = oldRecordDate.Month;
+                    year = oldRecordDate.Year;
+                } else {
+                    DateTime selectedRecordDate = getSelectedRecordDate();
+                    month = selectedRecordDate.Month;
+                    year = selectedRecordDate.Year;
+                }
+
+
+                //CHANGE
+                //DateTime selectedRecordDate = getSelectedRecordDate();
+                //int month = selectedRecordDate.Month;
+                //int year = selectedRecordDate.Year;
+
                 int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, oldRecordDate, getSelectedBudgetItemType(), false);
                 if (savingAccountBalanceUpdateResult == -1) {
                     MessageBox.Show("Unable to update the saving account balance record.", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -138,6 +159,14 @@ namespace BudgetManager {
 
             hasChangedRecordValue = false;
             hasChangedRecordDate = false;
+
+            oldRecordValue = 0;
+            newRecordValue = 0;
+            deletedRecordValue = 0;
+
+            oldRecordDate = DateTime.MinValue;
+            deletedRecordDate = DateTime.MinValue;
+
             //changedRowIndex = -1;
         }
 
@@ -233,26 +262,26 @@ namespace BudgetManager {
 
         //Saving the original values of value and date columns when the saving account expenses data is shown in the DataGridView and one of these cells is clicked
         private void dataGridViewTableDisplay_CellEnter(object sender, DataGridViewCellEventArgs e) {
-            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {                                         
-                //Retrieving the column index of the modified cell
-                int currentCellColumn = e.ColumnIndex;
+            //if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {                                         
+            //    //Retrieving the column index of the modified cell
+            //    int currentCellColumn = e.ColumnIndex;
 
-                //The variable used for storing the value of the modified cell(the values are saved only if changes are performed to the value or date columns)
-                object selectedCellValue = null;                           
-                if (currentCellColumn == 3) {
-                    selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
-                    object dateCellValue = dataGridViewTableDisplay.CurrentRow.Cells[4].Value;
-                    oldRecordValue = selectedCellValue != DBNull.Value ? Convert.ToInt32(selectedCellValue) : -1;
-                    oldRecordDate = dateCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(dateCellValue)) : DateTime.MinValue;
-                    //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
-                } else if (currentCellColumn == 4) {
-                    selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
-                    object valueCellValue = dataGridViewTableDisplay.CurrentRow.Cells[3].Value;
-                    oldRecordValue = valueCellValue != DBNull.Value ? Convert.ToInt32(valueCellValue) : -1;
-                    oldRecordDate = selectedCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
-                    //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
-                }
-            }
+            //    //The variable used for storing the value of the modified cell(the values are saved only if changes are performed to the value or date columns)
+            //    object selectedCellValue = null;                           
+            //    if (currentCellColumn == 3) {
+            //        selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
+            //        object dateCellValue = dataGridViewTableDisplay.CurrentRow.Cells[4].Value;
+            //        oldRecordValue = selectedCellValue != DBNull.Value ? Convert.ToInt32(selectedCellValue) : -1;
+            //        //oldRecordDate = dateCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(dateCellValue)) : DateTime.MinValue;//CHANGE
+            //        //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
+            //    } else if (currentCellColumn == 4) {
+            //        selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
+            //        object valueCellValue = dataGridViewTableDisplay.CurrentRow.Cells[3].Value;
+            //        oldRecordValue = valueCellValue != DBNull.Value ? Convert.ToInt32(valueCellValue) : -1;
+            //        oldRecordDate = selectedCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
+            //        //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
+            //    }
+            //}
         }
 
         //Saving the new values of value and date columns when the saving account expenses data is shown in the DataGridView and one of these cells' content is modified
@@ -402,18 +431,7 @@ namespace BudgetManager {
                     int newBalanceRecordValue = 0;
                     int recordDifferenceValue = 0;
 
-                    if (hasChangedRecordValue) {
-                        if (recordComparisonResult == -1) {
-                            recordDifferenceValue = oldRecordValue - newRecordValue;//CASE:new value is lower than the old value
-                            newBalanceRecordValue = balanceManager.getRecordValue() + recordDifferenceValue;//The difference is added to the old record value since the balance increases by entering a smaller value expense                            
-                            executionResult = balanceManager.updateBalanceRecord(newBalanceRecordValue);
-                        } else if (recordComparisonResult == 1) {
-                            recordDifferenceValue = newRecordValue - oldRecordValue;//CASE:new value is higher than the old value
-                            newBalanceRecordValue = balanceManager.getRecordValue() - recordDifferenceValue;//The difference is subtracted from the old record value since the balance decreases by entering a higher value expense
-                            executionResult = balanceManager.updateBalanceRecord(newBalanceRecordValue);
-                        }
-
-                    } else if (hasChangedRecordDate || (hasChangedRecordValue && hasChangedRecordDate)) {
+                    if (hasChangedRecordDate || (hasChangedRecordValue && hasChangedRecordDate)) {
                         int newMonth = newRecordDate.Month;
                         int newYear = newRecordDate.Year;
 
@@ -422,7 +440,7 @@ namespace BudgetManager {
                         SavingAccountBalanceManager newBalanceManager = new SavingAccountBalanceManager(userID, newMonth, newYear, newRecordDate);
 
                         if (!hasChangedRecordValue) {
-                            newRecordValue = oldRecordValue;//Current value of the record(unmodified)
+                            oldRecordValue = newRecordValue;//Current value of the record(unmodified)
                         }
 
                         if (newBalanceManager.hasBalanceRecord()) {
@@ -435,6 +453,17 @@ namespace BudgetManager {
                         } else {
                             //If not a new record with the newly modified value will be created
                             executionResult = newBalanceManager.createBalanceRecord(newRecordValue);
+                        }
+
+                    } else if (hasChangedRecordValue) {
+                        if (recordComparisonResult == -1) {
+                            recordDifferenceValue = oldRecordValue - newRecordValue;//CASE:new value is lower than the old value
+                            newBalanceRecordValue = balanceManager.getRecordValue() + recordDifferenceValue;//The difference is added to the old record value since the balance increases by entering a smaller value expense                            
+                            executionResult = balanceManager.updateBalanceRecord(newBalanceRecordValue);
+                        } else if (recordComparisonResult == 1) {
+                            recordDifferenceValue = newRecordValue - oldRecordValue;//CASE:new value is higher than the old value
+                            newBalanceRecordValue = balanceManager.getRecordValue() - recordDifferenceValue;//The difference is subtracted from the old record value since the balance decreases by entering a higher value expense
+                            executionResult = balanceManager.updateBalanceRecord(newBalanceRecordValue);
                         }
                     }
                 }
@@ -578,6 +607,29 @@ namespace BudgetManager {
             }
 
             return newRecordValue;
+        }
+
+        private void dataGridViewTableDisplay_CellClick(object sender, DataGridViewCellEventArgs e) {
+            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+                //Retrieving the column index of the modified cell
+                int currentCellColumn = e.ColumnIndex;
+
+                //The variable used for storing the value of the modified cell(the values are saved only if changes are performed to the value or date columns)
+                object selectedCellValue = null;
+                if (currentCellColumn == 3) {
+                    selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
+                    object dateCellValue = dataGridViewTableDisplay.CurrentRow.Cells[4].Value;
+                    oldRecordValue = selectedCellValue != DBNull.Value ? Convert.ToInt32(selectedCellValue) : -1;
+                    //oldRecordDate = dateCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(dateCellValue)) : DateTime.MinValue;//CHANGE
+                    //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
+                } else if (currentCellColumn == 4) {
+                    selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
+                    object valueCellValue = dataGridViewTableDisplay.CurrentRow.Cells[3].Value;
+                    //oldRecordValue = valueCellValue != DBNull.Value ? Convert.ToInt32(valueCellValue) : -1;
+                    oldRecordDate = selectedCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
+                    //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
+                }
+            }
         }
     }
 }
