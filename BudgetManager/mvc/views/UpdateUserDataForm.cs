@@ -19,7 +19,7 @@ namespace BudgetManager {
         private DateTimePicker[] dateTimePickers = new DateTimePicker[] { };
         private int userID;
         //The variable holding the value of the last modifed row
-        //private int changedRowIndex;
+        private int changedRowIndex;
         //The variables holding the new and old values of the modified record
         private int oldRecordValue;
         private int newRecordValue;
@@ -40,7 +40,7 @@ namespace BudgetManager {
             this.userID = userID;
             controls = new ArrayList() { tableSelectionComboBox, deleteButton, submitButton };
             dateTimePickers = new DateTimePicker[] { dateTimePickerTimeSpanSelection };
-            //changedRowIndex = -1;
+            changedRowIndex = -1;
             setDateTimePickerDefaultDate(dateTimePickers);
             wireUp(controller, model);
 
@@ -123,20 +123,27 @@ namespace BudgetManager {
                 MessageBox.Show("Unable to update the selected data! Please try again.", "Update data");
             }
 
-            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE || getSelectedBudgetItemType() == BudgetItemType.SAVING) {
-                if (hasChangedRecordDate && !hasChangedRecordValue) { 
-                    newRecordValue = getSelectedRecordValue();
+            //Balance record update section
+            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+                //If only the record value is changed by the user then the new record value is set to it
+                if (hasChangedRecordDate && !hasChangedRecordValue) {
+                    //newRecordValue = getSelectedRecordValue();
+                    newRecordValue = getValueFromRow(changedRowIndex);//CHANGE(takes the value from the actual changed row not from the currently selected one which can be different)
                  
                 }
 
                 int month = 0;
                 int year = 0;
+                DateTime selectedRecordDate = DateTime.MinValue;//CHANGE
 
-                if(hasChangedRecordDate) {
+                //If the record date was modified then the month and year variables will be assigned the corresponding values from the old date otherwise the current date of the record will be used
+                if (hasChangedRecordDate) {
                     month = oldRecordDate.Month;
                     year = oldRecordDate.Year;
+                    selectedRecordDate = oldRecordDate;//Selected record date will be the old record date since we need to save the date that existed previous to the change
                 } else {
-                    DateTime selectedRecordDate = getSelectedRecordDate();
+                    //DateTime selectedRecordDate = getSelectedRecordDate();
+                    selectedRecordDate = getDateFromRow(changedRowIndex);//CHANGE(takes the date from the actual changed row not from the currently selected one which can be different)
                     month = selectedRecordDate.Month;
                     year = selectedRecordDate.Year;
                 }
@@ -147,7 +154,10 @@ namespace BudgetManager {
                 //int month = selectedRecordDate.Month;
                 //int year = selectedRecordDate.Year;
 
-                int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, oldRecordDate, getSelectedBudgetItemType(), false);
+                //Retrieving the execution result of the method responsible for updating the balance record table
+                //int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, oldRecordDate, getSelectedBudgetItemType(), false);
+                int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, selectedRecordDate, getSelectedBudgetItemType(), false);
+
                 if (savingAccountBalanceUpdateResult == -1) {
                     MessageBox.Show("Unable to update the saving account balance record.", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
@@ -157,17 +167,19 @@ namespace BudgetManager {
             submitButton.Enabled = false;//Disables the Submit button after deleting data from the table
             deleteButton.Enabled = false;//Disables the Delete button after deleting data from the table
 
-            hasChangedRecordValue = false;
-            hasChangedRecordDate = false;
+            //hasChangedRecordValue = false;
+            //hasChangedRecordDate = false;
 
-            oldRecordValue = 0;
-            newRecordValue = 0;
-            deletedRecordValue = 0;
+            //oldRecordValue = 0;
+            //newRecordValue = 0;
+            //deletedRecordValue = 0;
 
-            oldRecordDate = DateTime.MinValue;
-            deletedRecordDate = DateTime.MinValue;
+            //oldRecordDate = DateTime.MinValue;
+            //deletedRecordDate = DateTime.MinValue;
+            clearFlags();
+            resetSavedValues();
 
-            //changedRowIndex = -1;
+           
         }
 
         private void deleteButton_Click(object sender, EventArgs e) {
@@ -254,9 +266,12 @@ namespace BudgetManager {
             submitButton.Enabled = false;//Disables the Submit button after deleting data from the table
             deleteButton.Enabled = false;//Disables the Delete button after deleting data from the table
 
-            hasChangedRecordValue = false;
-            hasChangedRecordDate = false;
-            //changedRowIndex = -1;
+            //hasChangedRecordValue = false;
+            //hasChangedRecordDate = false;
+
+            clearFlags();
+            resetSavedValues();
+            
 
         }
 
@@ -297,11 +312,13 @@ namespace BudgetManager {
                     newRecordValue = changedCellValue != DBNull.Value ? Convert.ToInt32(changedCellValue) : -1;
                     hasChangedRecordValue = true;
                     //MessageBox.Show(String.Format("New record value: {0} \n New record date: {1}", newRecordValue, Convert.ToString(newRecordDate)));
+                    changedRowIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
                 } else if (changedCellColumn == 4) {
                     changedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
                     newRecordDate = changedCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(changedCellValue)) : DateTime.MinValue;
                     hasChangedRecordDate = true;
                     //MessageBox.Show(String.Format("New record value:{0} \n New record date: {1}", newRecordValue, Convert.ToString(newRecordDate)));
+                    changedRowIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
                 }
 
                 setRowsEditableProperty(dataGridViewTableDisplay, true, e.RowIndex);//Makes all the rows of the DataGridView non-editable except for the one containing the changed values 
@@ -420,7 +437,7 @@ namespace BudgetManager {
         private int updateSavingAccountBalanceTable(int userID, int month, int year, DateTime date, BudgetItemType selectedItemType, bool performsDeletion) {
             int executionResult = -1;
 
-            //Object that manages the update of the tables that are part of the saving account system
+            //Object that manages the update of the tables that are part of the saving account system(initial object which represents the balance record of the unmodified date)
             SavingAccountBalanceManager balanceManager = new SavingAccountBalanceManager(userID, month, year, date);
 
             //Balance record table update when only the values of the saving/saving account expense records are modified
@@ -431,6 +448,7 @@ namespace BudgetManager {
                     int newBalanceRecordValue = 0;
                     int recordDifferenceValue = 0;
 
+                    //Applies when the user has changed the record date or both the record date and record value
                     if (hasChangedRecordDate || (hasChangedRecordValue && hasChangedRecordDate)) {
                         int newMonth = newRecordDate.Month;
                         int newYear = newRecordDate.Year;
@@ -444,10 +462,11 @@ namespace BudgetManager {
                         }
 
                         if (newBalanceManager.hasBalanceRecord()) {
-                            //If a balance record already exists it will be updated
+                            //If a balance record already exists it will be updated(the record to which the modified value is "moved")
                             newBalanceRecordValue = newBalanceManager.getRecordValue() - newRecordValue;//The new balance record value for the corresponding month to which the date was modified is obtained by subtracting the new expense value from its current value
                             executionResult = newBalanceManager.updateBalanceRecord(newBalanceRecordValue);
 
+                            //After that the balance record representing the old date is also updated(the record from which the modified value is "moved")
                             int previousMonthBalanceUpdatedRecordValue = balanceManager.getRecordValue() + oldRecordValue;//The balance of the month from where the expense was "moved" will increase
                             executionResult = balanceManager.updateBalanceRecord(previousMonthBalanceUpdatedRecordValue);
                         } else {
@@ -547,6 +566,7 @@ namespace BudgetManager {
 
         // 
 
+       //Method for retrieving the value of the selected record from the DataGridView
         private int getSelectedRecordValue() {
             int selectedRowIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
             object selectedRowValue = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[selectedRowIndex].ItemArray[3];
@@ -555,6 +575,7 @@ namespace BudgetManager {
             return recordValue;
         }
 
+        //Method for retrieving the value of the selected record from the DataGridView
         private DateTime getSelectedRecordDate() {
             int selectedRowIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
             object selectedRowDate = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[selectedRowIndex].ItemArray[4];
@@ -611,25 +632,77 @@ namespace BudgetManager {
 
         private void dataGridViewTableDisplay_CellClick(object sender, DataGridViewCellEventArgs e) {
             if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
-                //Retrieving the column index of the modified cell
-                int currentCellColumn = e.ColumnIndex;
+                if (!hasChangedRecordDate || !hasChangedRecordValue) {
+                    //Retrieving the column index of the modified cell
+                    int currentCellColumn = e.ColumnIndex;
 
-                //The variable used for storing the value of the modified cell(the values are saved only if changes are performed to the value or date columns)
-                object selectedCellValue = null;
-                if (currentCellColumn == 3) {
-                    selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
-                    object dateCellValue = dataGridViewTableDisplay.CurrentRow.Cells[4].Value;
-                    oldRecordValue = selectedCellValue != DBNull.Value ? Convert.ToInt32(selectedCellValue) : -1;
-                    //oldRecordDate = dateCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(dateCellValue)) : DateTime.MinValue;//CHANGE
-                    //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
-                } else if (currentCellColumn == 4) {
-                    selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
-                    object valueCellValue = dataGridViewTableDisplay.CurrentRow.Cells[3].Value;
-                    //oldRecordValue = valueCellValue != DBNull.Value ? Convert.ToInt32(valueCellValue) : -1;
-                    oldRecordDate = selectedCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
-                    //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
+                    //The variable used for storing the value of the modified cell(the values are saved only if changes are performed to the value or date columns)
+                    object selectedCellValue = null;
+                    if (currentCellColumn == 3) {
+                        selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
+                        object dateCellValue = dataGridViewTableDisplay.CurrentRow.Cells[4].Value;
+                        oldRecordValue = selectedCellValue != DBNull.Value ? Convert.ToInt32(selectedCellValue) : -1;
+                        //oldRecordDate = dateCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(dateCellValue)) : DateTime.MinValue;//CHANGE
+                        //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
+                    } else if (currentCellColumn == 4) {
+                        DateTime temp;
+                        selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
+                        object valueCellValue = dataGridViewTableDisplay.CurrentRow.Cells[3].Value;
+                        //oldRecordValue = valueCellValue != DBNull.Value ? Convert.ToInt32(valueCellValue) : -1;
+                        //oldRecordDate = selectedCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
+                        oldRecordDate = DateTime.TryParse(Convert.ToString(selectedCellValue), out temp) ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
+                        //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
+                    }
                 }
             }
+        }
+
+        //Method for clearing the flags set when changing record value/date of a saving account expense or saving
+        private void clearFlags() {
+            this.hasChangedRecordValue = false;
+            this.hasChangedRecordDate = false;
+        }
+
+        //Method for resetting the values saved when changing record value/date of a saving account expense or saving
+        private void resetSavedValues() {
+            this.oldRecordValue = 0;
+            this.newRecordValue = 0;
+
+            this.oldRecordDate = DateTime.MinValue;
+            this.newRecordDate = DateTime.MinValue;
+
+            this.deletedRecordValue = 0;
+            this.deletedRecordDate = DateTime.MinValue;
+
+            this.changedRowIndex = -1;
+
+        }
+
+        //Method for retrieving the record date from the specified row of the DataGridView
+        private DateTime getDateFromRow(int rowIndex) {
+            if(dataGridViewTableDisplay == null || dataGridViewTableDisplay.Rows.Count < rowIndex || rowIndex == -1) {
+                return DateTime.MinValue;
+            }
+
+            DataRow specifiedRow = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[changedRowIndex];
+            object rowDateObject = specifiedRow.ItemArray[4];
+            DateTime rowDateValue = rowDateObject != DBNull.Value ? DateTime.Parse(Convert.ToString(rowDateObject)) : DateTime.MinValue;
+
+            return rowDateValue;   
+        }
+
+        ////Method for retrieving the record value from the specified row of the DataGridView
+        private int getValueFromRow(int rowIndex) {
+            if (dataGridViewTableDisplay == null || dataGridViewTableDisplay.Rows.Count < rowIndex || rowIndex == -1) {
+                return -1;
+            }
+
+            DataRow specifiedRow = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[changedRowIndex];
+            object rowDateObject = specifiedRow.ItemArray[3];
+            int recordValue = rowDateObject != DBNull.Value ? Convert.ToInt32(rowDateObject) : -1;
+
+            return recordValue;
+
         }
     }
 }

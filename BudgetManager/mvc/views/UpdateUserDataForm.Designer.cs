@@ -63,6 +63,7 @@
             // 
             // dataGridViewTableDisplay
             // 
+            this.dataGridViewTableDisplay.AllowUserToAddRows = false;
             this.dataGridViewTableDisplay.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewTableDisplay.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGridViewTableDisplay.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
