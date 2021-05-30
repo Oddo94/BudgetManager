@@ -128,7 +128,7 @@ namespace BudgetManager {
                 //If only the record value is changed by the user then the new record value is set to it
                 if (hasChangedRecordDate && !hasChangedRecordValue) {
                     //newRecordValue = getSelectedRecordValue();
-                    newRecordValue = getValueFromRow(changedRowIndex);//CHANGE(takes the value from the actual changed row not from the currently selected one which can be different)
+                    newRecordValue = getValueFromRow(changedRowIndex, 3);//CHANGE(takes the value from the actual changed row not from the currently selected one which can be different)
                  
                 }
 
@@ -143,19 +143,13 @@ namespace BudgetManager {
                     selectedRecordDate = oldRecordDate;//Selected record date will be the old record date since we need to save the date that existed previous to the change
                 } else {
                     //DateTime selectedRecordDate = getSelectedRecordDate();
-                    selectedRecordDate = getDateFromRow(changedRowIndex);//CHANGE(takes the date from the actual changed row not from the currently selected one which can be different)
+                    selectedRecordDate = getDateFromRow(changedRowIndex, 4);//CHANGE(takes the date from the actual changed row not from the currently selected one which can be different)
                     month = selectedRecordDate.Month;
                     year = selectedRecordDate.Year;
                 }
 
-
-                //CHANGE
-                //DateTime selectedRecordDate = getSelectedRecordDate();
-                //int month = selectedRecordDate.Month;
-                //int year = selectedRecordDate.Year;
-
-                //Retrieving the execution result of the method responsible for updating the balance record table
-                //int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, oldRecordDate, getSelectedBudgetItemType(), false);
+         
+                //Retrieving the execution result of the method responsible for updating the balance record table               
                 int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, selectedRecordDate, getSelectedBudgetItemType(), false);
 
                 if (savingAccountBalanceUpdateResult == -1) {
@@ -163,31 +157,20 @@ namespace BudgetManager {
                 }
             }
 
-
             submitButton.Enabled = false;//Disables the Submit button after deleting data from the table
             deleteButton.Enabled = false;//Disables the Delete button after deleting data from the table
-
-            //hasChangedRecordValue = false;
-            //hasChangedRecordDate = false;
-
-            //oldRecordValue = 0;
-            //newRecordValue = 0;
-            //deletedRecordValue = 0;
-
-            //oldRecordDate = DateTime.MinValue;
-            //deletedRecordDate = DateTime.MinValue;
+    
             clearFlags();
-            resetSavedValues();
-
-           
+            resetSavedValues();         
         }
 
         private void deleteButton_Click(object sender, EventArgs e) {
             //Getting the selected row index
             int selectedRowIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
-            //The value of the deleted record and its date are saved before the actual deletion takes place because otherwise they would be lost and the update of the corresponding saving account balance record would be impossible
-            deletedRecordValue = getSelectedRecordValue();
-            deletedRecordDate = getSelectedRecordDate();
+            //The value of the deleted record and its date are saved before the actual deletion takes place because otherwise they would be lost and the update of the corresponding saving account balance record would be impossible        
+            int selectedRowForDeletionIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
+            deletedRecordValue = getValueFromRow(selectedRowForDeletionIndex, 3);
+            deletedRecordDate = getDateFromRow(selectedRowForDeletionIndex, 4);
 
             String confirmationMessage = String.Format("Are you sure that you want to delete row number {0}?", selectedRowIndex);
             DialogResult userOption1 = MessageBox.Show(confirmationMessage, "Data update form", MessageBoxButtons.YesNo);
@@ -195,10 +178,7 @@ namespace BudgetManager {
             if (userOption1 == DialogResult.No) {
                 return;
             }
-
-
-            //DataRow currentRow = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[selectedRowIndex];
-            //int currentRowPrimaryKey = getPrimaryKeyFromRow(currentRow);
+           
             if (hasChangedRows()) {
                 MessageBox.Show("You cannot delete the selected row before submitting or discarding the currently pending change/s!", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -212,10 +192,7 @@ namespace BudgetManager {
             CurrencyManager currencyManager = (CurrencyManager)dataGridViewTableDisplay.BindingContext[dataGridViewTableDisplay.DataSource, dataGridViewTableDisplay.DataMember];
             DataRowView selectedDataRow = (DataRowView)currencyManager.Current;
             int itemID = selectedDataRow.Row.ItemArray[0] != null ? Convert.ToInt32(selectedDataRow.Row.ItemArray[0]) : -1;
-
-            //Getting the result of executing the delete command by calling the requestDelete method of the controller (which in turn calls the delete method of the model)
-            //int executionResult = controller.requestDelete(tableName, itemID);
-
+          
             //CHANGE!!!!
             QueryType option = 0;
             QueryData paramContainer = null;
@@ -240,19 +217,15 @@ namespace BudgetManager {
 
             int executionResult = controller.requestDelete(option, paramContainer, sourceDataTable);
 
-            //CHANGE!!!
-
+           
             //Displaying info message regarding the delete operation result
             if (executionResult != -1) {
-                MessageBox.Show("The selected data was successfully deleted !", "Data update");
-                //Deleting row from the table displayed in the GUI if the delete operation was successfull
-                //dataGridViewTableDisplay.Rows.RemoveAt(selectedRowIndex);
+                MessageBox.Show("The selected data was successfully deleted !", "Data update");              
             } else {
                 MessageBox.Show("Unable to delete the selected data! Please try again.", "Data update");
             }
 
-            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
-                //DateTime date = getSelectedRecordDate();
+            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {               
                 int month = deletedRecordDate.Month;
                 int year = deletedRecordDate.Year;
                 
@@ -265,14 +238,34 @@ namespace BudgetManager {
 
             submitButton.Enabled = false;//Disables the Submit button after deleting data from the table
             deleteButton.Enabled = false;//Disables the Delete button after deleting data from the table
-
-            //hasChangedRecordValue = false;
-            //hasChangedRecordDate = false;
-
+          
             clearFlags();
             resetSavedValues();
             
 
+        }
+
+        private void dataGridViewTableDisplay_CellClick(object sender, DataGridViewCellEventArgs e) {
+            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+                if (!hasChangedRecordDate || !hasChangedRecordValue) {
+                    //Retrieving the column index of the modified cell
+                    int currentCellColumn = e.ColumnIndex;
+
+                    //The variable used for storing the value of the modified cell(the values are saved only if changes are performed to the value or date columns)
+                    object selectedCellValue = null;
+                    if (currentCellColumn == 3) {
+                        selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
+                        object dateCellValue = dataGridViewTableDisplay.CurrentRow.Cells[4].Value;
+                        oldRecordValue = selectedCellValue != DBNull.Value ? Convert.ToInt32(selectedCellValue) : -1;
+
+                    } else if (currentCellColumn == 4) {
+                        DateTime temp;
+                        selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
+                        object valueCellValue = dataGridViewTableDisplay.CurrentRow.Cells[3].Value;
+                        oldRecordDate = DateTime.TryParse(Convert.ToString(selectedCellValue), out temp) ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
+                    }
+                }
+            }
         }
 
         //Saving the original values of value and date columns when the saving account expenses data is shown in the DataGridView and one of these cells is clicked
@@ -301,8 +294,7 @@ namespace BudgetManager {
 
         //Saving the new values of value and date columns when the saving account expenses data is shown in the DataGridView and one of these cells' content is modified
         private void dataGridViewTableDisplay_CellValueChanged(object sender, DataGridViewCellEventArgs e) {           
-            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
-                //changedRowIndex = e.RowIndex;//Retrieving the index of the modified cell's row               
+            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {                             
                 //Retrieving the column index of the modified cell(the new values are saved only if changes are performed to the value or date columns) 
                 int changedCellColumn = e.ColumnIndex;
 
@@ -311,13 +303,13 @@ namespace BudgetManager {
                     changedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
                     newRecordValue = changedCellValue != DBNull.Value ? Convert.ToInt32(changedCellValue) : -1;
                     hasChangedRecordValue = true;
-                    //MessageBox.Show(String.Format("New record value: {0} \n New record date: {1}", newRecordValue, Convert.ToString(newRecordDate)));
+                   
                     changedRowIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
                 } else if (changedCellColumn == 4) {
                     changedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
                     newRecordDate = changedCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(changedCellValue)) : DateTime.MinValue;
                     hasChangedRecordDate = true;
-                    //MessageBox.Show(String.Format("New record value:{0} \n New record date: {1}", newRecordValue, Convert.ToString(newRecordDate)));
+                    
                     changedRowIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
                 }
 
@@ -337,7 +329,6 @@ namespace BudgetManager {
             }
             
         }
-
 
         private void dataGridViewTableDisplay_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e) {
             
@@ -391,6 +382,9 @@ namespace BudgetManager {
             }
         }
 
+        /*****************************************************************************/
+        //UTILITY METHODS SECTION
+
         private void fillDataGridView(DataGridView gridView, DataTable inputDataTable) {
             //Null check and row count check(the condition for row count is set to >= 0 so that if a user selects an item with no available records, 
             //an empty table will be displayed and it will be easier to understand the current status of that item for the selected month)
@@ -412,8 +406,7 @@ namespace BudgetManager {
                 int selectedMonth = datePicker.Value.Month;
                 int selectedYear = datePicker.Value.Year;
                 String tableName = itemComboBox.Text;               
-                //Creating the storage object for the data that will be passed to the controller
-                //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear, tableName);
+                //Creating the storage object for the data that will be passed to the controller                
                 QueryData paramContainer = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addTableName(tableName).build(); //CHANGE
 
                 controller.requestData(option, paramContainer);
@@ -424,8 +417,7 @@ namespace BudgetManager {
 
                 int selectedYear = datePicker.Value.Year;
                 String tableName = itemComboBox.Text;
-
-                //QueryData paramContainer = new QueryData(userID, selectedYear,tableName);
+                
                 QueryData paramContainer = new QueryData.Builder(userID).addYear(selectedYear).addTableName(tableName).build(); //CHANGE
 
                 controller.requestData(option, paramContainer);
@@ -536,53 +528,10 @@ namespace BudgetManager {
             if (changedRowsDataTable != null) {
                 return true;
             }
-
-            //DataRowCollection changedRowsCollection = changedRowsDataTable.Rows;
-          
-            ////Checks to see if the selected row is part of the modified collection of rows
-            //foreach(DataRow currentRow in changedRowsCollection) {
-            //    int currentRowPrimaryKey = getPrimaryKeyFromRow(currentRow);
-
-            //    if(currentRowPrimaryKey == selectedRowPrimaryKey) {
-            //        return true;
-            //    }
-            //}
-
+    
             return false;
         }
 
-        //Method for retrieving the primary key from the provided DataRow object
-        //private int getPrimaryKeyFromRow(DataRow inputRow) {
-        //    if(inputRow == null) {
-        //        return -1;
-        //    }
-
-        //    int primaryKey = -1;
-
-        //    object retrievedValue = inputRow.ItemArray[0];
-        //    primaryKey = retrievedValue != DBNull.Value ? Convert.ToInt32(retrievedValue) : -1;
-
-        //    return primaryKey;
-
-        // 
-
-       //Method for retrieving the value of the selected record from the DataGridView
-        private int getSelectedRecordValue() {
-            int selectedRowIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
-            object selectedRowValue = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[selectedRowIndex].ItemArray[3];
-            int recordValue = selectedRowValue != DBNull.Value ? Convert.ToInt32(selectedRowValue) : -1;
-
-            return recordValue;
-        }
-
-        //Method for retrieving the value of the selected record from the DataGridView
-        private DateTime getSelectedRecordDate() {
-            int selectedRowIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
-            object selectedRowDate = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[selectedRowIndex].ItemArray[4];
-            DateTime recordDate = selectedRowDate != DBNull.Value ? DateTime.Parse(selectedRowDate.ToString()) : DateTime.MinValue;
-
-            return recordDate;
-        }
 
         private BudgetItemType getSelectedBudgetItemType() {
             int selectedIndex = tableSelectionComboBox.SelectedIndex;
@@ -630,33 +579,6 @@ namespace BudgetManager {
             return newRecordValue;
         }
 
-        private void dataGridViewTableDisplay_CellClick(object sender, DataGridViewCellEventArgs e) {
-            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
-                if (!hasChangedRecordDate || !hasChangedRecordValue) {
-                    //Retrieving the column index of the modified cell
-                    int currentCellColumn = e.ColumnIndex;
-
-                    //The variable used for storing the value of the modified cell(the values are saved only if changes are performed to the value or date columns)
-                    object selectedCellValue = null;
-                    if (currentCellColumn == 3) {
-                        selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
-                        object dateCellValue = dataGridViewTableDisplay.CurrentRow.Cells[4].Value;
-                        oldRecordValue = selectedCellValue != DBNull.Value ? Convert.ToInt32(selectedCellValue) : -1;
-                        //oldRecordDate = dateCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(dateCellValue)) : DateTime.MinValue;//CHANGE
-                        //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
-                    } else if (currentCellColumn == 4) {
-                        DateTime temp;
-                        selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
-                        object valueCellValue = dataGridViewTableDisplay.CurrentRow.Cells[3].Value;
-                        //oldRecordValue = valueCellValue != DBNull.Value ? Convert.ToInt32(valueCellValue) : -1;
-                        //oldRecordDate = selectedCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
-                        oldRecordDate = DateTime.TryParse(Convert.ToString(selectedCellValue), out temp) ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
-                        //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
-                    }
-                }
-            }
-        }
-
         //Method for clearing the flags set when changing record value/date of a saving account expense or saving
         private void clearFlags() {
             this.hasChangedRecordValue = false;
@@ -679,26 +601,34 @@ namespace BudgetManager {
         }
 
         //Method for retrieving the record date from the specified row of the DataGridView
-        private DateTime getDateFromRow(int rowIndex) {
+        private DateTime getDateFromRow(int rowIndex, int columnIndex) {
             if(dataGridViewTableDisplay == null || dataGridViewTableDisplay.Rows.Count < rowIndex || rowIndex == -1) {
                 return DateTime.MinValue;
             }
 
-            DataRow specifiedRow = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[changedRowIndex];
-            object rowDateObject = specifiedRow.ItemArray[4];
+            if (dataGridViewTableDisplay.Columns.Count - 1 < columnIndex || columnIndex == -1) {
+                return DateTime.MinValue;
+            }
+            
+            DataRow specifiedRow = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[rowIndex];          
+            object rowDateObject = specifiedRow.ItemArray[columnIndex];
             DateTime rowDateValue = rowDateObject != DBNull.Value ? DateTime.Parse(Convert.ToString(rowDateObject)) : DateTime.MinValue;
 
             return rowDateValue;   
         }
 
         ////Method for retrieving the record value from the specified row of the DataGridView
-        private int getValueFromRow(int rowIndex) {
-            if (dataGridViewTableDisplay == null || dataGridViewTableDisplay.Rows.Count < rowIndex || rowIndex == -1) {
+        private int getValueFromRow(int rowIndex, int columnIndex) {
+            if (dataGridViewTableDisplay == null || dataGridViewTableDisplay.Rows.Count - 1 < rowIndex || rowIndex == -1) {
                 return -1;
             }
 
-            DataRow specifiedRow = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[changedRowIndex];
-            object rowDateObject = specifiedRow.ItemArray[3];
+            if (dataGridViewTableDisplay.Columns.Count - 1 < columnIndex || columnIndex == -1) {
+                return -1;
+            }
+         
+            DataRow specifiedRow = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[rowIndex];            
+            object rowDateObject = specifiedRow.ItemArray[columnIndex];
             int recordValue = rowDateObject != DBNull.Value ? Convert.ToInt32(rowDateObject) : -1;
 
             return recordValue;
