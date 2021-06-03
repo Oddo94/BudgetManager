@@ -246,26 +246,42 @@ namespace BudgetManager {
         }
 
         private void dataGridViewTableDisplay_CellClick(object sender, DataGridViewCellEventArgs e) {
-            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+            //Default values for expected column indexes
+            int expectedValueColumnIndex = -1;
+            int expectedDateColumnIndex = -1;
+            //The actual values for the expected column indexes are set based on the selected budget item type(because the layout of the displayed DataGridView for each of them is different)
+            if(getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+                expectedValueColumnIndex = 3;
+                expectedDateColumnIndex = 4;
+            } else if (getSelectedBudgetItemType() == BudgetItemType.SAVING) {
+                expectedValueColumnIndex = 2;
+                expectedDateColumnIndex = 3;
+            } else {
+                return;
+            }
+
+            //if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
                 if (!hasChangedRecordDate || !hasChangedRecordValue) {
                     //Retrieving the column index of the modified cell
                     int currentCellColumn = e.ColumnIndex;
 
                     //The variable used for storing the value of the modified cell(the values are saved only if changes are performed to the value or date columns)
                     object selectedCellValue = null;
-                    if (currentCellColumn == 3) {
+                    if (currentCellColumn == expectedValueColumnIndex) {
                         selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
-                        object dateCellValue = dataGridViewTableDisplay.CurrentRow.Cells[4].Value;
+                        object dateCellValue = dataGridViewTableDisplay.CurrentRow.Cells[currentCellColumn].Value;
                         oldRecordValue = selectedCellValue != DBNull.Value ? Convert.ToInt32(selectedCellValue) : -1;
+                        MessageBox.Show("Selected cell value: " + oldRecordValue);
 
-                    } else if (currentCellColumn == 4) {
+                    } else if (currentCellColumn == expectedDateColumnIndex) {
                         DateTime temp;
                         selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
-                        object valueCellValue = dataGridViewTableDisplay.CurrentRow.Cells[3].Value;
+                        object valueCellValue = dataGridViewTableDisplay.CurrentRow.Cells[currentCellColumn].Value;
                         oldRecordDate = DateTime.TryParse(Convert.ToString(selectedCellValue), out temp) ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
-                    }
+                        MessageBox.Show("Selected cell value: " + oldRecordDate);
                 }
-            }
+                }
+           // }
         }
 
         //Saving the original values of value and date columns when the saving account expenses data is shown in the DataGridView and one of these cells is clicked
