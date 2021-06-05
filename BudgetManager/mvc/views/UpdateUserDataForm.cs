@@ -442,14 +442,14 @@ namespace BudgetManager {
 
 
         //Method for updating the records in the saving account balance table and creating records in the saving account expense table when needed(secondary task)  
-        private int updateSavingAccountBalanceTable(int userID, int month, int year, DateTime date, BudgetItemType selectedItemType, bool performsDeletion) {
+        private int updateSavingAccountBalanceTable(int userID, int month, int year, DateTime date, BudgetItemType selectedItemType, bool performDeletion) {
             int executionResult = -1;
 
             //Object that manages the update of the tables that are part of the saving account system(initial object which represents the balance record of the unmodified date)
             SavingAccountBalanceManager balanceManager = new SavingAccountBalanceManager(userID, month, year, date);
 
             //Balance record table update when only the values of the saving/saving account expense records are modified
-            if (!performsDeletion) {
+            if (!performDeletion) {
                 if (balanceManager.hasBalanceRecord()) {
                     int recordComparisonResult = balanceManager.compareRecordValues(oldRecordValue, newRecordValue);
                     int oldBalanceRecordValue = balanceManager.getRecordValue();
@@ -574,25 +574,83 @@ namespace BudgetManager {
             }
         }
 
-        //Method for calculating the new record value after changing the current value
-        private int calculateNewRecordValue(int currentRecordValue, int recordDifferenceValue, int comparisonResult, BudgetItemType selectedItemType) {
-            int newRecordValue = -1;
+        //Method for calculating the new balance record value after changing the current value of the saving/saving account expense(applies when the record isn't "moved" from one month to the other)
+        private int calculateNewBalanceRecordValue(int currentBalanceRecordValue, int oldRecordValue, int newRecordValue,int comparisonResult, BudgetItemType selectedItemType, bool performDeletion) {
+            int newBalanceRecordValue = -1;
 
-            if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
-                if (comparisonResult == -1) {
-                    newRecordValue = currentRecordValue + recordDifferenceValue;//The new value is smaller than the old value->the new record value increases accordingly(higher balance due to smaller expenses)
-                } else if(comparisonResult == 1) {
-                    newRecordValue = currentRecordValue - recordDifferenceValue;//The new value is greater than the old value->the new record value decreases accordingly(lower balance due to higher expenses)
+            //if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+            //    if (comparisonResult == -1) {
+            //        newRecordValue = currentBalanceRecordValue + recordDifferenceValue;//The new value is smaller than the old value->the new record value increases accordingly(higher balance due to smaller expenses)
+            //    } else if(comparisonResult == 1) {
+            //        newRecordValue = currentBalanceRecordValue - recordDifferenceValue;//The new value is greater than the old value->the new record value decreases accordingly(lower balance due to higher expenses)
+            //    }
+            //} else if(selectedItemType == BudgetItemType.SAVING) {
+            //    if(comparisonResult == -1) {
+            //        newRecordValue = currentBalanceRecordValue - recordDifferenceValue;//The new value is smaller than the old value->the new record value decreases accordingly(lower balance due to smaller savings)
+            //    } else if(comparisonResult == 1) {
+            //        newRecordValue = currentBalanceRecordValue + recordDifferenceValue;//The new value is greater than the old value->the new record value increases accordingly(higher balance due to higher savings)
+            //    } 
+            //}
+
+            if (!performDeletion) {
+                //Applies when the user has changed the record date or both the record date and record value
+                if (hasChangedRecordDate || (hasChangedRecordValue && hasChangedRecordDate)) {
+                    if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+                        newBalanceRecordValue = currentBalanceRecordValue - newRecordValue;//The new balance record value for the corresponding month to which the date was modified is obtained by subtracting the new expense value from its current value
+                    } else if (selectedItemType == BudgetItemType.SAVING) {
+                        newBalanceRecordValue = currentBalanceRecordValue + newRecordValue;//The new balance record value for the corresponding month to which the date was modified is obtained by adding the new saving value to its current value
+                    }
+
+                } else if (hasChangedRecordValue) {
+                    int recordDifferenceValue = 0;
+                    if (comparisonResult == -1) {
+                        //The new record value is lower than the old record value
+                        recordDifferenceValue = oldRecordValue - newRecordValue;
+                        if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+                            newBalanceRecordValue = currentBalanceRecordValue + recordDifferenceValue;//The new expense is lower than the old expense so the balance record value increases
+                        } else if (selectedItemType == BudgetItemType.SAVING) {
+                            newBalanceRecordValue = currentBalanceRecordValue - recordDifferenceValue;//The new saving is lower than the old saving so the balance decreases
+                        }
+                    } else if (comparisonResult == 1) {
+                        //The new record value is higher than the old record value
+                        recordDifferenceValue = newRecordValue - oldRecordValue;
+                        if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+                            newBalanceRecordValue = currentBalanceRecordValue - recordDifferenceValue;//The new expense is higher than the old expense so the balance record value decreases
+                        } else if (selectedItemType == BudgetItemType.SAVING) {
+                            newBalanceRecordValue = currentBalanceRecordValue + recordDifferenceValue;//The new saving is higher than the old saving so the balance record value increases
+                        }
+                    }
                 }
-            } else if(selectedItemType == BudgetItemType.SAVING) {
-                if(comparisonResult == -1) {
-                    newRecordValue = currentRecordValue - recordDifferenceValue;//The new value is smaller than the old value->the new record value decreases accordingly(lower balance due to smaller savings)
-                } else if(comparisonResult == 1) {
-                    newRecordValue = currentRecordValue + recordDifferenceValue;//The new value is greater than the old value->the new record value increases accordingly(higher balance due to higher savings)
-                } 
+            } else {
+                if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+                    newBalanceRecordValue = currentBalanceRecordValue + oldRecordValue;//The expense is deleted so the balance record value increases by the deleted value
+                } else if (selectedItemType == BudgetItemType.SAVING) {
+                    newBalanceRecordValue = currentBalanceRecordValue - oldRecordValue;//The saving is deleted so the balance record value decreases by the deleted value
+                }
             }
 
-            return newRecordValue;
+
+            return newBalanceRecordValue;
+        }
+
+        //Method for calculating the updated balance record value of the month which previously contained the modified saving/saving account expense(applies when "moving" a record from one month to the other)
+        private int calculateOldBalanceRecordValue(SavingAccountBalanceManager oldMonthRecordManager, int oldRecordValue, BudgetItemType selectedItemType) {
+            if (oldMonthRecordManager == null || selectedItemType == BudgetItemType.UNDEFINED) {
+                return -1;
+            }
+
+            int oldBalanceRecordValue = -1;
+            int currentRecordValue = 0;
+
+            if(selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+                currentRecordValue = oldMonthRecordManager.getRecordValue();//Retrieving the current value of the record that will be updated 
+                oldBalanceRecordValue = currentRecordValue + oldRecordValue;//The balance of the month from where the expense was "moved" will increase
+            } else if (selectedItemType == BudgetItemType.SAVING) {
+                currentRecordValue = oldMonthRecordManager.getRecordValue();//Retrieving the current value of the record that will be updated 
+                oldBalanceRecordValue = currentRecordValue + oldRecordValue;//The balance of the month from where the saving was "moved" will decrease
+            }
+
+            return oldBalanceRecordValue;
         }
 
         //Method for clearing the flags set when changing record value/date of a saving account expense or saving
@@ -649,7 +707,7 @@ namespace BudgetManager {
 
             return recordValue;
 
-        }
+        }      
     }
 }
 
