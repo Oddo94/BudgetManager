@@ -75,13 +75,13 @@
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridViewTableDisplay.DefaultCellStyle = dataGridViewCellStyle1;
-            this.dataGridViewTableDisplay.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            this.dataGridViewTableDisplay.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dataGridViewTableDisplay.Location = new System.Drawing.Point(28, 180);
             this.dataGridViewTableDisplay.Name = "dataGridViewTableDisplay";
             this.dataGridViewTableDisplay.Size = new System.Drawing.Size(550, 258);
             this.dataGridViewTableDisplay.TabIndex = 3;
             this.dataGridViewTableDisplay.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellClick);
-            this.dataGridViewTableDisplay.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellEnter);
+            this.dataGridViewTableDisplay.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellDoubleClick);
             this.dataGridViewTableDisplay.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewTableDisplay_CellMouseClick);
             this.dataGridViewTableDisplay.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellValueChanged);
             // 

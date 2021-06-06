@@ -124,12 +124,19 @@ namespace BudgetManager {
             }
 
             //Balance record update section
-            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+            BudgetItemType selectedItemType = getSelectedBudgetItemType();
+            if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE || selectedItemType == BudgetItemType.SAVING) {
                 //If only the record value is changed by the user then the new record value is set to it
                 if (hasChangedRecordDate && !hasChangedRecordValue) {
                     //newRecordValue = getSelectedRecordValue();
-                    newRecordValue = getValueFromRow(changedRowIndex, 3);//CHANGE(takes the value from the actual changed row not from the currently selected one which can be different)
-                 
+                    //newRecordValue = getValueFromRow(changedRowIndex, 3);//CHANGE(takes the value from the actual changed row not from the currently selected one which can be different)
+
+                    //CHANGE
+                    //Takes the value from the actual changed row not from the currently selected one which can be different.
+                    //If a saving account expense is selected the value is taken from the column 3 of the row and if a saving is selected the value is taken from column 2 of the row.
+                    newRecordValue = selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE ? getValueFromRow(changedRowIndex, 3) : getValueFromRow(changedRowIndex, 2);
+
+
                 }
 
                 int month = 0;
@@ -143,7 +150,12 @@ namespace BudgetManager {
                     selectedRecordDate = oldRecordDate;//Selected record date will be the old record date since we need to save the date that existed previous to the change
                 } else {
                     //DateTime selectedRecordDate = getSelectedRecordDate();
-                    selectedRecordDate = getDateFromRow(changedRowIndex, 4);//CHANGE(takes the date from the actual changed row not from the currently selected one which can be different)
+                    //selectedRecordDate = getDateFromRow(changedRowIndex, 4);//CHANGE(takes the date from the actual changed row not from the currently selected one which can be different)
+
+                    //CHANGE
+                    //Takes the value from the actual changed row not from the currently selected one which can be different.
+                    //If a saving account expense is selected the date is taken from the column 4 of the row and if a saving is selected the date is taken from column 3 of the row.
+                    selectedRecordDate = selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE ? getDateFromRow(changedRowIndex, 4) : getDateFromRow(changedRowIndex, 3);
                     month = selectedRecordDate.Month;
                     year = selectedRecordDate.Year;
                 }
@@ -169,8 +181,15 @@ namespace BudgetManager {
             int selectedRowIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
             //The value of the deleted record and its date are saved before the actual deletion takes place because otherwise they would be lost and the update of the corresponding saving account balance record would be impossible        
             int selectedRowForDeletionIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
-            deletedRecordValue = getValueFromRow(selectedRowForDeletionIndex, 3);
-            deletedRecordDate = getDateFromRow(selectedRowForDeletionIndex, 4);
+
+            //deletedRecordValue = getValueFromRow(selectedRowForDeletionIndex, 3);
+            //deletedRecordDate = getDateFromRow(selectedRowForDeletionIndex, 4);
+
+            //Retrieving the correct column indexes from which data will be extracted
+            int[] columnIndexList = getColumnIndexList();
+
+            deletedRecordValue = getValueFromRow(selectedRowForDeletionIndex, columnIndexList[0]);
+            deletedRecordDate = getDateFromRow(selectedRowForDeletionIndex, columnIndexList[1]);
 
             String confirmationMessage = String.Format("Are you sure that you want to delete row number {0}?", selectedRowIndex);
             DialogResult userOption1 = MessageBox.Show(confirmationMessage, "Data update form", MessageBoxButtons.YesNo);
@@ -225,7 +244,9 @@ namespace BudgetManager {
                 MessageBox.Show("Unable to delete the selected data! Please try again.", "Data update");
             }
 
-            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {               
+            //Balance record update section
+            BudgetItemType selectedItemType = getSelectedBudgetItemType();
+            if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE || selectedItemType == BudgetItemType.SAVING) {               
                 int month = deletedRecordDate.Month;
                 int year = deletedRecordDate.Year;
                 
@@ -271,57 +292,37 @@ namespace BudgetManager {
                         selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
                         object dateCellValue = dataGridViewTableDisplay.CurrentRow.Cells[currentCellColumn].Value;
                         oldRecordValue = selectedCellValue != DBNull.Value ? Convert.ToInt32(selectedCellValue) : -1;
-                        MessageBox.Show("Selected cell value: " + oldRecordValue);
+                        //MessageBox.Show("Selected cell value: " + oldRecordValue);
 
                     } else if (currentCellColumn == expectedDateColumnIndex) {
                         DateTime temp;
                         selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
                         object valueCellValue = dataGridViewTableDisplay.CurrentRow.Cells[currentCellColumn].Value;
                         oldRecordDate = DateTime.TryParse(Convert.ToString(selectedCellValue), out temp) ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
-                        MessageBox.Show("Selected cell value: " + oldRecordDate);
+                        //MessageBox.Show("Selected cell value: " + oldRecordDate);
                 }
                 }
            // }
         }
 
-        //Saving the original values of value and date columns when the saving account expenses data is shown in the DataGridView and one of these cells is clicked
-        private void dataGridViewTableDisplay_CellEnter(object sender, DataGridViewCellEventArgs e) {
-            //if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {                                         
-            //    //Retrieving the column index of the modified cell
-            //    int currentCellColumn = e.ColumnIndex;
-
-            //    //The variable used for storing the value of the modified cell(the values are saved only if changes are performed to the value or date columns)
-            //    object selectedCellValue = null;                           
-            //    if (currentCellColumn == 3) {
-            //        selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
-            //        object dateCellValue = dataGridViewTableDisplay.CurrentRow.Cells[4].Value;
-            //        oldRecordValue = selectedCellValue != DBNull.Value ? Convert.ToInt32(selectedCellValue) : -1;
-            //        //oldRecordDate = dateCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(dateCellValue)) : DateTime.MinValue;//CHANGE
-            //        //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
-            //    } else if (currentCellColumn == 4) {
-            //        selectedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
-            //        object valueCellValue = dataGridViewTableDisplay.CurrentRow.Cells[3].Value;
-            //        oldRecordValue = valueCellValue != DBNull.Value ? Convert.ToInt32(valueCellValue) : -1;
-            //        oldRecordDate = selectedCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(selectedCellValue)) : DateTime.MinValue;
-            //        //MessageBox.Show(String.Format("Old record value: {0} \n Old record date:{1}", oldRecordValue, Convert.ToString(oldRecordDate)));
-            //    }
-            //}
-        }
-
         //Saving the new values of value and date columns when the saving account expenses data is shown in the DataGridView and one of these cells' content is modified
-        private void dataGridViewTableDisplay_CellValueChanged(object sender, DataGridViewCellEventArgs e) {           
-            if (getSelectedBudgetItemType() == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {                             
+        private void dataGridViewTableDisplay_CellValueChanged(object sender, DataGridViewCellEventArgs e) {
+
+            BudgetItemType selectedItemType = getSelectedBudgetItemType();
+            if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE || selectedItemType == BudgetItemType.SAVING) {                             
                 //Retrieving the column index of the modified cell(the new values are saved only if changes are performed to the value or date columns) 
                 int changedCellColumn = e.ColumnIndex;
 
                 object changedCellValue = null;
-                if (changedCellColumn == 3) {
+                //CHANGE
+                if ((selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE && changedCellColumn == 3) || (selectedItemType == BudgetItemType.SAVING && changedCellColumn == 2)) {
                     changedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
                     newRecordValue = changedCellValue != DBNull.Value ? Convert.ToInt32(changedCellValue) : -1;
                     hasChangedRecordValue = true;
                    
                     changedRowIndex = dataGridViewTableDisplay.CurrentCell.RowIndex;
-                } else if (changedCellColumn == 4) {
+                 //CHANGE
+                } else if ((selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE && changedCellColumn == 4) || (selectedItemType == BudgetItemType.SAVING && changedCellColumn == 3)) {
                     changedCellValue = dataGridViewTableDisplay.CurrentCell.Value;
                     newRecordDate = changedCellValue != DBNull.Value ? DateTime.Parse(Convert.ToString(changedCellValue)) : DateTime.MinValue;
                     hasChangedRecordDate = true;
@@ -448,10 +449,11 @@ namespace BudgetManager {
             //Object that manages the update of the tables that are part of the saving account system(initial object which represents the balance record of the unmodified date)
             SavingAccountBalanceManager balanceManager = new SavingAccountBalanceManager(userID, month, year, date);
 
+            //int recordComparisonResult = balanceManager.compareRecordValues(oldRecordValue, newRecordValue);
+            int recordComparisonResult = balanceManager.compareRecordValues(newRecordValue, oldRecordValue);
             //Balance record table update when only the values of the saving/saving account expense records are modified
-            if (!performDeletion) {
-                if (balanceManager.hasBalanceRecord()) {
-                    int recordComparisonResult = balanceManager.compareRecordValues(oldRecordValue, newRecordValue);
+            if (!performDeletion) {               
+                if (balanceManager.hasBalanceRecord()) {                   
                     int oldBalanceRecordValue = balanceManager.getRecordValue();
                     int newBalanceRecordValue = 0;
                     int recordDifferenceValue = 0;
@@ -471,36 +473,43 @@ namespace BudgetManager {
 
                         if (newBalanceManager.hasBalanceRecord()) {
                             //If a balance record already exists it will be updated(the record to which the modified value is "moved")
-                            newBalanceRecordValue = newBalanceManager.getRecordValue() - newRecordValue;//The new balance record value for the corresponding month to which the date was modified is obtained by subtracting the new expense value from its current value
-                            executionResult = newBalanceManager.updateBalanceRecord(newBalanceRecordValue);
+                            //newBalanceRecordValue = newBalanceManager.getRecordValue() - newRecordValue;//The new balance record value for the corresponding month to which the date was modified is obtained by subtracting the new expense value from its current value
+                            newBalanceRecordValue = calculateNewBalanceRecordValue(newBalanceManager, oldRecordValue, newRecordValue, recordComparisonResult, getSelectedBudgetItemType(), false);//CHANGE
+                            executionResult = newBalanceRecordValue != -1 ? newBalanceManager.updateBalanceRecord(newBalanceRecordValue) : -1;
 
                             //After that the balance record representing the old date is also updated(the record from which the modified value is "moved")
-                            int previousMonthBalanceUpdatedRecordValue = balanceManager.getRecordValue() + oldRecordValue;//The balance of the month from where the expense was "moved" will increase
-                            executionResult = balanceManager.updateBalanceRecord(previousMonthBalanceUpdatedRecordValue);
+                            //int previousMonthBalanceUpdatedRecordValue = balanceManager.getRecordValue() + oldRecordValue;//The balance of the month from where the expense was "moved" will 
+                            int previousMonthBalanceUpdatedRecordValue = calculateOldBalanceRecordValue(balanceManager, oldRecordValue, getSelectedBudgetItemType());//CHANGE
+                            executionResult = previousMonthBalanceUpdatedRecordValue != -1 ? balanceManager.updateBalanceRecord(previousMonthBalanceUpdatedRecordValue) : -1;
                         } else {
                             //If not a new record with the newly modified value will be created
                             executionResult = newBalanceManager.createBalanceRecord(newRecordValue);
                         }
 
                     } else if (hasChangedRecordValue) {
-                        if (recordComparisonResult == -1) {
-                            recordDifferenceValue = oldRecordValue - newRecordValue;//CASE:new value is lower than the old value
-                            newBalanceRecordValue = balanceManager.getRecordValue() + recordDifferenceValue;//The difference is added to the old record value since the balance increases by entering a smaller value expense                            
-                            executionResult = balanceManager.updateBalanceRecord(newBalanceRecordValue);
-                        } else if (recordComparisonResult == 1) {
-                            recordDifferenceValue = newRecordValue - oldRecordValue;//CASE:new value is higher than the old value
-                            newBalanceRecordValue = balanceManager.getRecordValue() - recordDifferenceValue;//The difference is subtracted from the old record value since the balance decreases by entering a higher value expense
-                            executionResult = balanceManager.updateBalanceRecord(newBalanceRecordValue);
-                        }
+                        //if (recordComparisonResult == -1) {
+                        //    //recordDifferenceValue = oldRecordValue - newRecordValue;//CASE:new value is lower than the old value
+                        //    //newBalanceRecordValue = balanceManager.getRecordValue() + recordDifferenceValue;//The difference is added to the old record value since the balance increases by entering a smaller value expense
+                        //    executionResult = balanceManager.updateBalanceRecord(newBalanceRecordValue);
+                        //} else if (recordComparisonResult == 1) {
+                        //    //recordDifferenceValue = newRecordValue - oldRecordValue;//CASE:new value is higher than the old value
+                        //    //newBalanceRecordValue = balanceManager.getRecordValue() - recordDifferenceValue;//The difference is subtracted from the old record value since the balance decreases by entering a higher value expense                            
+                        //    executionResult = balanceManager.updateBalanceRecord(newBalanceRecordValue);
+                        //}
+
+                        newBalanceRecordValue = calculateNewBalanceRecordValue(balanceManager, oldRecordValue, newRecordValue, recordComparisonResult, getSelectedBudgetItemType(), false);//CHANGE                         
+                        executionResult = newBalanceRecordValue != -1 ? balanceManager.updateBalanceRecord(newBalanceRecordValue) : -1;//The balance record is updated only if the newly calculated value is greater than -1(-1 means that something went wrong during the calculation process)
                     }
                 }
 
             } else {
                 //Balance record table update when a saving/saving account expense record is deleted
                 SavingAccountBalanceManager deletionBalanceManager = new SavingAccountBalanceManager(userID, month, year, date);
-                int currentBalanceRecordValue = deletionBalanceManager.getRecordValue();                
-                int newBalanceRecordValue = currentBalanceRecordValue + deletedRecordValue;
-                executionResult = deletionBalanceManager.updateBalanceRecord(newBalanceRecordValue); 
+                //int currentBalanceRecordValue = deletionBalanceManager.getRecordValue();                
+                //int newBalanceRecordValue = currentBalanceRecordValue + deletedRecordValue;
+                //executionResult = deletionBalanceManager.updateBalanceRecord(newBalanceRecordValue);
+                int newBalanceRecordValue = calculateNewBalanceRecordValue(deletionBalanceManager, oldRecordValue, newRecordValue, recordComparisonResult, getSelectedBudgetItemType(), true); //CHANGE
+                executionResult = newBalanceRecordValue != -1 ? deletionBalanceManager.updateBalanceRecord(newBalanceRecordValue) : -1;
             }
 
             return executionResult;
@@ -575,8 +584,17 @@ namespace BudgetManager {
         }
 
         //Method for calculating the new balance record value after changing the current value of the saving/saving account expense(applies when the record isn't "moved" from one month to the other)
-        private int calculateNewBalanceRecordValue(int currentBalanceRecordValue, int oldRecordValue, int newRecordValue,int comparisonResult, BudgetItemType selectedItemType, bool performDeletion) {
+        private int calculateNewBalanceRecordValue(SavingAccountBalanceManager newMonthRecordManager, int oldRecordValue, int newRecordValue,int comparisonResult, BudgetItemType selectedItemType, bool performDeletion) {
+            if (newMonthRecordManager == null || selectedItemType == BudgetItemType.UNDEFINED) {
+                return -1;
+            }
+
             int newBalanceRecordValue = -1;
+            int currentBalanceRecordValue = newMonthRecordManager.getRecordValue();
+
+            if (currentBalanceRecordValue == -1) {
+                return -1;
+            }
 
             //if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
             //    if (comparisonResult == -1) {
@@ -623,9 +641,9 @@ namespace BudgetManager {
                 }
             } else {
                 if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
-                    newBalanceRecordValue = currentBalanceRecordValue + oldRecordValue;//The expense is deleted so the balance record value increases by the deleted value
+                    newBalanceRecordValue = currentBalanceRecordValue + deletedRecordValue;//The expense is deleted so the balance record value increases by the deleted value(the deleted record value is used since the record was not modified)
                 } else if (selectedItemType == BudgetItemType.SAVING) {
-                    newBalanceRecordValue = currentBalanceRecordValue - oldRecordValue;//The saving is deleted so the balance record value decreases by the deleted value
+                    newBalanceRecordValue = currentBalanceRecordValue - deletedRecordValue;//The saving is deleted so the balance record value decreases by the deleted value(the deleted record value is used since the record was not modified)
                 }
             }
 
@@ -640,14 +658,18 @@ namespace BudgetManager {
             }
 
             int oldBalanceRecordValue = -1;
-            int currentRecordValue = 0;
+            int currentBalanceRecordValue = oldMonthRecordManager.getRecordValue();//Retrieving the current value of the record that will be updated 
+
+            if (currentBalanceRecordValue == -1) {
+                return -1;
+            }
 
             if(selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
-                currentRecordValue = oldMonthRecordManager.getRecordValue();//Retrieving the current value of the record that will be updated 
-                oldBalanceRecordValue = currentRecordValue + oldRecordValue;//The balance of the month from where the expense was "moved" will increase
+                //currentBalanceRecordValue = oldMonthRecordManager.getRecordValue();//Retrieving the current value of the record that will be updated 
+                oldBalanceRecordValue = currentBalanceRecordValue + oldRecordValue;//The balance of the month from where the expense was "moved" will increase
             } else if (selectedItemType == BudgetItemType.SAVING) {
-                currentRecordValue = oldMonthRecordManager.getRecordValue();//Retrieving the current value of the record that will be updated 
-                oldBalanceRecordValue = currentRecordValue + oldRecordValue;//The balance of the month from where the saving was "moved" will decrease
+                //currentBalanceRecordValue = oldMonthRecordManager.getRecordValue();//Retrieving the current value of the record that will be updated 
+                oldBalanceRecordValue = currentBalanceRecordValue - oldRecordValue;//The balance of the month from where the saving was "moved" will decrease
             }
 
             return oldBalanceRecordValue;
@@ -707,7 +729,38 @@ namespace BudgetManager {
 
             return recordValue;
 
-        }      
+        }
+
+        //Method for retrieving the correct data column index for saving account expense/savings
+        private int[] getColumnIndexList() {
+            int[] columnIndexList = new int[2];
+
+            int expectedValueColumnIndex = -1;
+            int expectedDateColumnIndex = -1;
+            //The actual values for the expected column indexes are set based on the selected budget item type(because the layout of the displayed DataGridView for each of them is different)
+            BudgetItemType selectedItemType = getSelectedBudgetItemType();
+            if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE) {
+                expectedValueColumnIndex = 3;
+                expectedDateColumnIndex = 4;
+            } else if (selectedItemType == BudgetItemType.SAVING) {
+                expectedValueColumnIndex = 2;
+                expectedDateColumnIndex = 3;
+            }
+
+            columnIndexList[0] = expectedValueColumnIndex;
+            columnIndexList[1] = expectedDateColumnIndex;
+
+            return columnIndexList;
+
+        }
+
+        //The edit mode of the DataGridView is set to "Edit Programatically" so it can be triggered by a certain event decided by the programmer
+        //In this case the editing mode is triggered when double clicking the DataGridView cell
+        //The change was introduced in order to allow the correct saving of the old cell value when modifying record date and immediately after the record value
+        //As a result, on double click the cellClick() method is triggered, saving the old value and then, after the record is modified the new value is saved by the cellValueChangedMethod()
+        private void dataGridViewTableDisplay_CellDoubleClick(object sender, DataGridViewCellEventArgs e) {
+            dataGridViewTableDisplay.BeginEdit(true);
+        }
     }
 }
 
