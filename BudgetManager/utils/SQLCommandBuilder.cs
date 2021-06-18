@@ -163,5 +163,13 @@ namespace BudgetManager {
 
             return budgetPlanCreationCommand;
         }
+
+        //Method for creating commands with a single parameter representing the user ID
+        public static MySqlCommand getSpecificUserRecordsCommand(String sqlStatement, QueryData paramContainer) {
+            MySqlCommand getSpecificUserRecordsCommand = new MySqlCommand(sqlStatement);
+            getSpecificUserRecordsCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
+
+            return getSpecificUserRecordsCommand;
+        }
     }
 }
