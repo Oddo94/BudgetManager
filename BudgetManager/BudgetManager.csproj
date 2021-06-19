@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="mvc\controllers\BudgetPlanManagementController.cs" />
+    <Compile Include="mvc\controllers\SavingAccountController.cs" />
     <Compile Include="mvc\models\BudgetPlanManagementModel.cs" />
     <Compile Include="mvc\models\BudgetSummaryModel.cs" />
     <Compile Include="mvc\models\SavingAccountModel.cs" />
@@ -157,7 +158,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
