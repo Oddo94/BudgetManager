@@ -14,7 +14,7 @@ namespace BudgetManager.mvc.models {
 
         //SQL statements for retrieving single/multiple months savings data
         private String sqlStatementSingleMonthSavings = @"SELECT savingID AS 'ID', name AS 'Saving name', value AS 'Value', date AS 'Date' FROM savings WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
-        private String sqlStatementMultipleMonthsSavings = @"SELECT name AS 'Saving name', value AS 'Value', date AS 'Date'
+        private String sqlStatementMultipleMonthsSavings = @"SELECT savingID AS 'ID', name AS 'Saving name', value AS 'Value', date AS 'Date'
                 FROM savings
                 WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate
                 ORDER BY date ASC";
@@ -30,7 +30,7 @@ namespace BudgetManager.mvc.models {
 
         //SQL statement for retrieving the data showing the yearly saving account balance evolution
         private String sqlStatementFullYearBalanceEvolution = @"SELECT * FROM
-                (SELECT year, month, value, SUM(value) OVER(PARTITION BY user_ID ORDER BY year, month) AS 'Running total'
+                (SELECT year, month, SUM(value) OVER(PARTITION BY user_ID ORDER BY year, month) AS 'Running total'
                 FROM saving_account_balance
                 WHERE user_ID = @paramID) AS subquery
                 WHERE year = @paramYear";
@@ -79,7 +79,23 @@ namespace BudgetManager.mvc.models {
                         break;
                 }
             } else if (option == QueryType.MONTHLY_TOTALS) {
-                command = SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementFullYearBalanceEvolution, paramContainer);
+                switch (dataSource) {
+                    case SelectedDataSource.DYNAMIC_DATASOURCE_1:
+                        //command = getCorrectCommandForDataDisplay(option, paramContainer);
+                        break;
+
+                    case SelectedDataSource.DYNAMIC_DATASOURCE_2:
+                        //The getCorrectCommandFordataDisplay() method is not used in this case since displaying the monthly balance evolution for the selected year does not require to specify a table from which data will be extracted
+                        command = SQLCommandBuilder.getMonthlyTotalsCommand(sqlStatementFullYearBalanceEvolution, paramContainer);
+                        break;
+
+                    case SelectedDataSource.STATIC_DATASOURCE:
+                        command = SQLCommandBuilder.getSpecificUserRecordsCommand(sqlStatementSavingAccountCurrentBalance, paramContainer);
+                        break;
+                        //command = SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementFullYearBalanceEvolution, paramContainer);
+                }
+            } else if (option == QueryType.TOTAL_VALUE) {
+                command = SQLCommandBuilder.getSpecificUserRecordsCommand(sqlStatementSavingAccountCurrentBalance, paramContainer); ;
             }
 
             return DBConnectionManager.getData(command);

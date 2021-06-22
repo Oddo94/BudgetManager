@@ -61,16 +61,16 @@ namespace BudgetManager {
             model.addObserver(this);
         }
 
-        private void tableSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e) {                     
+        private void tableSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e) {
             //Creating the object that will hold the DateTimePicker selector type
-            DateTimePickerType pickerType = 0;
+            DataUpdateControl pickerType = 0;
           
             //If the checkbox for getting data for a single month is selected then the previously created object is assigned the MONTHLY_PICKER value
             //else it is assigned the YEARLY_PICKER value
             if (monthRecordsCheckBox.Checked == true) {
-                pickerType = DateTimePickerType.MONTHLY_PICKER;
+                pickerType = DataUpdateControl.MONTHLY_PICKER;
             } else if (yearRecordsCheckBox.Checked == true) {
-                pickerType = DateTimePickerType.YEARLY_PICKER;
+                pickerType = DataUpdateControl.YEARLY_PICKER;
             }
 
             //Sending data to the specialized method for communicating with the controller
@@ -401,9 +401,9 @@ namespace BudgetManager {
             }
         }
 
-        private void sendDataToController(DateTimePickerType pickerType, ComboBox itemComboBox, DateTimePicker datePicker) {
+        private void sendDataToController(DataUpdateControl pickerType, ComboBox itemComboBox, DateTimePicker datePicker) {
             //Single month data selection
-            if (pickerType == DateTimePickerType.MONTHLY_PICKER) {
+            if (pickerType == DataUpdateControl.MONTHLY_PICKER) {
                 QueryType option = QueryType.SINGLE_MONTH;
 
                 int selectedMonth = datePicker.Value.Month;
@@ -415,7 +415,7 @@ namespace BudgetManager {
                 controller.requestData(option, paramContainer);
          
               //Multiple months data selection
-            } else if (pickerType == DateTimePickerType.YEARLY_PICKER) {
+            } else if (pickerType == DataUpdateControl.YEARLY_PICKER) {
                 QueryType option = QueryType.FULL_YEAR;
 
                 int selectedYear = datePicker.Value.Year;

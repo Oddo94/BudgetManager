@@ -43,12 +43,16 @@ namespace BudgetManager {
             foreach (DateTimePicker currentPicker in datePickers) {
                 currentPicker.Enabled = false;
             }
+            //Disables the newly added button for accessing the saving account window
+            savingAccountButton.Enabled = false;
         }
 
         public void enableControls() {
             foreach (DateTimePicker currentPicker in datePickers) {
                 currentPicker.Enabled = true;
             }
+            //Enables the newly added button for accessing the saving account window
+            savingAccountButton.Enabled = true;
         }
 
         public void updateView(IModel model) {
@@ -165,7 +169,7 @@ namespace BudgetManager {
                 setMonthInfoSelectionMessage(message, infoLabelBS, dateTimePickerStartBS, dateTimePickerEndBS, monthPickerPanelBS);
             }
 
-            sendDataToController(DateTimePickerType.START_PICKER, intervalCheckBoxBS, dateTimePickerStartBS, dateTimePickerEndBS);
+            sendDataToController(DataUpdateControl.START_PICKER, intervalCheckBoxBS, dateTimePickerStartBS, dateTimePickerEndBS);
         }
 
         private void dateTimePickerEndBS_ValueChanged(object sender, EventArgs e) {
@@ -178,7 +182,7 @@ namespace BudgetManager {
                 setMonthInfoSelectionMessage(message, infoLabelBS, dateTimePickerStartBS, dateTimePickerEndBS, monthPickerPanelBS);
             }
 
-            sendDataToController(DateTimePickerType.END_PICKER, intervalCheckBoxBS, dateTimePickerStartBS, dateTimePickerEndBS);
+            sendDataToController(DataUpdateControl.END_PICKER, intervalCheckBoxBS, dateTimePickerStartBS, dateTimePickerEndBS);
         }          
 
         private void fillDataGridViewBS(DataTable inputDataTable) {
@@ -289,7 +293,7 @@ namespace BudgetManager {
 
             }
 
-            sendDataToController(DateTimePickerType.START_PICKER, intervalCheckBoxIncomes, dateTimePickerStartIncomes, dateTimePickerEndIncomes);
+            sendDataToController(DataUpdateControl.START_PICKER, intervalCheckBoxIncomes, dateTimePickerStartIncomes, dateTimePickerEndIncomes);
 
         }
 
@@ -303,7 +307,7 @@ namespace BudgetManager {
                 setMonthInfoSelectionMessage(message, infoLabelIncomes, dateTimePickerStartIncomes, dateTimePickerEndIncomes, monthPickerPanelIncomes);
             }
 
-            sendDataToController(DateTimePickerType.END_PICKER, intervalCheckBoxIncomes, dateTimePickerStartIncomes, dateTimePickerEndIncomes);
+            sendDataToController(DataUpdateControl.END_PICKER, intervalCheckBoxIncomes, dateTimePickerStartIncomes, dateTimePickerEndIncomes);
 
         }
 
@@ -313,7 +317,7 @@ namespace BudgetManager {
                 return;
             }
 
-            sendDataToController(DateTimePickerType.MONTHLY_PICKER, intervalCheckBoxIncomes, dateTimePickerMonthlyIncomes, dateTimePickerEndIncomes);
+            sendDataToController(DataUpdateControl.MONTHLY_PICKER, intervalCheckBoxIncomes, dateTimePickerMonthlyIncomes, dateTimePickerEndIncomes);
         }
 
         //Metoda generala de actualizare a tabului Incomes(apeleaza metodele specifice de actualizare pentru fiecare componenta)
@@ -352,7 +356,7 @@ namespace BudgetManager {
                 setMonthInfoSelectionMessage(message, infoLabelExpenses, dateTimePickerStartExpenses, dateTimePickerEndExpenses, monthPickerPanelExpenses);
             }
 
-            sendDataToController(DateTimePickerType.START_PICKER, intervalCheckBoxExpenses, dateTimePickerStartExpenses, dateTimePickerEndExpenses);
+            sendDataToController(DataUpdateControl.START_PICKER, intervalCheckBoxExpenses, dateTimePickerStartExpenses, dateTimePickerEndExpenses);
         }
 
         private void dateTimePickerEndExpenses_ValueChanged(object sender, EventArgs e) {
@@ -365,7 +369,7 @@ namespace BudgetManager {
                 setMonthInfoSelectionMessage(message, infoLabelExpenses, dateTimePickerStartExpenses, dateTimePickerEndExpenses, monthPickerPanelExpenses);
             }
 
-            sendDataToController(DateTimePickerType.END_PICKER, intervalCheckBoxExpenses, dateTimePickerStartExpenses, dateTimePickerEndExpenses);
+            sendDataToController(DataUpdateControl.END_PICKER, intervalCheckBoxExpenses, dateTimePickerStartExpenses, dateTimePickerEndExpenses);
         }
 
         private void dateTimePickerMonthlyExpenses_ValueChanged(object sender, EventArgs e) {
@@ -374,7 +378,7 @@ namespace BudgetManager {
                 return;
             }
 
-            sendDataToController(DateTimePickerType.MONTHLY_PICKER, intervalCheckBoxExpenses, dateTimePickerMonthlyExpenses, dateTimePickerEndExpenses);
+            sendDataToController(DataUpdateControl.MONTHLY_PICKER, intervalCheckBoxExpenses, dateTimePickerMonthlyExpenses, dateTimePickerEndExpenses);
         }
 
 
@@ -411,7 +415,7 @@ namespace BudgetManager {
                 setMonthInfoSelectionMessage(message, infoLabelDebts, dateTimePickerStartDebts, dateTimePickerEndDebts, monthPickerPanelDebts);
             }
 
-            sendDataToController(DateTimePickerType.START_PICKER, intervalCheckBoxDebts, dateTimePickerStartDebts, dateTimePickerEndDebts);
+            sendDataToController(DataUpdateControl.START_PICKER, intervalCheckBoxDebts, dateTimePickerStartDebts, dateTimePickerEndDebts);
 
         }
 
@@ -425,7 +429,7 @@ namespace BudgetManager {
                 setMonthInfoSelectionMessage(message, infoLabelExpenses, dateTimePickerStartDebts, dateTimePickerEndDebts, monthPickerPanelDebts);
             }
 
-            sendDataToController(DateTimePickerType.END_PICKER, intervalCheckBoxDebts, dateTimePickerStartDebts, dateTimePickerEndDebts);
+            sendDataToController(DataUpdateControl.END_PICKER, intervalCheckBoxDebts, dateTimePickerStartDebts, dateTimePickerEndDebts);
 
         }
 
@@ -435,7 +439,7 @@ namespace BudgetManager {
                 return;
             }
 
-            sendDataToController(DateTimePickerType.MONTHLY_PICKER, intervalCheckBoxDebts, dateTimePickerMonthlyDebts, dateTimePickerEndDebts);
+            sendDataToController(DataUpdateControl.MONTHLY_PICKER, intervalCheckBoxDebts, dateTimePickerMonthlyDebts, dateTimePickerEndDebts);
         }
 
         private void updateDebtsTab(IModel model) {
@@ -470,7 +474,7 @@ namespace BudgetManager {
                 setMonthInfoSelectionMessage(message, infoLabelSavings, dateTimePickerStartSavings, dateTimePickerEndSavings, monthPickerPanelSavings);
             }
 
-            sendDataToController(DateTimePickerType.START_PICKER, intervalCheckBoxSavings, dateTimePickerStartSavings, dateTimePickerEndSavings);
+            sendDataToController(DataUpdateControl.START_PICKER, intervalCheckBoxSavings, dateTimePickerStartSavings, dateTimePickerEndSavings);
         }
 
         private void dateTimePickerEndSavings_ValueChanged(object sender, EventArgs e) {
@@ -483,7 +487,7 @@ namespace BudgetManager {
                 setMonthInfoSelectionMessage(message, infoLabelSavings, dateTimePickerStartSavings, dateTimePickerEndSavings, monthPickerPanelSavings);
             }
 
-            sendDataToController(DateTimePickerType.END_PICKER, intervalCheckBoxSavings, dateTimePickerStartSavings, dateTimePickerEndSavings);
+            sendDataToController(DataUpdateControl.END_PICKER, intervalCheckBoxSavings, dateTimePickerStartSavings, dateTimePickerEndSavings);
         }
 
         private void dateTimePickerMonthlySavings_ValueChanged(object sender, EventArgs e) {
@@ -492,7 +496,7 @@ namespace BudgetManager {
                 return;
             }
 
-            sendDataToController(DateTimePickerType.MONTHLY_PICKER, intervalCheckBoxSavings, dateTimePickerMonthlySavings, dateTimePickerEndSavings);
+            sendDataToController(DataUpdateControl.MONTHLY_PICKER, intervalCheckBoxSavings, dateTimePickerMonthlySavings, dateTimePickerEndSavings);
         }
 
         private void updateSavingsTab(IModel model) {
@@ -782,9 +786,9 @@ namespace BudgetManager {
         }
 
         //Metoda generica pentru trimiterea datelor catre Controller
-        private void sendDataToController(DateTimePickerType pickerType, CheckBox checkBox, DateTimePicker startPicker, DateTimePicker endPicker) {
+        private void sendDataToController(DataUpdateControl pickerType, CheckBox checkBox, DateTimePicker startPicker, DateTimePicker endPicker) {
             //Se verfica tipul de selector a carui stare a fost modificata
-            if (pickerType == DateTimePickerType.START_PICKER) {
+            if (pickerType == DataUpdateControl.START_PICKER) {
                 //Daca este bifat controlul de tip checkbox pt interval inseamna ca se doreste selectarea datelor pe mai multe luni
                 if (checkBox.Checked == true) {
                     //Selectare optiune pt mai multe luni                  
@@ -814,7 +818,7 @@ namespace BudgetManager {
 
 
                 }
-            } else if (pickerType == DateTimePickerType.END_PICKER) {
+            } else if (pickerType == DataUpdateControl.END_PICKER) {
                 //Selectare date pe mai multe luni daca selectorul este cel pt data de final
                 QueryType option = QueryType.MULTIPLE_MONTHS;
 
@@ -824,7 +828,7 @@ namespace BudgetManager {
                 QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).build(); //CHANGE
                 controller.requestData(option, paramContainer);
 
-            } else if(pickerType == DateTimePickerType.MONTHLY_PICKER) {
+            } else if(pickerType == DataUpdateControl.MONTHLY_PICKER) {
                 //Se alege interogarea ce insumeaza valorile elementului pt fiecare luna a anului selectat
                 QueryType option = QueryType.MONTHLY_TOTALS;
 
@@ -901,6 +905,10 @@ namespace BudgetManager {
 
         private void editDeleteExistingPlansToolStripMenuItem_Click(object sender, EventArgs e) {
             new BudgetPlanManagementForm(userID).ShowDialog();
+        }
+        //Control method for the button that displays the aving account manager window
+        private void savingAccountButton_Click(object sender, EventArgs e) {
+            new SavingAccountForm(userID).ShowDialog();
         }
     }
  }

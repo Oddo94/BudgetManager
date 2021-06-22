@@ -14,11 +14,12 @@ namespace BudgetManager {
 
     //Enum ce defineste tipurile de selectoare de date din punct 
     //de vedere al rolului (pt data de inceput/final, pt selectarea unei anumite luni dintr-un an, pt selectarea unui an intreg)
-    public enum DateTimePickerType {
+    public enum DataUpdateControl {
         START_PICKER,
         END_PICKER,
         MONTHLY_PICKER,
         YEARLY_PICKER,
+        REFRESH_BUTTON,
         UNDEFINED
     }
     public interface IView {

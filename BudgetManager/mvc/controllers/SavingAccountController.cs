@@ -46,6 +46,15 @@ namespace BudgetManager.mvc.controllers {
                 updatedDataSources[2] = staticDataTable;
 
                 model.DataSources = updatedDataSources;
+            } else if (option == QueryType.TOTAL_VALUE) {
+                DataTable staticDataTable = model.getNewData(option, paramContainer, SelectedDataSource.STATIC_DATASOURCE);//Account balance field new data
+
+                DataTable[] updatedDataSources = model.DataSources;
+
+                //Only the column chart and saving account balance field are updated since the column chart remains unchanged when requesting full year monthly totals data               
+                updatedDataSources[2] = staticDataTable;
+
+                model.DataSources = updatedDataSources;
             }
         }
 

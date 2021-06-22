@@ -15,6 +15,7 @@ namespace BudgetManager {
         MONTHLY_TOTALS,
         FULL_YEAR,//option used for the model that also updates data
         BUDGET_PLAN_INFO,//option added for the queries that retrieve data for the currently selected budget plan
+        TOTAL_VALUE,//option for queries retrieving data for all the timeframe up to the current month
         UNDEFINED  //option added as default value to return when the conditinos for the other options are not met     
     }
 
