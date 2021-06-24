@@ -158,6 +158,7 @@
             title1.Name = "Title1";
             title1.Text = "Saving account balance evolution for ";
             this.columnChartMonthlyBalance.Titles.Add(title1);
+            this.columnChartMonthlyBalance.MouseHover += new System.EventHandler(this.columnChartMonthlyBalance_MouseHover);
             // 
             // label1
             // 

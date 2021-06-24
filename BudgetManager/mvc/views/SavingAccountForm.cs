@@ -110,6 +110,10 @@ namespace BudgetManager.mvc.views {
             sendDataToController(DataUpdateControl.MONTHLY_PICKER, intervalCheckBoxSavingAccount, dateTimePickerMonthlyBalance, dateTimePickerEndSavingAccount);
         }
 
+        private void columnChartMonthlyBalance_MouseHover(object sender, EventArgs e) {
+            //Displays the current value of the column on which the mouse hovers 
+            columnChartMonthlyBalance.Series[0].ToolTip = "Monthly balance: #VALY";
+        }
 
         //UTIL METHODS SECTION
         private void fillDataGridView(DataGridView gridView, DataTable inputDataTable) {
@@ -396,6 +400,8 @@ namespace BudgetManager.mvc.views {
                 intervalCheckBoxSavingAccount.Enabled = true;
                 dateTimePickerStartSavingAccount.Enabled = true;
             }
-        }  
+        }
+
+      
     }
 }
