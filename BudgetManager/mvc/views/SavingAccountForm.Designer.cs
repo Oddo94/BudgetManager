@@ -209,6 +209,7 @@
             // 
             // savingAccountComboBox
             // 
+            this.savingAccountComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.savingAccountComboBox.FormattingEnabled = true;
             this.savingAccountComboBox.Items.AddRange(new object[] {
             "Saving",

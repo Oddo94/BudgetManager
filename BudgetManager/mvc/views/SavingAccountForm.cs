@@ -107,6 +107,7 @@ namespace BudgetManager.mvc.views {
         }
 
         private void dateTimePickerMonthlyBalance_ValueChanged(object sender, EventArgs e) {
+            //CHECK IF CHANGING THE PICKER TYPE TO YEARLY PICKER DOES NOT MAKE MORE SENSE IN THIS SITUATION
             sendDataToController(DataUpdateControl.MONTHLY_PICKER, intervalCheckBoxSavingAccount, dateTimePickerMonthlyBalance, dateTimePickerEndSavingAccount);
         }
 
@@ -120,50 +121,52 @@ namespace BudgetManager.mvc.views {
             if(gridView == null) {
                 return;
             }
-            gridView.DataSource = inputDataTable;
+            gridView.DataSource = null;                     
+            gridView.DataSource = inputDataTable;          
         }
 
-        private void fillColumnChart(Chart chart, DataTable inputDataTable, int currentYear, String title) {
-            //Eliminare puncte din grafic
+        private void fillColumnChart(Chart chart, DataTable inputDataTable, int currentYear, String title) {           
+            //Eliminates the existing chart points
             chart.Series[0].Points.Clear();
 
-            if (inputDataTable != null && inputDataTable.Rows.Count > 0) {
-                //Creare lista de date(prima zi a fiecarei luni a anului selectat)
+            if (inputDataTable != null && inputDataTable.Rows.Count > 0) {                
+                //Creates a dates list(representing the first day of each month of the selected year)
                 List<DateTime> dates = new List<DateTime>();
                 for (int i = 1; i <= 12; i++) {
                     dates.Add(new DateTime(currentYear, i, 1));
                 }
-
-                //Adaugare nume luni in grafic
+                
+                //Adds the names of the months to the chart
                 foreach (DateTime currentDate in dates) {
                     chart.Series[0].Points.AddXY(currentDate, 0);
                 }
 
-                int j = 0;//indexul randului curent din tabelul de date provenit din DB
-                for (int i = 0; i < chart.Series[0].Points.Count; i++) {
-                    //Daca s-au epuizat randurile din DataTable(de ex daca nu avem rezultate pt fiecare luna a anului) se adauga valoarea 0 pt luna respectiva din grafic
+                int j = 0;//the index of the current row from the DataTable object retrieved from the DB
+                for (int i = 0; i < chart.Series[0].Points.Count; i++) {                    
+                    //If there are no more rows in the DataTable(for example there may be months for which there are no records) the ) value is added to the respectiv month from the chart
                     if (j > inputDataTable.Rows.Count - 1) {
                         chart.Series[0].Points[i].SetValueY(0);
                         continue;
                     }
-
-                    //Se creaza un obiect de tip DateTime pt valoarea X a punctului curent al graficului
-                    System.DateTime currentPointDate = System.DateTime.FromOADate(chart.Series[0].Points[i].XValue);
-                    //Se extrage valoarea lunii din obiectul de tip DateTime creat anterior
+                   
+                    //A DateTime object for the X value of the current chart point is created
+                    System.DateTime currentPointDate = System.DateTime.FromOADate(chart.Series[0].Points[i].XValue);                   
+                    //The month value is extracted from the DateTime object that was previously created
                     int currentChartMonth = Convert.ToInt32(DateTime.ParseExact(currentPointDate.ToString("MMM"), "MMM", CultureInfo.CurrentCulture).Month);
                     int currentDataTableMonth = Convert.ToInt32(inputDataTable.Rows[j].ItemArray[1]);
-
-                    //Se compara daca luna punctului curent din grafic este egala cu luna din tabelul de date provenit din DB
+                   
+                    //A comparison is made to see if the month represented by the current chart point is the same as the one from the DataTable object retrieved from the DB
                     if (currentChartMonth == currentDataTableMonth) {
                         int currentDataTableMonthValue = Convert.ToInt32(inputDataTable.Rows[j].ItemArray[2]);
-                        chart.Series[0].Points[i].SetValueY(currentDataTableMonthValue);//se adauga valoarea corespunzatoare daca cele doua luni sunt identice
-                        j++;//se incrementeaza valoarea indexului randului curent din tabelul de date
+                        chart.Series[0].Points[i].SetValueY(currentDataTableMonthValue);//if the two values are identical the corresponding value is added to the column chart
+                        j++;//the value of the current row index from the DataTable object is incremented
                     } else {
-                        chart.Series[0].Points[i].SetValueY(0);// in caz contrar se adauga valoare 0 intrucat nu avem o corespondenta intre inregistrarea din tabel si luna curenta din grafic                   
+                        chart.Series[0].Points[i].SetValueY(0);//if the values don't match then the 0 value is added to the respective column chart point since there is no correspondence between the DataTable record and the current column chart point                   
                     }
                 }
             }
-            //Setare titlu pentru grafic
+           
+            //Setting chart title
             chart.Titles[0].Text = String.Format("{0} for {1}", title, currentYear);
         }
 
@@ -204,9 +207,7 @@ namespace BudgetManager.mvc.views {
                 resetDateTimePicker(endPicker);
                
             } else if (dateTimePickerContainer.Visible == false) {
-                targetLabel.Text = String.Format("{0} for {1} {2}", message, startPicker.Value.ToString("MMMM"), startPicker.Value.ToString("yyyy"));
-                //return;    
-
+                targetLabel.Text = String.Format("{0} for {1} {2}", message, startPicker.Value.ToString("MMMM"), startPicker.Value.ToString("yyyy"));                  
             }
         }
 
@@ -229,11 +230,11 @@ namespace BudgetManager.mvc.views {
             if (targetPicker == null) {
                 return;
             }
-
-            //Obtine numarul de zile trecute de la inceputul lunii
+            
+            //Retrieves the number of days passed from the start of the month
             int daysPassedFromMonthStart = DateTime.Now.Day;
-            hasResetDatePickers = true;//seteaza flagul ca true pt a evita executia metodei asociate date time picker-ului selectat          
-            targetPicker.Value = DateTime.Now.AddDays(-daysPassedFromMonthStart + 1);//scade numarul de zile trecute de la inceputul lunii si adauga 1 (pentru ca altfel prima zi a lunii ar deveni 0)
+            hasResetDatePickers = true;//sets the flag to true in order to avoid the execution of the method associated to the selected DateTimePicker         
+            targetPicker.Value = DateTime.Now.AddDays(-daysPassedFromMonthStart + 1);//subtracts the number of days passed from the beginning of the month and adds one more day(otherwise the first day of the month would be assigned value 0 which is incorrect)
 
         }
       
@@ -269,8 +270,7 @@ namespace BudgetManager.mvc.views {
 
         }
 
-        private BudgetItemType getSelectedBudgetItemType(ComboBox comboBox) {
-            //int selectedIndex = comboBox.SelectedIndex;
+        private BudgetItemType getSelectedBudgetItemType(ComboBox comboBox) {           
             String selectedIndexText = comboBox.SelectedItem.ToString();
 
             switch (selectedIndexText.ToLower()) {
@@ -305,43 +305,42 @@ namespace BudgetManager.mvc.views {
             }
         }
   
-        private void sendDataToController(DataUpdateControl updateControl, CheckBox checkBox, DateTimePicker startPicker, DateTimePicker endPicker) {
-           
-            //Se verfica tipul de selector a carui stare a fost modificata
+        private void sendDataToController(DataUpdateControl updateControl, CheckBox checkBox, DateTimePicker startPicker, DateTimePicker endPicker) {                    
+            //Checking the control type whose state was modified
             if (updateControl == DataUpdateControl.START_PICKER) {
-                String tableName = getSelectedTableName(savingAccountComboBox);
-                //Daca este bifat controlul de tip checkbox pt interval inseamna ca se doreste selectarea datelor pe mai multe luni
-                if (checkBox.Checked == true) {
-                    //Selectare optiune pt mai multe luni                  
+                String tableName = getSelectedTableName(savingAccountComboBox);                
+                //If the interval checkbox is selected it means that multiple months data is being requested from the DB
+                if (checkBox.Checked == true) {                   
+                    //Selecting the multiple months option                  
                     QueryType option = QueryType.MULTIPLE_MONTHS;
-
-                    //Se obține data de început și cea de final in formatul cerut de baza de date MySql
+                  
+                    //Retrieving the start and end date in the format used by the MySqL database
                     String startDate = getDateStringInSQLFormat(startPicker, DateType.START_DATE);
-                    String endDate = getDateStringInSQLFormat(endPicker, DateType.END_DATE);                   
-
-                    //Se configurează obiectul de stocare al datelor si se trimit controllerului tipul de interogare și respectivul obiect                  
-                    QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).addTableName(tableName).build(); //CHANGE
+                    String endDate = getDateStringInSQLFormat(endPicker, DateType.END_DATE);
+               
+                    //Configures the object that is used to store the parameter values for the SQL query and sends it to the controller alongside the type of the query that will be executed         
+                    QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).addTableName(tableName).build();
 
                     controller.requestData(option, paramContainer);
 
-                } else {
-                    //Altfel, se selecteaza datele pe o singura luna
+                } else {                    
+                    //Otherwise single month data is selected
                     QueryType option = QueryType.SINGLE_MONTH;
-
-                    //Se preiau valorile lunii si anului selectat
+                   
+                    //Retrieving the month and year values
                     int month = startPicker.Value.Month;
                     int year = startPicker.Value.Year;
 
-                    //Se configurează obiectul de stocare al datelor si se trimit controllerului tipul de interogare și respectivul obiect                    
-                    QueryData paramContainer = new QueryData.Builder(userID).addMonth(month).addYear(year).addTableName(tableName).build(); //CHANGE
+                    //Configures the object that is used to store the parameter values for the SQL query and sends it to the controller alongside the type of the query that will be executed                    
+                    QueryData paramContainer = new QueryData.Builder(userID).addMonth(month).addYear(year).addTableName(tableName).build();
 
                     controller.requestData(option, paramContainer);
 
 
                 }
             } else if (updateControl == DataUpdateControl.END_PICKER) {
-                String tableName = getSelectedTableName(savingAccountComboBox);
-                //Selectare date pe mai multe luni daca selectorul este cel pt data de final
+                String tableName = getSelectedTableName(savingAccountComboBox);                
+                //Selecting multiple months data if the control whose state was modified is the DateTimePicker used to set the end month
                 QueryType option = QueryType.MULTIPLE_MONTHS;
 
                 String startDate = getDateStringInSQLFormat(startPicker, DateType.START_DATE);
@@ -350,15 +349,15 @@ namespace BudgetManager.mvc.views {
                 QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).addTableName(tableName).build(); //CHANGE
                 controller.requestData(option, paramContainer);
 
-            } else if (updateControl == DataUpdateControl.MONTHLY_PICKER) {
-                //Se alege interogarea ce insumeaza valorile elementului pt fiecare luna a anului selectat
+            } else if (updateControl == DataUpdateControl.MONTHLY_PICKER) {              
+                //Selecting the query type option that will sum the selected element values for each month of the selected year.
                 QueryType option = QueryType.MONTHLY_TOTALS;
-
-                //La fel ca inainte se preia luna si anul din control
+               
+                //Just like before the month and year values are retrieved
                 int month = startPicker.Value.Month;
                 int year = startPicker.Value.Year;
 
-                //Se trimit datele               
+                //Creating the QueryData object and sending the data to the controller           
                 QueryData paramContainer = new QueryData.Builder(userID).addMonth(month).addYear(year).build(); //CHANGE
                 controller.requestData(option, paramContainer);
             } else if (updateControl == DataUpdateControl.REFRESH_BUTTON) {
@@ -376,13 +375,13 @@ namespace BudgetManager.mvc.views {
             if (datePicker == null) {
                 return "";
             }
-            String sqlFormatDateString = "";
-            //Daca e data de final a intervalului se va modifica data astfel incat sa se ia in considerare inclusiv ultima zi din luna
-            if (dateType == DateType.END_DATE) {
-                //Ia data curenta din date picker la care adauga o luna si scade o zi(pt a obtine data ultimei zile din luna)
+            String sqlFormatDateString = "";          
+            //If the end date of the interval is being processed it will be modified so that it will contain the last day of the respective month 
+            if (dateType == DateType.END_DATE) {                
+                //Retrieves the current date from the DateTimePicker control, adds a month an subtracts a day(in order to obtain the date last of the last day of that month)
                 sqlFormatDateString = datePicker.Value.AddMonths(1).AddDays(-1).ToString("yyyy-MM-dd");
             } else {
-                sqlFormatDateString = datePicker.Value.ToString("yyyy-MM-dd");// daca e data de inceput se va lua doar data din dateTimePicker intrucat aceasta incepe deja de la prima zi a lunii(vezi setarea din designer)
+                sqlFormatDateString = datePicker.Value.ToString("yyyy-MM-dd");//if the start date of the interval is being processed then it will be simply retrieved from the DateTimePicker control since it already contains the first day of the month (see the Designer setting)
             }
 
 
