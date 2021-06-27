@@ -96,6 +96,7 @@
             this.dateTimePickerEndSavingAccount.ShowUpDown = true;
             this.dateTimePickerEndSavingAccount.Size = new System.Drawing.Size(200, 20);
             this.dateTimePickerEndSavingAccount.TabIndex = 4;
+            this.dateTimePickerEndSavingAccount.Value = new System.DateTime(2021, 6, 1, 0, 0, 0, 0);
             this.dateTimePickerEndSavingAccount.ValueChanged += new System.EventHandler(this.dateTimePickerEndSavingAccount_ValueChanged);
             // 
             // label5
@@ -125,6 +126,7 @@
             this.dateTimePickerStartSavingAccount.ShowUpDown = true;
             this.dateTimePickerStartSavingAccount.Size = new System.Drawing.Size(200, 20);
             this.dateTimePickerStartSavingAccount.TabIndex = 7;
+            this.dateTimePickerStartSavingAccount.Value = new System.DateTime(2021, 6, 1, 0, 0, 0, 0);
             this.dateTimePickerStartSavingAccount.ValueChanged += new System.EventHandler(this.dateTimePickerStartSavingAccount_ValueChanged);
             // 
             // dataGridViewSavingAccount

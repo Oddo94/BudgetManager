@@ -106,9 +106,8 @@ namespace BudgetManager.mvc.views {
             sendDataToController(DataUpdateControl.REFRESH_BUTTON, intervalCheckBoxSavingAccount, dateTimePickerStartSavingAccount, dateTimePickerEndSavingAccount);
         }
 
-        private void dateTimePickerMonthlyBalance_ValueChanged(object sender, EventArgs e) {
-            //CHECK IF CHANGING THE PICKER TYPE TO YEARLY PICKER DOES NOT MAKE MORE SENSE IN THIS SITUATION
-            sendDataToController(DataUpdateControl.MONTHLY_PICKER, intervalCheckBoxSavingAccount, dateTimePickerMonthlyBalance, dateTimePickerEndSavingAccount);
+        private void dateTimePickerMonthlyBalance_ValueChanged(object sender, EventArgs e) {            
+            sendDataToController(DataUpdateControl.YEARLY_PICKER, intervalCheckBoxSavingAccount, dateTimePickerMonthlyBalance, dateTimePickerEndSavingAccount);
         }
 
         private void columnChartMonthlyBalance_MouseHover(object sender, EventArgs e) {
@@ -349,7 +348,7 @@ namespace BudgetManager.mvc.views {
                 QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).addTableName(tableName).build(); //CHANGE
                 controller.requestData(option, paramContainer);
 
-            } else if (updateControl == DataUpdateControl.MONTHLY_PICKER) {              
+            } else if (updateControl == DataUpdateControl.YEARLY_PICKER) {              
                 //Selecting the query type option that will sum the selected element values for each month of the selected year.
                 QueryType option = QueryType.MONTHLY_TOTALS;
                
