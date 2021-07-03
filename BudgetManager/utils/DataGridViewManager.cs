@@ -4,8 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics.Contracts;
 
 namespace BudgetManager.utils {
+    //Enum that contains the type of index checks that can be made on the current DataGridView object
+    public enum IndexCheckType {
+       COLUMN_INDEX_CHECK,
+       ROW_INDEX_CHECK,
+       UNDEFINED
+    }
     class DataGridViewManager {
         private DataGridView targetDataGridView;
 
@@ -23,12 +30,10 @@ namespace BudgetManager.utils {
         }
 
         //Method for making data grid view rows that contain budget plans for which the start and end dates don't meet the specified criteria non-editable
-        private void disableDataGridViewRows(int startDateCellIndex, int endDateCellIndex) {
-            if (startDateCellIndex < 0 || endDateCellIndex < 0) {
-                return;
-            }
+        public void disableDataGridViewRows(int startDateCellIndex, int endDateCellIndex) {
+            int[] columnIndexes = new int[] { startDateCellIndex, endDateCellIndex };
 
-            if (startDateCellIndex > targetDataGridView.ColumnCount - 1 || endDateCellIndex > targetDataGridView.ColumnCount - 1) {
+            if (!areIndexesInRange(columnIndexes, IndexCheckType.COLUMN_INDEX_CHECK)) {
                 return;
             }
 
@@ -68,23 +73,24 @@ namespace BudgetManager.utils {
         }
 
         //Method for disabling specific columns from the DataGridGriew(the arguments are the specified DataGridView and an array containing the indexes of the columns which need to be non-editable)
-        private void disableDataGridViewColumns(DataGridView dataGridView, int[] columnIndexes) {
-            if (dataGridView == null || columnIndexes == null) {
+        public void disableDataGridViewColumns(int[] columnIndexes) {
+            if (columnIndexes == null) {
                 return;
             }
             //Each index from the array is checked to see if is higher than the index of the last column in the DataGridView
             foreach (int currentIndex in columnIndexes) {
-                if (currentIndex > dataGridView.Columns.Count - 1) {
-                    return;
+                //If the current index is outside of the column index range then it will be skipped and no column will be disabled
+                if (!areIndexesInRange(new int[] { currentIndex }, IndexCheckType.ROW_INDEX_CHECK)) {
+                    continue;
                 }
 
-                dataGridView.Columns[currentIndex].ReadOnly = true;
+                targetDataGridView.Columns[currentIndex].ReadOnly = true;
             }
         }
 
         //Method for checking if the budget plan contained in a DataGridView row can be edited
         //Editing is allowed only for current budget plans, future budget plans and for plans that started in the past but will continue for some time in the future after the start of the current month 
-        private bool isEditableBasedOnDate(DateTime startDate, DateTime endDate) {
+        public bool isEditableBasedOnDate(DateTime startDate, DateTime endDate) {
             //Gets the current date
             DateTime currentDate = DateTime.Now;
             //Creates a DateTime object representing the date of the first day of the current month and year 
@@ -112,23 +118,24 @@ namespace BudgetManager.utils {
         }
 
         //Method for retrieving the start and end date from the currently selected row of the DataGridView
-        private String[] getDatesFromSelectedRow(int selectedRowIndex, DataGridView dataGridView) {
-            //Arguments checks
-            if (dataGridView == null) {
+        public String[] getDatesFromSelectedRow(int selectedRowIndex, int startDateCellIndex, int endDateCellIndex) {
+            //Arguments check
+            if (!areIndexesInRange(new int[]{selectedRowIndex}, IndexCheckType.ROW_INDEX_CHECK)) {
                 return null;
             }
 
-            if (selectedRowIndex < 0 || selectedRowIndex > dataGridView.Rows.Count) {
+            if (!areIndexesInRange(new int[] { startDateCellIndex, endDateCellIndex},IndexCheckType.COLUMN_INDEX_CHECK)) {
                 return null;
             }
+
 
             //Getting the selected row
-            DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
+            DataGridViewRow selectedRow = targetDataGridView.Rows[selectedRowIndex];
 
 
             //Gets the dates from the selected row as String objects(if the date cells are empty the null value is assigned)
-            String startDateString = !"".Equals(selectedRow.Cells[8].FormattedValue) ? selectedRow.Cells[8].Value.ToString() : null;
-            String endDateString = !"".Equals(selectedRow.Cells[8].FormattedValue) ? selectedRow.Cells[9].Value.ToString() : null;
+            String startDateString = !"".Equals(selectedRow.Cells[startDateCellIndex].FormattedValue) ? selectedRow.Cells[startDateCellIndex].Value.ToString() : null;
+            String endDateString = !"".Equals(selectedRow.Cells[endDateCellIndex].FormattedValue) ? selectedRow.Cells[endDateCellIndex].Value.ToString() : null;
 
             //Checks for the null value of any of the two string dates and if so returns(to avoid NPE)
             if (startDateString == null || endDateString == null) {
@@ -145,18 +152,13 @@ namespace BudgetManager.utils {
 
         }
 
-        private int[] getItemsPercentagesFromSelectedRow(int selectedRowIndex, DataGridView dataGridView) {
-            //Arguments checks
-            if (dataGridView == null) {
+        private int[] getItemsPercentagesFromSelectedRow(int selectedRowIndex) {
+            //Arguments checks         
+            if (!areIndexesInRange(new int[] { selectedRowIndex }, IndexCheckType.ROW_INDEX_CHECK)) {
                 return null;
             }
-
-            if (selectedRowIndex < 0 || selectedRowIndex > dataGridView.Rows.Count) {
-                return null;
-            }
-
             //Getting the selected row
-            DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
+            DataGridViewRow selectedRow = targetDataGridView.Rows[selectedRowIndex];
 
             int expensesPercentage = selectedRow.Cells[2].Value != null ? Convert.ToInt32(selectedRow.Cells[2].Value) : 0;
             int debtsPercentage = selectedRow.Cells[3].Value != null ? Convert.ToInt32(selectedRow.Cells[3].Value) : 0;
@@ -190,9 +192,27 @@ namespace BudgetManager.utils {
 
         }
 
+        //Method for checking if the provided column indexes are inside the column index range of the current DataGridView
+        //The checks are different based on the type specified (column check/row check)
+        private bool areIndexesInRange(int[] indexList, IndexCheckType performedCheck) {
+            bool inRange = true;
 
+            int lowerBoundIndex = 0;
+            int upperBoundIndex = 0;
 
+            if (performedCheck == IndexCheckType.COLUMN_INDEX_CHECK) {
+                upperBoundIndex = targetDataGridView.Columns.Count - 1;
+            } else if (performedCheck == IndexCheckType.ROW_INDEX_CHECK) {
+                upperBoundIndex = targetDataGridView.Rows.Count - 1;
+            }
 
-
+            foreach (int index in indexList) {
+                if (index < lowerBoundIndex || index > upperBoundIndex) {
+                    inRange = false;
+                    break;
+                }
+            }
+            return inRange;
+        }
     }
 }
