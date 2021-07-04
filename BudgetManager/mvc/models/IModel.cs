@@ -13,15 +13,16 @@ namespace BudgetManager {
         SINGLE_MONTH,
         MULTIPLE_MONTHS,
         MONTHLY_TOTALS,
-        FULL_YEAR,//optiune adaugata pentru modelul folosit la actualizarea datelor
+        FULL_YEAR,//option used for the model that also updates data
         BUDGET_PLAN_INFO,//option added for the queries that retrieve data for the currently selected budget plan
-        UNDEFINED  //option added as default value to return when the conditios for the other option are not met     
+        TOTAL_VALUE,//option for queries retrieving data for all the timeframe up to the current month
+        UNDEFINED  //option added as default value to return when the conditinos for the other options are not met     
     }
 
-    //Enum pt sursa de date ce urmeaza a fi populata
-    //DYNAMIC_DATASOURCE_1-sursa de date pt tabel
-    //DYNAMIC_DATASOURCE_2- sursa de date pt pie chart
-    //STATIC_DATASOURCE = sursa de date pt column chart(graficul care afiseaza situatia pe lunile unui an selectat, ex:veniturile lunare pt anul 2020)
+    //Enum for the data source that is about to be populated
+    //DYNAMIC_DATASOURCE_1-data grid view data source
+    //DYNAMIC_DATASOURCE_2- pie chart data source
+    //STATIC_DATASOURCE -column chart data source (the chart the shows the monthly evolution of an element for the selected year)
     public enum SelectedDataSource {
         DYNAMIC_DATASOURCE_1,
         DYNAMIC_DATASOURCE_2,
@@ -33,7 +34,7 @@ namespace BudgetManager {
              
         DataTable getNewData(QueryType option, QueryData paramContainer,SelectedDataSource dataSource);
         void notifyObservers();       
-        void addObserver(IView observer);//Se foloseste ca parametru referinta catre interfata IView asfel că orice clasa care o implementează va putea fi transmisa ca argument
+        void addObserver(IView observer);//The parameter used is of IView type so any object whose class implements this interface can be used as an argument
         void removeObserver(IView observer);
         bool hasDBConnection();
     }

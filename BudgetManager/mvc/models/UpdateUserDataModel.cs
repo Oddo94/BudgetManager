@@ -13,23 +13,20 @@ namespace BudgetManager {
         private ArrayList observerList = new ArrayList();
         private DataTable[] dataSources = new DataTable[10];
 
-        //Selectare date pe o luna
+        //SQL statements for selecting single month data
         String sqlStatementSelectSingleMonthIncomes = @"SELECT incomeID, name, incomeType, value, date FROM incomes WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
-        String sqlStatementSelectSingleMonthExpenses = @"SELECT expenseID, name, type, value, date FROM expenses WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
+        String sqlStatementSelectSingleMonthGeneralExpenses = @"SELECT expenseID, name, type, value, date FROM expenses WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
+        String sqlStatementSelectSingleMonthSavingAccountExpenses = @"SELECT expenseID AS 'ID', name AS 'Name', (SELECT categoryName FROM expense_types WHERE categoryID = type) AS 'Expense type', value AS 'Value', date AS 'Date' FROM `saving_account_expenses` WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
         String sqlStatementSelectSingleMonthDebts = @"SELECT debtID, name, value, creditor_ID, date FROM debts WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
         String sqlStatementSelectSingleMonthSavings = @"SELECT savingID, name, value, date FROM savings WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
 
-        //Selectare date pe un an intreg
+        //SQL statements for selecting full year data
         String sqlStatementSelectFullYearIncomes = @"SELECT incomeID, name, incomeType, value, date FROM incomes WHERE user_ID = @paramID AND YEAR(date) = @paramYear ORDER BY date ASC";
-        String sqlStatementSelectFullYearExpenses = @"SELECT expenseID, name, type, value, date FROM expenses WHERE user_ID = @paramID AND YEAR(date) = @paramYear ORDER BY date ASC";
+        String sqlStatementSelectFullYearGeneralExpenses = @"SELECT expenseID, name, type, value, date FROM expenses WHERE user_ID = @paramID AND YEAR(date) = @paramYear ORDER BY date ASC";
+        String sqlStatementSelectFullYearSavingAccountExpenses = @"SELECT expenseID AS 'ID', name AS 'Name', (SELECT categoryName FROM expense_types WHERE categoryID = type) AS 'Expense type', value AS 'Value', date AS 'Date' FROM `saving_account_expenses` WHERE user_ID = @paramID AND YEAR(date) = @paramYear ORDER BY date ASC";
         String sqlStatementSelectFullYearDebts = @"SELECT debtID, name, value, creditor_ID, date FROM debts WHERE user_ID = @paramID AND YEAR(date) = @paramYear ORDER BY date ASC";
         String sqlStatementSelectFullYearSavings = @"SELECT savingID, name, value, date FROM savings WHERE user_ID = @paramID AND YEAR(date) = @paramYear ORDER BY date ASC";
 
-        //Comenzi generale de stergere a datelor
-        String sqlStatementDeleteIncome = @"DELETE FROM incomes WHERE incomeID = @paramItemID";
-        String sqlStatementDeleteExpense = @"DELETE FROM expenses WHERE expenseID = @paramItemID";
-        String sqlStatementDeleteDebt = @"DELETE FROM debts WHERE debtID = @paramItemID";
-        String sqlStatementDeleteSaving = @"DELETE FROM savings WHERE savingID = @paramItemID";
 
         public DataTable[] DataSources {
             get {
@@ -42,19 +39,15 @@ namespace BudgetManager {
             }
         }
 
-
-
         public DataTable getNewData(QueryType option, QueryData paramContainer, SelectedDataSource dataSource) {
             MySqlCommand command = null;
             if (option == QueryType.SINGLE_MONTH) {
                 switch (dataSource) {
                     //Grid view
-                    case SelectedDataSource.DYNAMIC_DATASOURCE_1:
-                        //command = SQLCommandBuilder.getSingleMonthCommand(sqlStatementSingleMonthExpenses, paramContainer);
+                    case SelectedDataSource.DYNAMIC_DATASOURCE_1:                       
                         break;
                     //Pie chart
                     case SelectedDataSource.DYNAMIC_DATASOURCE_2:
-                        //command = SQLCommandBuilder.getSingleMonthCommand(sqlStatementExpenseTypeSumSingle, paramContainer);
                         break;
                     //Column chart
                     case SelectedDataSource.STATIC_DATASOURCE:
@@ -69,12 +62,10 @@ namespace BudgetManager {
             } else if (option == QueryType.FULL_YEAR) {
                 switch (dataSource) {
                     //Grid view
-                    case SelectedDataSource.DYNAMIC_DATASOURCE_1:
-                        //command = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementMultipleMonthsExpenses, paramContainer);
+                    case SelectedDataSource.DYNAMIC_DATASOURCE_1:                       
                         break;
                     //Pie chart
-                    case SelectedDataSource.DYNAMIC_DATASOURCE_2:
-                        //command = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementExpenseTypeSumMultiple, paramContainer);
+                    case SelectedDataSource.DYNAMIC_DATASOURCE_2:                       
                         break;
                     //Column chart
                     case SelectedDataSource.STATIC_DATASOURCE:
@@ -92,30 +83,11 @@ namespace BudgetManager {
 
         public int updateData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
             int executionResult = 0;
-            //MySqlConnection conn = DBConnectionManager.getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
-            //try {
-                
-            //    MySqlCommand updateTableCommand = getCorrectSqlCommandForDataDisplay(option, paramContainer);
-            //    updateTableCommand.Connection = conn;
-            //    MySqlDataAdapter dataAdapter = new MySqlDataAdapter(updateTableCommand);
-            //    MySqlCommandBuilder commandBuilder = new MySqlCommandBuilder(dataAdapter);
-
-            //    DataTable currentTable = sourceDataTable;
-
-            //    executionResult = dataAdapter.Update(currentTable);
-            //    currentTable.AcceptChanges();
-          
-
-            //} catch (MySqlException ex) {
-            //    MessageBox.Show(ex.Message, "Data update form");
-            //}
-
-            //if (executionResult > 0) {
-            //    return executionResult;
-            //}
-            //Refacere comanda utilizata la afisarea datelor din tabel
+           
+            //Recreating the command used for displaying the data in the table
             MySqlCommand updateTableCommand = getCorrectSqlCommandForDataDisplay(option, paramContainer);
-            //Apelare metoda de actualizare efectiva a datelor
+            
+            //Calling the method which updates the data
             executionResult = DBConnectionManager.updateData(updateTableCommand, sourceDataTable);
 
             if (executionResult > 0) {
@@ -125,22 +97,6 @@ namespace BudgetManager {
             return -1;
 
         }
-
-        //public int deleteData(String tableName, int itemID) {
-        //    int executionResult = 0;
-        //    //Creare comandă de ștergere
-        //    MySqlCommand deleteCommand = getCorrectSqlCommandForDeletion(tableName, itemID);
-        //    //executionResult = DBConnectionManager.deleteData(deleteCommand);//MODIFICARE DENUMIRE COMANDA
-        //    //Obtinere rezultat executie
-        //    executionResult = DBConnectionManager.deleteData(deleteCommand);
-
-        //    if (executionResult > 0) {
-        //        return executionResult;
-        //    }
-
-        //    return -1;
-
-        //}
 
         //CHANGE!!!!!
         public int deleteData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
@@ -168,21 +124,21 @@ namespace BudgetManager {
             observerList.Remove(this);
         }
 
-        private MySqlCommand getCorrectSqlCommandForDataDisplay(QueryType option, QueryData paramContainer) {
-            //Obtinere date din obiectul de tip QueryData
+        private MySqlCommand getCorrectSqlCommandForDataDisplay(QueryType option, QueryData paramContainer) {          
+            //Retrieving data from the Querydata object(container object)
             int userID = paramContainer.UserID;
             String tableName = paramContainer.TableName;
             int selectedMonth = 0;
-
-            //Daca se cer datele pt o luna se va lua valoarea lunii din obiectul de tip QueryData
+        
+            //If single month data is requested then the value of the month from the QueryData object will be retrieved
             if (option == QueryType.SINGLE_MONTH) {
                 selectedMonth = paramContainer.Month;
             }
 
             int selectedYear = paramContainer.Year;
 
-            switch (tableName) {
-                //Creaza comanda SQL adecvata in functie de selectia din dateTimePicker(comanda pt o luna/un an intreg)
+            switch (tableName) {              
+                //Creates the correct SQL command based on the dateTimePicker selection(single month command/full year command)
                 case "Incomes":
                     if (option == QueryType.SINGLE_MONTH) {
                         return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthIncomes, new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build());
@@ -190,18 +146,25 @@ namespace BudgetManager {
                         return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearIncomes, new QueryData.Builder(userID).addYear(selectedYear).build()); //CHANGE
                     } else {
                         return null;
-                    }
-                //break;
+                    }               
 
-                case "Expenses":
+                case "General expenses":
                     if (option == QueryType.SINGLE_MONTH) {
-                        return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthExpenses, new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build());
+                        return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthGeneralExpenses, new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build());
                     } else if (option == QueryType.FULL_YEAR) {
-                        return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearExpenses, new QueryData.Builder(userID).addYear(selectedYear).build());
+                        return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearGeneralExpenses, new QueryData.Builder(userID).addYear(selectedYear).build());
+                    } else {
+                        return null;
+                    }            
+
+                case "Saving account expenses":
+                    if (option == QueryType.SINGLE_MONTH) {
+                        return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthSavingAccountExpenses, new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build());
+                    } else if (option == QueryType.FULL_YEAR) {
+                        return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearSavingAccountExpenses, new QueryData.Builder(userID).addYear(selectedYear).build());
                     } else {
                         return null;
                     }
-                //break;
 
                 case "Debts":
                     if (option == QueryType.SINGLE_MONTH) {
@@ -210,8 +173,7 @@ namespace BudgetManager {
                         return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearDebts, new QueryData.Builder(userID).addYear(selectedYear).build());
                     } else {
                         return null;
-                    }
-                //break;
+                    }             
 
                 case "Savings":
                     if (option == QueryType.SINGLE_MONTH) {
@@ -220,50 +182,13 @@ namespace BudgetManager {
                         return SQLCommandBuilder.getFullYearRecordsCommand(sqlStatementSelectFullYearSavings, new QueryData.Builder(userID).addYear(selectedYear).build());
                     } else {
                         return null;
-                    }
-                //break;
+                    }              
 
                 default:
                     return null;
-
-            }
-        }
-
-              private MySqlCommand getCorrectSqlCommandForDeletion(String tableName, int itemID) {
-            switch (tableName) {
-                //Creaza comanda sql adecvata in functie de selectia din dateTimePicker(comanda pt o luna/un an intreg)
-                case "Incomes":
-                    MySqlCommand deleteIncomeCommand = new MySqlCommand(sqlStatementDeleteIncome);
-                    deleteIncomeCommand.Parameters.AddWithValue("@paramItemID", itemID);
-
-                    return deleteIncomeCommand;
-
-                case "Expenses":
-                    MySqlCommand deleteExpenseCommand = new MySqlCommand(sqlStatementDeleteExpense);
-                    deleteExpenseCommand.Parameters.AddWithValue("@paramItemID", itemID);
-
-                    return deleteExpenseCommand;
-
-                case "Debts":
-                    MySqlCommand deleteDebtCommand = new MySqlCommand(sqlStatementDeleteDebt);
-                    deleteDebtCommand.Parameters.AddWithValue("@paramItemID", itemID);
-
-                    return deleteDebtCommand;
-
-                case "Savings":
-                    MySqlCommand deleteSavingCommand = new MySqlCommand(sqlStatementDeleteSaving);
-                    deleteSavingCommand.Parameters.AddWithValue("@paramItemID", itemID);
-
-                    return deleteSavingCommand;
-
-
-                default:
-                    return null;
-
             }
         }
     }
-
-    }
+ }
  
 

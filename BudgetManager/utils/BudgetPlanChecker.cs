@@ -183,9 +183,10 @@ namespace BudgetManager.utils {
             //Sets the default value for the percentage limit
             int percentageLimit = 1;
 
-            //Checks if the specified item type is an expense, debt or saving and sets the percentage limit accordingly (if the percentage limit retrieved from the DB is null the default value of 1 is set)
+            //Checks if the specified item type is a general expense, debt or saving and sets the percentage limit accordingly (if the percentage limit retrieved from the DB is null the default value of 1 is set)
             switch (itemType) {
-                case BudgetItemType.EXPENSE:
+                //CHANGE(FROM EXPENSE TO GENERAL EXPENSE)!!!
+                case BudgetItemType.GENERAL_EXPENSE:
                     percentageLimit = budgetPlanDataTable.Rows[0].ItemArray[1] != DBNull.Value ? Convert.ToInt32(budgetPlanDataTable.Rows[0].ItemArray[1]) : 1;
                     break;
 
@@ -235,13 +236,14 @@ namespace BudgetManager.utils {
 
         }
 
-        //Method for getting the right Sql command according to the user selected budget item(expense, debt saving)
+        //Method for getting the right Sql command according to the user selected budget item(general expense, debt saving)
         private MySqlCommand getCorrectSqlCommand(BudgetItemType itemType, String startDate, String endDate) {
             MySqlCommand getTotalItemValueCommand = null;
             QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).build();
 
             switch (itemType) {
-                case BudgetItemType.EXPENSE:
+                //CHANGE(FROM EXPENSE TO GENERAL EXPENSE)!!!
+                case BudgetItemType.GENERAL_EXPENSE:
                     getTotalItemValueCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementGetTotalExpenses, paramContainer);
                     break;
 

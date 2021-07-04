@@ -61,3 +61,4 @@ D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Deb
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.non_mvc.BudgetPlanCreator.resources
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.mvc.views.BudgetPlanManagementForm.resources
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.non_mvc.BudgetPlanManagementCalculator.resources
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.mvc.views.SavingAccountForm.resources

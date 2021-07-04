@@ -104,6 +104,32 @@ namespace BudgetManager {
             return savingInsertionCommand;
         }
 
+        //Method for creating a command that will insert or update a record in the balance record table
+        public static MySqlCommand getBalanceRecordInsertUpdateCommand(String sqlStatement, QueryData paramContainer) {
+            MySqlCommand balanceRecordInsertionCommand = new MySqlCommand(sqlStatement);
+            balanceRecordInsertionCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
+            balanceRecordInsertionCommand.Parameters.AddWithValue("@paramRecordName",paramContainer.ItemName);
+            balanceRecordInsertionCommand.Parameters.AddWithValue("@paramValue", paramContainer.ItemValue);
+            balanceRecordInsertionCommand.Parameters.AddWithValue("paramMonth", paramContainer.Month);
+            balanceRecordInsertionCommand.Parameters.AddWithValue("paramYear", paramContainer.Year);
+
+            return balanceRecordInsertionCommand;
+        }
+
+        //Method for creating a command that can be used to check the sum of a table values for a user(can be used to check current balance or other limits on item insertion into the DB)
+        public static MySqlCommand getRecordSumValueCommand(String sqlStatement, QueryData paramContainer) {
+            MySqlCommand recordSumValueCommand = new MySqlCommand(sqlStatement);
+            recordSumValueCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
+
+            return recordSumValueCommand;
+        }
+
+        //public static MySqlCommand getBalanceRecordUpdateCommand(String sqlStatement, QueryData paramContainer) {
+        //    MySqlCommand balanceRecordUpdateCommand = new MySqlCommand(sqlStatement);
+        //    balanceRecordUpdateCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
+        //    balanceRecordUpdateCommand.Parameters.AddWithValue("@paramRecordName", paramContainer.ItemName);
+        //}
+
         //Method for getting the command that helps check if there is an existing budget plan for the specified time interval
         public static MySqlCommand getBudgetPlanCheckCommand(String sqlStatement, QueryData paramContainer) {
             MySqlCommand budgetPlanCheckCommand = new MySqlCommand(sqlStatement);
@@ -136,6 +162,14 @@ namespace BudgetManager {
             budgetPlanCreationCommand.Parameters.AddWithValue("@paramEndDate", paramContainer.EndDate);
 
             return budgetPlanCreationCommand;
+        }
+
+        //Method for creating commands with a single parameter representing the user ID
+        public static MySqlCommand getSpecificUserRecordsCommand(String sqlStatement, QueryData paramContainer) {
+            MySqlCommand getSpecificUserRecordsCommand = new MySqlCommand(sqlStatement);
+            getSpecificUserRecordsCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
+
+            return getSpecificUserRecordsCommand;
         }
     }
 }

@@ -23,7 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tableSelectionComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGridViewTableDisplay = new System.Windows.Forms.DataGridView();
@@ -42,7 +42,8 @@
             this.tableSelectionComboBox.FormattingEnabled = true;
             this.tableSelectionComboBox.Items.AddRange(new object[] {
             "Incomes",
-            "Expenses",
+            "General expenses",
+            "Saving account expenses",
             "Debts",
             "Savings"});
             this.tableSelectionComboBox.Location = new System.Drawing.Point(46, 100);
@@ -62,22 +63,25 @@
             // 
             // dataGridViewTableDisplay
             // 
+            this.dataGridViewTableDisplay.AllowUserToAddRows = false;
             this.dataGridViewTableDisplay.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewTableDisplay.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGridViewTableDisplay.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewTableDisplay.DefaultCellStyle = dataGridViewCellStyle2;
-            this.dataGridViewTableDisplay.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewTableDisplay.DefaultCellStyle = dataGridViewCellStyle1;
+            this.dataGridViewTableDisplay.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dataGridViewTableDisplay.Location = new System.Drawing.Point(28, 180);
             this.dataGridViewTableDisplay.Name = "dataGridViewTableDisplay";
             this.dataGridViewTableDisplay.Size = new System.Drawing.Size(550, 258);
             this.dataGridViewTableDisplay.TabIndex = 3;
+            this.dataGridViewTableDisplay.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellClick);
+            this.dataGridViewTableDisplay.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellDoubleClick);
             this.dataGridViewTableDisplay.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewTableDisplay_CellMouseClick);
             this.dataGridViewTableDisplay.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellValueChanged);
             // 

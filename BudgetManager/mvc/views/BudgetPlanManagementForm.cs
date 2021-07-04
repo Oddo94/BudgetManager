@@ -66,10 +66,10 @@ namespace BudgetManager.mvc.views {
         }
 
         private void dateTimePickerBPManagement_ValueChanged(object sender, EventArgs e) {
-            DateTimePickerType pickerType = getDateTimePickerType(dateTimePickerBPManagement);
+            DataUpdateControl pickerType = getDateTimePickerType(dateTimePickerBPManagement);
 
             //If the returned value is UNDEFINED it means that something went wrong and the control returns from the method meaning and as a result no data is sent to the controller
-            if (pickerType == DateTimePickerType.UNDEFINED) {
+            if (pickerType == DataUpdateControl.UNDEFINED) {
                 return;
             }
 
@@ -85,7 +85,7 @@ namespace BudgetManager.mvc.views {
             selectedRowIndex = dataGridViewBPManagement.CurrentCell.RowIndex; //Gets the index of the selected cell's parent row 
             deleteButtonBPManagement.Enabled = true;
 
-            DateTimePickerType pickerType = getDateTimePickerType(dateTimePickerBPManagement);       
+            DataUpdateControl pickerType = getDateTimePickerType(dateTimePickerBPManagement);       
 
             bool hasClickedCell = true;
             sendDataToController(pickerType, dateTimePickerBPManagement, hasClickedCell);
@@ -164,14 +164,14 @@ namespace BudgetManager.mvc.views {
 
 
         //UTIL METHODS
-        private DateTimePickerType getDateTimePickerType(DateTimePicker dateTimePicker) {
+        private DataUpdateControl getDateTimePickerType(DateTimePicker dateTimePicker) {
             //Sets the default value for the picker type
-            DateTimePickerType pickerType = DateTimePickerType.UNDEFINED;
+            DataUpdateControl pickerType = DataUpdateControl.UNDEFINED;
             
             if ("MM/yyyy".Equals(dateTimePicker.CustomFormat)) {
-                pickerType = DateTimePickerType.MONTHLY_PICKER;
+                pickerType = DataUpdateControl.MONTHLY_PICKER;
             } else if ("yyyy".Equals(dateTimePicker.CustomFormat)) {
-                pickerType = DateTimePickerType.YEARLY_PICKER;
+                pickerType = DataUpdateControl.YEARLY_PICKER;
             }
 
             return pickerType;
@@ -180,10 +180,10 @@ namespace BudgetManager.mvc.views {
 
 
         //Method for sending the correct data to the controller acording to user timespan selection
-        private void sendDataToController(DateTimePickerType pickerType, DateTimePicker dateTimePicker, bool hasClickedCell) {
+        private void sendDataToController(DataUpdateControl pickerType, DateTimePicker dateTimePicker, bool hasClickedCell) {
             QueryData paramContainer = null;
             //If the month records checkbox is selected then the month and year is retrieved from the provided dateTimePicker and the QueryData object is created
-            if (pickerType == DateTimePickerType.MONTHLY_PICKER) {
+            if (pickerType == DataUpdateControl.MONTHLY_PICKER) {
                 //paramContainer = new QueryData.Builder(userID).addMonth(dateTimePicker.Value.Month).addYear(dateTimePicker.Value.Year).build();
                 if (hasClickedCell) {
                     string[] selectedPlanDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
@@ -198,7 +198,7 @@ namespace BudgetManager.mvc.views {
                     paramContainer = new QueryData.Builder(userID).addMonth(dateTimePicker.Value.Month).addYear(dateTimePicker.Value.Year).build();
                 }
                 //If the year record checkbox is selected then only the year is retrieved from the prvided dateTimePicker and the QueryData object is created
-            } else if (pickerType == DateTimePickerType.YEARLY_PICKER) {
+            } else if (pickerType == DataUpdateControl.YEARLY_PICKER) {
                 //If a DataGridView cell was clicked  then it means that the start and end dates of the selected budget plan have to be retrieved in order to create the paramContainer object
                 if (hasClickedCell) {
                     string[] selectedPlanDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);

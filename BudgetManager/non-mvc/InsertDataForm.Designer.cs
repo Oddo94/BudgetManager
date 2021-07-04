@@ -40,6 +40,9 @@
             this.addEntryButton = new System.Windows.Forms.Button();
             this.resetButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.generalIncomesRadioButton = new System.Windows.Forms.RadioButton();
+            this.savingAccountRadioButton = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
             // label1
@@ -99,7 +102,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(28, 470);
+            this.label7.Location = new System.Drawing.Point(28, 507);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(72, 13);
             this.label7.TabIndex = 6;
@@ -107,7 +110,7 @@
             // 
             // newEntryDateTimePicker
             // 
-            this.newEntryDateTimePicker.Location = new System.Drawing.Point(105, 80);
+            this.newEntryDateTimePicker.Location = new System.Drawing.Point(111, 80);
             this.newEntryDateTimePicker.Name = "newEntryDateTimePicker";
             this.newEntryDateTimePicker.Size = new System.Drawing.Size(200, 20);
             this.newEntryDateTimePicker.TabIndex = 7;
@@ -122,7 +125,7 @@
             "Debt",
             "Saving",
             "Creditor"});
-            this.budgetItemComboBox.Location = new System.Drawing.Point(105, 140);
+            this.budgetItemComboBox.Location = new System.Drawing.Point(111, 140);
             this.budgetItemComboBox.Name = "budgetItemComboBox";
             this.budgetItemComboBox.Size = new System.Drawing.Size(121, 21);
             this.budgetItemComboBox.TabIndex = 8;
@@ -132,7 +135,7 @@
             // 
             this.incomeTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.incomeTypeComboBox.FormattingEnabled = true;
-            this.incomeTypeComboBox.Location = new System.Drawing.Point(105, 359);
+            this.incomeTypeComboBox.Location = new System.Drawing.Point(111, 359);
             this.incomeTypeComboBox.Name = "incomeTypeComboBox";
             this.incomeTypeComboBox.Size = new System.Drawing.Size(121, 21);
             this.incomeTypeComboBox.TabIndex = 9;
@@ -142,7 +145,7 @@
             // 
             this.expenseTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.expenseTypeComboBox.FormattingEnabled = true;
-            this.expenseTypeComboBox.Location = new System.Drawing.Point(105, 410);
+            this.expenseTypeComboBox.Location = new System.Drawing.Point(111, 410);
             this.expenseTypeComboBox.Name = "expenseTypeComboBox";
             this.expenseTypeComboBox.Size = new System.Drawing.Size(121, 21);
             this.expenseTypeComboBox.TabIndex = 10;
@@ -152,7 +155,7 @@
             // 
             this.creditorNameComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.creditorNameComboBox.FormattingEnabled = true;
-            this.creditorNameComboBox.Location = new System.Drawing.Point(105, 462);
+            this.creditorNameComboBox.Location = new System.Drawing.Point(111, 499);
             this.creditorNameComboBox.Name = "creditorNameComboBox";
             this.creditorNameComboBox.Size = new System.Drawing.Size(121, 21);
             this.creditorNameComboBox.TabIndex = 11;
@@ -160,7 +163,7 @@
             // 
             // nameTextBox
             // 
-            this.nameTextBox.Location = new System.Drawing.Point(105, 247);
+            this.nameTextBox.Location = new System.Drawing.Point(111, 247);
             this.nameTextBox.Name = "nameTextBox";
             this.nameTextBox.Size = new System.Drawing.Size(200, 20);
             this.nameTextBox.TabIndex = 12;
@@ -168,7 +171,7 @@
             // 
             // valueTextBox
             // 
-            this.valueTextBox.Location = new System.Drawing.Point(105, 311);
+            this.valueTextBox.Location = new System.Drawing.Point(111, 311);
             this.valueTextBox.Name = "valueTextBox";
             this.valueTextBox.Size = new System.Drawing.Size(200, 20);
             this.valueTextBox.TabIndex = 13;
@@ -177,7 +180,7 @@
             // addEntryButton
             // 
             this.addEntryButton.Enabled = false;
-            this.addEntryButton.Location = new System.Drawing.Point(31, 546);
+            this.addEntryButton.Location = new System.Drawing.Point(31, 574);
             this.addEntryButton.Name = "addEntryButton";
             this.addEntryButton.Size = new System.Drawing.Size(82, 23);
             this.addEntryButton.TabIndex = 14;
@@ -187,7 +190,7 @@
             // 
             // resetButton
             // 
-            this.resetButton.Location = new System.Drawing.Point(233, 546);
+            this.resetButton.Location = new System.Drawing.Point(236, 574);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(82, 23);
             this.resetButton.TabIndex = 15;
@@ -197,7 +200,7 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(412, 546);
+            this.cancelButton.Location = new System.Drawing.Point(421, 574);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(82, 23);
             this.cancelButton.TabIndex = 16;
@@ -205,11 +208,47 @@
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(28, 462);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(77, 13);
+            this.label8.TabIndex = 17;
+            this.label8.Text = "Income source";
+            // 
+            // generalIncomesRadioButton
+            // 
+            this.generalIncomesRadioButton.AutoSize = true;
+            this.generalIncomesRadioButton.Checked = true;
+            this.generalIncomesRadioButton.Enabled = false;
+            this.generalIncomesRadioButton.Location = new System.Drawing.Point(111, 460);
+            this.generalIncomesRadioButton.Name = "generalIncomesRadioButton";
+            this.generalIncomesRadioButton.Size = new System.Drawing.Size(104, 17);
+            this.generalIncomesRadioButton.TabIndex = 18;
+            this.generalIncomesRadioButton.TabStop = true;
+            this.generalIncomesRadioButton.Text = "General incomes";
+            this.generalIncomesRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // savingAccountRadioButton
+            // 
+            this.savingAccountRadioButton.AutoSize = true;
+            this.savingAccountRadioButton.Enabled = false;
+            this.savingAccountRadioButton.Location = new System.Drawing.Point(236, 460);
+            this.savingAccountRadioButton.Name = "savingAccountRadioButton";
+            this.savingAccountRadioButton.Size = new System.Drawing.Size(100, 17);
+            this.savingAccountRadioButton.TabIndex = 19;
+            this.savingAccountRadioButton.Text = "Saving account";
+            this.savingAccountRadioButton.UseVisualStyleBackColor = true;
+            // 
             // InsertDataForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(547, 613);
+            this.ClientSize = new System.Drawing.Size(572, 653);
+            this.Controls.Add(this.savingAccountRadioButton);
+            this.Controls.Add(this.generalIncomesRadioButton);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.resetButton);
             this.Controls.Add(this.addEntryButton);
@@ -231,6 +270,7 @@
             this.MaximizeBox = false;
             this.Name = "InsertDataForm";
             this.Text = "Insert data";
+            this.Load += new System.EventHandler(this.InsertDataForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -255,5 +295,8 @@
         private System.Windows.Forms.Button addEntryButton;
         private System.Windows.Forms.Button resetButton;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.RadioButton generalIncomesRadioButton;
+        private System.Windows.Forms.RadioButton savingAccountRadioButton;
     }
 }
