@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics.Contracts;
+using System.Collections;
 
 namespace BudgetManager.utils {
     //Enum that contains the type of index checks that can be made on the current DataGridView object
@@ -29,8 +30,8 @@ namespace BudgetManager.utils {
             targetDataGridView.DataSource = inputDataTable;
         }
 
-        //Method for making data grid view rows that contain budget plans for which the start and end dates don't meet the specified criteria non-editable
-        public void disableDataGridViewRows(int startDateCellIndex, int endDateCellIndex) {
+        //Method for making data grid view rows for which the record start and end dates don't meet the specified criteria non-editable
+        public void disableRowsBasedOnDate(int startDateCellIndex, int endDateCellIndex) {
             int[] columnIndexes = new int[] { startDateCellIndex, endDateCellIndex };
 
             if (!areIndexesInRange(columnIndexes, IndexCheckType.COLUMN_INDEX_CHECK)) {
@@ -72,7 +73,7 @@ namespace BudgetManager.utils {
             }
         }
 
-        //Method for disabling specific columns from the DataGridGriew(the arguments are the specified DataGridView and an array containing the indexes of the columns which need to be non-editable)
+        //Method for disabling specific columns from the DataGridGriew(the parameter is an array containing the indexes of the columns which need to be made non-editable)
         public void disableDataGridViewColumns(int[] columnIndexes) {
             if (columnIndexes == null) {
                 return;
@@ -88,9 +89,9 @@ namespace BudgetManager.utils {
             }
         }
 
-        //Method for checking if the budget plan contained in a DataGridView row can be edited
+        //Method for checking if the data contained in a DataGridView row can be edited(usually for budget plan reciords displayed in the DataGridView)
         //Editing is allowed only for current budget plans, future budget plans and for plans that started in the past but will continue for some time in the future after the start of the current month 
-        public bool isEditableBasedOnDate(DateTime startDate, DateTime endDate) {
+        private bool isEditableBasedOnDate(DateTime startDate, DateTime endDate) {
             //Gets the current date
             DateTime currentDate = DateTime.Now;
             //Creates a DateTime object representing the date of the first day of the current month and year 
@@ -152,44 +153,54 @@ namespace BudgetManager.utils {
 
         }
 
-        private int[] getItemsPercentagesFromSelectedRow(int selectedRowIndex) {
+        //Method for retrieving multiple values from a specified DataGridView row
+        public int[] getMultipleItemValuesFromSelectedRow(int selectedRowIndex, int[] itemIndexes) {
             //Arguments checks         
             if (!areIndexesInRange(new int[] { selectedRowIndex }, IndexCheckType.ROW_INDEX_CHECK)) {
+                return null;
+            }
+
+            if (itemIndexes == null || !areIndexesInRange(itemIndexes, IndexCheckType.COLUMN_INDEX_CHECK)) {
                 return null;
             }
             //Getting the selected row
             DataGridViewRow selectedRow = targetDataGridView.Rows[selectedRowIndex];
 
-            int expensesPercentage = selectedRow.Cells[2].Value != null ? Convert.ToInt32(selectedRow.Cells[2].Value) : 0;
-            int debtsPercentage = selectedRow.Cells[3].Value != null ? Convert.ToInt32(selectedRow.Cells[3].Value) : 0;
-            int savingsPercentage = selectedRow.Cells[4].Value != null ? Convert.ToInt32(selectedRow.Cells[4].Value) : 0;
+            //Creates a list for storing the values
+            List<int> itemDataList = new List<int>();
+            //Iterates through the item index array retrieving the value at each index and adding it to the list
+            foreach (int currentIndex in itemIndexes) {
+                int currentItemValue = selectedRow.Cells[currentIndex].Value != null ? Convert.ToInt32(selectedRow.Cells[currentIndex].Value) : 0;
+                itemDataList.Add(currentItemValue);
+            }
 
-            int[] userSetPercentages = new int[] { expensesPercentage, debtsPercentage, savingsPercentage };
-
-            return userSetPercentages;
+            //Converting the List<int> object to an int[] array and returning the result
+            return itemDataList.ToArray();
         }
 
-        //Method for calculating the sum of percentages limit for all budget items
-        private int calculatePercentagesSum(int selectedRowIndex, DataGridView dataGridView) {
-            if (dataGridView == null || dataGridView.Rows.Count == 0) {
+        //Method for calculating the sum of the specified column values
+        public int calculateItemsValueSum(int selectedRowIndex, int[] summedItemsIndexes ) {
+            //Arguments checks         
+            if (!areIndexesInRange(new int[] { selectedRowIndex }, IndexCheckType.ROW_INDEX_CHECK)) {
                 return -1;
             }
 
-            if (selectedRowIndex < 0 || selectedRowIndex > dataGridView.Rows.Count) {
+            if (summedItemsIndexes == null || !areIndexesInRange(summedItemsIndexes, IndexCheckType.COLUMN_INDEX_CHECK)) {
                 return -1;
             }
 
             //Gets the selected row from the DataGridView
-            DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
-            //Converts the value at the respective cell and if this value is null the result will be 0
-            int expensePercentage = selectedRow.Cells[2].Value != DBNull.Value ? Convert.ToInt32(selectedRow.Cells[2].Value) : 0;
-            int debtPercentage = selectedRow.Cells[3].Value != DBNull.Value ? Convert.ToInt32(selectedRow.Cells[3].Value) : 0;
-            int savingPercentage = selectedRow.Cells[4].Value != DBNull.Value ? Convert.ToInt32(selectedRow.Cells[4].Value) : 0;
+            DataGridViewRow selectedRow = targetDataGridView.Rows[selectedRowIndex];
 
-            int percentagesSum = expensePercentage + debtPercentage + savingPercentage;
-
-            return percentagesSum;
-
+            int selectedItemsSum = 0;
+            //Iterates through the item index array retrieving the value at each index and adding it to the list
+            foreach (int currentIndex in summedItemsIndexes) {
+                //Converts the value at the respective cell and if this value is null the result will be 0
+                int currentItemValue = selectedRow.Cells[currentIndex].Value != null ? Convert.ToInt32(selectedRow.Cells[currentIndex].Value) : 0;
+                selectedItemsSum += currentItemValue;
+            }
+                            
+            return selectedItemsSum;
         }
 
         //Method for checking if the provided column indexes are inside the column index range of the current DataGridView
@@ -200,12 +211,14 @@ namespace BudgetManager.utils {
             int lowerBoundIndex = 0;
             int upperBoundIndex = 0;
 
+            //The upper bound index max limit is calculated based on the performed check(column check/row check) but the lower bound index is always 0
             if (performedCheck == IndexCheckType.COLUMN_INDEX_CHECK) {
                 upperBoundIndex = targetDataGridView.Columns.Count - 1;
             } else if (performedCheck == IndexCheckType.ROW_INDEX_CHECK) {
                 upperBoundIndex = targetDataGridView.Rows.Count - 1;
             }
 
+            //If any of the specified indexes is out of range then false value will be returned from the method
             foreach (int index in indexList) {
                 if (index < lowerBoundIndex || index > upperBoundIndex) {
                     inRange = false;
