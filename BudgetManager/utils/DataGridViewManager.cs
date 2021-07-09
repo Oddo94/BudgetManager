@@ -19,9 +19,7 @@ namespace BudgetManager.utils {
 
         public DataGridViewManager(DataGridView targetDataGridView) {
             //Null check inside the constructor in order to ensure a fail fast solution and to avoid the need for further null checks inside each method of the class
-            if (targetDataGridView == null) {
-                throw new ArgumentNullException(nameof(targetDataGridView));
-            }
+            Guard.notNull(targetDataGridView, "DataGridView");
 
             this.targetDataGridView = targetDataGridView;
         }
@@ -75,9 +73,8 @@ namespace BudgetManager.utils {
 
         //Method for disabling specific columns from the DataGridGriew(the parameter is an array containing the indexes of the columns which need to be made non-editable)
         public void disableDataGridViewColumns(int[] columnIndexes) {
-            if (columnIndexes == null) {
-                return;
-            }
+            Guard.notNull(columnIndexes, "Column indexes array");
+
             //Each index from the array is checked to see if is higher than the index of the last column in the DataGridView
             foreach (int currentIndex in columnIndexes) {
                 //If the current index is outside of the column index range then it will be skipped and no column will be disabled

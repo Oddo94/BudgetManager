@@ -99,6 +99,7 @@
     <Compile Include="non-mvc\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="utils\Guard.cs" />
     <Compile Include="utils\PasswordResetManager.cs" />
     <Compile Include="utils\PasswordSecurityManager.cs" />
     <Compile Include="non-mvc\RegisterForm.cs">
