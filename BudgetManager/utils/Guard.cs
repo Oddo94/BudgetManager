@@ -8,12 +8,14 @@ using System.Windows.Forms;
 namespace BudgetManager.utils {
     public static class Guard {
 
+        //Method for checking if the provided argument is null and if so displays an error message based on the argument name  
         public static void notNull(Object value , String paramName) {
             if (value == null) {
-                throw new ArgumentNullException(paramName);
+                throw new ArgumentNullException(paramName, String.Format("The provided {0} argument cannot be null", paramName));
             }
         }
 
+        //Method for checking if the provided row index of the DataGridView object is in range
         public static void inRange(DataGridView gridView, int rowIndex) {
             int maxRowIndex = gridView.Rows.Count - 1;
 
@@ -22,6 +24,7 @@ namespace BudgetManager.utils {
             }
         }
 
+        //Method for checking if the provided row index and column index of the DataGridView object are in range
         public static void inRange(DataGridView gridView, int rowIndex, int columnIndex) {
             int maxRowIndex = gridView.Rows.Count - 1;
             int maxColumnIndex = gridView.Columns.Count - 1;
