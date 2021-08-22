@@ -21,13 +21,20 @@ namespace BudgetManager.mvc.views {
         private IUpdaterModel model;
         private DateTimePicker[] datePickers;
         private int selectedRowIndex;//the variable that holds the value of the DataGridView row that contains the user edited value
+        private DataGridViewManager gridViewManager;//object used to access the methods for managing the data grid view that displays the budget plans
+        private const int EXPENSE_PERCENTAGE_COLUMN_INDEX = 2;
+        private const int DEBT_PERCENTAGE_COLUMN_INDEX = 3;
+        private const int SAVING_PERCENTAGE_COLUMN_INDEX = 4;  
+        private const int START_DATE_COLUMN_INDEX = 8;
+        private const int END_DATE_COLUMN_INDEX = 9;
 
 
         public BudgetPlanManagementForm(int userID) {
             InitializeComponent();
             this.userID = userID;
             this.buttons = new Button[] {submitButtonBPManagement, deleteButtonBPManagement};
-            this.datePickers = new DateTimePicker[] { dateTimePickerBPManagement};  
+            this.datePickers = new DateTimePicker[] { dateTimePickerBPManagement};
+            this.gridViewManager = new DataGridViewManager(dataGridViewBPManagement);
 
             //Sets the default date of the date time picker as the first day of the current month of the current year(before the MVC is set up so the date setting action does not trigger the data retrieval method from the model)
             setDateTimePickerDefaultDate(datePickers);
@@ -82,7 +89,7 @@ namespace BudgetManager.mvc.views {
         //The method that activates the delete button when a cell from the dataGridView is clicked
         //ADD METHOD FOR BUDGET PLAN DETAILS GRID VIEW FILLING
         private void dataGridViewBPManagement_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e) {
-            selectedRowIndex = dataGridViewBPManagement.CurrentCell.RowIndex; //Gets the index of the selected cell's parent row 
+            //selectedRowIndex = dataGridViewBPManagement.CurrentCell.RowIndex; //Gets the index of the selected cell's parent row 
             deleteButtonBPManagement.Enabled = true;
 
             DataUpdateControl pickerType = getDateTimePickerType(dateTimePickerBPManagement);       
@@ -94,6 +101,8 @@ namespace BudgetManager.mvc.views {
 
         //the method that activates the submit button when the value of a cell from the dataGridView changes and one of the timespan selection checkboxes is checked
         private void dataGridViewBPManagement_CellValueChanged(object sender, DataGridViewCellEventArgs e) {
+            //The index of the row whose value/values were changed is saved (as opposed to previous solution which saved the value at each CellMouseClick event see-dataGridViewBPManagement_CellMouseClick method)
+            selectedRowIndex = dataGridViewBPManagement.CurrentCell.RowIndex;
             if (monthRecordsCheckboxBP.Checked == true || yearRecordsCheckboxBP.Checked == true) {
                 submitButtonBPManagement.Enabled = true;
             }
@@ -115,7 +124,10 @@ namespace BudgetManager.mvc.views {
 
         public void updateView(IModel model) {
             fillDataGridViewBP(model.DataSources[0]);
-            disableDataGridViewRows(dataGridViewBPManagement);
+            //disableDataGridViewRows(dataGridViewBPManagement);
+            //CHANGE-DGW MANAGEMENT
+            gridViewManager.disableRowsBasedOnDate(START_DATE_COLUMN_INDEX, END_DATE_COLUMN_INDEX);
+
 
             //Array containing the indexes of the columns that will be made non-editable(currently the record ID(primary key), budget plan type, start date and end date are included)
             int[] columnIndexes = new int[] {0, 5, 8, 9 };
@@ -186,7 +198,9 @@ namespace BudgetManager.mvc.views {
             if (pickerType == DataUpdateControl.MONTHLY_PICKER) {
                 //paramContainer = new QueryData.Builder(userID).addMonth(dateTimePicker.Value.Month).addYear(dateTimePicker.Value.Year).build();
                 if (hasClickedCell) {
-                    string[] selectedPlanDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+                    //string[] selectedPlanDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+                    //CHANGE-DGW MANAGEMENT
+                    string[] selectedPlanDates = gridViewManager.getDatesFromSelectedRow(selectedRowIndex, START_DATE_COLUMN_INDEX, END_DATE_COLUMN_INDEX);
 
                     if (selectedPlanDates == null) {
                         return;
@@ -201,7 +215,9 @@ namespace BudgetManager.mvc.views {
             } else if (pickerType == DataUpdateControl.YEARLY_PICKER) {
                 //If a DataGridView cell was clicked  then it means that the start and end dates of the selected budget plan have to be retrieved in order to create the paramContainer object
                 if (hasClickedCell) {
-                    string[] selectedPlanDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+                    //string[] selectedPlanDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+                    //CHANGE-DGW MANAGEMENT
+                    string[] selectedPlanDates = gridViewManager.getDatesFromSelectedRow(selectedRowIndex, START_DATE_COLUMN_INDEX, END_DATE_COLUMN_INDEX);
 
                     if (selectedPlanDates == null) {
                         return;
@@ -227,7 +243,7 @@ namespace BudgetManager.mvc.views {
 
 
         private void submitButtonBPManagement_Click(object sender, EventArgs e) {
-            //Asksfor user to confirm the update decision
+            //Asks for user to confirm the update decision
             DialogResult userOptionConfirmUpdate = MessageBox.Show("Are you sure that you want to update the selected budget plan?", "Budget plan mamagement", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             //If the user selects the 'No' option then no budget plan is updated
@@ -236,13 +252,26 @@ namespace BudgetManager.mvc.views {
             }
 
             //Checks if the percentage limit for items were correctly set (if the total sum equals 100%)          
-            if (calculatePercentagesSum(selectedRowIndex, dataGridViewBPManagement) < 100 || calculatePercentagesSum(selectedRowIndex, dataGridViewBPManagement) > 100) {
+            //if (calculatePercentagesSum(selectedRowIndex, dataGridViewBPManagement) < 100 || calculatePercentagesSum(selectedRowIndex, dataGridViewBPManagement) > 100) {
+            //    MessageBox.Show("The sum of the specified percentages for budget items does not equal 100%! Please amend the necessary limits before continuing.", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            //    return;
+            //}
+            //CHANGE-DGW MANAGEMENT
+            int[] itemColumnIndexes = new int[] { EXPENSE_PERCENTAGE_COLUMN_INDEX, DEBT_PERCENTAGE_COLUMN_INDEX, SAVING_PERCENTAGE_COLUMN_INDEX };
+            int percentagesSum = gridViewManager.calculateItemsValueSum(selectedRowIndex, itemColumnIndexes);
+
+            if (percentagesSum < 100 || percentagesSum > 100) {
                 MessageBox.Show("The sum of the specified percentages for budget items does not equal 100%! Please amend the necessary limits before continuing.", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 return;
             }
+
+
+
             //Creates the planChecker object for accessing the methods inside the BudgetPlanChecker class
             BudgetPlanChecker planChecker = new BudgetPlanChecker(userID, DateTime.Now.ToString("yyyy-MM-dd"));
-            String[] selectedRowDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+            //String[] selectedRowDates = getDatesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+            //CHANGE-DGW MANAGEMENT
+            String[] selectedRowDates = gridViewManager.getDatesFromSelectedRow(selectedRowIndex, START_DATE_COLUMN_INDEX, END_DATE_COLUMN_INDEX);
 
             if (selectedRowDates == null || selectedRowDates.Length < 2) {
                 return;
@@ -257,7 +286,10 @@ namespace BudgetManager.mvc.views {
                 return;
             }
 
-            int[] userSetPercentages = getItemsPercentagesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+
+            //int[] userSetPercentages = getItemsPercentagesFromSelectedRow(selectedRowIndex, dataGridViewBPManagement);
+            //CHANGE-DGW MANAGEMENT            
+            int[] userSetPercentages = gridViewManager.getMultipleItemValuesFromSelectedRow(selectedRowIndex, itemColumnIndexes);
 
             //Checks to see if the percentage set by the user is higher/equal to the percentage of the current item total value calculated in relation to the total incomes from the timespan between start date and end date
             if (!planChecker.isLowerThanCurrentItemPercentage(userSetPercentages, itemTotals, startDate, endDate)) {
@@ -382,28 +414,28 @@ namespace BudgetManager.mvc.views {
         }
 
         //Method for making data grid view rows that contain budget plans for which the start and end dates don't meet the specified criteria non-editable
-        private void disableDataGridViewRows(DataGridView dataGridView) {
-            foreach (DataGridViewRow currentRow in dataGridView.Rows) {
-                if (currentRow == null) {
-                    return;
-                }
-                //Retrieves the date strings from the current row of the DataGridView
-                String startDateString = currentRow.Cells[8].Value != null ? currentRow.Cells[8].FormattedValue.ToString() : "";
-                String endDateString = currentRow.Cells[9].Value != null ? currentRow.Cells[9].FormattedValue.ToString() : "";
+        //private void disableDataGridViewRows(DataGridView dataGridView) {
+        //    foreach (DataGridViewRow currentRow in dataGridView.Rows) {
+        //        if (currentRow == null) {
+        //            return;
+        //        }
+        //        //Retrieves the date strings from the current row of the DataGridView
+        //        String startDateString = currentRow.Cells[8].Value != null ? currentRow.Cells[8].FormattedValue.ToString() : "";
+        //        String endDateString = currentRow.Cells[9].Value != null ? currentRow.Cells[9].FormattedValue.ToString() : "";
 
-                if ("".Equals(startDateString) || "".Equals(endDateString)) {
-                    currentRow.ReadOnly = true;
-                    return;
-                }
+        //        if ("".Equals(startDateString) || "".Equals(endDateString)) {
+        //            currentRow.ReadOnly = true;
+        //            return;
+        //        }
 
-                DateTime startDate = DateTime.Parse(startDateString);
-                DateTime endDate = DateTime.Parse(endDateString);
+        //        DateTime startDate = DateTime.Parse(startDateString);
+        //        DateTime endDate = DateTime.Parse(endDateString);
 
-                if (!isEditableBasedOnDate(startDate, endDate)) {
-                    currentRow.ReadOnly = true;
-                }
-            }
-        }
+        //        if (!isEditableBasedOnDate(startDate, endDate)) {
+        //            currentRow.ReadOnly = true;
+        //        }
+        //    }
+        //}
 
         //Method for disabling specific columns from the DataGridGriew(the arguments are the specified DataGridView and an array containing the indexes of the columns which need to be non-editable)
         private void disableDataGridViewColumns(DataGridView dataGridView, int[] columnIndexes) {
@@ -423,111 +455,111 @@ namespace BudgetManager.mvc.views {
 
         //Method for checking if the budget plan contained in a DataGridView row can be edited
         //Editing is allowed only for current budget plans, future budget plans and for plans that started in the past but will continue for some time in the future after the start of the current month 
-        private bool isEditableBasedOnDate(DateTime startDate, DateTime endDate) {
-            //Gets the current date
-            DateTime currentDate = DateTime.Now;
-            //Creates a DateTime object representing the date of the first day of the current month and year 
-            DateTime startOfCurrentMonthDate =new DateTime(currentDate.Year, currentDate.Month, 1);
+        //private bool isEditableBasedOnDate(DateTime startDate, DateTime endDate) {
+        //    //Gets the current date
+        //    DateTime currentDate = DateTime.Now;
+        //    //Creates a DateTime object representing the date of the first day of the current month and year 
+        //    DateTime startOfCurrentMonthDate =new DateTime(currentDate.Year, currentDate.Month, 1);
 
-            //Compares the two dates with the startOfCurrentMonthDate value
-            int comparisonResultStartDate = DateTime.Compare(startDate, startOfCurrentMonthDate);
-            int comparisonResultEndDate = DateTime.Compare(endDate, startOfCurrentMonthDate);
+        //    //Compares the two dates with the startOfCurrentMonthDate value
+        //    int comparisonResultStartDate = DateTime.Compare(startDate, startOfCurrentMonthDate);
+        //    int comparisonResultEndDate = DateTime.Compare(endDate, startOfCurrentMonthDate);
 
-            //Case 1- start date and end date are both before the start of the current month
-            if (comparisonResultStartDate < 0 && comparisonResultEndDate < 0) {
-                return false;
-            //Case 2- start date and end date are both after the start of the current month
-            } else if (comparisonResultStartDate > 0 && comparisonResultEndDate > 0) {
-                return true;
-            //Case 3- start date is before the start of the current month and end date is after the start of the current month
-            } else if (comparisonResultStartDate < 0 && comparisonResultEndDate > 0) {
-                return true;
-            //Case 4- start date is the the same as the start of the current month and the end date if after the start of the current month
-            } else if (comparisonResultStartDate == 0 && comparisonResultEndDate > 0) {
-                return true;
-            }
+        //    //Case 1- start date and end date are both before the start of the current month
+        //    if (comparisonResultStartDate < 0 && comparisonResultEndDate < 0) {
+        //        return false;
+        //    //Case 2- start date and end date are both after the start of the current month
+        //    } else if (comparisonResultStartDate > 0 && comparisonResultEndDate > 0) {
+        //        return true;
+        //    //Case 3- start date is before the start of the current month and end date is after the start of the current month
+        //    } else if (comparisonResultStartDate < 0 && comparisonResultEndDate > 0) {
+        //        return true;
+        //    //Case 4- start date is the the same as the start of the current month and the end date if after the start of the current month
+        //    } else if (comparisonResultStartDate == 0 && comparisonResultEndDate > 0) {
+        //        return true;
+        //    }
 
-            return false;
-        } 
+        //    return false;
+        //} 
 
         //Method for retrieving the start and end date from the currently selected row of the DataGridView
-        private String[] getDatesFromSelectedRow(int selectedRowIndex, DataGridView dataGridView) {
-            //Arguments checks
-            if(dataGridView == null) {
-                return null;
-            }
+        //private String[] getDatesFromSelectedRow(int selectedRowIndex, DataGridView dataGridView) {
+        //    //Arguments checks
+        //    if(dataGridView == null) {
+        //        return null;
+        //    }
 
-            if (selectedRowIndex < 0 || selectedRowIndex > dataGridView.Rows.Count) {
-                return null;
-            }
+        //    if (selectedRowIndex < 0 || selectedRowIndex > dataGridView.Rows.Count) {
+        //        return null;
+        //    }
 
-            //Getting the selected row
-            DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
+        //    //Getting the selected row
+        //    DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
 
         
-            //Gets the dates from the selected row as String objects(if the date cells are empty the null value is assigned)
-            String startDateString = !"".Equals(selectedRow.Cells[8].FormattedValue)  ? selectedRow.Cells[8].Value.ToString() : null;
-            String endDateString = !"".Equals(selectedRow.Cells[8].FormattedValue) ? selectedRow.Cells[9].Value.ToString() : null;
+        //    //Gets the dates from the selected row as String objects(if the date cells are empty the null value is assigned)
+        //    String startDateString = !"".Equals(selectedRow.Cells[8].FormattedValue)  ? selectedRow.Cells[8].Value.ToString() : null;
+        //    String endDateString = !"".Equals(selectedRow.Cells[8].FormattedValue) ? selectedRow.Cells[9].Value.ToString() : null;
 
-            //Checks for the null value of any of the two string dates and if so returns(to avoid NPE)
-            if (startDateString == null || endDateString == null) {
-                return null;
-            }
+        //    //Checks for the null value of any of the two string dates and if so returns(to avoid NPE)
+        //    if (startDateString == null || endDateString == null) {
+        //        return null;
+        //    }
 
-            //Changes the format of the date string from MM/dd/yyyy to yyyy/MM/dd so that they can correctly processed by the MySql database
-            String sqlFormatStartDate = DateTime.Parse(startDateString).ToString("yyyy-MM-dd");
-            String sqlFormatEndDate = DateTime.Parse(endDateString).ToString("yyyy-MM-dd");
+        //    //Changes the format of the date string from MM/dd/yyyy to yyyy/MM/dd so that they can correctly processed by the MySql database
+        //    String sqlFormatStartDate = DateTime.Parse(startDateString).ToString("yyyy-MM-dd");
+        //    String sqlFormatEndDate = DateTime.Parse(endDateString).ToString("yyyy-MM-dd");
 
-            String[] selectedRowDates = new String[] { sqlFormatStartDate, sqlFormatEndDate };
+        //    String[] selectedRowDates = new String[] { sqlFormatStartDate, sqlFormatEndDate };
 
-            return selectedRowDates;
+        //    return selectedRowDates;
 
-        }
+        //}
 
-        private int[] getItemsPercentagesFromSelectedRow(int selectedRowIndex, DataGridView dataGridView) {
-            //Arguments checks
-            if (dataGridView == null) {
-                return null;
-            }
+        //private int[] getItemsPercentagesFromSelectedRow(int selectedRowIndex, DataGridView dataGridView) {
+        //    //Arguments checks
+        //    if (dataGridView == null) {
+        //        return null;
+        //    }
 
-            if (selectedRowIndex < 0 || selectedRowIndex > dataGridView.Rows.Count) {
-                return null;
-            }
+        //    if (selectedRowIndex < 0 || selectedRowIndex > dataGridView.Rows.Count) {
+        //        return null;
+        //    }
 
-            //Getting the selected row
-            DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
+        //    //Getting the selected row
+        //    DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
 
-            int expensesPercentage = selectedRow.Cells[2].Value != null ? Convert.ToInt32(selectedRow.Cells[2].Value) : 0;
-            int debtsPercentage = selectedRow.Cells[3].Value != null ? Convert.ToInt32(selectedRow.Cells[3].Value) : 0;
-            int savingsPercentage = selectedRow.Cells[4].Value != null ? Convert.ToInt32(selectedRow.Cells[4].Value) : 0;
+        //    int expensesPercentage = selectedRow.Cells[2].Value != null ? Convert.ToInt32(selectedRow.Cells[2].Value) : 0;
+        //    int debtsPercentage = selectedRow.Cells[3].Value != null ? Convert.ToInt32(selectedRow.Cells[3].Value) : 0;
+        //    int savingsPercentage = selectedRow.Cells[4].Value != null ? Convert.ToInt32(selectedRow.Cells[4].Value) : 0;
 
-            int[] userSetPercentages = new int[] {expensesPercentage, debtsPercentage, savingsPercentage};
+        //    int[] userSetPercentages = new int[] {expensesPercentage, debtsPercentage, savingsPercentage};
 
-            return userSetPercentages;
-        }
+        //    return userSetPercentages;
+        //}
         
         //Method for calculating the sum of percentages limit for all budget items
-        private int calculatePercentagesSum(int selectedRowIndex, DataGridView dataGridView) {
-            if (dataGridView == null || dataGridView.Rows.Count == 0) {
-                return -1;
-            }
+        //private int calculatePercentagesSum(int selectedRowIndex, DataGridView dataGridView) {
+        //    if (dataGridView == null || dataGridView.Rows.Count == 0) {
+        //        return -1;
+        //    }
 
-            if (selectedRowIndex < 0 || selectedRowIndex > dataGridView.Rows.Count) {
-                return -1;
-            }
+        //    if (selectedRowIndex < 0 || selectedRowIndex > dataGridView.Rows.Count) {
+        //        return -1;
+        //    }
 
-            //Gets the selected row from the DataGridView
-            DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
-            //Converts the value at the respective cell and if this value is null the result will be 0
-            int expensePercentage = selectedRow.Cells[2].Value != DBNull.Value ? Convert.ToInt32(selectedRow.Cells[2].Value) : 0;
-            int debtPercentage = selectedRow.Cells[3].Value != DBNull.Value ? Convert.ToInt32(selectedRow.Cells[3].Value) : 0;
-            int savingPercentage = selectedRow.Cells[4].Value != DBNull.Value ? Convert.ToInt32(selectedRow.Cells[4].Value) : 0;
+        //    //Gets the selected row from the DataGridView
+        //    DataGridViewRow selectedRow = dataGridView.Rows[selectedRowIndex];
+        //    //Converts the value at the respective cell and if this value is null the result will be 0
+        //    int expensePercentage = selectedRow.Cells[2].Value != DBNull.Value ? Convert.ToInt32(selectedRow.Cells[2].Value) : 0;
+        //    int debtPercentage = selectedRow.Cells[3].Value != DBNull.Value ? Convert.ToInt32(selectedRow.Cells[3].Value) : 0;
+        //    int savingPercentage = selectedRow.Cells[4].Value != DBNull.Value ? Convert.ToInt32(selectedRow.Cells[4].Value) : 0;
 
-            int percentagesSum = expensePercentage + debtPercentage + savingPercentage;
+        //    int percentagesSum = expensePercentage + debtPercentage + savingPercentage;
 
-            return percentagesSum;
+        //    return percentagesSum;
 
-        }
+        //}
 
         //Seteaza data curenta a obiectelor de tip DateTimePicker ca prima zi a lunii curente a anului curent
         private void setDateTimePickerDefaultDate(DateTimePicker[] dateTimePickers) {
