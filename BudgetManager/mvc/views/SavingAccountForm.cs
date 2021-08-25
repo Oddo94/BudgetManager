@@ -1,5 +1,6 @@
 ﻿using BudgetManager.mvc.controllers;
 using BudgetManager.mvc.models;
+using BudgetManager.utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,12 +20,14 @@ namespace BudgetManager.mvc.views {
         private IModel model = new SavingAccountModel();
 
         private DateTimePicker[] datePickers = new DateTimePicker[] { };
+        private DataGridViewManager gridViewManager;
         private bool hasResetDatePickers = false;
 
         public SavingAccountForm(int userID) {
             InitializeComponent();
             this.userID = userID;
-            datePickers = new DateTimePicker[] { dateTimePickerStartSavingAccount, dateTimePickerEndSavingAccount, dateTimePickerMonthlyBalance};                     
+            datePickers = new DateTimePicker[] { dateTimePickerStartSavingAccount, dateTimePickerEndSavingAccount, dateTimePickerMonthlyBalance};
+            gridViewManager = new DataGridViewManager(dataGridViewSavingAccount);                 
             wireUp(controller, model);
             dateTimePickerStartSavingAccount.Enabled = false;
         }
@@ -54,7 +57,9 @@ namespace BudgetManager.mvc.views {
             int currentYear = dateTimePickerMonthlyBalance.Value.Year;
 
             DataTable[] results = model.DataSources;
-            fillDataGridView(dataGridViewSavingAccount, results[0]);
+            //fillDataGridView(dataGridViewSavingAccount, results[0]);
+            //CHANGE-DGW MANAGEMENT
+            gridViewManager.fillDataGridView(results[0]);
             fillColumnChart(columnChartMonthlyBalance, results[1], currentYear, title);
             updateAvailableBalanceLabel(savingAccountBalanceLabel, results[2]);           
         }
@@ -116,13 +121,13 @@ namespace BudgetManager.mvc.views {
         }
 
         //UTIL METHODS SECTION
-        private void fillDataGridView(DataGridView gridView, DataTable inputDataTable) {
-            if(gridView == null) {
-                return;
-            }
-            gridView.DataSource = null;                     
-            gridView.DataSource = inputDataTable;          
-        }
+        //private void fillDataGridView(DataGridView gridView, DataTable inputDataTable) {
+        //    if(gridView == null) {
+        //        return;
+        //    }
+        //    gridView.DataSource = null;                     
+        //    gridView.DataSource = inputDataTable;          
+        //}
 
         private void fillColumnChart(Chart chart, DataTable inputDataTable, int currentYear, String title) {           
             //Eliminates the existing chart points

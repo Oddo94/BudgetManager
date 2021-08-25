@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics.Contracts;
 using System.Collections;
+using System.Data;
 
 namespace BudgetManager.utils {
     //Enum that contains the type of index checks that can be made on the current DataGridView object
@@ -24,7 +25,14 @@ namespace BudgetManager.utils {
             this.targetDataGridView = targetDataGridView;
         }
 
-        public void fillDataGridView(DataGridTableStyle inputDataTable) {
+        public void setDataGridView(DataGridView targetDataGridView) {
+            Guard.notNull(targetDataGridView, "DataGridView");
+
+            this.targetDataGridView = targetDataGridView;
+        }
+
+        //No parameter checking since sometimes it might be necessary to set the DataGridView data source to null
+        public void fillDataGridView(DataTable inputDataTable) {
             targetDataGridView.DataSource = inputDataTable;
         }
 
