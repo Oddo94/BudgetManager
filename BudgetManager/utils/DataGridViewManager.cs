@@ -79,6 +79,22 @@ namespace BudgetManager.utils {
             }
         }
 
+
+        //Method for enabling/disabling all DataGridView rows except for the specified one(if all rows need to be made editable then -1 value can be provided as value for the exceptedRowIndex alongside true as the value for isEditable flag)
+        public void setRowsReadOnlyProperty(bool isReadOnly, int exceptedRowIndex) {
+            Guard.notNull(targetDataGridView, "DataGridView");
+
+            if (targetDataGridView.Rows.Count == 0) {
+                return;
+            }
+
+            for (int i = 0; i < targetDataGridView.Rows.Count; i++) {
+                if (exceptedRowIndex != i) {
+                    targetDataGridView.Rows[i].ReadOnly = isReadOnly;
+                }
+            }
+        }
+
         //Method for disabling specific columns from the DataGridGriew(the parameter is an array containing the indexes of the columns which need to be made non-editable)
         public void disableDataGridViewColumns(int[] columnIndexes) {
             Guard.notNull(columnIndexes, "Column indexes array");
@@ -158,6 +174,25 @@ namespace BudgetManager.utils {
 
         }
 
+        //Method for retrieving the record date from the specified row of the DataGridView
+        public DateTime getDateFromRow(int rowIndex, int columnIndex) {
+            
+
+            if (!areIndexesInRange(new int[] { rowIndex }, IndexCheckType.ROW_INDEX_CHECK)) {
+                return DateTime.MinValue;
+            }
+
+            if (!areIndexesInRange(new int[] { columnIndex }, IndexCheckType.COLUMN_INDEX_CHECK)) {
+                return DateTime.MinValue;
+            }
+
+            DataRow specifiedRow = ((DataTable)targetDataGridView.DataSource).Rows[rowIndex];
+            object rowDateObject = specifiedRow.ItemArray[columnIndex];
+            DateTime rowDateValue = rowDateObject != DBNull.Value ? DateTime.Parse(Convert.ToString(rowDateObject)) : DateTime.MinValue;
+
+            return rowDateValue;
+        }
+
         //Method for retrieving multiple values from a specified DataGridView row
         public int[] getMultipleItemValuesFromSelectedRow(int selectedRowIndex, int[] itemIndexes) {
             //Arguments checks         
@@ -181,6 +216,25 @@ namespace BudgetManager.utils {
 
             //Converting the List<int> object to an int[] array and returning the result
             return itemDataList.ToArray();
+        }
+
+        ////Method for retrieving the record value from the specified row and column of the DataGridView
+        public int getSingleItemValueFromRow(int rowIndex, int columnIndex) {
+
+            if (!areIndexesInRange(new int[] { rowIndex }, IndexCheckType.ROW_INDEX_CHECK)) {
+                return -1;
+            }
+
+            if (!areIndexesInRange(new int[] { columnIndex }, IndexCheckType.COLUMN_INDEX_CHECK)) {
+                return -1;
+            }
+
+            DataRow specifiedRow = ((DataTable)targetDataGridView.DataSource).Rows[rowIndex];
+            object rowDateObject = specifiedRow.ItemArray[columnIndex];
+            int recordValue = rowDateObject != DBNull.Value ? Convert.ToInt32(rowDateObject) : -1;
+
+            return recordValue;
+
         }
 
         //Method for calculating the sum of the specified column values
@@ -231,6 +285,19 @@ namespace BudgetManager.utils {
                 }
             }
             return inRange;
+        }
+
+        //Method for checking if the targetDataGridView contains rows that were changed
+        public bool hasChangedRows() {          
+            //Retrieves the DataTable object containing the modified rows from the DataGridView
+            DataTable changedRowsDataTable = ((DataTable)targetDataGridView.DataSource).GetChanges();
+
+            //If the DataTable is not null it means that there are pending changes so the method will return true
+            if (changedRowsDataTable != null) {
+                return true;
+            }
+
+            return false;
         }
     }
 }
