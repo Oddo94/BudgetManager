@@ -1,5 +1,6 @@
 ﻿using BudgetManager.mvc.views;
 using BudgetManager.non_mvc;
+using BudgetManager.utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace BudgetManager {
         private readonly int userID;//ar trebui transformat in variabila statica pt a se pastra valoarea pe toata executia programului(mai ales pt situatia in care utilizatorul navigheaza in alte ferestre si dupa aceea revine la dashboard)       
         private IControl controller = new MainController();
         private IModel model = new BudgetSummaryModel();
+        private DataGridViewManager gridViewManager;
 
         //Lista DateTimePicker care vor fi dezactivate in situatia in care nu exista conexiune la baza de date
         private DateTimePicker[] datePickers = new DateTimePicker[]{};
@@ -32,6 +34,10 @@ namespace BudgetManager {
                        dateTimePickerStartDebts, dateTimePickerEndDebts, dateTimePickerMonthlyDebts, dateTimePickerStartSavings, dateTimePickerEndSavings, dateTimePickerMonthlySavings};
             this.Text = String.Format("Budget Manager-{0}'s dashboard", userName);
             setDateTimePickerDefaultDate(datePickers);
+
+            //Configuring DataGridViewManager object
+            //It initially receives the dataGridViewIncomes object and later this can be changed as needed through the setDataGridView() method
+            gridViewManager = new utils.DataGridViewManager(dataGridViewIncomes);         
 
             wireUp(controller, model);
             
@@ -327,7 +333,10 @@ namespace BudgetManager {
             int currentYear = dateTimePickerMonthlyIncomes.Value.Year;
            
             DataTable[] results = model.DataSources;
-            fillDataGridView(dataGridViewIncomes, (DataTable) results[0]);
+            //fillDataGridView(dataGridViewIncomes, (DataTable) results[0]);
+            //CHANGE-DGW MANAGEMENT
+            gridViewManager.fillDataGridView(results[0]);
+
             fillPieChart(pieChartIncomes, (DataTable)results[1], typeNames);          
             fillColumnChart(columnChartIncomes, (DataTable)results[2], currentYear, title);
             
@@ -387,7 +396,12 @@ namespace BudgetManager {
             String title = "Monthly expense evolution";
             int currentYear = dateTimePickerMonthlyExpenses.Value.Year;
        
-            fillDataGridView(dataGridViewExpenses, model.DataSources[0]);
+            //fillDataGridView(dataGridViewExpenses, model.DataSources[0]);
+            //CHANGE-DGW MANAGEMENT
+            //Sets the DataGridView object of the gridViewManager object and fills it with the provided data
+            gridViewManager.setDataGridView(dataGridViewExpenses);
+            gridViewManager.fillDataGridView(model.DataSources[0]);
+
             fillPieChart(pieChartExpenses, model.DataSources[1], typeNames);
             fillColumnChart(columnChartExpenses, model.DataSources[2], currentYear, title);
 
@@ -446,7 +460,11 @@ namespace BudgetManager {
             String title = "Monthly debts";
             int currentYear = dateTimePickerMonthlyDebts.Value.Year;
           
-            fillDataGridView(dataGridViewDebts, model.DataSources[0]);
+            //fillDataGridView(dataGridViewDebts, model.DataSources[0]);
+            //CHANGE-DGW MANAGEMENT
+            gridViewManager.setDataGridView(dataGridViewDebts);
+            gridViewManager.fillDataGridView(model.DataSources[0]);
+
             fillPieChartWithVariablePoints(pieChartDebts, model.DataSources[1]);
             fillColumnChart(columnChartDebts, model.DataSources[2], currentYear, title);
         }
@@ -504,7 +522,11 @@ namespace BudgetManager {
             String[] typeNames = new String[] { "Total savings", "Total incomes"};
             int currentYear = dateTimePickerMonthlySavings.Value.Year;
 
-            fillDataGridView(dataGridViewSavings, model.DataSources[0]);
+            //fillDataGridView(dataGridViewSavings, model.DataSources[0]);
+            //CHANGE-DGW MANAGEMENT
+            gridViewManager.setDataGridView(dataGridViewSavings);
+            gridViewManager.fillDataGridView(model.DataSources[0]);
+
             fillPieChart(pieChartSavings, model.DataSources[1], typeNames);
             fillColumnChart(columnChartSavings, model.DataSources[2], currentYear, title);
         }
@@ -512,10 +534,10 @@ namespace BudgetManager {
 
 
         //Metoda generica pt populare DataGridView
-        private void fillDataGridView(DataGridView gridView, DataTable inputDataTable) {
-            //Impune sursa de date primita ca argument obiectului de tip DataGridView primit ca argument
-            gridView.DataSource = inputDataTable;
-        }
+        //private void fillDataGridView(DataGridView gridView, DataTable inputDataTable) {
+        //    //Impune sursa de date primita ca argument obiectului de tip DataGridView primit ca argument
+        //    gridView.DataSource = inputDataTable;
+        //}
 
         //Metoda generica pt populare grafice de tip ColumnChart
         private void fillColumnChart(Chart chart, DataTable dTable, int currentYear, String title) {
