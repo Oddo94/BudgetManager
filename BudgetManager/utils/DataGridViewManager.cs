@@ -40,7 +40,7 @@ namespace BudgetManager.utils {
         public void disableRowsBasedOnDate(int startDateCellIndex, int endDateCellIndex) {
             int[] columnIndexes = new int[] { startDateCellIndex, endDateCellIndex };
 
-            if (!areIndexesInRange(columnIndexes, IndexCheckType.COLUMN_INDEX_CHECK)) {
+            if (!areIndexesInRange(IndexCheckType.COLUMN_INDEX_CHECK, columnIndexes)) {
                 return;
             }
 
@@ -102,7 +102,7 @@ namespace BudgetManager.utils {
             //Each index from the array is checked to see if is higher than the index of the last column in the DataGridView
             foreach (int currentIndex in columnIndexes) {
                 //If the current index is outside of the column index range then it will be skipped and no column will be disabled
-                if (!areIndexesInRange(new int[] { currentIndex }, IndexCheckType.ROW_INDEX_CHECK)) {
+                if (!areIndexesInRange(IndexCheckType.ROW_INDEX_CHECK, currentIndex)) {
                     continue;
                 }
 
@@ -142,11 +142,11 @@ namespace BudgetManager.utils {
         //Method for retrieving the start and end date from the currently selected row of the DataGridView
         public String[] getDatesFromSelectedRow(int selectedRowIndex, int startDateCellIndex, int endDateCellIndex) {
             //Arguments check
-            if (!areIndexesInRange(new int[]{selectedRowIndex}, IndexCheckType.ROW_INDEX_CHECK)) {
+            if (!areIndexesInRange(IndexCheckType.ROW_INDEX_CHECK, selectedRowIndex)) {
                 return null;
             }
 
-            if (!areIndexesInRange(new int[] { startDateCellIndex, endDateCellIndex},IndexCheckType.COLUMN_INDEX_CHECK)) {
+            if (!areIndexesInRange(IndexCheckType.COLUMN_INDEX_CHECK, new int[] { startDateCellIndex, endDateCellIndex })) {
                 return null;
             }
 
@@ -178,11 +178,11 @@ namespace BudgetManager.utils {
         public DateTime getDateFromRow(int rowIndex, int columnIndex) {
             
 
-            if (!areIndexesInRange(new int[] { rowIndex }, IndexCheckType.ROW_INDEX_CHECK)) {
+            if (!areIndexesInRange(IndexCheckType.ROW_INDEX_CHECK, rowIndex)) {
                 return DateTime.MinValue;
             }
 
-            if (!areIndexesInRange(new int[] { columnIndex }, IndexCheckType.COLUMN_INDEX_CHECK)) {
+            if (!areIndexesInRange(IndexCheckType.COLUMN_INDEX_CHECK, columnIndex)) {
                 return DateTime.MinValue;
             }
 
@@ -196,11 +196,11 @@ namespace BudgetManager.utils {
         //Method for retrieving multiple values from a specified DataGridView row
         public int[] getMultipleItemValuesFromSelectedRow(int selectedRowIndex, int[] itemIndexes) {
             //Arguments checks         
-            if (!areIndexesInRange(new int[] { selectedRowIndex }, IndexCheckType.ROW_INDEX_CHECK)) {
+            if (!areIndexesInRange(IndexCheckType.ROW_INDEX_CHECK, selectedRowIndex)) {
                 return null;
             }
 
-            if (itemIndexes == null || !areIndexesInRange(itemIndexes, IndexCheckType.COLUMN_INDEX_CHECK)) {
+            if (itemIndexes == null || !areIndexesInRange(IndexCheckType.COLUMN_INDEX_CHECK, itemIndexes)) {
                 return null;
             }
             //Getting the selected row
@@ -221,11 +221,11 @@ namespace BudgetManager.utils {
         ////Method for retrieving the record value from the specified row and column of the DataGridView
         public int getSingleItemValueFromRow(int rowIndex, int columnIndex) {
 
-            if (!areIndexesInRange(new int[] { rowIndex }, IndexCheckType.ROW_INDEX_CHECK)) {
+            if (!areIndexesInRange(IndexCheckType.ROW_INDEX_CHECK, rowIndex)) {
                 return -1;
             }
 
-            if (!areIndexesInRange(new int[] { columnIndex }, IndexCheckType.COLUMN_INDEX_CHECK)) {
+            if (!areIndexesInRange(IndexCheckType.COLUMN_INDEX_CHECK, columnIndex)) {
                 return -1;
             }
 
@@ -240,11 +240,11 @@ namespace BudgetManager.utils {
         //Method for calculating the sum of the specified column values
         public int calculateItemsValueSum(int selectedRowIndex, int[] summedItemsIndexes ) {
             //Arguments checks         
-            if (!areIndexesInRange(new int[] { selectedRowIndex }, IndexCheckType.ROW_INDEX_CHECK)) {
+            if (!areIndexesInRange(IndexCheckType.ROW_INDEX_CHECK, selectedRowIndex)) {
                 return -1;
             }
 
-            if (summedItemsIndexes == null || !areIndexesInRange(summedItemsIndexes, IndexCheckType.COLUMN_INDEX_CHECK)) {
+            if (summedItemsIndexes == null || !areIndexesInRange(IndexCheckType.COLUMN_INDEX_CHECK, summedItemsIndexes)) {
                 return -1;
             }
 
@@ -264,7 +264,7 @@ namespace BudgetManager.utils {
 
         //Method for checking if the provided column indexes are inside the column index range of the current DataGridView
         //The checks are different based on the type specified (column check/row check)
-        private bool areIndexesInRange(int[] indexList, IndexCheckType performedCheck) {
+        private bool areIndexesInRange(IndexCheckType performedCheck, params int[] indexList) {
             bool inRange = true;
 
             int lowerBoundIndex = 0;
