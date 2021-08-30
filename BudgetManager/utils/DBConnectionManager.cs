@@ -44,7 +44,7 @@ namespace BudgetManager {
 
             } catch (MySqlException ex) {
                 //Daca se ridica vreo exceptie se afiseaza o fereastra de dialog care contine mesajul acesteia             
-                MessageBox.Show(ex.Message, "DBConnectionManager");
+                MessageBox.Show(ex.Message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 
             } finally {
                 //Indiferent de rezultat se inchide conexiune creata
@@ -83,7 +83,7 @@ namespace BudgetManager {
                         message = ex.Message;
                         break;
                 }
-                MessageBox.Show(message, "DBConnectionManager");
+                MessageBox.Show(message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 tx.Rollback();//Daca apare o exceptie se readuce baza de date la starea initiala
             } finally {
                 conn.Close();
@@ -123,7 +123,7 @@ namespace BudgetManager {
                 tx.Commit();
 
             } catch (MySqlException ex) {
-                MessageBox.Show(ex.Message, "DBConnectionManager");
+                MessageBox.Show(ex.Message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 tx.Rollback();//Daca se genereaza o execptie baza de date este readusa la starea initiala
             } finally {
                 conn.Close();
@@ -153,7 +153,7 @@ namespace BudgetManager {
 
 
             } catch(MySqlException ex) {
-                MessageBox.Show(ex.Message, "DBConnectionManager");
+                MessageBox.Show(ex.Message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
             } finally {
                 //Closes the connection irrespective of the execution result
@@ -216,11 +216,11 @@ namespace BudgetManager {
                 tx.Commit();
 
             }catch(MySqlException ex) {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message,"DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 tx.Rollback();
 
             } catch(DBConcurrencyException ex) {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 tx.Rollback();
 
             } finally {

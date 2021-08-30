@@ -69,9 +69,9 @@ namespace BudgetManager {
                 SmtpServer.EnableSsl = true;
 
                 SmtpServer.Send(mail);
-                MessageBox.Show(onSuccessMessage, parentWindowName);
+                MessageBox.Show(onSuccessMessage, parentWindowName,MessageBoxButtons.OK,MessageBoxIcon.Information);
             } catch (Exception ex) {
-                MessageBox.Show(ex.ToString());
+                MessageBox.Show(ex.ToString(),"Password reset manager",MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
            
         }

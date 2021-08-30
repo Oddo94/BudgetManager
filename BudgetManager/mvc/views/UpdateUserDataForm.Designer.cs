@@ -76,9 +76,9 @@
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridViewTableDisplay.DefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridViewTableDisplay.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dataGridViewTableDisplay.Location = new System.Drawing.Point(28, 180);
+            this.dataGridViewTableDisplay.Location = new System.Drawing.Point(46, 180);
             this.dataGridViewTableDisplay.Name = "dataGridViewTableDisplay";
-            this.dataGridViewTableDisplay.Size = new System.Drawing.Size(550, 258);
+            this.dataGridViewTableDisplay.Size = new System.Drawing.Size(537, 257);
             this.dataGridViewTableDisplay.TabIndex = 3;
             this.dataGridViewTableDisplay.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellClick);
             this.dataGridViewTableDisplay.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellDoubleClick);
@@ -88,7 +88,7 @@
             // submitButton
             // 
             this.submitButton.Enabled = false;
-            this.submitButton.Location = new System.Drawing.Point(49, 458);
+            this.submitButton.Location = new System.Drawing.Point(46, 455);
             this.submitButton.Name = "submitButton";
             this.submitButton.Size = new System.Drawing.Size(115, 23);
             this.submitButton.TabIndex = 4;
@@ -154,7 +154,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(605, 559);
+            this.ClientSize = new System.Drawing.Size(634, 570);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.dateTimePickerTimeSpanSelection);
             this.Controls.Add(this.yearRecordsCheckBox);

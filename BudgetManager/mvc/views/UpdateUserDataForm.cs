@@ -85,12 +85,12 @@ namespace BudgetManager {
         private void submitButton_Click(object sender, EventArgs e) {                      
             //Checks if the timespan selection combobxes are selected before the Submit button is pressed
             if (monthRecordsCheckBox.Checked == false && yearRecordsCheckBox.Checked == false) {              
-                MessageBox.Show("Please select a time interval first!", "Update data");
+                MessageBox.Show("Please select a time interval first!", "Update data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
           
             //Displaying a message asking the user to confirm his intention of modifying the data and getting the result of his selection 
-            DialogResult userOption = MessageBox.Show("Are you sure that you want to submit the changes to the database?", "Data update form", MessageBoxButtons.YesNo);
+            DialogResult userOption = MessageBox.Show("Are you sure that you want to submit the changes to the database?", "Data update form", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if(userOption == DialogResult.No) {
                 return;
@@ -122,9 +122,9 @@ namespace BudgetManager {
             //Sending data to controller and checking the execution result
             int executionResult = controller.requestUpdate(option, paramContainer, sourceDataTable);
             if (executionResult != -1) {
-                MessageBox.Show("The selected data was updated successfully!", "Update data");
+                MessageBox.Show("The selected data was updated successfully!", "Update data", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } else {               
-                MessageBox.Show("Unable to update the selected data! Please try again.", "Update data");
+                MessageBox.Show("Unable to update the selected data! Please try again.", "Update data", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             //Balance record update section
@@ -168,7 +168,7 @@ namespace BudgetManager {
                 int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, selectedRecordDate, getSelectedBudgetItemType(), false);
 
                 if (savingAccountBalanceUpdateResult == -1) {
-                    MessageBox.Show("Unable to update the saving account balance record.", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Unable to update the saving account balance record.", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 
@@ -197,7 +197,7 @@ namespace BudgetManager {
             deletedRecordDate = gridViewManager.getDateFromRow(selectedRowForDeletionIndex, columnIndexList[1]);
 
             String confirmationMessage = String.Format("Are you sure that you want to delete row number {0}?", selectedRowIndex);
-            DialogResult userOption1 = MessageBox.Show(confirmationMessage, "Data update form", MessageBoxButtons.YesNo);
+            DialogResult userOption1 = MessageBox.Show(confirmationMessage, "Data update form", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (userOption1 == DialogResult.No) {
                 return;
@@ -245,9 +245,9 @@ namespace BudgetManager {
            
             //Displaying info message regarding the delete operation result
             if (executionResult != -1) {
-                MessageBox.Show("The selected data was successfully deleted !", "Data update");              
+                MessageBox.Show("The selected data was successfully deleted!", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Information);              
             } else {
-                MessageBox.Show("Unable to delete the selected data! Please try again.", "Data update");
+                MessageBox.Show("Unable to delete the selected data! Please try again.", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             //Balance record update section

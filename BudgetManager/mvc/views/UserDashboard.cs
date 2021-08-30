@@ -285,7 +285,7 @@ namespace BudgetManager {
 
         //2.METODE TAB INCOMES
         private void intervalCheckBoxIncomes_CheckedChanged(object sender, EventArgs e) {
-            setEndPickerPanelVisibility(intervalCheckBoxIncomes, monthPickerPanelIncomes, infoLabelIncomes);
+            setEndPickerPanelVisibility(intervalCheckBoxIncomes, monthPickerPanelIncomes, startLabelIncomes);
         }
 
         private void dateTimePickerStartIncomes_ValueChanged(object sender, EventArgs e) {
@@ -734,7 +734,7 @@ namespace BudgetManager {
                 resetDateTimePicker(startPicker);
                 resetDateTimePicker(endPicker);
 
-                MessageBox.Show("Invalid date selection!", "Warning");
+                MessageBox.Show("Invalid date selection!", "Warning",MessageBoxButtons.OK,MessageBoxIcon.Warning);
             
             } else if (dateTimePickerContainer.Visible == false) {
                 targetLabel.Text = String.Format("{0} for {1} {2}", message, startPicker.Value.ToString("MMMM"), startPicker.Value.ToString("yyyy"));

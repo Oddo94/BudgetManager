@@ -23,58 +23,58 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea21 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend21 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series21 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint36 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 250D);
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint37 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 250D);
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint38 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 250D);
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint39 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 250D);
-            System.Windows.Forms.DataVisualization.Charting.Title title21 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea22 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend22 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series22 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint40 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(44197D, 0D);
-            System.Windows.Forms.DataVisualization.Charting.Title title22 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea23 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend23 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series23 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint41 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 500D);
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint42 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 500D);
-            System.Windows.Forms.DataVisualization.Charting.Title title23 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea24 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend24 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series24 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint43 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(44197D, 0D);
-            System.Windows.Forms.DataVisualization.Charting.Title title24 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea25 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend25 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series25 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint44 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 300D);
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint45 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 300D);
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint46 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 300D);
-            System.Windows.Forms.DataVisualization.Charting.Title title25 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea26 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend26 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series26 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint47 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(44197D, 0D);
-            System.Windows.Forms.DataVisualization.Charting.Title title26 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea27 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend27 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series27 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint48 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 1000D);
-            System.Windows.Forms.DataVisualization.Charting.Title title27 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea19 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend19 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series19 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint33 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(44197D, 0D);
-            System.Windows.Forms.DataVisualization.Charting.Title title19 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea20 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend20 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series20 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint34 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 500D);
-            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint35 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 500D);
-            System.Windows.Forms.DataVisualization.Charting.Title title20 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea39 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend39 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series39 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint67 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 250D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint68 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 250D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint69 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 250D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint70 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 250D);
+            System.Windows.Forms.DataVisualization.Charting.Title title39 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea40 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend40 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series40 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint71 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(44197D, 0D);
+            System.Windows.Forms.DataVisualization.Charting.Title title40 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea41 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend41 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series41 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint72 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 500D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint73 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 500D);
+            System.Windows.Forms.DataVisualization.Charting.Title title41 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea42 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend42 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series42 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint74 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(44197D, 0D);
+            System.Windows.Forms.DataVisualization.Charting.Title title42 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea43 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend43 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series43 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint75 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 300D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint76 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 300D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint77 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 300D);
+            System.Windows.Forms.DataVisualization.Charting.Title title43 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea37 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend37 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series37 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint65 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(44197D, 0D);
+            System.Windows.Forms.DataVisualization.Charting.Title title37 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea38 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend38 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series38 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint66 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 1000D);
+            System.Windows.Forms.DataVisualization.Charting.Title title38 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea44 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend44 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series44 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint78 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(44197D, 0D);
+            System.Windows.Forms.DataVisualization.Charting.Title title44 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea45 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend45 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series45 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint79 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 500D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint80 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1000D, 500D);
+            System.Windows.Forms.DataVisualization.Charting.Title title45 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.tabPageBS = new System.Windows.Forms.TabPage();
             this.infoLabelBS = new System.Windows.Forms.Label();
@@ -133,6 +133,7 @@
             this.startLabelDebts = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.tabPageSavings = new System.Windows.Forms.TabPage();
+            this.savingAccountButton = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.dateTimePickerMonthlySavings = new System.Windows.Forms.DateTimePicker();
             this.columnChartSavings = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -158,7 +159,6 @@
             this.budgetPlannerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editDeleteExistingPlansToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.savingAccountButton = new System.Windows.Forms.Button();
             this.mainTabControl.SuspendLayout();
             this.tabPageBS.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pieChartBS)).BeginInit();
@@ -230,31 +230,31 @@
             // 
             // pieChartBS
             // 
-            chartArea21.Name = "ChartArea1";
-            this.pieChartBS.ChartAreas.Add(chartArea21);
-            legend21.Name = "Legend1";
-            this.pieChartBS.Legends.Add(legend21);
+            chartArea39.Name = "ChartArea1";
+            this.pieChartBS.ChartAreas.Add(chartArea39);
+            legend39.Name = "Legend1";
+            this.pieChartBS.Legends.Add(legend39);
             this.pieChartBS.Location = new System.Drawing.Point(619, 243);
             this.pieChartBS.Name = "pieChartBS";
-            series21.ChartArea = "ChartArea1";
-            series21.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series21.Legend = "Legend1";
-            series21.Name = "Series1";
-            dataPoint36.LegendText = "Expenses";
-            dataPoint37.LegendText = "Debts";
-            dataPoint38.LegendText = "Savings";
-            dataPoint39.LegendText = "Amount left";
-            series21.Points.Add(dataPoint36);
-            series21.Points.Add(dataPoint37);
-            series21.Points.Add(dataPoint38);
-            series21.Points.Add(dataPoint39);
-            this.pieChartBS.Series.Add(series21);
+            series39.ChartArea = "ChartArea1";
+            series39.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series39.Legend = "Legend1";
+            series39.Name = "Series1";
+            dataPoint67.LegendText = "Expenses";
+            dataPoint68.LegendText = "Debts";
+            dataPoint69.LegendText = "Savings";
+            dataPoint70.LegendText = "Amount left";
+            series39.Points.Add(dataPoint67);
+            series39.Points.Add(dataPoint68);
+            series39.Points.Add(dataPoint69);
+            series39.Points.Add(dataPoint70);
+            this.pieChartBS.Series.Add(series39);
             this.pieChartBS.Size = new System.Drawing.Size(300, 300);
             this.pieChartBS.TabIndex = 8;
             this.pieChartBS.Text = "chart1";
-            title21.Name = "PieChartBSTitle";
-            title21.Text = "Item percentage from total incomes";
-            this.pieChartBS.Titles.Add(title21);
+            title39.Name = "PieChartBSTitle";
+            title39.Text = "Item percentage from total incomes";
+            this.pieChartBS.Titles.Add(title39);
             // 
             // monthPickerPanelBS
             // 
@@ -270,7 +270,7 @@
             // 
             this.dateTimePickerEndBS.CustomFormat = "MM/yyyy";
             this.dateTimePickerEndBS.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePickerEndBS.Location = new System.Drawing.Point(0, 47);
+            this.dateTimePickerEndBS.Location = new System.Drawing.Point(3, 50);
             this.dateTimePickerEndBS.Name = "dateTimePickerEndBS";
             this.dateTimePickerEndBS.ShowUpDown = true;
             this.dateTimePickerEndBS.Size = new System.Drawing.Size(200, 20);
@@ -281,7 +281,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(-3, 24);
+            this.label3.Location = new System.Drawing.Point(0, 24);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(72, 13);
             this.label3.TabIndex = 6;
@@ -400,54 +400,54 @@
             // 
             // columnChartIncomes
             // 
-            chartArea22.AxisX.Interval = 1D;
-            chartArea22.AxisX.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Months;
-            chartArea22.AxisX.LabelStyle.Format = "MMM";
-            chartArea22.AxisX.MajorGrid.Enabled = false;
-            chartArea22.Name = "ChartArea1";
-            this.columnChartIncomes.ChartAreas.Add(chartArea22);
-            legend22.Name = "Legend1";
-            this.columnChartIncomes.Legends.Add(legend22);
+            chartArea40.AxisX.Interval = 1D;
+            chartArea40.AxisX.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Months;
+            chartArea40.AxisX.LabelStyle.Format = "MMM";
+            chartArea40.AxisX.MajorGrid.Enabled = false;
+            chartArea40.Name = "ChartArea1";
+            this.columnChartIncomes.ChartAreas.Add(chartArea40);
+            legend40.Name = "Legend1";
+            this.columnChartIncomes.Legends.Add(legend40);
             this.columnChartIncomes.Location = new System.Drawing.Point(35, 475);
             this.columnChartIncomes.Name = "columnChartIncomes";
-            series22.ChartArea = "ChartArea1";
-            series22.LabelFormat = "dddd";
-            series22.Legend = "Legend1";
-            series22.Name = "Incomes";
-            series22.Points.Add(dataPoint40);
-            series22.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
-            series22.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            this.columnChartIncomes.Series.Add(series22);
+            series40.ChartArea = "ChartArea1";
+            series40.LabelFormat = "dddd";
+            series40.Legend = "Legend1";
+            series40.Name = "Incomes";
+            series40.Points.Add(dataPoint71);
+            series40.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
+            series40.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            this.columnChartIncomes.Series.Add(series40);
             this.columnChartIncomes.Size = new System.Drawing.Size(879, 280);
             this.columnChartIncomes.TabIndex = 8;
             this.columnChartIncomes.Text = "chart2";
-            title22.Name = "Title1";
-            title22.Text = "Monthly income evolution";
-            this.columnChartIncomes.Titles.Add(title22);
+            title40.Name = "Title1";
+            title40.Text = "Monthly income evolution";
+            this.columnChartIncomes.Titles.Add(title40);
             // 
             // pieChartIncomes
             // 
-            chartArea23.Name = "ChartArea1";
-            this.pieChartIncomes.ChartAreas.Add(chartArea23);
-            legend23.Name = "Legend1";
-            this.pieChartIncomes.Legends.Add(legend23);
+            chartArea41.Name = "ChartArea1";
+            this.pieChartIncomes.ChartAreas.Add(chartArea41);
+            legend41.Name = "Legend1";
+            this.pieChartIncomes.Legends.Add(legend41);
             this.pieChartIncomes.Location = new System.Drawing.Point(674, 126);
             this.pieChartIncomes.Name = "pieChartIncomes";
-            series23.ChartArea = "ChartArea1";
-            series23.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series23.Legend = "Legend1";
-            series23.Name = "Series1";
-            dataPoint41.LegendText = "Active income";
-            dataPoint42.LegendText = "Passive income";
-            series23.Points.Add(dataPoint41);
-            series23.Points.Add(dataPoint42);
-            this.pieChartIncomes.Series.Add(series23);
+            series41.ChartArea = "ChartArea1";
+            series41.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series41.Legend = "Legend1";
+            series41.Name = "Series1";
+            dataPoint72.LegendText = "Active income";
+            dataPoint73.LegendText = "Passive income";
+            series41.Points.Add(dataPoint72);
+            series41.Points.Add(dataPoint73);
+            this.pieChartIncomes.Series.Add(series41);
             this.pieChartIncomes.Size = new System.Drawing.Size(300, 300);
             this.pieChartIncomes.TabIndex = 7;
             this.pieChartIncomes.Text = "chart1";
-            title23.Name = "Title1";
-            title23.Text = "Income percentage per category";
-            this.pieChartIncomes.Titles.Add(title23);
+            title41.Name = "Title1";
+            title41.Text = "Income percentage per category";
+            this.pieChartIncomes.Titles.Add(title41);
             // 
             // dataGridViewIncomes
             // 
@@ -490,7 +490,7 @@
             // 
             this.dateTimePickerEndIncomes.CustomFormat = "MM/yyyy";
             this.dateTimePickerEndIncomes.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePickerEndIncomes.Location = new System.Drawing.Point(0, 39);
+            this.dateTimePickerEndIncomes.Location = new System.Drawing.Point(0, 42);
             this.dateTimePickerEndIncomes.Name = "dateTimePickerEndIncomes";
             this.dateTimePickerEndIncomes.ShowUpDown = true;
             this.dateTimePickerEndIncomes.Size = new System.Drawing.Size(200, 20);
@@ -582,56 +582,56 @@
             // 
             // columnChartExpenses
             // 
-            chartArea24.AxisX.Interval = 1D;
-            chartArea24.AxisX.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Months;
-            chartArea24.AxisX.LabelStyle.Format = "MMM";
-            chartArea24.AxisX.MajorGrid.Enabled = false;
-            chartArea24.Name = "ChartArea1";
-            this.columnChartExpenses.ChartAreas.Add(chartArea24);
-            legend24.Name = "Legend1";
-            this.columnChartExpenses.Legends.Add(legend24);
+            chartArea42.AxisX.Interval = 1D;
+            chartArea42.AxisX.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Months;
+            chartArea42.AxisX.LabelStyle.Format = "MMM";
+            chartArea42.AxisX.MajorGrid.Enabled = false;
+            chartArea42.Name = "ChartArea1";
+            this.columnChartExpenses.ChartAreas.Add(chartArea42);
+            legend42.Name = "Legend1";
+            this.columnChartExpenses.Legends.Add(legend42);
             this.columnChartExpenses.Location = new System.Drawing.Point(21, 507);
             this.columnChartExpenses.Name = "columnChartExpenses";
-            series24.ChartArea = "ChartArea1";
-            series24.LabelFormat = "dddd";
-            series24.Legend = "Legend1";
-            series24.Name = "Expenses";
-            series24.Points.Add(dataPoint43);
-            series24.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
-            series24.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            this.columnChartExpenses.Series.Add(series24);
+            series42.ChartArea = "ChartArea1";
+            series42.LabelFormat = "dddd";
+            series42.Legend = "Legend1";
+            series42.Name = "Expenses";
+            series42.Points.Add(dataPoint74);
+            series42.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
+            series42.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            this.columnChartExpenses.Series.Add(series42);
             this.columnChartExpenses.Size = new System.Drawing.Size(818, 236);
             this.columnChartExpenses.TabIndex = 10;
             this.columnChartExpenses.Text = "chart2";
-            title24.Name = "Title1";
-            title24.Text = "Monthly expense evolution";
-            this.columnChartExpenses.Titles.Add(title24);
+            title42.Name = "Title1";
+            title42.Text = "Monthly expense evolution";
+            this.columnChartExpenses.Titles.Add(title42);
             // 
             // pieChartExpenses
             // 
-            chartArea25.Name = "ChartArea1";
-            this.pieChartExpenses.ChartAreas.Add(chartArea25);
-            legend25.Name = "Legend1";
-            this.pieChartExpenses.Legends.Add(legend25);
+            chartArea43.Name = "ChartArea1";
+            this.pieChartExpenses.ChartAreas.Add(chartArea43);
+            legend43.Name = "Legend1";
+            this.pieChartExpenses.Legends.Add(legend43);
             this.pieChartExpenses.Location = new System.Drawing.Point(644, 163);
             this.pieChartExpenses.Name = "pieChartExpenses";
-            series25.ChartArea = "ChartArea1";
-            series25.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series25.Legend = "Legend1";
-            series25.Name = "Series1";
-            dataPoint44.LegendText = "Fixed expenses";
-            dataPoint45.LegendText = "Periodic expenses";
-            dataPoint46.LegendText = "Variable expenses";
-            series25.Points.Add(dataPoint44);
-            series25.Points.Add(dataPoint45);
-            series25.Points.Add(dataPoint46);
-            this.pieChartExpenses.Series.Add(series25);
+            series43.ChartArea = "ChartArea1";
+            series43.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series43.Legend = "Legend1";
+            series43.Name = "Series1";
+            dataPoint75.LegendText = "Fixed expenses";
+            dataPoint76.LegendText = "Periodic expenses";
+            dataPoint77.LegendText = "Variable expenses";
+            series43.Points.Add(dataPoint75);
+            series43.Points.Add(dataPoint76);
+            series43.Points.Add(dataPoint77);
+            this.pieChartExpenses.Series.Add(series43);
             this.pieChartExpenses.Size = new System.Drawing.Size(300, 300);
             this.pieChartExpenses.TabIndex = 9;
             this.pieChartExpenses.Text = "chart1";
-            title25.Name = "Title1";
-            title25.Text = "Expense value per category";
-            this.pieChartExpenses.Titles.Add(title25);
+            title43.Name = "Title1";
+            title43.Text = "Expense value per category";
+            this.pieChartExpenses.Titles.Add(title43);
             // 
             // monthPickerPanelExpenses
             // 
@@ -647,7 +647,7 @@
             // 
             this.dateTimePickerEndExpenses.CustomFormat = "MM/yyyy";
             this.dateTimePickerEndExpenses.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePickerEndExpenses.Location = new System.Drawing.Point(0, 42);
+            this.dateTimePickerEndExpenses.Location = new System.Drawing.Point(0, 47);
             this.dateTimePickerEndExpenses.Name = "dateTimePickerEndExpenses";
             this.dateTimePickerEndExpenses.ShowUpDown = true;
             this.dateTimePickerEndExpenses.Size = new System.Drawing.Size(200, 20);
@@ -658,7 +658,7 @@
             // endLabelExpenses
             // 
             this.endLabelExpenses.AutoSize = true;
-            this.endLabelExpenses.Location = new System.Drawing.Point(3, 12);
+            this.endLabelExpenses.Location = new System.Drawing.Point(3, 13);
             this.endLabelExpenses.Name = "endLabelExpenses";
             this.endLabelExpenses.Size = new System.Drawing.Size(72, 13);
             this.endLabelExpenses.TabIndex = 2;
@@ -766,52 +766,52 @@
             // 
             // columnChartDebts
             // 
-            chartArea26.AxisX.Interval = 1D;
-            chartArea26.AxisX.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Months;
-            chartArea26.AxisX.LabelStyle.Format = "MMM";
-            chartArea26.AxisX.LabelStyle.Interval = 1D;
-            chartArea26.AxisX.MajorGrid.Enabled = false;
-            chartArea26.Name = "ChartArea1";
-            this.columnChartDebts.ChartAreas.Add(chartArea26);
-            legend26.Name = "Legend1";
-            this.columnChartDebts.Legends.Add(legend26);
+            chartArea37.AxisX.Interval = 1D;
+            chartArea37.AxisX.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Months;
+            chartArea37.AxisX.LabelStyle.Format = "MMM";
+            chartArea37.AxisX.LabelStyle.Interval = 1D;
+            chartArea37.AxisX.MajorGrid.Enabled = false;
+            chartArea37.Name = "ChartArea1";
+            this.columnChartDebts.ChartAreas.Add(chartArea37);
+            legend37.Name = "Legend1";
+            this.columnChartDebts.Legends.Add(legend37);
             this.columnChartDebts.Location = new System.Drawing.Point(29, 507);
             this.columnChartDebts.Name = "columnChartDebts";
-            series26.ChartArea = "ChartArea1";
-            series26.Legend = "Legend1";
-            series26.Name = "Debts";
-            series26.Points.Add(dataPoint47);
-            series26.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
-            series26.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            this.columnChartDebts.Series.Add(series26);
+            series37.ChartArea = "ChartArea1";
+            series37.Legend = "Legend1";
+            series37.Name = "Debts";
+            series37.Points.Add(dataPoint65);
+            series37.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
+            series37.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            this.columnChartDebts.Series.Add(series37);
             this.columnChartDebts.Size = new System.Drawing.Size(828, 246);
             this.columnChartDebts.TabIndex = 10;
             this.columnChartDebts.Text = "chart2";
-            title26.Name = "Title1";
-            title26.Text = "Monthly debts evoulution for";
-            this.columnChartDebts.Titles.Add(title26);
+            title37.Name = "Title1";
+            title37.Text = "Monthly debts evoulution for";
+            this.columnChartDebts.Titles.Add(title37);
             // 
             // pieChartDebts
             // 
-            chartArea27.Name = "ChartArea1";
-            this.pieChartDebts.ChartAreas.Add(chartArea27);
-            legend27.Name = "Legend1";
-            this.pieChartDebts.Legends.Add(legend27);
+            chartArea38.Name = "ChartArea1";
+            this.pieChartDebts.ChartAreas.Add(chartArea38);
+            legend38.Name = "Legend1";
+            this.pieChartDebts.Legends.Add(legend38);
             this.pieChartDebts.Location = new System.Drawing.Point(663, 152);
             this.pieChartDebts.Name = "pieChartDebts";
-            series27.ChartArea = "ChartArea1";
-            series27.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series27.Legend = "Legend1";
-            series27.Name = "Series1";
-            dataPoint48.LegendText = "Creditor1";
-            series27.Points.Add(dataPoint48);
-            this.pieChartDebts.Series.Add(series27);
+            series38.ChartArea = "ChartArea1";
+            series38.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series38.Legend = "Legend1";
+            series38.Name = "Series1";
+            dataPoint66.LegendText = "Creditor1";
+            series38.Points.Add(dataPoint66);
+            this.pieChartDebts.Series.Add(series38);
             this.pieChartDebts.Size = new System.Drawing.Size(300, 300);
             this.pieChartDebts.TabIndex = 9;
             this.pieChartDebts.Text = "chart1";
-            title27.Name = "Title1";
-            title27.Text = "Debt value sum for each creditor";
-            this.pieChartDebts.Titles.Add(title27);
+            title38.Name = "Title1";
+            title38.Text = "Debt value sum for each creditor";
+            this.pieChartDebts.Titles.Add(title38);
             // 
             // monthPickerPanelDebts
             // 
@@ -899,9 +899,9 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(26, 32);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(174, 13);
+            this.label5.Size = new System.Drawing.Size(182, 13);
             this.label5.TabIndex = 0;
-            this.label5.Text = "Please select the date and the year";
+            this.label5.Text = "Please select the month and the year";
             // 
             // tabPageSavings
             // 
@@ -923,6 +923,16 @@
             this.tabPageSavings.TabIndex = 4;
             this.tabPageSavings.Text = "Savings";
             this.tabPageSavings.UseVisualStyleBackColor = true;
+            // 
+            // savingAccountButton
+            // 
+            this.savingAccountButton.Location = new System.Drawing.Point(807, 72);
+            this.savingAccountButton.Name = "savingAccountButton";
+            this.savingAccountButton.Size = new System.Drawing.Size(111, 38);
+            this.savingAccountButton.TabIndex = 12;
+            this.savingAccountButton.Text = "Saving account manager";
+            this.savingAccountButton.UseVisualStyleBackColor = true;
+            this.savingAccountButton.Click += new System.EventHandler(this.savingAccountButton_Click);
             // 
             // label7
             // 
@@ -947,56 +957,56 @@
             // 
             // columnChartSavings
             // 
-            chartArea19.AxisX.Interval = 1D;
-            chartArea19.AxisX.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Months;
-            chartArea19.AxisX.LabelStyle.Format = "MMM";
-            chartArea19.AxisX.MajorGrid.Enabled = false;
-            chartArea19.Name = "ChartArea1";
-            this.columnChartSavings.ChartAreas.Add(chartArea19);
-            legend19.Name = "Legend1";
-            this.columnChartSavings.Legends.Add(legend19);
+            chartArea44.AxisX.Interval = 1D;
+            chartArea44.AxisX.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Months;
+            chartArea44.AxisX.LabelStyle.Format = "MMM";
+            chartArea44.AxisX.MajorGrid.Enabled = false;
+            chartArea44.Name = "ChartArea1";
+            this.columnChartSavings.ChartAreas.Add(chartArea44);
+            legend44.Name = "Legend1";
+            this.columnChartSavings.Legends.Add(legend44);
             this.columnChartSavings.Location = new System.Drawing.Point(28, 534);
             this.columnChartSavings.Name = "columnChartSavings";
-            series19.ChartArea = "ChartArea1";
-            series19.Legend = "Legend1";
-            series19.Name = "Savings";
-            dataPoint33.Label = "";
-            dataPoint33.LegendText = "";
-            series19.Points.Add(dataPoint33);
-            series19.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
-            series19.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            this.columnChartSavings.Series.Add(series19);
+            series44.ChartArea = "ChartArea1";
+            series44.Legend = "Legend1";
+            series44.Name = "Savings";
+            dataPoint78.Label = "";
+            dataPoint78.LegendText = "";
+            series44.Points.Add(dataPoint78);
+            series44.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
+            series44.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            this.columnChartSavings.Series.Add(series44);
             this.columnChartSavings.Size = new System.Drawing.Size(825, 235);
             this.columnChartSavings.TabIndex = 10;
             this.columnChartSavings.Text = "chart2";
-            title19.Name = "Title1";
-            title19.Text = "Monthly savings evolution for";
-            this.columnChartSavings.Titles.Add(title19);
+            title44.Name = "Title1";
+            title44.Text = "Monthly savings evolution for";
+            this.columnChartSavings.Titles.Add(title44);
             // 
             // pieChartSavings
             // 
-            chartArea20.Name = "ChartArea1";
-            this.pieChartSavings.ChartAreas.Add(chartArea20);
-            legend20.Name = "Legend1";
-            this.pieChartSavings.Legends.Add(legend20);
+            chartArea45.Name = "ChartArea1";
+            this.pieChartSavings.ChartAreas.Add(chartArea45);
+            legend45.Name = "Legend1";
+            this.pieChartSavings.Legends.Add(legend45);
             this.pieChartSavings.Location = new System.Drawing.Point(672, 197);
             this.pieChartSavings.Name = "pieChartSavings";
-            series20.ChartArea = "ChartArea1";
-            series20.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series20.Legend = "Legend1";
-            series20.Name = "Savings";
-            dataPoint34.LegendText = "Total savings";
-            dataPoint35.IsVisibleInLegend = false;
-            dataPoint35.LegendText = "";
-            series20.Points.Add(dataPoint34);
-            series20.Points.Add(dataPoint35);
-            this.pieChartSavings.Series.Add(series20);
+            series45.ChartArea = "ChartArea1";
+            series45.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series45.Legend = "Legend1";
+            series45.Name = "Savings";
+            dataPoint79.LegendText = "Total savings";
+            dataPoint80.IsVisibleInLegend = false;
+            dataPoint80.LegendText = "";
+            series45.Points.Add(dataPoint79);
+            series45.Points.Add(dataPoint80);
+            this.pieChartSavings.Series.Add(series45);
             this.pieChartSavings.Size = new System.Drawing.Size(300, 300);
             this.pieChartSavings.TabIndex = 9;
             this.pieChartSavings.Text = "chart1";
-            title20.Name = "Title1";
-            title20.Text = "Savings value as percentage from total income";
-            this.pieChartSavings.Titles.Add(title20);
+            title45.Name = "Title1";
+            title45.Text = "Savings value as percentage from total income";
+            this.pieChartSavings.Titles.Add(title45);
             // 
             // dataGridViewSavings
             // 
@@ -1021,7 +1031,7 @@
             // 
             this.dateTimePickerEndSavings.CustomFormat = "MM/yyyy";
             this.dateTimePickerEndSavings.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePickerEndSavings.Location = new System.Drawing.Point(3, 40);
+            this.dateTimePickerEndSavings.Location = new System.Drawing.Point(0, 46);
             this.dateTimePickerEndSavings.Name = "dateTimePickerEndSavings";
             this.dateTimePickerEndSavings.ShowUpDown = true;
             this.dateTimePickerEndSavings.Size = new System.Drawing.Size(200, 20);
@@ -1184,16 +1194,6 @@
             this.editDeleteExistingPlansToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.editDeleteExistingPlansToolStripMenuItem.Text = "Edit/Delete budget plans";
             this.editDeleteExistingPlansToolStripMenuItem.Click += new System.EventHandler(this.editDeleteExistingPlansToolStripMenuItem_Click);
-            // 
-            // savingAccountButton
-            // 
-            this.savingAccountButton.Location = new System.Drawing.Point(807, 72);
-            this.savingAccountButton.Name = "savingAccountButton";
-            this.savingAccountButton.Size = new System.Drawing.Size(111, 38);
-            this.savingAccountButton.TabIndex = 12;
-            this.savingAccountButton.Text = "Saving account manager";
-            this.savingAccountButton.UseVisualStyleBackColor = true;
-            this.savingAccountButton.Click += new System.EventHandler(this.savingAccountButton_Click);
             // 
             // UserDashboard
             // 
