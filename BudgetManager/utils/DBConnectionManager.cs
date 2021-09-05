@@ -8,8 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BudgetManager {
-    //Clasa utilitara prin care se realizeaza conexiunea la baza de date si se obtin datele din aceasta sub forma de DataTable
+namespace BudgetManager {  
+    //Utility class for managing the application connection to the database
     class DBConnectionManager {
         
         public static readonly String BUDGET_MANAGER_CONN_STRING = Properties.Settings.Default.BUDGET_MANAGER_CONN_STRING;
@@ -27,23 +27,27 @@ namespace BudgetManager {
 
         }
 
-        public static DataTable getData(MySqlCommand command) {
-            //Se creaza conexiunea
+        public static DataTable getData(MySqlCommand command) {       
+            //Creates a new connection
             MySqlConnection conn = DBConnectionManager.getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
-            //Se impune proprietății obiectului command conexiunea creata
+
+            //Assigning the connection to the command object
             command.Connection = conn;
-            //Se creaza un adaptor pe baza obiectului command
+           
+            //Creating a DataAdapter based on the command object
             MySqlDataAdapter adp = DBConnectionManager.getDataAdapter(command);
-            //Se initializeaza un obiect de tip DataTable gol
+           
+            //Creating an empty DataTable
             DataTable dataTable = new DataTable();
 
             try {
                 //Se deschide conexiunea si se umple cu date obiectul DataTable
+                //Opening the connection and populating the DataTable object with data
                 conn.Open();
                 adp.Fill(dataTable);
 
-            } catch (MySqlException ex) {
-                //Daca se ridica vreo exceptie se afiseaza o fereastra de dialog care contine mesajul acesteia
+            } catch (MySqlException ex) {               
+                //If an exception is thrown then a MessageBox containing the execption or the custom message (for error code 1042) is displayed
                 int errorCode = ex.Number;
                 String message;
                 if (errorCode == 1042) {
@@ -54,78 +58,37 @@ namespace BudgetManager {
                 MessageBox.Show(message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 
             } finally {
-                //Indiferent de rezultat se inchide conexiune creata
+                //Closing the connection irrespective of the command execution result
                 conn.Close();
             }
-
-            //Se returneaza obiectul DataTable
+           
             return dataTable;
         }
 
-        //Metoda de inserare a datelor in baza de date
-        //public static int insertData(MySqlCommand command) {
-        //    int executionResult = 0;
-        //    MySqlConnection conn = getConnection(BUDGET_MANAGER_CONN_STRING);
-        //    command.Connection = conn;
-        //    conn.Open();
-        //    //Creare tranzactie
-        //    MySqlTransaction tx = conn.BeginTransaction();
-        //    command.Transaction = tx;
-
-        //    try {
-        //        //Numarul de randuri afectat de executia comezii SQL este stocat in variabila(daca este mai mare decat 0 inseamna ca executia a avut loc cu succes altfel inseamna ca a esuat)
-        //        executionResult = command.ExecuteNonQuery();
-        //        //Confirmarea modificarii in baza de date
-        //        tx.Commit();
-        //    } catch (MySqlException ex) {
-        //        int errorCode = ex.Number;
-        //        string message = "";
-
-        //        switch (errorCode) {
-        //            case 1062:
-        //                message = "The entry already exists in the database!";
-        //                break;
-
-        //            default:
-        //                message = ex.Message;
-        //                break;
-        //        }
-        //        MessageBox.Show(message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        tx.Rollback();//Daca apare o exceptie se readuce baza de date la starea initiala
-        //    } finally {
-        //        conn.Close();
-        //    }
-
-        //    //Daca executia comenzii a avut loc cu succes se returneaza numarul de randuri afectate din tabel iar in caz contrar se returneaza -1 ceea ce indica esuarea operatiunii
-        //    if (executionResult != 0 ) {           
-        //        return executionResult;
-        //    }
-
-        //    return -1;
-        //}
-
+   
         public static int insertData(MySqlCommand command) {
             int executionResult = 0;
             MySqlConnection conn = getConnection(BUDGET_MANAGER_CONN_STRING);
             command.Connection = conn;
 
-            //Creare tranzactie
-            //MySqlTransaction tx = conn.BeginTransaction();
-            //command.Transaction = tx;
+            //Creating a new transaction (it is created here to allow it to be referneced in the catch block      
             MySqlTransaction tx = null;
 
             try {
                 conn.Open();
 
+                //The transaction is started uusing the previously created Connection object and it is assigned to the command
                 tx = conn.BeginTransaction();
                 command.Transaction = tx;
 
-                //Numarul de randuri afectat de executia comezii SQL este stocat in variabila(daca este mai mare decat 0 inseamna ca executia a avut loc cu succes altfel inseamna ca a esuat)
+                //The number of affected rows after the execution of the SQL statement command is stored in this variable(if the number is greater than 0 is means that the command was executed successfully otherwise it means that it has failed)
                 executionResult = command.ExecuteNonQuery();
-                //Confirmarea modificarii in baza de date
+                //The changes are submitted to the DB
                 tx.Commit();
             } catch (MySqlException ex) {
+                //Retrieving the error code
                 int errorCode = ex.Number;
+                //The message is composed based on the error code returned (in order to improve the error understanding for the end user)
                 string message = "";
 
                 switch (errorCode) {               
@@ -142,62 +105,21 @@ namespace BudgetManager {
                         break;
                 }
                 MessageBox.Show(message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //Null check for transaction in case the connection cannot be established
+                //Null check for the transaction object to avoid NPE when there's no DB connectionn(in that case the transaction remains null since the conn.Object() statement throws an exception and the rest of the code is not executed anymore)
                 if (tx != null) {
-                    tx.Rollback();//Daca apare o exceptie se readuce baza de date la starea initiala
+                    tx.Rollback();//Reverting the DB to its original state
                 }              
             } finally {
                 conn.Close();
             }
 
-            //Daca executia comenzii a avut loc cu succes se returneaza numarul de randuri afectate din tabel iar in caz contrar se returneaza -1 ceea ce indica esuarea operatiunii
+            //If the execution was successfull the number of affected rows is returned, otherwise the method returns -1 which means that the update operation failed
             if (executionResult != 0) {
                 return executionResult;
             }
 
             return -1;
         }
-
-        //public static int updateData(MySqlCommand command, DataTable sourceTable) {
-        //    int executionResult = 0;
-        //    //Creare conexiune si atribuirea acesteia comenzii
-        //    MySqlConnection conn = getConnection(BUDGET_MANAGER_CONN_STRING);
-        //    command.Connection = conn;
-
-        //    //Deschidere conexiune
-        //    conn.Open();
-
-        //    //Creare tranzactie
-        //    MySqlTransaction tx = conn.BeginTransaction();
-        //    command.Transaction = tx;
-
-        //    //Creare DataAdapter pt actualizarea datelor din baza de date cu modificarile efecutate de utilizator in interfata
-        //    MySqlDataAdapter dataAdapter = getDataAdapter(command);
-        //    //Creare obiect CommandBuilder pentru generarea automata a comenzilor INSERT, UPDATE, DELETE care sa reflecte modificarile din tabelul sursa in baza de date
-        //    MySqlCommandBuilder commandBuilder = new MySqlCommandBuilder(dataAdapter);
-
-        //    try {
-        //        //Numarul de randuri afectat de executia comezii SQL este stocat in variabila(daca este mai mare decat 0 inseamna ca executia a avut loc cu succes altfel inseamna ca a esuat)
-        //        executionResult = dataAdapter.Update(sourceTable);
-        //        sourceTable.AcceptChanges();
-        //        //Confirmarea modificarii in baza de date
-        //        tx.Commit();
-
-        //    } catch (MySqlException ex) {
-        //        MessageBox.Show(ex.Message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        tx.Rollback();//Daca se genereaza o execptie baza de date este readusa la starea initiala
-        //    } finally {
-        //        conn.Close();
-        //    }
-
-        //    //Daca executia comenzii a avut loc cu succes se returneaza numarul de randuri afectate din tabel iar in caz contrar se returneaza -1 ceea ce indica esuarea operatiunii
-        //    if (executionResult != 0) {
-        //        return executionResult;
-        //    }
-
-        //    return -1;
-
-        //}
 
         public static int updateData(MySqlCommand command, DataTable sourceTable) {
             int executionResult = 0;
@@ -293,43 +215,6 @@ namespace BudgetManager {
             return executionResult;
         }
 
-
-        //CHANGE!!!!
-        //public static int deleteData(MySqlCommand command, DataTable sourceDataTable) {
-        //    MySqlConnection conn = getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
-
-        //    command.Connection = conn;
-        //    conn.Open();
-
-        //    MySqlTransaction tx = conn.BeginTransaction();
-        //    command.Transaction = tx;
-
-        //    MySqlDataAdapter dataAdapter = getDataAdapter(command);
-        //    MySqlCommandBuilder commandBuilder = new MySqlCommandBuilder(dataAdapter);
-
-        //    int executionResult = -1;
-        //    try {
-
-        //        executionResult = dataAdapter.Update(sourceDataTable);
-        //        sourceDataTable.AcceptChanges();
-        //        tx.Commit();
-
-        //    }catch(MySqlException ex) {
-        //        MessageBox.Show(ex.Message,"DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        tx.Rollback();
-
-        //    } catch(DBConcurrencyException ex) {
-        //        MessageBox.Show(ex.Message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        tx.Rollback();
-
-        //    } finally {
-        //       conn.Close();
-        //    }
-
-        //    return executionResult;
-
-        //}
-
         public static int deleteData(MySqlCommand command, DataTable sourceDataTable) {
             MySqlConnection conn = getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
 
@@ -380,9 +265,12 @@ namespace BudgetManager {
 
         }
 
+        //Method for checking that the connection with the DB is up and running
         public static bool hasConnection() {
+            //A new connection is created 
             MySqlConnection conn = getConnection(BUDGET_MANAGER_CONN_STRING);
 
+            //If it can be opened then it means that everything is OK, otherwise and exception will be thrown and the false value will be returned
             try {
                 conn.Open();
                 return true;
