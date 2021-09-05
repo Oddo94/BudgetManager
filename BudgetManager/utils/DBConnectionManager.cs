@@ -43,8 +43,15 @@ namespace BudgetManager {
                 adp.Fill(dataTable);
 
             } catch (MySqlException ex) {
-                //Daca se ridica vreo exceptie se afiseaza o fereastra de dialog care contine mesajul acesteia             
-                MessageBox.Show(ex.Message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //Daca se ridica vreo exceptie se afiseaza o fereastra de dialog care contine mesajul acesteia
+                int errorCode = ex.Number;
+                String message;
+                if (errorCode == 1042) {
+                     message = "Unable to connect to the database! Please check the connection and try again.";
+                } else {
+                     message = ex.Message;
+                }          
+                MessageBox.Show(message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 
             } finally {
                 //Indiferent de rezultat se inchide conexiune creata
@@ -56,16 +63,63 @@ namespace BudgetManager {
         }
 
         //Metoda de inserare a datelor in baza de date
+        //public static int insertData(MySqlCommand command) {
+        //    int executionResult = 0;
+        //    MySqlConnection conn = getConnection(BUDGET_MANAGER_CONN_STRING);
+        //    command.Connection = conn;
+        //    conn.Open();
+        //    //Creare tranzactie
+        //    MySqlTransaction tx = conn.BeginTransaction();
+        //    command.Transaction = tx;
+
+        //    try {
+        //        //Numarul de randuri afectat de executia comezii SQL este stocat in variabila(daca este mai mare decat 0 inseamna ca executia a avut loc cu succes altfel inseamna ca a esuat)
+        //        executionResult = command.ExecuteNonQuery();
+        //        //Confirmarea modificarii in baza de date
+        //        tx.Commit();
+        //    } catch (MySqlException ex) {
+        //        int errorCode = ex.Number;
+        //        string message = "";
+
+        //        switch (errorCode) {
+        //            case 1062:
+        //                message = "The entry already exists in the database!";
+        //                break;
+
+        //            default:
+        //                message = ex.Message;
+        //                break;
+        //        }
+        //        MessageBox.Show(message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        tx.Rollback();//Daca apare o exceptie se readuce baza de date la starea initiala
+        //    } finally {
+        //        conn.Close();
+        //    }
+
+        //    //Daca executia comenzii a avut loc cu succes se returneaza numarul de randuri afectate din tabel iar in caz contrar se returneaza -1 ceea ce indica esuarea operatiunii
+        //    if (executionResult != 0 ) {           
+        //        return executionResult;
+        //    }
+
+        //    return -1;
+        //}
+
         public static int insertData(MySqlCommand command) {
             int executionResult = 0;
             MySqlConnection conn = getConnection(BUDGET_MANAGER_CONN_STRING);
             command.Connection = conn;
-            conn.Open();
+
             //Creare tranzactie
-            MySqlTransaction tx = conn.BeginTransaction();
-            command.Transaction = tx;
+            //MySqlTransaction tx = conn.BeginTransaction();
+            //command.Transaction = tx;
+            MySqlTransaction tx = null;
 
             try {
+                conn.Open();
+
+                tx = conn.BeginTransaction();
+                command.Transaction = tx;
+
                 //Numarul de randuri afectat de executia comezii SQL este stocat in variabila(daca este mai mare decat 0 inseamna ca executia a avut loc cu succes altfel inseamna ca a esuat)
                 executionResult = command.ExecuteNonQuery();
                 //Confirmarea modificarii in baza de date
@@ -74,7 +128,11 @@ namespace BudgetManager {
                 int errorCode = ex.Number;
                 string message = "";
 
-                switch (errorCode) {
+                switch (errorCode) {               
+                    case 1042:
+                        message = "Unable to connect to the database! Please check the connection and try again.";
+                        break;
+
                     case 1062:
                         message = "The entry already exists in the database!";
                         break;
@@ -84,13 +142,16 @@ namespace BudgetManager {
                         break;
                 }
                 MessageBox.Show(message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                tx.Rollback();//Daca apare o exceptie se readuce baza de date la starea initiala
+                //Null check for transaction in case the connection cannot be established
+                if (tx != null) {
+                    tx.Rollback();//Daca apare o exceptie se readuce baza de date la starea initiala
+                }              
             } finally {
                 conn.Close();
             }
 
             //Daca executia comenzii a avut loc cu succes se returneaza numarul de randuri afectate din tabel iar in caz contrar se returneaza -1 ceea ce indica esuarea operatiunii
-            if (executionResult != 0 ) {           
+            if (executionResult != 0) {
                 return executionResult;
             }
 
@@ -163,37 +224,6 @@ namespace BudgetManager {
             return executionResult;
         }
 
-
-        //public static int deleteData(MySqlCommand command) {
-        //    //Creare conexiune și impunerea acesteia comenzii primite ca argument
-        //    MySqlConnection conn = getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
-        //    command.Connection = conn;
-        //    conn.Open();
-        //    //Creare tranzactie si impunerea acesteia comenzii
-        //    MySqlTransaction tx = conn.BeginTransaction();
-        //    command.Transaction = tx;
-
-        //    int executionResult = 0;
-        //    try {
-        //        //Obtinere rezultat executie și confirmarea modificării in baza de date
-        //        executionResult = command.ExecuteNonQuery();
-        //        //Confirmarea modificarii in baza de date
-        //        tx.Commit();
-
-        //    } catch (MySqlException ex) {
-        //        MessageBox.Show(ex.Message, "DBConnectionManager");
-        //        tx.Rollback();//Se readuce baza de date la starea initiala daca s-a generat o exceptie
-        //    } finally {
-        //        conn.Close();// Inchidere conexiune
-        //    }
-
-        //    //Daca executia comenzii a avut loc cu succes se returneaza numarul de randuri afectate din tabel iar in caz contrar se returneaza -1 ceea ce indica esuarea operatiunii
-        //    if (executionResult != 0) {                
-        //        return executionResult;
-        //    }
-
-        //    return -1;
-        //}
 
         //CHANGE!!!!
         public static int deleteData(MySqlCommand command, DataTable sourceDataTable) {
