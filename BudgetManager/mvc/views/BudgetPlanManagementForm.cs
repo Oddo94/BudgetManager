@@ -141,6 +141,11 @@ namespace BudgetManager.mvc.views {
             if (model.DataSources[1] != null) {             
                 //Extracting the data from the DataTable containing the selected budget plan item information
                 int[] extractedData = extractData(model.DataSources[1]);
+
+                if (extractedData == null) {
+                    MessageBox.Show("Unable to retrieve the data for the selected budget plan!", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
                 //Filling the DataGridView used to display the budget plan info with data
                 fillBPInfoDataGridView(prepareDataForInfoGridView(extractedData));
             }
@@ -578,7 +583,11 @@ namespace BudgetManager.mvc.views {
             }
         }
 
-        private void fillBPInfoDataGridView(Tuple<String, int, int, int, int, int>[] gridViewData) {
+        private void fillBPInfoDataGridView(Tuple<String, int, int, int, int, int>[] gridViewData)  {
+            if (gridViewData == null) {
+                return;
+            }
+
             //The total number of rows for DataGridView showing info abut the selected budget plan
             int rowCount = 3;
        
