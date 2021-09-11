@@ -142,10 +142,12 @@ namespace BudgetManager.mvc.views {
                 //Extracting the data from the DataTable containing the selected budget plan item information
                 int[] extractedData = extractData(model.DataSources[1]);
 
+                //Checks if the extracted data is null.This check covers the situation when there's no DB connection and the selected budget plan data cannot be retrieved
                 if (extractedData == null) {
                     MessageBox.Show("Unable to retrieve the data for the selected budget plan!", "Budget plan management", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
+
                 //Filling the DataGridView used to display the budget plan info with data
                 fillBPInfoDataGridView(prepareDataForInfoGridView(extractedData));
             }
@@ -172,8 +174,10 @@ namespace BudgetManager.mvc.views {
             this.controller = paramController;
             this.model = paramModel;
 
-            controller.setModel(model);
+            //Reverses the method calls so that NPE is avoided when there's no DB conection (otherwise the disableControls method of the View would be called on a null object)
             controller.setView(this);
+            controller.setModel(model);
+            
 
             model.addObserver(this);
         }
@@ -566,7 +570,8 @@ namespace BudgetManager.mvc.views {
 
         //}
 
-        //Seteaza data curenta a obiectelor de tip DateTimePicker ca prima zi a lunii curente a anului curent
+      
+        //Sets the current date of the DateTimePicker objects as the first of the current month from the current year
         private void setDateTimePickerDefaultDate(DateTimePicker[] dateTimePickers) {
             //Creates an istance of the curent date
             DateTime defaultDate = DateTime.Now;
@@ -584,6 +589,7 @@ namespace BudgetManager.mvc.views {
         }
 
         private void fillBPInfoDataGridView(Tuple<String, int, int, int, int, int>[] gridViewData)  {
+            //Additional check to avoid NPE when trying to fill the dataGridViewSelectedPlanInfo
             if (gridViewData == null) {
                 return;
             }
