@@ -18,6 +18,7 @@ namespace BudgetManager {
         private int thresholdPercentage;
         private int alarmExistenceValue;
         private int itemValue;
+        private String itemCreationDate;
         private String startDate;
         private String endDate;
         private String tableName;
@@ -94,6 +95,12 @@ namespace BudgetManager {
             }
         }
 
+        public String ItemCreationDate {
+            get {
+                return this.itemCreationDate;
+            }
+        }
+
         public String StartDate {
             get {
                 return this.startDate;
@@ -146,6 +153,7 @@ namespace BudgetManager {
             private int thresholdPercentage;
             private int alarmExistenceValue;
             private int itemValue;
+            private String itemCreationDate;
             private String startDate;
             private String endDate;
             private String tableName;
@@ -218,6 +226,12 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addItemCreationDate(String itemCreationDate) {
+                this.itemCreationDate = itemCreationDate;
+
+                return this;
+            }
+
             public Builder addStartDate(String startDate) {
                 this.startDate = startDate;
 
@@ -259,6 +273,7 @@ namespace BudgetManager {
                     userID = this.userID,
                     month = this.month,
                     year = this.year,
+                    itemCreationDate = this.itemCreationDate,
                     startDate = this.startDate,
                     endDate = this.endDate,
                     tableName = this.tableName,

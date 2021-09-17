@@ -1,4 +1,5 @@
-﻿using BudgetManager.utils;
+﻿using BudgetManager.non_mvc;
+using BudgetManager.utils;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -456,9 +457,17 @@ namespace BudgetManager {
             int executionResult = -1;
             switch (selectedItemIndex) {
                 //Income insertion
-                case 0:              
-                    executionResult = insertIncome();
+                case 0:
+                    QueryData paramContainer = configureParamContainer(BudgetItemType.INCOME);
+                    Guard.notNull(paramContainer, "parameter container");
+
+                    DataInsertionStrategy incomeInsertionStrategy = new IncomeInsertionStrategy();
+                    DataInsertionContext dataInsertionContext = new DataInsertionContext(incomeInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);
+
                     break;
+
 
                 //Expense insertion
                 //CHANGE TO ALLOW THE CORRECT SELECTION OF EXPENSE INSERTION STATEMENT
@@ -806,6 +815,32 @@ namespace BudgetManager {
 
             return executionResult;
         }
+
+        private QueryData configureParamContainer(BudgetItemType selectedItemType) {
+            QueryData paramContainer = null;
+
+            switch (selectedItemType) {
+                case BudgetItemType.INCOME:
+                    String itemName = nameTextBox.Text;
+                    String incomeTypeName = incomeTypeComboBox.Text;
+                    int incomeValue = Convert.ToInt32(valueTextBox.Text);
+                    String incomeDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addItemName(itemName)
+                        .addItemValue(incomeValue)
+                        .addTypeName(incomeTypeName)
+                        .addItemCreationDate(incomeDate)
+                        .build();
+                    break;
+
+                default:
+                    break;
+            }
+
+            return paramContainer;
+        }
+
 
 
 

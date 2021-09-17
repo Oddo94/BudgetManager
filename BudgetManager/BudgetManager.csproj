@@ -78,6 +78,9 @@
     <Compile Include="non-mvc\BudgetPlanManagementCalculator.Designer.cs">
       <DependentUpon>BudgetPlanManagementCalculator.cs</DependentUpon>
     </Compile>
+    <Compile Include="non-mvc\DataInsertionContext.cs" />
+    <Compile Include="non-mvc\DataInsertionStrategy.cs" />
+    <Compile Include="non-mvc\IncomeInsertionStrategy.cs" />
     <Compile Include="utils\BudgetPlanChecker.cs" />
     <Compile Include="utils\ConfirmationSender.cs" />
     <Compile Include="utils\DataGridViewManager.cs" />
