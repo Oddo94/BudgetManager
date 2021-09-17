@@ -12,13 +12,16 @@ using System.Windows.Forms;
 
 namespace BudgetManager.non_mvc {
     public partial class BudgetPlanManagementCalculator : Form {
-        private TextBox[] textBoxes;
+        private TextBox[] textBoxesToReset;
+        private TextBox[] textBoxesToCheck;
         private bool hasClearedFields;
 
         public BudgetPlanManagementCalculator() {
             InitializeComponent();
             //Creates an array of text boxes for further use by the reset button and hasDataOnActiveFields() method
-            textBoxes = new TextBox[] { inputValueOrPercentageTextBox, totalIncomesTextBox};
+            textBoxesToReset = new TextBox[] { inputValueOrPercentageTextBox, totalIncomesTextBox, resultTextBox};
+            //Creates an array of text boxes for further use by the hasDataOnActiveFields() method
+            textBoxesToCheck = new TextBox[] { inputValueOrPercentageTextBox, totalIncomesTextBox};
             //Sets the calculation mode combobox item to the first item present in the list
             calculationModeComboBox.SelectedIndex = 0;
             //Sets the flag that keeps track of the field clearing actions to false
@@ -27,9 +30,10 @@ namespace BudgetManager.non_mvc {
 
         private void inputValueOrPercentageTextBox_TextChanged(object sender, EventArgs e) {
             checkTextBox(inputValueOrPercentageTextBox);
-            
+            int selectedIndex = calculationModeComboBox.SelectedIndex;
+
             //Checks if the input fields contain data and if so enables the "Calculate" button
-            if (hasDataOnActiveFields(textBoxes)) {
+            if (hasDataOnActiveFields(textBoxesToCheck) && selectedIndex > 0) {
                 calculateButton.Enabled = true;
             } else {
                 calculateButton.Enabled = false;
@@ -38,8 +42,9 @@ namespace BudgetManager.non_mvc {
 
         private void totalIncomesTextBox_TextChanged(object sender, EventArgs e) {
             checkTextBox(totalIncomesTextBox);
+            int selectedIndex = calculationModeComboBox.SelectedIndex;
 
-            if (hasDataOnActiveFields(textBoxes)) {
+            if (hasDataOnActiveFields(textBoxesToCheck) && selectedIndex > 0) {
                 calculateButton.Enabled = true;
             } else {
                 calculateButton.Enabled = false;
@@ -47,6 +52,8 @@ namespace BudgetManager.non_mvc {
         }
 
         private void calculationModeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            //Clears the fields when each time a new calculation mode is selected
+            resetFields(textBoxesToReset);
             int selectedIndex = calculationModeComboBox.SelectedIndex;
 
             
@@ -76,9 +83,10 @@ namespace BudgetManager.non_mvc {
 
         private void resetButton_Click(object sender, EventArgs e) {
             //Clears the text boxes present in the array
-            foreach (TextBox textBox in textBoxes) {
-                textBox.Text = "";
-            }
+            //foreach (TextBox textBox in textBoxes) {
+            //    textBox.Text = "";
+            //}
+            resetFields(textBoxesToReset);
 
             calculationModeComboBox.SelectedIndex = 0;
             //Sets the flag that indicates the field reset
@@ -142,6 +150,14 @@ namespace BudgetManager.non_mvc {
             }
 
             return true;
-        }     
+        }
+        
+
+        private void resetFields(params TextBox[] textBoxes) {
+
+            foreach(TextBox textBox in textBoxes) {
+                textBox.Text = "";
+            } 
+        }
     }
 }

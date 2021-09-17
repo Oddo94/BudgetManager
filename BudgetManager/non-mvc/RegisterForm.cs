@@ -52,29 +52,29 @@ namespace BudgetManager {
             string emailAddress = emailTextBox.Text;
 
             if (!isValidUserName(userName)) {
-                MessageBox.Show("The username must have at least 3 characters and can contain only lowercase(a-z) and uppercase(A-Z) letters, digits(0-9) and underscores(_)!", "User registration");
+                MessageBox.Show("The username must have at least 3 characters and can contain only lowercase(a-z) and uppercase(A-Z) letters, digits(0-9) and underscores(_)!", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
 
             if (password.Length < minimumPasswordLength) {
-                MessageBox.Show("Your password should be at least 10 characters long! Please try again.", "User registration");
+                MessageBox.Show("Your password should be at least 10 characters long! Please try again.", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (!isValidPassword(password)) {
-                MessageBox.Show("Invalid password! Your password must contain:\n1.Lowercase and uppercase letters (a-zA-z) \n2.Digits (0-9) \n3.Special characters (@#$%<>?)", "User registration");
+                MessageBox.Show("Invalid password! Your password must contain:\n1.Lowercase and uppercase letters (a-zA-z) \n2.Digits (0-9) \n3.Special characters (@#$%<>?)", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
 
             if (!isValidEmail(emailAddress)) {
-                MessageBox.Show("Invalid email address!", "User registration");
+                MessageBox.Show("Invalid email address!", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (userExists(getUser(sqlStatementCheckUserExistence, userName))) {
-                MessageBox.Show("The selected username already exists! Please try again", "User registration");
+                MessageBox.Show("The selected username already exists! Please try again", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
 
@@ -98,17 +98,17 @@ namespace BudgetManager {
                 int executionResult = DBConnectionManager.insertData(userCreationCommand);
 
                 if (executionResult == -1) {
-                    MessageBox.Show("Could not create the requested user!", "Register");
+                    MessageBox.Show("Could not create the requested user!", "Register", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                MessageBox.Show("Your user was succesfully created!", "Register");
+                MessageBox.Show("Your user was succesfully created!", "Register", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 clearInputFields(textBoxes);
                 registerButton.Enabled = false;
 
 
             } else {
-                MessageBox.Show("Invalid confirmation code! Please try again.", "Register");
+                MessageBox.Show("Invalid confirmation code! Please try again.", "Register", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
          
         }

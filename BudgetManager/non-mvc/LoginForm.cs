@@ -35,7 +35,8 @@ namespace BudgetManager {
 
         private void loginButton_Click(object sender, EventArgs e) {
             if (!DBConnectionManager.hasConnection()) {
-                MessageBox.Show(this, "No database connection! Unable to login.", "Login");
+                //MessageBox.Show(this, "No database connection! Unable to login.", "Login");
+                MessageBox.Show(this, "No database connection! Unable to login.", "Login", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             String userName = userNameTextBox.Text;
@@ -59,7 +60,8 @@ namespace BudgetManager {
 
                 userDashboard.Visible = true;
             } else {
-                MessageBox.Show("Invalid username and/or password! Please try again", "Login");
+                //MessageBox.Show("Invalid username and/or password! Please try again", "Login");
+                MessageBox.Show("Invalid username and/or password! Please try again", "Login",MessageBoxButtons.OK, MessageBoxIcon.Error);
             }     
         }
 
@@ -77,11 +79,13 @@ namespace BudgetManager {
 
         private void resetPasswordButton_Click(object sender, EventArgs e) {         
             if (!DBConnectionManager.hasConnection()) {
-                MessageBox.Show(this, "No database connection! Unable to reset your password.", "Password reset manager");
+                //MessageBox.Show(this, "No database connection! Unable to reset your password.", "Password reset manager");
+                MessageBox.Show(this, "No database connection! Unable to reset your password.", "Password reset manager",MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             //Cere confirmarea utilizatorului pentru resetarea parolei si inregistreaza rezultatul 
-            DialogResult userOption = MessageBox.Show(this, "Are you sure that you want to reset your password?", "Password reset manager", MessageBoxButtons.YesNo);
+            //DialogResult userOption = MessageBox.Show(this, "Are you sure that you want to reset your password?", "Password reset manager", MessageBoxButtons.YesNo);
+            DialogResult userOption = MessageBox.Show(this, "Are you sure that you want to reset your password?", "Password reset manager", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             //Daca se selecteaza optiunea "No" se iese din metoda si se opreste procesul de resetare
             if (userOption == DialogResult.No) {
@@ -96,18 +100,22 @@ namespace BudgetManager {
 
             //Verifica daca noua parola si parola de confirmare sunt identice
             if (!newPassword.Equals(confirmationPassword)) {
-                MessageBox.Show("The input passwords don't match! Please try again!", "Password reset manager");
+                //MessageBox.Show("The input passwords don't match! Please try again!", "Password reset manager");
+                MessageBox.Show("The input passwords don't match! Please try again!", "Password reset manager",MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
                 return;
             }
 
             //Verifica daca parola respecta regulile de complexitate
             if (newPassword.Length < minimumPasswordLength) {
-                MessageBox.Show("Your password should be at least 10 characters long! Please try again.", "Password reset manager");
+                //MessageBox.Show("Your password should be at least 10 characters long! Please try again.", "Password reset manager");
+                MessageBox.Show("Your password should be at least 10 characters long! Please try again.", "Password reset manager",MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (!isValidPassword(newPassword)) {
-                MessageBox.Show("Invalid password! Your password must contain:\n1.Lowercase and uppercase letters (a-zA-z) \n2.Digits (0-9) \n3.Special characters (@#$%<>?)", "Password reset manager");
+                //MessageBox.Show("Invalid password! Your password must contain:\n1.Lowercase and uppercase letters (a-zA-z) \n2.Digits (0-9) \n3.Special characters (@#$%<>?)", "Password reset manager");
+                MessageBox.Show("Invalid password! Your password must contain:\n1.Lowercase and uppercase letters (a-zA-z) \n2.Digits (0-9) \n3.Special characters (@#$%<>?)", "Password reset manager", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -124,7 +132,8 @@ namespace BudgetManager {
 
                 //Se verifica daca utilizatorul are setata o adresa de email 
                 if ("".Equals(userEmail)) {
-                    MessageBox.Show("Unable to retrieve the email address for the selected user!", "Password reset manager");
+                    //MessageBox.Show("Unable to retrieve the email address for the selected user!", "Password reset manager");
+                    MessageBox.Show("Unable to retrieve the email address for the selected user!", "Password reset manager",MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -151,23 +160,27 @@ namespace BudgetManager {
                     int executionResult = passwordResetManager.resetPassword(newPassword, userID);//Daca din diverse motive nu se pot insera in baza de date noile informatii(salt si hashcode) metoda returneaza -1
 
                     if (executionResult == -1) {
-                        MessageBox.Show("Could not reset your password!", "Password reset manager");
+                        //MessageBox.Show("Could not reset your password!", "Password reset manager");
+                        MessageBox.Show("Could not reset your password!", "Password reset manager",MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
 
-                    MessageBox.Show("Your password has been succesfully reset!", "Password reset manager");
+                    //MessageBox.Show("Your password has been succesfully reset!", "Password reset manager");
+                    MessageBox.Show("Your password has been succesfully reset!", "Password reset manager", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 } else {
                     //Se afiseaza mesajul doar daca codul introdus nu se potriveste cu cel generat nu si in situatia in care
                     //utilizatorul selecteaza optiunea Cancel sau inchide fereastra
                     if (!"".Equals(userInputConfirmationCode)) {
-                        MessageBox.Show("Invalid confirmation code! Please try again.", "Password reset manager");
+                        //MessageBox.Show("Invalid confirmation code! Please try again.", "Password reset manager");
+                        MessageBox.Show("Invalid confirmation code! Please try again.", "Password reset manager",MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                    
                 }
 
             } else {
-            
-                MessageBox.Show("Invalid username!", "Password reset manager");
+
+                //MessageBox.Show("Invalid username!", "Password reset manager");
+                MessageBox.Show("Invalid username!", "Password reset manager",MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
                
             }

@@ -190,7 +190,7 @@
             // 
             // resetButton
             // 
-            this.resetButton.Location = new System.Drawing.Point(236, 574);
+            this.resetButton.Location = new System.Drawing.Point(229, 574);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(82, 23);
             this.resetButton.TabIndex = 15;

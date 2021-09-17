@@ -166,10 +166,12 @@ namespace BudgetManager {
 
         private void valueTextBox_TextChanged(object sender, EventArgs e) {
             //Regex for matching digits
-            Regex numberRegex = new Regex("\\b[\\d]+\\b", RegexOptions.Compiled);
+            Regex numberRegex = new Regex("\\b[0-9]+\\b", RegexOptions.Compiled);
+            //Regex for matching special characters(anything that is not a word, digit or space is matched)
+            Regex specialCharacterRegex = new Regex("[^\\w\\d\\s]", RegexOptions.Compiled);
 
-            //If the input contains any other characters apart from digits then the textbox content will be cleared automatically
-            if (!numberRegex.IsMatch(valueTextBox.Text)) {
+            //If the input contains any other characters apart from digits(letters or special characters) then the textbox content will be cleared automatically
+            if (!numberRegex.IsMatch(valueTextBox.Text) || specialCharacterRegex.IsMatch(valueTextBox.Text)) {
                 valueTextBox.Text = "";
             }
             if (hasDataOnActiveFields(inputFields)) {

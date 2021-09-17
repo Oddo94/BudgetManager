@@ -79,9 +79,9 @@
             this.resultLabel.AutoSize = true;
             this.resultLabel.Location = new System.Drawing.Point(22, 300);
             this.resultLabel.Name = "resultLabel";
-            this.resultLabel.Size = new System.Drawing.Size(94, 13);
+            this.resultLabel.Size = new System.Drawing.Size(66, 13);
             this.resultLabel.TabIndex = 5;
-            this.resultLabel.Text = "Result percentage";
+            this.resultLabel.Text = "Result value";
             // 
             // percentSymbolLabel2
             // 
@@ -91,6 +91,7 @@
             this.percentSymbolLabel2.Size = new System.Drawing.Size(15, 13);
             this.percentSymbolLabel2.TabIndex = 6;
             this.percentSymbolLabel2.Text = "%";
+            this.percentSymbolLabel2.Visible = false;
             // 
             // calculationModeComboBox
             // 
@@ -125,6 +126,7 @@
             // 
             this.resultTextBox.Location = new System.Drawing.Point(132, 293);
             this.resultTextBox.Name = "resultTextBox";
+            this.resultTextBox.ReadOnly = true;
             this.resultTextBox.Size = new System.Drawing.Size(100, 20);
             this.resultTextBox.TabIndex = 11;
             // 
@@ -178,7 +180,7 @@
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "BudgetPlanManagementCalculator";
-            this.Text = "BudgetPlanManagementCalculator";
+            this.Text = "Budget plan management calculator";
             this.ResumeLayout(false);
             this.PerformLayout();
 
