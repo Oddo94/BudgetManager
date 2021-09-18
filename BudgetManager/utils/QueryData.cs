@@ -18,6 +18,7 @@ namespace BudgetManager {
         private int thresholdPercentage;
         private int alarmExistenceValue;
         private int itemValue;
+        private int itemTypeID;
         private String itemCreationDate;
         private String startDate;
         private String endDate;
@@ -25,6 +26,7 @@ namespace BudgetManager {
         private String budgetPlanName;
         private String typeName;
         private String itemName;
+        private IncomeSource incomeSource;
 
         private QueryData() {
 
@@ -95,6 +97,12 @@ namespace BudgetManager {
             }
         }
 
+        public int ItemTypeID {
+            get {
+                return this.itemTypeID;
+            }
+        }
+
         public String ItemCreationDate {
             get {
                 return this.itemCreationDate;
@@ -138,9 +146,12 @@ namespace BudgetManager {
             }
         }
 
-      
-
-
+        public IncomeSource IncomeSource {
+            get {
+                return this.incomeSource;
+            }
+        }
+     
         public class Builder {
             private int userID;
             private int month;
@@ -153,6 +164,7 @@ namespace BudgetManager {
             private int thresholdPercentage;
             private int alarmExistenceValue;
             private int itemValue;
+            private int itemTypeID;
             private String itemCreationDate;
             private String startDate;
             private String endDate;
@@ -160,6 +172,7 @@ namespace BudgetManager {
             private String budgetPlanName;
             private String typeName;
             private String itemName;
+            private IncomeSource incomeSource;
 
 
             public Builder(int userID) {
@@ -226,6 +239,12 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addItemTypeID(int itemTypeID) {
+                this.itemTypeID = itemTypeID;
+
+                return this;
+            }
+
             public Builder addItemCreationDate(String itemCreationDate) {
                 this.itemCreationDate = itemCreationDate;
 
@@ -268,17 +287,17 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addIncomeSource(IncomeSource incomeSource) {
+                this.incomeSource = incomeSource;
+
+                return this;
+            }
+
             public QueryData build() {
                 return new QueryData {
                     userID = this.userID,
                     month = this.month,
                     year = this.year,
-                    itemCreationDate = this.itemCreationDate,
-                    startDate = this.startDate,
-                    endDate = this.endDate,
-                    tableName = this.tableName,
-                    budgetPlanName = this.budgetPlanName,
-                    typeName = this.typeName,
                     expenseLimit = this.expenseLimit,
                     debtLimit = this.debtLimit,
                     savingLimit = this.savingLimit,
@@ -287,9 +306,17 @@ namespace BudgetManager {
                     thresholdPercentage = this.thresholdPercentage,
                     alarmExistenceValue = this.alarmExistenceValue,
                     itemValue = this.itemValue,
-                    itemName = this.itemName
+                    itemTypeID = this.itemTypeID,
+                    itemCreationDate = this.itemCreationDate,
+                    startDate = this.startDate,
+                    endDate = this.endDate,
+                    tableName = this.tableName,
+                    budgetPlanName = this.budgetPlanName,
+                    typeName = this.typeName,                                   
+                    itemName = this.itemName,
+                    incomeSource = this.incomeSource
                 };
-            }
+        }
         }
     }
 }

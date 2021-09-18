@@ -46,7 +46,7 @@ namespace BudgetManager {
         private String sqlStatementCheckCreditorExistence = @"SELECT creditorName FROM creditors WHERE creditorName = @paramCreditorName";
 
         //SQL queries for selecting the ID's used in the INSERT commands
-        private String sqlStatementSelectIncomeTypeID = @"SELECT typeID FROM income_types WHERE typeName = @paramTypeName";
+        //private String sqlStatementSelectIncomeTypeID = @"SELECT typeID FROM income_types WHERE typeName = @paramTypeName";
         private String sqlStatementSelectExpenseTypeID = @"SELECT categoryID FROM expense_types WHERE categoryName = @paramTypeName";
         private String sqlStatementSelectCreditorID = @"SELECT creditorID FROM creditors WHERE creditorName = @paramTypeName";
 
@@ -54,9 +54,9 @@ namespace BudgetManager {
         private String sqlStatementCheckCreditorExistenceInUserList = @"SELECT user_ID, creditor_ID FROM users_creditors WHERE user_ID = @paramUserID AND creditor_ID = @paramCreditorID";
 
         //SQL queries for inserting incomes, expenses, debts and savings
-        private String sqlStatementInsertIncome = @"INSERT INTO incomes(user_ID, name, incomeType, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
-        private String sqlStatementInsertGeneralIncomesExpense = @"INSERT INTO expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
-        private String sqlStatementInsertSavingAccountExpense = @"INSERT INTO saving_account_expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
+        //private String sqlStatementInsertIncome = @"INSERT INTO incomes(user_ID, name, incomeType, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
+        //private String sqlStatementInsertGeneralIncomesExpense = @"INSERT INTO expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
+        //private String sqlStatementInsertSavingAccountExpense = @"INSERT INTO saving_account_expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
         private String sqlStatementInsertDebt = @"INSERT INTO debts(user_ID, name, value, creditor_ID, date) VALUES(@paramID, @paramDebtName, @paramDebtValue, @paramCreditorID, @paramDebtDate)";
         private String sqlStatementInsertSaving = @"INSERT INTO savings(user_ID, name, value, date) VALUES(@paramID, @paramSavingName, @paramSavingValue, @paramSavingDate)";
         private String sqlStatementInsertCreditor = @"INSERT INTO creditors(creditorName) VALUES(@paramCreditorName)";
@@ -455,28 +455,32 @@ namespace BudgetManager {
 
         private int insertSelectedItem(int selectedItemIndex) {
             int executionResult = -1;
+            QueryData paramContainer = null;
+            DataInsertionContext dataInsertionContext = new DataInsertionContext();
             switch (selectedItemIndex) {
                 //Income insertion
                 case 0:
-                    QueryData paramContainer = configureParamContainer(BudgetItemType.INCOME);
-                    Guard.notNull(paramContainer, "parameter container");
+                    paramContainer = configureParamContainer(BudgetItemType.INCOME);
+                    Guard.notNull(paramContainer, "income parameter container");
 
                     DataInsertionStrategy incomeInsertionStrategy = new IncomeInsertionStrategy();
-                    DataInsertionContext dataInsertionContext = new DataInsertionContext(incomeInsertionStrategy);
+                    dataInsertionContext.setStrategy(incomeInsertionStrategy);
 
                     executionResult = dataInsertionContext.invoke(paramContainer);
 
                     break;
 
-
                 //Expense insertion
                 //CHANGE TO ALLOW THE CORRECT SELECTION OF EXPENSE INSERTION STATEMENT
-                case 1:
-                    if(getIncomeSource() == IncomeSource.GENERAL_INCOMES) {
-                        executionResult = insertExpense(sqlStatementInsertGeneralIncomesExpense);//Uses the SQL statement that inserts the expense in the expenses table of the DB
-                    } else if (getIncomeSource() == IncomeSource.SAVING_ACCOUNT) {
-                        executionResult = insertExpense(sqlStatementInsertSavingAccountExpense);//Uses SQL statement that inserts the expense in the saving_account_expenses table of the DB
-                    }                                             
+                case 1:                   
+                    //GENERAL_EXPENSE type is used since there is an intentional fall through the cases inside the configuration method so that both types are treated identically(they need the same data)
+                    paramContainer = configureParamContainer(BudgetItemType.GENERAL_EXPENSE);
+                    Guard.notNull(paramContainer, "expense parameter container");
+
+                    DataInsertionStrategy expenseInsertionStrategy = new ExpenseInsertionStrategy();
+                    dataInsertionContext.setStrategy(expenseInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);                                                  
                     break;
 
                 //Debt insertion
@@ -501,36 +505,36 @@ namespace BudgetManager {
             return executionResult;
         }
 
-        private int insertIncome() {
-            //Getting the necessary data
-            String incomeName = nameTextBox.Text;
-            int incomeTypeID = getID(sqlStatementSelectIncomeTypeID, incomeTypeComboBox.Text);//Ia ca argumente fraza SQL si denumirea tipului de venit selectat
-            int incomeValue = Convert.ToInt32(valueTextBox.Text);
-            String incomeDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd"); //Obtinere data sub forma de String
+        //private int insertIncome() {
+        //    //Getting the necessary data
+        //    String incomeName = nameTextBox.Text;
+        //    int incomeTypeID = getID(sqlStatementSelectIncomeTypeID, incomeTypeComboBox.Text);//Ia ca argumente fraza SQL si denumirea tipului de venit selectat
+        //    int incomeValue = Convert.ToInt32(valueTextBox.Text);
+        //    String incomeDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd"); //Obtinere data sub forma de String
 
-            //Creating command for income insertion
-            MySqlCommand incomeInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertIncome, userID, incomeName, incomeTypeID, incomeValue, incomeDate);
-            //Getting the execution command result
-            int executionResult = DBConnectionManager.insertData(incomeInsertionCommand);
+        //    //Creating command for income insertion
+        //    MySqlCommand incomeInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertIncome, userID, incomeName, incomeTypeID, incomeValue, incomeDate);
+        //    //Getting the execution command result
+        //    int executionResult = DBConnectionManager.insertData(incomeInsertionCommand);
 
-            return executionResult;
-        }
+        //    return executionResult;
+        //}
 
 
-        private int insertExpense(String sqlStatement) {
-            //Getting the necessary data
-            String expenseName = nameTextBox.Text;
-            int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
-            int expenseValue = Convert.ToInt32(valueTextBox.Text);
-            String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Getting date as String
+        //private int insertExpense(String sqlStatement) {
+        //    //Getting the necessary data
+        //    String expenseName = nameTextBox.Text;
+        //    int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
+        //    int expenseValue = Convert.ToInt32(valueTextBox.Text);
+        //    String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Getting date as String
 
-            //Creating command for expense insertion
-            MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatement, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
-            //Getting the execution command result
-            int executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
+        //    //Creating command for expense insertion
+        //    MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatement, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
+        //    //Getting the execution command result
+        //    int executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
 
-            return executionResult;
-        }
+        //    return executionResult;
+        //}
 
         private int insertDebt() {
             //Getting the necessary data
@@ -816,23 +820,46 @@ namespace BudgetManager {
             return executionResult;
         }
 
+        //Method for configuring the param container object for the insertion of different budget items
         private QueryData configureParamContainer(BudgetItemType selectedItemType) {
             QueryData paramContainer = null;
 
             switch (selectedItemType) {
+                //Income insertion configuration
                 case BudgetItemType.INCOME:
-                    String itemName = nameTextBox.Text;
+                    String incomeName = nameTextBox.Text;
                     String incomeTypeName = incomeTypeComboBox.Text;
                     int incomeValue = Convert.ToInt32(valueTextBox.Text);
                     String incomeDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
 
                     paramContainer = new QueryData.Builder(userID)
-                        .addItemName(itemName)
+                        .addItemName(incomeName)
                         .addItemValue(incomeValue)
                         .addTypeName(incomeTypeName)
                         .addItemCreationDate(incomeDate)
                         .build();
                     break;
+
+                //Expense insertion configuration
+                //Intentional fall-through the cases because both types need the same data
+                case BudgetItemType.SAVING_ACCOUNT_EXPENSE:
+                case BudgetItemType.GENERAL_EXPENSE:                    
+                    String expenseName = nameTextBox.Text;
+                    //int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
+                    String expenseTypeName = expenseTypeComboBox.Text;
+                    int expenseValue = Convert.ToInt32(valueTextBox.Text);
+                    String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Getting date as String
+                    IncomeSource incomeSource = getIncomeSource();
+
+                    paramContainer = new QueryData.Builder(userID)
+
+                        .addItemName(expenseName)
+                        .addItemValue(expenseValue)
+                        .addTypeName(expenseTypeName)                      
+                        .addItemCreationDate(expenseDate)
+                        .addIncomeSource(incomeSource)
+                        .build();
+                 break;
 
                 default:
                     break;

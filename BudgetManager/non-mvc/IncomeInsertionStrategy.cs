@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using BudgetManager.utils;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,7 +16,7 @@ namespace BudgetManager.non_mvc {
         private String sqlStatementSelectIncomeTypeID = @"SELECT typeID FROM income_types WHERE typeName = @paramTypeName";
 
 
-        public int execute(QueryData paramContainer) {
+        public int execute(QueryData paramContainer) {           
             //Getting the necessary data
             int userID = paramContainer.UserID;
             String incomeName = paramContainer.ItemName;
