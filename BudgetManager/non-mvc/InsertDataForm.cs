@@ -57,7 +57,7 @@ namespace BudgetManager {
         //private String sqlStatementInsertIncome = @"INSERT INTO incomes(user_ID, name, incomeType, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
         //private String sqlStatementInsertGeneralIncomesExpense = @"INSERT INTO expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
         //private String sqlStatementInsertSavingAccountExpense = @"INSERT INTO saving_account_expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
-        private String sqlStatementInsertDebt = @"INSERT INTO debts(user_ID, name, value, creditor_ID, date) VALUES(@paramID, @paramDebtName, @paramDebtValue, @paramCreditorID, @paramDebtDate)";
+        //private String sqlStatementInsertDebt = @"INSERT INTO debts(user_ID, name, value, creditor_ID, date) VALUES(@paramID, @paramDebtName, @paramDebtValue, @paramCreditorID, @paramDebtDate)";
         private String sqlStatementInsertSaving = @"INSERT INTO savings(user_ID, name, value, date) VALUES(@paramID, @paramSavingName, @paramSavingValue, @paramSavingDate)";
         private String sqlStatementInsertCreditor = @"INSERT INTO creditors(creditorName) VALUES(@paramCreditorName)";
         private String sqlStatementInsertCreditorID = @"INSERT INTO users_creditors(user_ID, creditor_ID) VALUES(@paramUserID, @paramCreditorID)";
@@ -460,12 +460,17 @@ namespace BudgetManager {
             switch (selectedItemIndex) {
                 //Income insertion
                 case 0:
+                    //Creates the object that contains the necessary values for the execution of the SQL query
                     paramContainer = configureParamContainer(BudgetItemType.INCOME);
+                    //Null check for this object
                     Guard.notNull(paramContainer, "income parameter container");
 
+                    //Creates the actual data insertion strategy
                     DataInsertionStrategy incomeInsertionStrategy = new IncomeInsertionStrategy();
+                    //Sets the strategy of the data insertion context to the previously created strategy
                     dataInsertionContext.setStrategy(incomeInsertionStrategy);
 
+                    //Executes the strategy by calling the invoke() method of the context and passing it the paramContainer object
                     executionResult = dataInsertionContext.invoke(paramContainer);
 
                     break;
@@ -484,8 +489,14 @@ namespace BudgetManager {
                     break;
 
                 //Debt insertion
-                case 2:                   
-                    executionResult = insertDebt();
+                case 2:
+                    paramContainer = configureParamContainer(BudgetItemType.DEBT);
+                    Guard.notNull(paramContainer, "debt parameter container");
+
+                    DataInsertionStrategy debtInsertionStrategy = new DebtInsertionStrategy();
+                    dataInsertionContext.setStrategy(debtInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);                                    
                     break;
 
                 //Saving insertion
@@ -536,19 +547,19 @@ namespace BudgetManager {
         //    return executionResult;
         //}
 
-        private int insertDebt() {
-            //Getting the necessary data
-            String debtName = nameTextBox.Text;
-            int debtValue = Convert.ToInt32(valueTextBox.Text);
-            int creditorID = getID(sqlStatementSelectCreditorID, creditorNameComboBox.Text);
-            String debtDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+        //private int insertDebt() {
+        //    //Getting the necessary data
+        //    String debtName = nameTextBox.Text;
+        //    int debtValue = Convert.ToInt32(valueTextBox.Text);
+        //    int creditorID = getID(sqlStatementSelectCreditorID, creditorNameComboBox.Text);
+        //    String debtDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
 
-            //Creating command for debt insertion
-            MySqlCommand debtInsertionCommand = SQLCommandBuilder.getDebtInsertionCommand(sqlStatementInsertDebt, userID, debtName, debtValue, creditorID, debtDate);
-            int executionResult = DBConnectionManager.insertData(debtInsertionCommand);
+        //    //Creating command for debt insertion
+        //    MySqlCommand debtInsertionCommand = SQLCommandBuilder.getDebtInsertionCommand(sqlStatementInsertDebt, userID, debtName, debtValue, creditorID, debtDate);
+        //    int executionResult = DBConnectionManager.insertData(debtInsertionCommand);
 
-            return executionResult;
-        }
+        //    return executionResult;
+        //}
 
         private int insertSaving() {
             //Getting the necessary data
@@ -825,7 +836,7 @@ namespace BudgetManager {
             QueryData paramContainer = null;
 
             switch (selectedItemType) {
-                //Income insertion configuration
+                //Income insertion object configuration
                 case BudgetItemType.INCOME:
                     String incomeName = nameTextBox.Text;
                     String incomeTypeName = incomeTypeComboBox.Text;
@@ -840,7 +851,7 @@ namespace BudgetManager {
                         .build();
                     break;
 
-                //Expense insertion configuration
+                //Expense insertion object configuration
                 //Intentional fall-through the cases because both types need the same data
                 case BudgetItemType.SAVING_ACCOUNT_EXPENSE:
                 case BudgetItemType.GENERAL_EXPENSE:                    
@@ -860,6 +871,22 @@ namespace BudgetManager {
                         .addIncomeSource(incomeSource)
                         .build();
                  break;
+
+                //Debt insertion object configuration
+                case BudgetItemType.DEBT:
+                    //Getting the necessary data
+                    String debtName = nameTextBox.Text;
+                    int debtValue = Convert.ToInt32(valueTextBox.Text);
+                    String creditorName = creditorNameComboBox.Text;
+                    String debtDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addItemName(debtName)
+                        .addItemValue(debtValue)
+                        .addCreditorName(creditorName)
+                        .addItemCreationDate(debtDate)
+                        .build();
+                    break;
 
                 default:
                     break;
