@@ -335,6 +335,7 @@ namespace BudgetManager {
             DataTable[] results = model.DataSources;
             //fillDataGridView(dataGridViewIncomes, (DataTable) results[0]);
             //CHANGE-DGW MANAGEMENT
+            gridViewManager.setDataGridView(dataGridViewIncomes);
             gridViewManager.fillDataGridView(results[0]);
 
             fillPieChart(pieChartIncomes, (DataTable)results[1], typeNames);          
