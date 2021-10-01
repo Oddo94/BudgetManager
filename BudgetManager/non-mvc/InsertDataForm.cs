@@ -58,7 +58,7 @@ namespace BudgetManager {
         //private String sqlStatementInsertGeneralIncomesExpense = @"INSERT INTO expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
         //private String sqlStatementInsertSavingAccountExpense = @"INSERT INTO saving_account_expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
         //private String sqlStatementInsertDebt = @"INSERT INTO debts(user_ID, name, value, creditor_ID, date) VALUES(@paramID, @paramDebtName, @paramDebtValue, @paramCreditorID, @paramDebtDate)";
-        private String sqlStatementInsertSaving = @"INSERT INTO savings(user_ID, name, value, date) VALUES(@paramID, @paramSavingName, @paramSavingValue, @paramSavingDate)";
+        //private String sqlStatementInsertSaving = @"INSERT INTO savings(user_ID, name, value, date) VALUES(@paramID, @paramSavingName, @paramSavingValue, @paramSavingDate)";
         private String sqlStatementInsertCreditor = @"INSERT INTO creditors(creditorName) VALUES(@paramCreditorName)";
         private String sqlStatementInsertCreditorID = @"INSERT INTO users_creditors(user_ID, creditor_ID) VALUES(@paramUserID, @paramCreditorID)";
 
@@ -333,7 +333,7 @@ namespace BudgetManager {
 
 
 
-            //Checks the execution result returned by the insertion method(positive value mean success while -1 means the failure of the operation)
+            //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
             if (executionResult != -1) {
                 MessageBox.Show("Data inserted successfully!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } else {
@@ -500,8 +500,14 @@ namespace BudgetManager {
                     break;
 
                 //Saving insertion
-                case 3:                 
-                    executionResult = insertSaving();                
+                case 3:
+                    paramContainer = configureParamContainer(BudgetItemType.SAVING);
+                    Guard.notNull(paramContainer, "saving parameter container");
+
+                    SavingInsertionStrategy savingInsertionStrategy = new SavingInsertionStrategy();
+                    dataInsertionContext.setStrategy(savingInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);      
                     break;
 
                 //New creditor insertion
@@ -561,18 +567,18 @@ namespace BudgetManager {
         //    return executionResult;
         //}
 
-        private int insertSaving() {
-            //Getting the necessary data
-            String savingName = nameTextBox.Text;
-            int savingValue = Convert.ToInt32(valueTextBox.Text);
-            String savingDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+        //private int insertSaving() {
+        //    //Getting the necessary data
+        //    String savingName = nameTextBox.Text;
+        //    int savingValue = Convert.ToInt32(valueTextBox.Text);
+        //    String savingDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
 
-            //Creating command for saving insertion
-            MySqlCommand savingInsertionCommand = SQLCommandBuilder.getSavingInsertionCommand(sqlStatementInsertSaving, userID, savingName, savingValue, savingDate);
-            int executionResult = DBConnectionManager.insertData(savingInsertionCommand);
+        //    //Creating command for saving insertion
+        //    MySqlCommand savingInsertionCommand = SQLCommandBuilder.getSavingInsertionCommand(sqlStatementInsertSaving, userID, savingName, savingValue, savingDate);
+        //    int executionResult = DBConnectionManager.insertData(savingInsertionCommand);
 
-            return executionResult;
-        }
+        //    return executionResult;
+        //}
 
         private int insertCreditor() {
             int executionResult = -1;
@@ -888,6 +894,20 @@ namespace BudgetManager {
                         .build();
                     break;
 
+                //Saving insertion object configuration
+                case BudgetItemType.SAVING:
+                    //Getting the necessary data
+                    String savingName = nameTextBox.Text;
+                    int savingValue = Convert.ToInt32(valueTextBox.Text);
+                    String savingDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addItemName(savingName)
+                        .addItemValue(savingValue)
+                        .addItemCreationDate(savingDate)
+                        .build();
+                    break;
+                    
                 default:
                     break;
             }

@@ -83,6 +83,7 @@
     <Compile Include="non-mvc\DebtInsertionContext.cs" />
     <Compile Include="non-mvc\ExpenseInsertionStrategy.cs" />
     <Compile Include="non-mvc\IncomeInsertionStrategy.cs" />
+    <Compile Include="non-mvc\SavingInsertionStrategy.cs" />
     <Compile Include="utils\BudgetPlanChecker.cs" />
     <Compile Include="utils\ConfirmationSender.cs" />
     <Compile Include="utils\DataGridViewManager.cs" />
