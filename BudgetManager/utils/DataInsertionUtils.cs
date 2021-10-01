@@ -10,12 +10,12 @@ namespace BudgetManager.utils {
     //Utility class that holds the utility metods needed for data insertion
     class DataInsertionUtils {
 
-        //Method for retrieving the ID of budget item whch has multiple types(incomes, expenses, etc)
-        public static int getID(String sqlStatement, String typeName) {
+        //Method for retrieving the ID of an item (it works for elements having multiple types such as expenses, incomes as well as other elements such as creditors)
+        public static int getID(String sqlStatement, String itemName) {
             Guard.notNull(sqlStatement, "SQL statement");
 
             MySqlCommand getTypeIDCommand = new MySqlCommand(sqlStatement);
-            getTypeIDCommand.Parameters.AddWithValue("@paramTypeName", typeName);
+            getTypeIDCommand.Parameters.AddWithValue("@paramTypeName", itemName);
 
             DataTable typeIDTable = DBConnectionManager.getData(getTypeIDCommand);
 

@@ -21,6 +21,7 @@ namespace BudgetManager {
         SAVING_ACCOUNT_EXPENSE,
         DEBT,
         SAVING,
+        CREDITOR,
         UNDEFINED
     }
 
@@ -51,7 +52,7 @@ namespace BudgetManager {
         private String sqlStatementSelectCreditorID = @"SELECT creditorID FROM creditors WHERE creditorName = @paramTypeName";
 
         //SQL queries for checking the existence of a creditor in the current user creditor list
-        private String sqlStatementCheckCreditorExistenceInUserList = @"SELECT user_ID, creditor_ID FROM users_creditors WHERE user_ID = @paramUserID AND creditor_ID = @paramCreditorID";
+        //private String sqlStatementCheckCreditorExistenceInUserList = @"SELECT user_ID, creditor_ID FROM users_creditors WHERE user_ID = @paramUserID AND creditor_ID = @paramCreditorID";
 
         //SQL queries for inserting incomes, expenses, debts and savings
         //private String sqlStatementInsertIncome = @"INSERT INTO incomes(user_ID, name, incomeType, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
@@ -59,8 +60,8 @@ namespace BudgetManager {
         //private String sqlStatementInsertSavingAccountExpense = @"INSERT INTO saving_account_expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
         //private String sqlStatementInsertDebt = @"INSERT INTO debts(user_ID, name, value, creditor_ID, date) VALUES(@paramID, @paramDebtName, @paramDebtValue, @paramCreditorID, @paramDebtDate)";
         //private String sqlStatementInsertSaving = @"INSERT INTO savings(user_ID, name, value, date) VALUES(@paramID, @paramSavingName, @paramSavingValue, @paramSavingDate)";
-        private String sqlStatementInsertCreditor = @"INSERT INTO creditors(creditorName) VALUES(@paramCreditorName)";
-        private String sqlStatementInsertCreditorID = @"INSERT INTO users_creditors(user_ID, creditor_ID) VALUES(@paramUserID, @paramCreditorID)";
+        //private String sqlStatementInsertCreditor = @"INSERT INTO creditors(creditorName) VALUES(@paramCreditorName)";
+        //private String sqlStatementInsertCreditorID = @"INSERT INTO users_creditors(user_ID, creditor_ID) VALUES(@paramUserID, @paramCreditorID)";
 
         //SQL queries for getting the total value of budget elements for a month in order to allow further checks
         private String sqlStatementSingleMonthIncomes = @"SELECT SUM(value) from incomes WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
@@ -512,7 +513,13 @@ namespace BudgetManager {
 
                 //New creditor insertion
                 case 4:
-                    executionResult = insertCreditor();
+                    paramContainer = configureParamContainer(BudgetItemType.CREDITOR);
+                    Guard.notNull(paramContainer, "creditor parameter container");
+
+                    DataInsertionStrategy creditorInsertionStrategy = new CreditorInsertionStrategy();
+                    dataInsertionContext.setStrategy(creditorInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);
                     break;
 
                 default:                
@@ -580,80 +587,80 @@ namespace BudgetManager {
         //    return executionResult;
         //}
 
-        private int insertCreditor() {
-            int executionResult = -1;
-            //Checks if the entered creditor name exists in the database
-            MySqlCommand creditorSelectionCommand = new MySqlCommand(sqlStatementCheckCreditorExistence);
-            creditorSelectionCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
-            if (entryIsPresent(creditorSelectionCommand, nameTextBox.Text)) {
-                DialogResult userChoice = MessageBox.Show("The provided creditor name already exists. Do you want to add it to your creditors list?", "Data insertion", MessageBoxButtons.YesNoCancel);
-                if (userChoice == DialogResult.Yes) {
-                    //Checks if the creditor is already present in the current user creditors' list
-                    MySqlCommand creditorPresenceInListCommand = new MySqlCommand(sqlStatementCheckCreditorExistenceInUserList);
-                    creditorPresenceInListCommand.Parameters.AddWithValue("@paramUserID", userID);
-                    creditorPresenceInListCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));//Looks for the id of the creditor whose name was inserted
-                    if (isPresentInUserCreditorList(creditorPresenceInListCommand)) {
-                        MessageBox.Show("The provided creditor is already present in your creditor list and cannot be assigned again! Please enter a different creditor", "Data insertion");
-                        return -1;
-                    } else {
-                        //If the creditor aleady exists but is assigned to the current user a new entry will be created in the users_creditors table of the database
-                        MySqlCommand creditorIDInsertCommandForExistingEntry = new MySqlCommand(sqlStatementInsertCreditorID);
-                        creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramUserID", userID);
-                        creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
-                        executionResult = DBConnectionManager.insertData(creditorIDInsertCommandForExistingEntry);
+        //private int insertCreditor() {
+        //    int executionResult = -1;
+        //    //Checks if the entered creditor name exists in the database
+        //    MySqlCommand creditorSelectionCommand = new MySqlCommand(sqlStatementCheckCreditorExistence);
+        //    creditorSelectionCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
+        //    if (entryIsPresent(creditorSelectionCommand, nameTextBox.Text)) {
+        //        DialogResult userChoice = MessageBox.Show("The provided creditor name already exists. Do you want to add it to your creditors list?", "Data insertion", MessageBoxButtons.YesNoCancel);
+        //        if (userChoice == DialogResult.Yes) {
+        //            //Checks if the creditor is already present in the current user creditors' list
+        //            MySqlCommand creditorPresenceInListCommand = new MySqlCommand(sqlStatementCheckCreditorExistenceInUserList);
+        //            creditorPresenceInListCommand.Parameters.AddWithValue("@paramUserID", userID);
+        //            creditorPresenceInListCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));//Looks for the id of the creditor whose name was inserted
+        //            if (isPresentInUserCreditorList(creditorPresenceInListCommand)) {
+        //                MessageBox.Show("The provided creditor is already present in your creditor list and cannot be assigned again! Please enter a different creditor", "Data insertion");
+        //                return -1;
+        //            } else {
+        //                //If the creditor aleady exists but is assigned to the current user a new entry will be created in the users_creditors table of the database
+        //                MySqlCommand creditorIDInsertCommandForExistingEntry = new MySqlCommand(sqlStatementInsertCreditorID);
+        //                creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramUserID", userID);
+        //                creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
+        //                executionResult = DBConnectionManager.insertData(creditorIDInsertCommandForExistingEntry);
 
-                    }
+        //            }
 
-                } else {
-                    //If the user option is 'No' we return from the method
-                    return -1;
-                }
-            } else {
-                //Inserting a new creditor in the creditors table of the database
-                MySqlCommand creditorInsertCommand = new MySqlCommand(sqlStatementInsertCreditor);
-                creditorInsertCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
-                executionResult = DBConnectionManager.insertData(creditorInsertCommand);
+        //        } else {
+        //            //If the user option is 'No' we return from the method
+        //            return -1;
+        //        }
+        //    } else {
+        //        //Inserting a new creditor in the creditors table of the database
+        //        MySqlCommand creditorInsertCommand = new MySqlCommand(sqlStatementInsertCreditor);
+        //        creditorInsertCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
+        //        executionResult = DBConnectionManager.insertData(creditorInsertCommand);
 
-                //Inserting the ID of the newly created creditor in he users_creditors table of the database
-                MySqlCommand creditorIDInsertCommand = new MySqlCommand(sqlStatementInsertCreditorID);
-                creditorIDInsertCommand.Parameters.AddWithValue("@paramUserID", userID);
-                creditorIDInsertCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
-                executionResult = DBConnectionManager.insertData(creditorIDInsertCommand);
-            }
+        //        //Inserting the ID of the newly created creditor in he users_creditors table of the database
+        //        MySqlCommand creditorIDInsertCommand = new MySqlCommand(sqlStatementInsertCreditorID);
+        //        creditorIDInsertCommand.Parameters.AddWithValue("@paramUserID", userID);
+         //       creditorIDInsertCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
+        //        executionResult = DBConnectionManager.insertData(creditorIDInsertCommand);
+        //    }
 
-            return executionResult;
-        }
+        //    return executionResult;
+        //}
 
 
 
-        private bool entryIsPresent(MySqlCommand command, String entryName) {
-            //Executes the data retrieval command using the name of the specified creditor        
-            DataTable entryDataTable = DBConnectionManager.getData(command);
+        //private bool entryIsPresent(MySqlCommand command, String entryName) {
+        //    //Executes the data retrieval command using the name of the specified creditor        
+        //    DataTable entryDataTable = DBConnectionManager.getData(command);
 
-            if (entryDataTable != null) {
-                if (entryDataTable.Rows.Count > 0) {
-                    for (int i = 0; i < entryDataTable.Rows.Count; i++) {
-                        //Checks if the name of the creditor that was obtained after the execution of the command is the same as the one that the users tries to insert(case insensitive string comparison)
-                        if (entryName.Equals(entryDataTable.Rows[i].ItemArray[0].ToString(), StringComparison.InvariantCultureIgnoreCase)) {
-                            return true;
-                        }
-                    }
-                }
-            }
+        //    if (entryDataTable != null) {
+        //        if (entryDataTable.Rows.Count > 0) {
+        //            for (int i = 0; i < entryDataTable.Rows.Count; i++) {
+        //                //Checks if the name of the creditor that was obtained after the execution of the command is the same as the one that the users tries to insert(case insensitive string comparison)
+        //                if (entryName.Equals(entryDataTable.Rows[i].ItemArray[0].ToString(), StringComparison.InvariantCultureIgnoreCase)) {
+        //                    return true;
+        //                }
+        //            }
+        //        }
+        //    }
 
-            return false;
+        //    return false;
 
-        }
+        //}
 
-        private bool isPresentInUserCreditorList(MySqlCommand command) {
-            DataTable creditorListPresenceTable = DBConnectionManager.getData(command);
+        //private bool isPresentInUserCreditorList(MySqlCommand command) {
+        //    DataTable creditorListPresenceTable = DBConnectionManager.getData(command);
 
-            if (creditorListPresenceTable != null && creditorListPresenceTable.Rows.Count > 0) {
-                return true;
-            }
+        //    if (creditorListPresenceTable != null && creditorListPresenceTable.Rows.Count > 0) {
+        //        return true;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
         private bool hasEnoughMoney(IncomeSource incomeSource, int valueToInsert, QueryData paramContainer) {
             if (incomeSource == IncomeSource.GENERAL_INCOMES) {
@@ -907,16 +914,22 @@ namespace BudgetManager {
                         .addItemCreationDate(savingDate)
                         .build();
                     break;
-                    
+
+                //Creditor insertion object configuration
+                case BudgetItemType.CREDITOR:
+                    String insertedCreditorName = nameTextBox.Text;
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addCreditorName(insertedCreditorName)
+                        .build();
+                    break;
+
                 default:
                     break;
             }
 
             return paramContainer;
         }
-
-
-
 
         private void InsertDataForm_Load(object sender, EventArgs e) {
 
