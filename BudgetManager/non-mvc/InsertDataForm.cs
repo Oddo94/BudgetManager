@@ -1,4 +1,5 @@
-﻿using BudgetManager.utils;
+﻿using BudgetManager.non_mvc;
+using BudgetManager.utils;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace BudgetManager {
         SAVING_ACCOUNT_EXPENSE,
         DEBT,
         SAVING,
+        CREDITOR,
         UNDEFINED
     }
 
@@ -45,21 +47,21 @@ namespace BudgetManager {
         private String sqlStatementCheckCreditorExistence = @"SELECT creditorName FROM creditors WHERE creditorName = @paramCreditorName";
 
         //SQL queries for selecting the ID's used in the INSERT commands
-        private String sqlStatementSelectIncomeTypeID = @"SELECT typeID FROM income_types WHERE typeName = @paramTypeName";
+        //private String sqlStatementSelectIncomeTypeID = @"SELECT typeID FROM income_types WHERE typeName = @paramTypeName";
         private String sqlStatementSelectExpenseTypeID = @"SELECT categoryID FROM expense_types WHERE categoryName = @paramTypeName";
         private String sqlStatementSelectCreditorID = @"SELECT creditorID FROM creditors WHERE creditorName = @paramTypeName";
 
         //SQL queries for checking the existence of a creditor in the current user creditor list
-        private String sqlStatementCheckCreditorExistenceInUserList = @"SELECT user_ID, creditor_ID FROM users_creditors WHERE user_ID = @paramUserID AND creditor_ID = @paramCreditorID";
+        //private String sqlStatementCheckCreditorExistenceInUserList = @"SELECT user_ID, creditor_ID FROM users_creditors WHERE user_ID = @paramUserID AND creditor_ID = @paramCreditorID";
 
         //SQL queries for inserting incomes, expenses, debts and savings
-        private String sqlStatementInsertIncome = @"INSERT INTO incomes(user_ID, name, incomeType, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
-        private String sqlStatementInsertGeneralIncomesExpense = @"INSERT INTO expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
-        private String sqlStatementInsertSavingAccountExpense = @"INSERT INTO saving_account_expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
-        private String sqlStatementInsertDebt = @"INSERT INTO debts(user_ID, name, value, creditor_ID, date) VALUES(@paramID, @paramDebtName, @paramDebtValue, @paramCreditorID, @paramDebtDate)";
-        private String sqlStatementInsertSaving = @"INSERT INTO savings(user_ID, name, value, date) VALUES(@paramID, @paramSavingName, @paramSavingValue, @paramSavingDate)";
-        private String sqlStatementInsertCreditor = @"INSERT INTO creditors(creditorName) VALUES(@paramCreditorName)";
-        private String sqlStatementInsertCreditorID = @"INSERT INTO users_creditors(user_ID, creditor_ID) VALUES(@paramUserID, @paramCreditorID)";
+        //private String sqlStatementInsertIncome = @"INSERT INTO incomes(user_ID, name, incomeType, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
+        //private String sqlStatementInsertGeneralIncomesExpense = @"INSERT INTO expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
+        //private String sqlStatementInsertSavingAccountExpense = @"INSERT INTO saving_account_expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
+        //private String sqlStatementInsertDebt = @"INSERT INTO debts(user_ID, name, value, creditor_ID, date) VALUES(@paramID, @paramDebtName, @paramDebtValue, @paramCreditorID, @paramDebtDate)";
+        //private String sqlStatementInsertSaving = @"INSERT INTO savings(user_ID, name, value, date) VALUES(@paramID, @paramSavingName, @paramSavingValue, @paramSavingDate)";
+        //private String sqlStatementInsertCreditor = @"INSERT INTO creditors(creditorName) VALUES(@paramCreditorName)";
+        //private String sqlStatementInsertCreditorID = @"INSERT INTO users_creditors(user_ID, creditor_ID) VALUES(@paramUserID, @paramCreditorID)";
 
         //SQL queries for getting the total value of budget elements for a month in order to allow further checks
         private String sqlStatementSingleMonthIncomes = @"SELECT SUM(value) from incomes WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
@@ -332,7 +334,7 @@ namespace BudgetManager {
 
 
 
-            //Checks the execution result returned by the insertion method(positive value mean success while -1 means the failure of the operation)
+            //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
             if (executionResult != -1) {
                 MessageBox.Show("Data inserted successfully!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } else {
@@ -454,35 +456,70 @@ namespace BudgetManager {
 
         private int insertSelectedItem(int selectedItemIndex) {
             int executionResult = -1;
+            QueryData paramContainer = null;
+            DataInsertionContext dataInsertionContext = new DataInsertionContext();
             switch (selectedItemIndex) {
                 //Income insertion
-                case 0:              
-                    executionResult = insertIncome();
+                case 0:
+                    //Creates the object that contains the necessary values for the execution of the SQL query
+                    paramContainer = configureParamContainer(BudgetItemType.INCOME);
+                    //Null check for this object
+                    Guard.notNull(paramContainer, "income parameter container");
+
+                    //Creates the actual data insertion strategy
+                    DataInsertionStrategy incomeInsertionStrategy = new IncomeInsertionStrategy();
+                    //Sets the strategy of the data insertion context to the previously created strategy
+                    dataInsertionContext.setStrategy(incomeInsertionStrategy);
+
+                    //Executes the strategy by calling the invoke() method of the context and passing it the paramContainer object
+                    executionResult = dataInsertionContext.invoke(paramContainer);
+
                     break;
 
                 //Expense insertion
                 //CHANGE TO ALLOW THE CORRECT SELECTION OF EXPENSE INSERTION STATEMENT
-                case 1:
-                    if(getIncomeSource() == IncomeSource.GENERAL_INCOMES) {
-                        executionResult = insertExpense(sqlStatementInsertGeneralIncomesExpense);//Uses the SQL statement that inserts the expense in the expenses table of the DB
-                    } else if (getIncomeSource() == IncomeSource.SAVING_ACCOUNT) {
-                        executionResult = insertExpense(sqlStatementInsertSavingAccountExpense);//Uses SQL statement that inserts the expense in the saving_account_expenses table of the DB
-                    }                                             
+                case 1:                   
+                    //GENERAL_EXPENSE type is used since there is an intentional fall through the cases inside the configuration method so that both types are treated identically(they need the same data)
+                    paramContainer = configureParamContainer(BudgetItemType.GENERAL_EXPENSE);
+                    Guard.notNull(paramContainer, "expense parameter container");
+
+                    DataInsertionStrategy expenseInsertionStrategy = new ExpenseInsertionStrategy();
+                    dataInsertionContext.setStrategy(expenseInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);                                                  
                     break;
 
                 //Debt insertion
-                case 2:                   
-                    executionResult = insertDebt();
+                case 2:
+                    paramContainer = configureParamContainer(BudgetItemType.DEBT);
+                    Guard.notNull(paramContainer, "debt parameter container");
+
+                    DataInsertionStrategy debtInsertionStrategy = new DebtInsertionStrategy();
+                    dataInsertionContext.setStrategy(debtInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);                                    
                     break;
 
                 //Saving insertion
-                case 3:                 
-                    executionResult = insertSaving();                
+                case 3:
+                    paramContainer = configureParamContainer(BudgetItemType.SAVING);
+                    Guard.notNull(paramContainer, "saving parameter container");
+
+                    SavingInsertionStrategy savingInsertionStrategy = new SavingInsertionStrategy();
+                    dataInsertionContext.setStrategy(savingInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);      
                     break;
 
                 //New creditor insertion
                 case 4:
-                    executionResult = insertCreditor();
+                    paramContainer = configureParamContainer(BudgetItemType.CREDITOR);
+                    Guard.notNull(paramContainer, "creditor parameter container");
+
+                    DataInsertionStrategy creditorInsertionStrategy = new CreditorInsertionStrategy();
+                    dataInsertionContext.setStrategy(creditorInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);
                     break;
 
                 default:                
@@ -492,138 +529,138 @@ namespace BudgetManager {
             return executionResult;
         }
 
-        private int insertIncome() {
-            //Getting the necessary data
-            String incomeName = nameTextBox.Text;
-            int incomeTypeID = getID(sqlStatementSelectIncomeTypeID, incomeTypeComboBox.Text);//Ia ca argumente fraza SQL si denumirea tipului de venit selectat
-            int incomeValue = Convert.ToInt32(valueTextBox.Text);
-            String incomeDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd"); //Obtinere data sub forma de String
+        //private int insertIncome() {
+        //    //Getting the necessary data
+        //    String incomeName = nameTextBox.Text;
+        //    int incomeTypeID = getID(sqlStatementSelectIncomeTypeID, incomeTypeComboBox.Text);//Ia ca argumente fraza SQL si denumirea tipului de venit selectat
+        //    int incomeValue = Convert.ToInt32(valueTextBox.Text);
+        //    String incomeDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd"); //Obtinere data sub forma de String
 
-            //Creating command for income insertion
-            MySqlCommand incomeInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertIncome, userID, incomeName, incomeTypeID, incomeValue, incomeDate);
-            //Getting the execution command result
-            int executionResult = DBConnectionManager.insertData(incomeInsertionCommand);
+        //    //Creating command for income insertion
+        //    MySqlCommand incomeInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertIncome, userID, incomeName, incomeTypeID, incomeValue, incomeDate);
+        //    //Getting the execution command result
+        //    int executionResult = DBConnectionManager.insertData(incomeInsertionCommand);
 
-            return executionResult;
-        }
-
-
-        private int insertExpense(String sqlStatement) {
-            //Getting the necessary data
-            String expenseName = nameTextBox.Text;
-            int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
-            int expenseValue = Convert.ToInt32(valueTextBox.Text);
-            String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Getting date as String
-
-            //Creating command for expense insertion
-            MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatement, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
-            //Getting the execution command result
-            int executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
-
-            return executionResult;
-        }
-
-        private int insertDebt() {
-            //Getting the necessary data
-            String debtName = nameTextBox.Text;
-            int debtValue = Convert.ToInt32(valueTextBox.Text);
-            int creditorID = getID(sqlStatementSelectCreditorID, creditorNameComboBox.Text);
-            String debtDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
-
-            //Creating command for debt insertion
-            MySqlCommand debtInsertionCommand = SQLCommandBuilder.getDebtInsertionCommand(sqlStatementInsertDebt, userID, debtName, debtValue, creditorID, debtDate);
-            int executionResult = DBConnectionManager.insertData(debtInsertionCommand);
-
-            return executionResult;
-        }
-
-        private int insertSaving() {
-            //Getting the necessary data
-            String savingName = nameTextBox.Text;
-            int savingValue = Convert.ToInt32(valueTextBox.Text);
-            String savingDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
-
-            //Creating command for saving insertion
-            MySqlCommand savingInsertionCommand = SQLCommandBuilder.getSavingInsertionCommand(sqlStatementInsertSaving, userID, savingName, savingValue, savingDate);
-            int executionResult = DBConnectionManager.insertData(savingInsertionCommand);
-
-            return executionResult;
-        }
-
-        private int insertCreditor() {
-            int executionResult = -1;
-            //Checks if the entered creditor name exists in the database
-            MySqlCommand creditorSelectionCommand = new MySqlCommand(sqlStatementCheckCreditorExistence);
-            creditorSelectionCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
-            if (entryIsPresent(creditorSelectionCommand, nameTextBox.Text)) {
-                DialogResult userChoice = MessageBox.Show("The provided creditor name already exists. Do you want to add it to your creditors list?", "Data insertion", MessageBoxButtons.YesNoCancel);
-                if (userChoice == DialogResult.Yes) {
-                    //Checks if the creditor is already present in the current user creditors' list
-                    MySqlCommand creditorPresenceInListCommand = new MySqlCommand(sqlStatementCheckCreditorExistenceInUserList);
-                    creditorPresenceInListCommand.Parameters.AddWithValue("@paramUserID", userID);
-                    creditorPresenceInListCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));//Looks for the id of the creditor whose name was inserted
-                    if (isPresentInUserCreditorList(creditorPresenceInListCommand)) {
-                        MessageBox.Show("The provided creditor is already present in your creditor list and cannot be assigned again! Please enter a different creditor", "Data insertion");
-                        return -1;
-                    } else {
-                        //If the creditor aleady exists but is assigned to the current user a new entry will be created in the users_creditors table of the database
-                        MySqlCommand creditorIDInsertCommandForExistingEntry = new MySqlCommand(sqlStatementInsertCreditorID);
-                        creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramUserID", userID);
-                        creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
-                        executionResult = DBConnectionManager.insertData(creditorIDInsertCommandForExistingEntry);
-
-                    }
-
-                } else {
-                    //If the user option is 'No' we return from the method
-                    return -1;
-                }
-            } else {
-                //Inserting a new creditor in the creditors table of the database
-                MySqlCommand creditorInsertCommand = new MySqlCommand(sqlStatementInsertCreditor);
-                creditorInsertCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
-                executionResult = DBConnectionManager.insertData(creditorInsertCommand);
-
-                //Inserting the ID of the newly created creditor in he users_creditors table of the database
-                MySqlCommand creditorIDInsertCommand = new MySqlCommand(sqlStatementInsertCreditorID);
-                creditorIDInsertCommand.Parameters.AddWithValue("@paramUserID", userID);
-                creditorIDInsertCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
-                executionResult = DBConnectionManager.insertData(creditorIDInsertCommand);
-            }
-
-            return executionResult;
-        }
+        //    return executionResult;
+        //}
 
 
+        //private int insertExpense(String sqlStatement) {
+        //    //Getting the necessary data
+        //    String expenseName = nameTextBox.Text;
+        //    int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
+        //    int expenseValue = Convert.ToInt32(valueTextBox.Text);
+        //    String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Getting date as String
 
-        private bool entryIsPresent(MySqlCommand command, String entryName) {
-            //Executes the data retrieval command using the name of the specified creditor        
-            DataTable entryDataTable = DBConnectionManager.getData(command);
+        //    //Creating command for expense insertion
+        //    MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatement, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
+        //    //Getting the execution command result
+        //    int executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
 
-            if (entryDataTable != null) {
-                if (entryDataTable.Rows.Count > 0) {
-                    for (int i = 0; i < entryDataTable.Rows.Count; i++) {
-                        //Checks if the name of the creditor that was obtained after the execution of the command is the same as the one that the users tries to insert(case insensitive string comparison)
-                        if (entryName.Equals(entryDataTable.Rows[i].ItemArray[0].ToString(), StringComparison.InvariantCultureIgnoreCase)) {
-                            return true;
-                        }
-                    }
-                }
-            }
+        //    return executionResult;
+        //}
 
-            return false;
+        //private int insertDebt() {
+        //    //Getting the necessary data
+        //    String debtName = nameTextBox.Text;
+        //    int debtValue = Convert.ToInt32(valueTextBox.Text);
+        //    int creditorID = getID(sqlStatementSelectCreditorID, creditorNameComboBox.Text);
+        //    String debtDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
 
-        }
+        //    //Creating command for debt insertion
+        //    MySqlCommand debtInsertionCommand = SQLCommandBuilder.getDebtInsertionCommand(sqlStatementInsertDebt, userID, debtName, debtValue, creditorID, debtDate);
+        //    int executionResult = DBConnectionManager.insertData(debtInsertionCommand);
 
-        private bool isPresentInUserCreditorList(MySqlCommand command) {
-            DataTable creditorListPresenceTable = DBConnectionManager.getData(command);
+        //    return executionResult;
+        //}
 
-            if (creditorListPresenceTable != null && creditorListPresenceTable.Rows.Count > 0) {
-                return true;
-            }
+        //private int insertSaving() {
+        //    //Getting the necessary data
+        //    String savingName = nameTextBox.Text;
+        //    int savingValue = Convert.ToInt32(valueTextBox.Text);
+        //    String savingDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
 
-            return false;
-        }
+        //    //Creating command for saving insertion
+        //    MySqlCommand savingInsertionCommand = SQLCommandBuilder.getSavingInsertionCommand(sqlStatementInsertSaving, userID, savingName, savingValue, savingDate);
+        //    int executionResult = DBConnectionManager.insertData(savingInsertionCommand);
+
+        //    return executionResult;
+        //}
+
+        //private int insertCreditor() {
+        //    int executionResult = -1;
+        //    //Checks if the entered creditor name exists in the database
+        //    MySqlCommand creditorSelectionCommand = new MySqlCommand(sqlStatementCheckCreditorExistence);
+        //    creditorSelectionCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
+        //    if (entryIsPresent(creditorSelectionCommand, nameTextBox.Text)) {
+        //        DialogResult userChoice = MessageBox.Show("The provided creditor name already exists. Do you want to add it to your creditors list?", "Data insertion", MessageBoxButtons.YesNoCancel);
+        //        if (userChoice == DialogResult.Yes) {
+        //            //Checks if the creditor is already present in the current user creditors' list
+        //            MySqlCommand creditorPresenceInListCommand = new MySqlCommand(sqlStatementCheckCreditorExistenceInUserList);
+        //            creditorPresenceInListCommand.Parameters.AddWithValue("@paramUserID", userID);
+        //            creditorPresenceInListCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));//Looks for the id of the creditor whose name was inserted
+        //            if (isPresentInUserCreditorList(creditorPresenceInListCommand)) {
+        //                MessageBox.Show("The provided creditor is already present in your creditor list and cannot be assigned again! Please enter a different creditor", "Data insertion");
+        //                return -1;
+        //            } else {
+        //                //If the creditor aleady exists but is assigned to the current user a new entry will be created in the users_creditors table of the database
+        //                MySqlCommand creditorIDInsertCommandForExistingEntry = new MySqlCommand(sqlStatementInsertCreditorID);
+        //                creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramUserID", userID);
+        //                creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
+        //                executionResult = DBConnectionManager.insertData(creditorIDInsertCommandForExistingEntry);
+
+        //            }
+
+        //        } else {
+        //            //If the user option is 'No' we return from the method
+        //            return -1;
+        //        }
+        //    } else {
+        //        //Inserting a new creditor in the creditors table of the database
+        //        MySqlCommand creditorInsertCommand = new MySqlCommand(sqlStatementInsertCreditor);
+        //        creditorInsertCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
+        //        executionResult = DBConnectionManager.insertData(creditorInsertCommand);
+
+        //        //Inserting the ID of the newly created creditor in he users_creditors table of the database
+        //        MySqlCommand creditorIDInsertCommand = new MySqlCommand(sqlStatementInsertCreditorID);
+        //        creditorIDInsertCommand.Parameters.AddWithValue("@paramUserID", userID);
+         //       creditorIDInsertCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
+        //        executionResult = DBConnectionManager.insertData(creditorIDInsertCommand);
+        //    }
+
+        //    return executionResult;
+        //}
+
+
+
+        //private bool entryIsPresent(MySqlCommand command, String entryName) {
+        //    //Executes the data retrieval command using the name of the specified creditor        
+        //    DataTable entryDataTable = DBConnectionManager.getData(command);
+
+        //    if (entryDataTable != null) {
+        //        if (entryDataTable.Rows.Count > 0) {
+        //            for (int i = 0; i < entryDataTable.Rows.Count; i++) {
+        //                //Checks if the name of the creditor that was obtained after the execution of the command is the same as the one that the users tries to insert(case insensitive string comparison)
+        //                if (entryName.Equals(entryDataTable.Rows[i].ItemArray[0].ToString(), StringComparison.InvariantCultureIgnoreCase)) {
+        //                    return true;
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    return false;
+
+        //}
+
+        //private bool isPresentInUserCreditorList(MySqlCommand command) {
+        //    DataTable creditorListPresenceTable = DBConnectionManager.getData(command);
+
+        //    if (creditorListPresenceTable != null && creditorListPresenceTable.Rows.Count > 0) {
+        //        return true;
+        //    }
+
+        //    return false;
+        //}
 
         private bool hasEnoughMoney(IncomeSource incomeSource, int valueToInsert, QueryData paramContainer) {
             if (incomeSource == IncomeSource.GENERAL_INCOMES) {
@@ -807,7 +844,92 @@ namespace BudgetManager {
             return executionResult;
         }
 
+        //Method for configuring the param container object for the insertion of different budget items
+        private QueryData configureParamContainer(BudgetItemType selectedItemType) {
+            QueryData paramContainer = null;
 
+            switch (selectedItemType) {
+                //Income insertion object configuration
+                case BudgetItemType.INCOME:
+                    String incomeName = nameTextBox.Text;
+                    String incomeTypeName = incomeTypeComboBox.Text;
+                    int incomeValue = Convert.ToInt32(valueTextBox.Text);
+                    String incomeDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addItemName(incomeName)
+                        .addItemValue(incomeValue)
+                        .addTypeName(incomeTypeName)
+                        .addItemCreationDate(incomeDate)
+                        .build();
+                    break;
+
+                //Expense insertion object configuration
+                //Intentional fall-through the cases because both types need the same data
+                case BudgetItemType.SAVING_ACCOUNT_EXPENSE:
+                case BudgetItemType.GENERAL_EXPENSE:                    
+                    String expenseName = nameTextBox.Text;
+                    //int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
+                    String expenseTypeName = expenseTypeComboBox.Text;
+                    int expenseValue = Convert.ToInt32(valueTextBox.Text);
+                    String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Getting date as String
+                    IncomeSource incomeSource = getIncomeSource();
+
+                    paramContainer = new QueryData.Builder(userID)
+
+                        .addItemName(expenseName)
+                        .addItemValue(expenseValue)
+                        .addTypeName(expenseTypeName)                      
+                        .addItemCreationDate(expenseDate)
+                        .addIncomeSource(incomeSource)
+                        .build();
+                 break;
+
+                //Debt insertion object configuration
+                case BudgetItemType.DEBT:
+                    //Getting the necessary data
+                    String debtName = nameTextBox.Text;
+                    int debtValue = Convert.ToInt32(valueTextBox.Text);
+                    String creditorName = creditorNameComboBox.Text;
+                    String debtDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addItemName(debtName)
+                        .addItemValue(debtValue)
+                        .addCreditorName(creditorName)
+                        .addItemCreationDate(debtDate)
+                        .build();
+                    break;
+
+                //Saving insertion object configuration
+                case BudgetItemType.SAVING:
+                    //Getting the necessary data
+                    String savingName = nameTextBox.Text;
+                    int savingValue = Convert.ToInt32(valueTextBox.Text);
+                    String savingDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addItemName(savingName)
+                        .addItemValue(savingValue)
+                        .addItemCreationDate(savingDate)
+                        .build();
+                    break;
+
+                //Creditor insertion object configuration
+                case BudgetItemType.CREDITOR:
+                    String insertedCreditorName = nameTextBox.Text;
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addCreditorName(insertedCreditorName)
+                        .build();
+                    break;
+
+                default:
+                    break;
+            }
+
+            return paramContainer;
+        }
 
         private void InsertDataForm_Load(object sender, EventArgs e) {
 
