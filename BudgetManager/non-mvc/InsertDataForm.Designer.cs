@@ -124,7 +124,8 @@
             "Expense",
             "Debt",
             "Saving",
-            "Creditor"});
+            "Creditor",
+            "Debtor"});
             this.budgetItemComboBox.Location = new System.Drawing.Point(111, 140);
             this.budgetItemComboBox.Name = "budgetItemComboBox";
             this.budgetItemComboBox.Size = new System.Drawing.Size(121, 21);

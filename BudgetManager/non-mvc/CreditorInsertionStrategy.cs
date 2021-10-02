@@ -40,7 +40,7 @@ namespace BudgetManager.non_mvc {
                     creditorPresenceInListCommand.Parameters.AddWithValue("@paramCreditorID", DataInsertionUtils.getID(sqlStatementSelectCreditorID, paramContainer.CreditorName));//Looks for the id of the creditor whose name was inserted
                     if (isPresentInUserCreditorList(creditorPresenceInListCommand)) {
                         MessageBox.Show("The provided creditor is already present in your creditor list and cannot be assigned again! Please enter a different creditor", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return executionResult;
+                        //return executionResult;
                     } else {
                         //If the creditor aleady exists but is assigned to the current user a new entry will be created in the users_creditors table of the database
                         MySqlCommand creditorIDInsertCommandForExistingEntry = new MySqlCommand(sqlStatementInsertCreditorID);

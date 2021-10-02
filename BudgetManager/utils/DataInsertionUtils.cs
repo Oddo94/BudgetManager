@@ -26,5 +26,36 @@ namespace BudgetManager.utils {
 
             return -1;
         }
+
+        //Method for checking if the specififed creditor/debtor is present in the database
+        public static bool entryIsPresent(MySqlCommand command, String entryName) {
+            //Executes the data retrieval command using the name of the specified creditor/debtor        
+            DataTable entryDataTable = DBConnectionManager.getData(command);
+
+            if (entryDataTable != null) {
+                if (entryDataTable.Rows.Count > 0) {
+                    for (int i = 0; i < entryDataTable.Rows.Count; i++) {
+                        //Checks if the name of the creditor/debtor that was obtained after the execution of the command is the same as the one that the users tries to insert(case insensitive string comparison)
+                        if (entryName.Equals(entryDataTable.Rows[i].ItemArray[0].ToString(), StringComparison.InvariantCultureIgnoreCase)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+
+        }
+
+        //Method for checking if the specified creditor/debtor is present in the user's creditor/debtor list(users_creditors or user_debtors table of the database)
+        public static bool isAssignedToCurrentUser(MySqlCommand command) {
+            DataTable assignmentListTable = DBConnectionManager.getData(command);
+
+            if (assignmentListTable != null && assignmentListTable.Rows.Count > 0) {
+                return true;
+            }
+
+            return false;
+        }
     }
 }
