@@ -22,6 +22,7 @@ namespace BudgetManager {
         DEBT,
         SAVING,
         CREDITOR,
+        DEBTOR,
         UNDEFINED
     }
 
@@ -44,12 +45,12 @@ namespace BudgetManager {
                 FROM users INNER JOIN users_creditors ON users.userID = users_creditors.user_ID
                 INNER JOIN creditors ON users_creditors.creditor_ID = creditors.creditorID
                 WHERE users_creditors.user_ID = @paramUserID";
-        private String sqlStatementCheckCreditorExistence = @"SELECT creditorName FROM creditors WHERE creditorName = @paramCreditorName";
+        //private String sqlStatementCheckCreditorExistence = @"SELECT creditorName FROM creditors WHERE creditorName = @paramCreditorName";
 
         //SQL queries for selecting the ID's used in the INSERT commands
         //private String sqlStatementSelectIncomeTypeID = @"SELECT typeID FROM income_types WHERE typeName = @paramTypeName";
         private String sqlStatementSelectExpenseTypeID = @"SELECT categoryID FROM expense_types WHERE categoryName = @paramTypeName";
-        private String sqlStatementSelectCreditorID = @"SELECT creditorID FROM creditors WHERE creditorName = @paramTypeName";
+        //private String sqlStatementSelectCreditorID = @"SELECT creditorID FROM creditors WHERE creditorName = @paramTypeName";
 
         //SQL queries for checking the existence of a creditor in the current user creditor list
         //private String sqlStatementCheckCreditorExistenceInUserList = @"SELECT user_ID, creditor_ID FROM users_creditors WHERE user_ID = @paramUserID AND creditor_ID = @paramCreditorID";
@@ -155,6 +156,19 @@ namespace BudgetManager {
                     savingAccountRadioButton.Enabled = false;
                     creditorNameComboBox.Enabled = false;
                     break;
+
+                //Debtors-ONLY FOR TEST PURPOSES
+                case 5:
+                    clearFields(inputFields);
+                    toggleInputFormFieldsState(inputFields, true);
+                    valueTextBox.Enabled = false;
+                    incomeTypeComboBox.Enabled = false;
+                    expenseTypeComboBox.Enabled = false;
+                    generalIncomesRadioButton.Enabled = false;
+                    savingAccountRadioButton.Enabled = false;
+                    creditorNameComboBox.Enabled = false;
+                    break;
+
             }
         }
 
@@ -222,7 +236,7 @@ namespace BudgetManager {
 
             String selectedItem = budgetItemComboBox.Text;
             //If the user wants to insert a creditor or an income then the available amount check is no longer performed
-            if (!"Creditor".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase) && !"Income".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase)) {
+            if (!"Creditor".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase) && !"Debtor".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase) && !"Income".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase)) {
                 //Checks if the user has enough money left to insert the selected item value
                 int insertedValue = Convert.ToInt32(valueTextBox.Text);
                 int selectedMonth = newEntryDateTimePicker.Value.Month;
@@ -522,6 +536,17 @@ namespace BudgetManager {
                     executionResult = dataInsertionContext.invoke(paramContainer);
                     break;
 
+                //New debtor insertion
+                case 5:
+                    paramContainer = configureParamContainer(BudgetItemType.DEBTOR);
+                    Guard.notNull(paramContainer, "debtor parameter container");
+
+                    DataInsertionStrategy debtorInsertionStrategy = new DebtorInsertionStrategy();
+                    dataInsertionContext.setStrategy(debtorInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);
+                    break;
+                
                 default:                
                     break;
             }
@@ -921,6 +946,15 @@ namespace BudgetManager {
 
                     paramContainer = new QueryData.Builder(userID)
                         .addCreditorName(insertedCreditorName)
+                        .build();
+                    break;
+
+                //Debtor insertion object configuration
+                case BudgetItemType.DEBTOR:
+                    String insertedDebtorName = nameTextBox.Text;
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addDebtorName(insertedDebtorName)
                         .build();
                     break;
 

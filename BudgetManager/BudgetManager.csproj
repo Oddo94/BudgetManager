@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>budget-vector-free-icon-set-35.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MySql.Data, Version=8.0.19.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
@@ -82,6 +85,7 @@
     <Compile Include="non-mvc\DataInsertionContext.cs" />
     <Compile Include="non-mvc\DataInsertionStrategy.cs" />
     <Compile Include="non-mvc\DebtInsertionContext.cs" />
+    <Compile Include="non-mvc\DebtorInsertionStrategy.cs" />
     <Compile Include="non-mvc\ExpenseInsertionStrategy.cs" />
     <Compile Include="non-mvc\IncomeInsertionStrategy.cs" />
     <Compile Include="non-mvc\SavingInsertionStrategy.cs" />
@@ -190,7 +194,10 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="budget-vector-free-icon-set-23.ico" />
+    <Content Include="budget-vector-free-icon-set-35.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
