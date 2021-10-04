@@ -10,10 +10,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static BudgetManager.utils.DataProvider;
 
 namespace BudgetManager.non_mvc {
     public partial class InsertDataForm2 : Form {
-      
+        //Current user ID
+        int userID;
+
         //General controls
         private TextBox itemNameTextBox;
         private TextBox itemValueTextBox;
@@ -53,6 +56,9 @@ namespace BudgetManager.non_mvc {
 
         public InsertDataForm2(int userID) {
             InitializeComponent();
+            //The userID must be assigned the correct value BEFORE creating the components and populating the comboboxes otherwise they will be empty
+            this.userID = userID;
+
             createLabels();
             createTextBoxes();
             createComboBoxes();
@@ -61,6 +67,8 @@ namespace BudgetManager.non_mvc {
             createContainer();
 
             groupBox1.Controls.Add(container);
+
+            
         }
 
 
@@ -187,8 +195,9 @@ namespace BudgetManager.non_mvc {
             DateTime startDate = datePicker.Value;
             DateTime endDate = receivableDueDatePicker.Value;
 
+            //CHECK TO SEE IF THE BEHAVIOR IS CORRECT
             if (!isChronological(startDate, endDate)) {
-                MessageBox.Show("The receivable creation date must be before the due date!");
+                //MessageBox.Show("The receivable creation date must be before the due date!");
                 addEntryButton.Enabled = false;
             } else {
                 addEntryButton.Enabled = true;
@@ -238,21 +247,26 @@ namespace BudgetManager.non_mvc {
         }
 
         private void createComboBoxes() {
+            DataProvider dataProvider = new DataProvider();
             incomeTypeComboBox = new ComboBox();
-            incomeTypeComboBox.DataSource = new List<String>() { "Active income", "Passive income" };
+            //incomeTypeComboBox.DataSource = new List<String>() { "Active income", "Passive income" };
+            dataProvider.fillComboBox(incomeTypeComboBox, ComboBoxType.INCOME_TYPE_COMBOBOX, userID);
             incomeTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 
 
             expenseTypeComboBox = new ComboBox();
-            expenseTypeComboBox.DataSource = new List<String>() { "Fixed expense", "Periodic expense", "Variable expense" };
+            //expenseTypeComboBox.DataSource = new List<String>() { "Fixed expense", "Periodic expense", "Variable expense" };
+            dataProvider.fillComboBox(expenseTypeComboBox, ComboBoxType.EXPENSE_TYPE_COMBOBOX, userID);
             expenseTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 
             creditorNameComboBox = new ComboBox();
-            creditorNameComboBox.DataSource = new List<String>() { "John", "David", "Andrew", "Steven" };
+            //creditorNameComboBox.DataSource = new List<String>() { "John", "David", "Andrew", "Steven" };
+            dataProvider.fillComboBox(creditorNameComboBox, ComboBoxType.CREDITOR_COMBOBOX, userID);
             creditorNameComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 
             debtorNameComboBox = new ComboBox();
-            debtorNameComboBox.DataSource = new List<String>() { "Michael", "Gerard", "Adam", "James" };
+            //debtorNameComboBox.DataSource = new List<String>() { "Michael", "Gerard", "Adam", "James" };
+            dataProvider.fillComboBox(debtorNameComboBox, ComboBoxType.DEBTOR_COMBOBOX, userID);
             debtorNameComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
         }
 
@@ -423,7 +437,7 @@ namespace BudgetManager.non_mvc {
         //Checks if the start date is before the end date (for receivables only!)
         private bool isChronological(DateTime startDate, DateTime endDate) {
 
-            return startDate < endDate;
+            return startDate <= endDate;
         }
 
         private void setAddEntryButtonState(ArrayList activeControls) {

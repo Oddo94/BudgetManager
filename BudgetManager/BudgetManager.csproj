@@ -98,7 +98,9 @@
     <Compile Include="utils\BudgetPlanChecker.cs" />
     <Compile Include="utils\ConfirmationSender.cs" />
     <Compile Include="utils\DataGridViewManager.cs" />
+    <Compile Include="utils\DataInsertionChecker.cs" />
     <Compile Include="utils\DataInsertionUtils.cs" />
+    <Compile Include="utils\DataProvider.cs" />
     <Compile Include="utils\DBConnectionManager.cs" />
     <Compile Include="mvc\models\DebtsModel.cs" />
     <Compile Include="mvc\models\ExpensesModel.cs" />

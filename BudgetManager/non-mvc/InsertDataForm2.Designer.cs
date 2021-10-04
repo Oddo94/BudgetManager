@@ -69,6 +69,7 @@
             // 
             // addEntryButton
             // 
+            this.addEntryButton.Enabled = false;
             this.addEntryButton.Location = new System.Drawing.Point(33, 445);
             this.addEntryButton.Name = "addEntryButton";
             this.addEntryButton.Size = new System.Drawing.Size(75, 23);
@@ -85,6 +86,7 @@
             this.resetButton.TabIndex = 4;
             this.resetButton.Text = "Reset";
             this.resetButton.UseVisualStyleBackColor = true;
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
             // 
             // cancelButton
             // 
@@ -108,6 +110,7 @@
             this.Controls.Add(this.itemTypeSelectionComboBox);
             this.Name = "InsertDataForm2";
             this.Text = "InsertDataForm2";
+            this.Load += new System.EventHandler(this.InsertDataForm2_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
