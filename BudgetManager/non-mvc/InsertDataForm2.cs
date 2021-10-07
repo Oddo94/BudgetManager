@@ -30,8 +30,8 @@ namespace BudgetManager.non_mvc {
         private ComboBox incomeTypeComboBox;
         private Label incomeTypeLabel;
         private Label incomeSourceLabel;
-        private RadioButton radioButtonGeneralIncomes;
-        private RadioButton radioButtonSavingAccount;
+        private RadioButton generalIncomesRadioButton;
+        private RadioButton savingAccountRadioButton;
 
         //Expenses
         private ComboBox expenseTypeComboBox;
@@ -77,10 +77,10 @@ namespace BudgetManager.non_mvc {
             itemNameTextBox.TextChanged += new EventHandler(itemNameTextBox_TextChanged);
             itemValueTextBox.TextChanged += new EventHandler(itemValueTextBox_TextChanged);
             incomeTypeComboBox.SelectedIndexChanged += new EventHandler(incomeTypeComboBox_SelectedIndexChanged);
-            expenseTypeComboBox.SelectedIndexChanged += new EventHandler(incomeTypeComboBox_SelectedIndexChanged);
-            creditorNameComboBox.SelectedIndexChanged += new EventHandler(expenseTypeComboBox_SelectedIndexChanged);
+            expenseTypeComboBox.SelectedIndexChanged += new EventHandler(expenseTypeComboBox_SelectedIndexChanged);
+            creditorNameComboBox.SelectedIndexChanged += new EventHandler(creditorNameComboBox_IndexChanged);
             debtorNameComboBox.SelectedIndexChanged += new EventHandler(debtorNameComboBox_IndexChanged);
-            receivableDueDatePicker.ValueChanged += new EventHandler(receivableDueDatePicker_ValueChanged);       
+            //receivableDueDatePicker.ValueChanged += new EventHandler(receivableDueDatePicker_ValueChanged);       
         }
 
         private void itemTypeSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -93,9 +93,9 @@ namespace BudgetManager.non_mvc {
                 case 0:
                     container.Controls.Clear();
                     addGeneralPurposeControls();
-                    List<Control> controlsListIncomes = new List<Control>() { incomeTypeLabel, incomeTypeComboBox, incomeSourceLabel, radioButtonGeneralIncomes, radioButtonSavingAccount };
+                    List<Control> controlsListIncomes = new List<Control>() { incomeTypeLabel, incomeTypeComboBox, incomeSourceLabel};
                     addControlsToContainer(container, controlsListIncomes);
-                    populateControlsList(itemTypeSelectionComboBox);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
                     incomeTypeComboBox.SelectedIndex = -1;
                     break;
@@ -104,9 +104,9 @@ namespace BudgetManager.non_mvc {
                 case 1:
                     container.Controls.Clear();
                     addGeneralPurposeControls();
-                    List<Control> controlsListExpenses = new List<Control>() { expenseTypeLabel, expenseTypeComboBox };
+                    List<Control> controlsListExpenses = new List<Control>() { expenseTypeLabel, expenseTypeComboBox, generalIncomesRadioButton, savingAccountRadioButton };
                     addControlsToContainer(container, controlsListExpenses);
-                    populateControlsList(itemTypeSelectionComboBox);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
                     expenseTypeComboBox.SelectedIndex = -1;
                     break;
@@ -117,7 +117,7 @@ namespace BudgetManager.non_mvc {
                     addGeneralPurposeControls();
                     List<Control> controlsListDebts = new List<Control>() { creditorNameLabel, creditorNameComboBox };
                     addControlsToContainer(container, controlsListDebts);
-                    populateControlsList(itemTypeSelectionComboBox);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
                     creditorNameComboBox.SelectedIndex = -1;
                     break;
@@ -128,7 +128,7 @@ namespace BudgetManager.non_mvc {
                     List<Control> controlsListReceivables = new List<Control>() { receivableCreationDateLabel, datePicker, receivableDueDateLabel, receivableDueDatePicker, itemNameLabel,
                     itemNameTextBox, itemValueLabel, itemValueTextBox, debtorSelectionLabel, debtorNameComboBox };
                     addControlsToContainer(container, controlsListReceivables);
-                    populateControlsList(itemTypeSelectionComboBox);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
                     debtorNameComboBox.SelectedIndex = -1;
                     break;
@@ -137,7 +137,7 @@ namespace BudgetManager.non_mvc {
                 case 4:
                     container.Controls.Clear();
                     addGeneralPurposeControls();
-                    populateControlsList(itemTypeSelectionComboBox);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
                     break;
 
@@ -147,7 +147,7 @@ namespace BudgetManager.non_mvc {
                     container.Controls.Clear();
                     List<Control> controlsListCreditorDebtor = new List<Control>() { itemNameLabel, itemNameTextBox };
                     addControlsToContainer(container, controlsListCreditorDebtor);
-                    populateControlsList(itemTypeSelectionComboBox);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
                     break;
 
@@ -207,32 +207,76 @@ namespace BudgetManager.non_mvc {
 
 
         private void addEntryButton_Click(object sender, EventArgs e) {
+            int dataCheckExecutionResult = -1;
             int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
 
+            DialogResult userOptionConfirmInsertion = MessageBox.Show("Are you sure that you want to insert the provided data?", "Data insertion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (userOptionConfirmInsertion == DialogResult.No) {
+                return;
+            }
+
+            String selectedItemName = itemTypeSelectionComboBox.Text;
+            DataInsertionCheckerContext dataInsertionCheckContext = new DataInsertionCheckerContext();
+
+            //Checks if the user has enough money left to insert the selected item value
+            int valueToInsert = Convert.ToInt32(itemValueTextBox.Text);
+            int selectedMonth = datePicker.Value.Month;
+            int selectedYear = datePicker.Value.Year;
+            IncomeSource incomeSource = getIncomeSource();
+            //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
+            QueryData paramContainer = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addIncomeSource(incomeSource).build(); //CHANGE
+
             switch (selectedIndex) {
+                //Income
                 case 0:
-                    break;
-
-                case 1:
-                    break;
-
+                    break;                
+                //Expense
+                case 1: 
+                //Debt                                 
                 case 2:
-                    break;
+                                  
+                //Saving
+                case 4:
+                    GeneralInsertionCheckStrategy dataCheckStrategy = new GeneralInsertionCheckStrategy();
+                    dataInsertionCheckContext.setStrategy(dataCheckStrategy);
 
+                    dataCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainer, selectedItemName, valueToInsert);                  
+
+                    break;
+                //Receivables  
                 case 3:
+                    //Might need to extract this check to a separate method
                     DateTime startDate = datePicker.Value;
                     DateTime endDate = receivableDueDatePicker.Value;
                     if (!isChronological(startDate, endDate)) {
                         MessageBox.Show("The creation date and due date of the receivable must be in chronological order or at least equal!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        //Resets the values of the date time pickers for the receivable item if the user tries to insert incorrect values for creation date/due date
+                        datePicker.Value = DateTime.Now;
+                        receivableDueDatePicker.Value = DateTime.Now;
+                        //return;
                     }
-                    break;
-
-                case 4:
-                    break;
-
+                    
+                break; 
+                //Creditor
                 case 5:
                     break;
+
+                //Debtor
+                case 6:
+                    break;
+
+                default:
+                    break;
             }
+
+            ////Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
+            //if (executionResult != -1) {
+            //    MessageBox.Show("Data inserted successfully!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //} else {
+            //    MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //    return;
+            //}
         }
 
 
@@ -310,14 +354,14 @@ namespace BudgetManager.non_mvc {
         }
 
         private void createRadioButtons() {
-            radioButtonGeneralIncomes = new RadioButton();
-            radioButtonGeneralIncomes.Text = "General incomes";
-            radioButtonGeneralIncomes.Name = "radioButtonGeneralIncomes";
-            radioButtonGeneralIncomes.Checked = true;
+            generalIncomesRadioButton = new RadioButton();
+            generalIncomesRadioButton.Text = "General incomes";
+            generalIncomesRadioButton.Name = "radioButtonGeneralIncomes";
+            generalIncomesRadioButton.Checked = true;
 
-            radioButtonSavingAccount = new RadioButton();
-            radioButtonSavingAccount.Text = "Saving account";
-            radioButtonSavingAccount.Name = "radioButtonSavingAccount";
+            savingAccountRadioButton = new RadioButton();
+            savingAccountRadioButton.Text = "Saving account";
+            savingAccountRadioButton.Name = "radioButtonSavingAccount";
         }
 
         private void createDatePickers() {
@@ -357,40 +401,40 @@ namespace BudgetManager.non_mvc {
         }
 
 
-        private void populateControlsList(ComboBox comboBox) {
-            Guard.notNull(comboBox, "Item selection combo box");
+        private void populateActiveControlsList(ComboBox comboBox) {
+            Guard.notNull(comboBox, "item selection combo box");
 
             int selectedIndex = comboBox.SelectedIndex;
 
             switch (selectedIndex) {
                 //Selected item -> incomes
                 case 0:
-                    activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox, incomeTypeComboBox, radioButtonGeneralIncomes, radioButtonSavingAccount };
+                    activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox, incomeTypeComboBox};
                     break;
 
                 //Selected item -> expenses   
                 case 1:
-                    activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox, expenseTypeComboBox };
+                    activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox, expenseTypeComboBox, generalIncomesRadioButton, savingAccountRadioButton};
                     break;
 
                 //Selected item -> debts
                 case 2:
-                    activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox, creditorNameComboBox };
+                    activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox, creditorNameComboBox};
                     break;
 
                 //Selected item -> receivables
                 case 3:
-                    activeControls = new ArrayList() { datePicker, receivableDueDatePicker, itemNameTextBox, itemValueTextBox, debtorNameComboBox };
+                    activeControls = new ArrayList() { datePicker, receivableDueDatePicker, itemNameTextBox, itemValueTextBox, debtorNameComboBox};
                     break;
 
                 //Selected item -> savings
                 case 4:
-                    activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox };
+                    activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox};
                     break;
 
                 //Selected item -> creditors
                 case 5:
-                    activeControls = new ArrayList() { itemNameTextBox };
+                    activeControls = new ArrayList() { itemNameTextBox};
                     break;
 
                 default:
@@ -448,6 +492,21 @@ namespace BudgetManager.non_mvc {
             } else {
                 addEntryButton.Enabled = false;
             }
+        }
+
+
+        //Method for retrieving the user selected income source
+        private IncomeSource getIncomeSource() {
+            //Setting the default value for the income source
+            IncomeSource incomeSource = IncomeSource.UNDEFINED;
+
+            if (generalIncomesRadioButton.Checked == true) {
+                incomeSource = IncomeSource.GENERAL_INCOMES;//Income source representing the active/passive incomes
+            } else if (savingAccountRadioButton.Checked == true) {
+                incomeSource = IncomeSource.SAVING_ACCOUNT;//Income source representing the savings that the user currently owns
+            }
+
+            return incomeSource;
         }
     }
 }

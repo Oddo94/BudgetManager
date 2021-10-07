@@ -900,7 +900,7 @@ namespace BudgetManager {
 
         private void insertDataToolStripMenuItem_Click(object sender, EventArgs e) {
             //Se foloseste metoda "ShowDialog()" pentru a nu permite utilizarea ferestrei din fundal cat timp cea selectata este deschisa; de asemenea previne deschiderea mai multor instante ale aceleasi ferestre
-            //new InsertDataForm(userID).ShowDialog();
+            //new InsertDataForm(userID).ShowDialog();//Uncomment this and comment the below statement in order to use the old data insertion window
             //CHANGE-links the new Dynamic data insertion form to the rest of the app
             new InsertDataForm2(userID).ShowDialog();
         }

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BudgetManager.utils {
-    class DataInsertionChecker {
+    interface DataInsertionCheckStrategy {
+
+        int performCheck(QueryData inputData, String selectedItemName, int valueToInsert);
     }
 }
