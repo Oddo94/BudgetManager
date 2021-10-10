@@ -247,15 +247,16 @@ namespace BudgetManager.non_mvc {
                 //Receivables  
                 case 3:
                     //Might need to extract this check to a separate method
-                    DateTime startDate = datePicker.Value;
-                    DateTime endDate = receivableDueDatePicker.Value;
-                    if (!isChronological(startDate, endDate)) {
-                        MessageBox.Show("The creation date and due date of the receivable must be in chronological order or at least equal!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        //Resets the values of the date time pickers for the receivable item if the user tries to insert incorrect values for creation date/due date
-                        datePicker.Value = DateTime.Now;
-                        receivableDueDatePicker.Value = DateTime.Now;
-                        //return;
-                    }
+                    //DateTime startDate = datePicker.Value;
+                    //DateTime endDate = receivableDueDatePicker.Value;
+                    //if (!isChronological(startDate, endDate)) {
+                    //    MessageBox.Show("The creation date and due date of the receivable must be in chronological order or at least equal!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //    //Resets the values of the date time pickers for the receivable item if the user tries to insert incorrect values for creation date/due date
+                    //    datePicker.Value = DateTime.Now;
+                    //    receivableDueDatePicker.Value = DateTime.Now;
+                    //    //return;
+                    //}
+                    checkReceivableDates();
                     
                 break; 
                 //Creditor
@@ -507,6 +508,19 @@ namespace BudgetManager.non_mvc {
             }
 
             return incomeSource;
+        }
+
+        private void checkReceivableDates() {
+            //Might need to extract this check to a separate method
+            DateTime startDate = datePicker.Value;
+            DateTime endDate = receivableDueDatePicker.Value;
+            if (!isChronological(startDate, endDate)) {
+                MessageBox.Show("The creation date and due date of the receivable must be in chronological order or at least equal!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                //Resets the values of the date time pickers for the receivable item if the user tries to insert incorrect values for creation date/due date
+                datePicker.Value = DateTime.Now;
+                receivableDueDatePicker.Value = DateTime.Now;
+                //return;
+            }
         }
     }
 }
