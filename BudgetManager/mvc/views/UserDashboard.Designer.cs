@@ -1208,7 +1208,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.Name = "UserDashboard";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.UserDashboard_FormClosed);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.UserDashboard_FormClosing);
             this.Load += new System.EventHandler(this.UserDashboard_Load);
             this.mainTabControl.ResumeLayout(false);
             this.tabPageBS.ResumeLayout(false);
