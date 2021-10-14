@@ -944,7 +944,7 @@ namespace BudgetManager {
             DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
 
             if (userOption == DialogResult.Yes) {
-                Application.Exit();
+                Environment.Exit(0);
             }
 
         }
