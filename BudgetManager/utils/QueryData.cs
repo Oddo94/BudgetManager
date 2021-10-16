@@ -29,6 +29,7 @@ namespace BudgetManager {
         private String creditorName;
         private String debtorName;
         private IncomeSource incomeSource;
+        private BudgetItemType budgetItemType;
 
         private QueryData() {
 
@@ -165,7 +166,13 @@ namespace BudgetManager {
                 return this.incomeSource;
             }
         }
-     
+
+        public BudgetItemType BudgetItemType {
+            get {
+                return this.budgetItemType;
+            }
+        }
+      
         public class Builder {
             private int userID;
             private int month;
@@ -189,6 +196,7 @@ namespace BudgetManager {
             private String creditorName;
             private String debtorName;
             private IncomeSource incomeSource;
+            private BudgetItemType budgetItemType;
 
 
             public Builder(int userID) {
@@ -321,6 +329,12 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addBudgetItemType(BudgetItemType budgetItemType) {
+                this.budgetItemType = budgetItemType;
+
+                return this;
+            }
+
             public QueryData build() {
                 return new QueryData {
                     userID = this.userID,
@@ -344,7 +358,8 @@ namespace BudgetManager {
                     itemName = this.itemName,
                     creditorName = this.creditorName,
                     debtorName = this.debtorName,
-                    incomeSource = this.incomeSource
+                    incomeSource = this.incomeSource,
+                    budgetItemType = this.budgetItemType
                 };
         }
         }

@@ -96,6 +96,7 @@
     </Compile>
     <Compile Include="non-mvc\SavingInsertionStrategy.cs" />
     <Compile Include="utils\BudgetPlanChecker.cs" />
+    <Compile Include="utils\BudgetPlanCheckStrategy.cs" />
     <Compile Include="utils\ConfirmationSender.cs" />
     <Compile Include="utils\DataGridViewManager.cs" />
     <Compile Include="utils\DataInsertionCheckerContext.cs" />

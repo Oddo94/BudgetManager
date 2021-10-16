@@ -16,12 +16,19 @@ namespace BudgetManager {
 
     //Note: GENERAL_EXPENSE refers to the usual expenses that the user inserts into the DB while SAVING_ACCOUNT_EXPENSE refers to the expenses made from the saving account available balance(the difference comes from the income source selected at the creation time)
     public enum BudgetItemType {
+        [Description("income")]
         INCOME,
+        [Description("expense")]
         GENERAL_EXPENSE,
+        [Description("saving account expense")]
         SAVING_ACCOUNT_EXPENSE,
+        [Description("debt")]
         DEBT,
+        [Description("saving")]
         SAVING,
+        [Description("creditor")]
         CREDITOR,
+        [Description("debtor")]
         DEBTOR,
         UNDEFINED
     }
@@ -968,6 +975,8 @@ namespace BudgetManager {
         private void InsertDataForm_Load(object sender, EventArgs e) {
 
         }
+
+
     }
  }
 

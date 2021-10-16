@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -70,8 +71,6 @@ namespace BudgetManager.non_mvc {
 
             
         }
-
-
 
         private void InsertDataForm2_Load(object sender, EventArgs e) {
             itemNameTextBox.TextChanged += new EventHandler(itemNameTextBox_TextChanged);
@@ -207,7 +206,10 @@ namespace BudgetManager.non_mvc {
 
 
         private void addEntryButton_Click(object sender, EventArgs e) {
-            int dataCheckExecutionResult = -1;
+            int allChecksExecutionResult = -1;
+            int generalCheckExecutionResult = -1;
+            int budgetPlanCheckExecutionResult = -1;
+            int dataInsertionExecutionResult = -1;
             int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
 
             DialogResult userOptionConfirmInsertion = MessageBox.Show("Are you sure that you want to insert the provided data?", "Data insertion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -215,6 +217,9 @@ namespace BudgetManager.non_mvc {
             if (userOptionConfirmInsertion == DialogResult.No) {
                 return;
             }
+
+            //String selectedItemString = getEnumDescriptionAttribute(getSelectedType(itemTypeSelectionComboBox));
+            //MessageBox.Show("The selected item is: " + selectedItemString);
 
             String selectedItemName = itemTypeSelectionComboBox.Text;
             DataInsertionCheckerContext dataInsertionCheckContext = new DataInsertionCheckerContext();
@@ -225,11 +230,15 @@ namespace BudgetManager.non_mvc {
             int selectedYear = datePicker.Value.Year;
             IncomeSource incomeSource = getIncomeSource();
             //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
-            QueryData paramContainer = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addIncomeSource(incomeSource).build(); //CHANGE
+            //Query data parameter object for general checks
+            QueryData paramContainerGeneralCheck = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addIncomeSource(incomeSource).build(); //CHANGE
+            //Query data parameter object for budget plan checks
+            QueryData paramContainerBPCheck = new QueryData.Builder(userID).addItemCreationDate(datePicker.Value.ToString("yyyy-MM-dd")).addBudgetItemType(getSelectedType(itemTypeSelectionComboBox)).build();
 
             switch (selectedIndex) {
                 //Income
                 case 0:
+                    allChecksExecutionResult = 0;
                     break;                
                 //Expense
                 case 1: 
@@ -241,43 +250,59 @@ namespace BudgetManager.non_mvc {
                     GeneralInsertionCheckStrategy dataCheckStrategy = new GeneralInsertionCheckStrategy();
                     dataInsertionCheckContext.setStrategy(dataCheckStrategy);
 
-                    dataCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainer, selectedItemName, valueToInsert);                  
+                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
 
+                    BudgetPlanCheckStrategy budgetPlanCheckStrategy = new BudgetPlanCheckStrategy();
+                    dataInsertionCheckContext.setStrategy(budgetPlanCheckStrategy);
+
+                    budgetPlanCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerBPCheck, selectedItemName, valueToInsert);
+
+                    //If the general check fails(not enough money) then the general check execution result will rmain -1 (no data can be inserted)
+                    //Else, if the general check is passed and the budget plan check returns -1 (fail because there might not be a budget plan in place) the data can be inserted
+                    //Otherwise the allChecksExecutionResult keeps its initial value(-1) and no data will be inserted(for example if a warning message is shown during budget plan checks due to the inserted value being higher than the value allowed by the budget plan item limit) 
+                    if (generalCheckExecutionResult == -1) {
+                        break;
+                    } else if (generalCheckExecutionResult == 0 && budgetPlanCheckExecutionResult == -1) {
+                        allChecksExecutionResult = 0;
+                    }
+                            
                     break;
                 //Receivables  
                 case 3:
-                    //Might need to extract this check to a separate method
-                    //DateTime startDate = datePicker.Value;
-                    //DateTime endDate = receivableDueDatePicker.Value;
-                    //if (!isChronological(startDate, endDate)) {
-                    //    MessageBox.Show("The creation date and due date of the receivable must be in chronological order or at least equal!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    //    //Resets the values of the date time pickers for the receivable item if the user tries to insert incorrect values for creation date/due date
-                    //    datePicker.Value = DateTime.Now;
-                    //    receivableDueDatePicker.Value = DateTime.Now;
-                    //    //return;
-                    //}
+                    //IMPLEMENT INSERTION LOGIC                
                     checkReceivableDates();
                     
                 break; 
                 //Creditor
                 case 5:
+                    allChecksExecutionResult = 0;
                     break;
 
                 //Debtor
                 case 6:
+                    allChecksExecutionResult = 0;
                     break;
 
                 default:
                     break;
             }
 
-            ////Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
-            //if (executionResult != -1) {
-            //    MessageBox.Show("Data inserted successfully!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //} else {
-            //    MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //    return;
-            //}
+            //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
+            if (allChecksExecutionResult != -1) {
+                dataInsertionExecutionResult = insertSelectedItem(selectedIndex);
+            } else {
+                MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+
+            //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
+            if (dataInsertionExecutionResult != -1) {
+                MessageBox.Show("Data inserted successfully!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } else {
+                MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
         }
 
 
@@ -521,6 +546,230 @@ namespace BudgetManager.non_mvc {
                 receivableDueDatePicker.Value = DateTime.Now;
                 //return;
             }
+        }
+
+        //Method for retrieving the user selected budget item type 
+        private BudgetItemType getSelectedType(ComboBox comboBox) {
+            int selectedIndex = comboBox.SelectedIndex;
+
+            switch (selectedIndex) {
+                case 1:
+                    //return BudgetItemType.EXPENSE;
+                    return BudgetItemType.GENERAL_EXPENSE;//CHANGE(FROM EXPENSE TO GENERAL_EXPENSE)
+
+                case 2:
+                    return BudgetItemType.DEBT;
+
+                case 3:
+                    return BudgetItemType.SAVING;
+
+                default:
+                    return BudgetItemType.UNDEFINED;
+            }
+        }
+
+        private int insertSelectedItem(int selectedItemIndex) {
+            int executionResult = -1;
+            QueryData paramContainer = null;
+            DataInsertionContext dataInsertionContext = new DataInsertionContext();
+            switch (selectedItemIndex) {
+                //Income insertion
+                case 0:
+                    //Creates the object that contains the necessary values for the execution of the SQL query
+                    paramContainer = configureParamContainer(BudgetItemType.INCOME);
+                    //Null check for this object
+                    Guard.notNull(paramContainer, "income parameter container");
+
+                    //Creates the actual data insertion strategy
+                    DataInsertionStrategy incomeInsertionStrategy = new IncomeInsertionStrategy();
+                    //Sets the strategy of the data insertion context to the previously created strategy
+                    dataInsertionContext.setStrategy(incomeInsertionStrategy);
+
+                    //Executes the strategy by calling the invoke() method of the context and passing it the paramContainer object
+                    executionResult = dataInsertionContext.invoke(paramContainer);
+
+                    break;
+
+                //Expense insertion
+                //CHANGE TO ALLOW THE CORRECT SELECTION OF EXPENSE INSERTION STATEMENT
+                case 1:
+                    //GENERAL_EXPENSE type is used since there is an intentional fall through the cases inside the configuration method so that both types are treated identically(they need the same data)
+                    paramContainer = configureParamContainer(BudgetItemType.GENERAL_EXPENSE);
+                    Guard.notNull(paramContainer, "expense parameter container");
+
+                    DataInsertionStrategy expenseInsertionStrategy = new ExpenseInsertionStrategy();
+                    dataInsertionContext.setStrategy(expenseInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);
+                    break;
+
+                //Debt insertion
+                case 2:
+                    paramContainer = configureParamContainer(BudgetItemType.DEBT);
+                    Guard.notNull(paramContainer, "debt parameter container");
+
+                    DataInsertionStrategy debtInsertionStrategy = new DebtInsertionStrategy();
+                    dataInsertionContext.setStrategy(debtInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);
+                    break;
+
+                //Receivable insertion
+                case 3:
+                    //paramContainer = configureParamContainer(BudgetItemType.SAVING);
+                    //Guard.notNull(paramContainer, "saving parameter container");
+
+                    //SavingInsertionStrategy savingInsertionStrategy = new SavingInsertionStrategy();
+                    //dataInsertionContext.setStrategy(savingInsertionStrategy);
+
+                    //executionResult = dataInsertionContext.invoke(paramContainer);
+                    break;
+                //Saving insertion
+                case 4:
+                    paramContainer = configureParamContainer(BudgetItemType.SAVING);
+                    Guard.notNull(paramContainer, "saving parameter container");
+
+                    SavingInsertionStrategy savingInsertionStrategy = new SavingInsertionStrategy();
+                    dataInsertionContext.setStrategy(savingInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);
+                    break;
+
+                //New creditor insertion
+                case 5:
+                    paramContainer = configureParamContainer(BudgetItemType.CREDITOR);
+                    Guard.notNull(paramContainer, "creditor parameter container");
+
+                    DataInsertionStrategy creditorInsertionStrategy = new CreditorInsertionStrategy();
+                    dataInsertionContext.setStrategy(creditorInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);
+                    break;
+
+                //New debtor insertion
+                case 6:
+                    paramContainer = configureParamContainer(BudgetItemType.DEBTOR);
+                    Guard.notNull(paramContainer, "debtor parameter container");
+
+                    DataInsertionStrategy debtorInsertionStrategy = new DebtorInsertionStrategy();
+                    dataInsertionContext.setStrategy(debtorInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);
+                    break;
+
+                default:
+                    break;
+            }
+
+            return executionResult;
+        }
+
+        //Method for configuring the param container object for the insertion of different budget items
+        private QueryData configureParamContainer(BudgetItemType selectedItemType) {
+            QueryData paramContainer = null;
+
+            switch (selectedItemType) {
+                //Income insertion object configuration
+                case BudgetItemType.INCOME:
+                    String incomeName = itemNameTextBox.Text;
+                    String incomeTypeName = incomeTypeComboBox.Text;
+                    int incomeValue = Convert.ToInt32(itemValueTextBox.Text);
+                    String incomeDate = datePicker.Value.ToString("yyyy-MM-dd");
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addItemName(incomeName)
+                        .addItemValue(incomeValue)
+                        .addTypeName(incomeTypeName)
+                        .addItemCreationDate(incomeDate)
+                        .build();
+                    break;
+
+                //Expense insertion object configuration
+                //Intentional fall-through the cases because both types need the same data
+                case BudgetItemType.SAVING_ACCOUNT_EXPENSE:
+                case BudgetItemType.GENERAL_EXPENSE:
+                    String expenseName = itemNameTextBox.Text;
+                    //int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
+                    String expenseTypeName = expenseTypeComboBox.Text;
+                    int expenseValue = Convert.ToInt32(itemValueTextBox.Text);
+                    String expenseDate = datePicker.Value.ToString("yyyy-MM-dd");//Getting date as String
+                    IncomeSource incomeSource = getIncomeSource();
+
+                    paramContainer = new QueryData.Builder(userID)
+
+                        .addItemName(expenseName)
+                        .addItemValue(expenseValue)
+                        .addTypeName(expenseTypeName)
+                        .addItemCreationDate(expenseDate)
+                        .addIncomeSource(incomeSource)
+                        .build();
+                    break;
+
+                //Debt insertion object configuration
+                case BudgetItemType.DEBT:
+                    //Getting the necessary data
+                    String debtName = itemNameTextBox.Text;
+                    int debtValue = Convert.ToInt32(itemValueTextBox.Text);
+                    String creditorName = creditorNameComboBox.Text;
+                    String debtDate = datePicker.Value.ToString("yyyy-MM-dd");
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addItemName(debtName)
+                        .addItemValue(debtValue)
+                        .addCreditorName(creditorName)
+                        .addItemCreationDate(debtDate)
+                        .build();
+                    break;
+
+                //Saving insertion object configuration
+                case BudgetItemType.SAVING:
+                    //Getting the necessary data
+                    String savingName = itemNameTextBox.Text;
+                    int savingValue = Convert.ToInt32(itemValueTextBox.Text);
+                    String savingDate = datePicker.Value.ToString("yyyy-MM-dd");
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addItemName(savingName)
+                        .addItemValue(savingValue)
+                        .addItemCreationDate(savingDate)
+                        .build();
+                    break;
+
+                //Creditor insertion object configuration
+                case BudgetItemType.CREDITOR:
+                    String insertedCreditorName = itemNameTextBox.Text;
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addCreditorName(insertedCreditorName)
+                        .build();
+                    break;
+
+                //Debtor insertion object configuration
+                case BudgetItemType.DEBTOR:
+                    String insertedDebtorName = itemNameTextBox.Text;
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addDebtorName(insertedDebtorName)
+                        .build();
+                    break;
+
+                default:
+                    break;
+            }
+
+            return paramContainer;
+        }
+
+
+
+
+        //Method for retrieving the description of an enum value
+        public static String getEnumDescriptionAttribute(Enum value) {
+            FieldInfo field = value.GetType().GetField(value.ToString());
+
+            DescriptionAttribute attribute = (DescriptionAttribute) Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute));
+
+            return attribute == null ? value.ToString() : attribute.Description;
         }
     }
 }
