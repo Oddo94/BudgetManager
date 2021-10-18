@@ -177,7 +177,19 @@ namespace BudgetManager {
             getTypeIDCommand.Parameters.AddWithValue("@paramTypeName", typeName);
 
             return getTypeIDCommand;
-        } 
+        }
+
+        //SHOULD replace the previous ID retrieval method and be more generic
+        //Method for retrieving the ID of a specified element type from the DB (e.g. budget plan)
+        public static MySqlCommand getRecordIDCommand(String sqlStatement, String recordName) {
+            Guard.notNull(sqlStatement, "SQL statement");
+            Guard.notNull(recordName, "record name");
+
+            MySqlCommand getRecordIDCommand = new MySqlCommand(sqlStatement);
+            getRecordIDCommand.Parameters.AddWithValue("@paramRecordName", recordName);
+
+            return getRecordIDCommand;
+        }
 
         //Method for getting the command used to insert a new budget plan into the DB
         public static MySqlCommand getBudgetPlanCreationCommand(String sqlStatement, QueryData paramContainer) {
@@ -217,6 +229,21 @@ namespace BudgetManager {
                 
                 Guard.notNull(currentArgument, argumentName);
             }
+        }
+
+        public static MySqlCommand getReceivableInsertionCommand(String sqlStatement, QueryData paramContainer) {
+            Guard.notNull(paramContainer, "parameter container");
+
+            MySqlCommand insertReceivableCommand = new MySqlCommand(sqlStatement);
+            insertReceivableCommand.Parameters.AddWithValue("@paramItemName", paramContainer.ItemName);
+            insertReceivableCommand.Parameters.AddWithValue("@paramItemValue", paramContainer.ItemValue);
+            insertReceivableCommand.Parameters.AddWithValue("@paramDebtorID", paramContainer.DebtorID);
+            insertReceivableCommand.Parameters.AddWithValue("@paramUserID", paramContainer.UserID);
+            insertReceivableCommand.Parameters.AddWithValue("@paramPaidAmount", paramContainer.PaidAmount);
+            insertReceivableCommand.Parameters.AddWithValue("@paramStartDate", paramContainer.StartDate);
+            insertReceivableCommand.Parameters.AddWithValue("@paramEndDate", paramContainer.EndDate);
+
+            return insertReceivableCommand;
         }
     }
 }

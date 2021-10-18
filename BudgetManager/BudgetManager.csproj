@@ -94,6 +94,7 @@
     <Compile Include="non-mvc\InsertDataForm2.Designer.cs">
       <DependentUpon>InsertDataForm2.cs</DependentUpon>
     </Compile>
+    <Compile Include="non-mvc\ReceivableInsertionStrategy.cs" />
     <Compile Include="non-mvc\SavingInsertionStrategy.cs" />
     <Compile Include="utils\BudgetPlanChecker.cs" />
     <Compile Include="utils\BudgetPlanCheckStrategy.cs" />

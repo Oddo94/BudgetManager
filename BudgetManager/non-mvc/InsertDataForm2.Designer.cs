@@ -62,15 +62,14 @@
             // 
             this.groupBox1.Location = new System.Drawing.Point(33, 101);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(479, 326);
+            this.groupBox1.Size = new System.Drawing.Size(478, 361);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "groupBox1";
             // 
             // addEntryButton
             // 
             this.addEntryButton.Enabled = false;
-            this.addEntryButton.Location = new System.Drawing.Point(33, 445);
+            this.addEntryButton.Location = new System.Drawing.Point(33, 481);
             this.addEntryButton.Name = "addEntryButton";
             this.addEntryButton.Size = new System.Drawing.Size(75, 23);
             this.addEntryButton.TabIndex = 3;
@@ -80,7 +79,7 @@
             // 
             // resetButton
             // 
-            this.resetButton.Location = new System.Drawing.Point(225, 445);
+            this.resetButton.Location = new System.Drawing.Point(221, 481);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(75, 23);
             this.resetButton.TabIndex = 4;
@@ -90,18 +89,19 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(425, 445);
+            this.cancelButton.Location = new System.Drawing.Point(424, 481);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 5;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
             // InsertDataForm2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(547, 499);
+            this.ClientSize = new System.Drawing.Size(580, 551);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.resetButton);
             this.Controls.Add(this.addEntryButton);

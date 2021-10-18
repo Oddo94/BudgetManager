@@ -8,12 +8,14 @@ namespace BudgetManager {
     //Clasa utilitara ca ajuta la crearea unui obiect care incapsuleaza datele necesare pt executia frazei SQL(parametri efectivi ce vor fi folositi pt inlocuirea placeholders)
     public class QueryData {
         private int userID;
+        private int debtorID;
         private int month;
         private int year;            
         private int expenseLimit;
         private int debtLimit;
         private int savingLimit;
-        private int estimatedIncome;        
+        private int estimatedIncome;
+        private int paidAmount;        
         private int planTypeID;
         private int thresholdPercentage;
         private int alarmExistenceValue;
@@ -41,6 +43,13 @@ namespace BudgetManager {
             }
            
         }
+
+        public int DebtorID {
+            get {
+                return this.debtorID;
+            }
+        }
+
         public int Month {
             get {
                 return this.month;
@@ -73,6 +82,12 @@ namespace BudgetManager {
         public int EstimatedIncome {
             get {
                 return this.estimatedIncome;
+            }
+        }
+
+        public int PaidAmount {
+            get {
+                return this.paidAmount;
             }
         }
 
@@ -175,12 +190,14 @@ namespace BudgetManager {
       
         public class Builder {
             private int userID;
+            private int debtorID;
             private int month;
             private int year;            
             private int expenseLimit;
             private int debtLimit;
             private int savingLimit;
             private int estimatedIncome;
+            private int paidAmount;
             private int planTypeID;
             private int thresholdPercentage;
             private int alarmExistenceValue;
@@ -201,6 +218,12 @@ namespace BudgetManager {
 
             public Builder(int userID) {
                 this.userID = userID;
+            }
+
+            public Builder addDebtorID(int debtorID) {
+                this.debtorID = debtorID;
+
+                return this;
             }
 
             public Builder addMonth(int month) {
@@ -235,6 +258,12 @@ namespace BudgetManager {
 
             public Builder addEstimatedIncome(int estimatedIncome) {
                 this.estimatedIncome = estimatedIncome;
+
+                return this;
+            }
+
+            public Builder addPaidAmount (int paidAmount) {
+                this.paidAmount = paidAmount;
 
                 return this;
             }
@@ -338,6 +367,7 @@ namespace BudgetManager {
             public QueryData build() {
                 return new QueryData {
                     userID = this.userID,
+                    debtorID = this.debtorID,
                     month = this.month,
                     year = this.year,
                     expenseLimit = this.expenseLimit,

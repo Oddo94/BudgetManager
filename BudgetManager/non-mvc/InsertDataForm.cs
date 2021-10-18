@@ -23,7 +23,9 @@ namespace BudgetManager {
         [Description("saving account expense")]
         SAVING_ACCOUNT_EXPENSE,
         [Description("debt")]
-        DEBT,
+        DEBT,       
+        [Description("receivable")]
+        RECEIVABLE,
         [Description("saving")]
         SAVING,
         [Description("creditor")]

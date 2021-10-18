@@ -92,7 +92,7 @@ namespace BudgetManager.non_mvc {
                 case 0:
                     container.Controls.Clear();
                     addGeneralPurposeControls();
-                    List<Control> controlsListIncomes = new List<Control>() { incomeTypeLabel, incomeTypeComboBox};
+                    List<Control> controlsListIncomes = new List<Control>() { incomeTypeLabel, incomeTypeComboBox, incomeSourceLabel};
                     addControlsToContainer(container, controlsListIncomes);
                     populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
@@ -125,7 +125,7 @@ namespace BudgetManager.non_mvc {
                 case 3:
                     container.Controls.Clear();
                     List<Control> controlsListReceivables = new List<Control>() { receivableCreationDateLabel, datePicker, receivableDueDateLabel, receivableDueDatePicker, itemNameLabel,
-                    itemNameTextBox, itemValueLabel, itemValueTextBox, debtorSelectionLabel, debtorNameComboBox, incomeSourceLabel, generalIncomesRadioButton, savingAccountRadioButton };
+                    itemNameTextBox, itemValueLabel, itemValueTextBox, debtorSelectionLabel, debtorNameComboBox };
                     addControlsToContainer(container, controlsListReceivables);
                     populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
@@ -222,30 +222,19 @@ namespace BudgetManager.non_mvc {
             //MessageBox.Show("The selected item is: " + selectedItemString);
 
             String selectedItemName = itemTypeSelectionComboBox.Text;
+            DataInsertionCheckerContext dataInsertionCheckContext = new DataInsertionCheckerContext();
 
-            QueryData paramContainerGeneralCheck = null;
-            QueryData paramContainerBPCheck = null;
-            DataInsertionCheckerContext dataInsertionCheckContext = null;
-            GeneralInsertionCheckStrategy generalCheckStrategy = null;
-            int valueToInsert = 0;
+            //Checks if the user has enough money left to insert the selected item value
+            int valueToInsert = Convert.ToInt32(itemValueTextBox.Text);
+            int selectedMonth = datePicker.Value.Month;
+            int selectedYear = datePicker.Value.Year;
+            IncomeSource incomeSource = getIncomeSource();
+            //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
+            //Query data parameter object for general checks
+            QueryData paramContainerGeneralCheck = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addIncomeSource(incomeSource).build(); //CHANGE
+            //Query data parameter object for budget plan checks
+            QueryData paramContainerBPCheck = new QueryData.Builder(userID).addItemCreationDate(datePicker.Value.ToString("yyyy-MM-dd")).addBudgetItemType(getSelectedType(itemTypeSelectionComboBox)).build();
 
-            //Check if it can be improved
-            if (!selectedItemName.Equals("Debtor") && !selectedItemName.Equals("Creditor")  && !selectedItemName.Equals("Income")) {
-                //Checks if the user has enough money left to insert the selected item value
-                valueToInsert = Convert.ToInt32(itemValueTextBox.Text);
-                int selectedMonth = datePicker.Value.Month;
-                int selectedYear = datePicker.Value.Year;
-                IncomeSource incomeSource = getIncomeSource();
-                //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
-                //Query data parameter object for general checks
-                 paramContainerGeneralCheck = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addIncomeSource(incomeSource).build(); //CHANGE
-                                                                                                                                                                          //Query data parameter object for budget plan checks
-                 paramContainerBPCheck = new QueryData.Builder(userID).addItemCreationDate(datePicker.Value.ToString("yyyy-MM-dd")).addBudgetItemType(getSelectedType(itemTypeSelectionComboBox)).build();
-
-                dataInsertionCheckContext = new DataInsertionCheckerContext();
-                generalCheckStrategy = new GeneralInsertionCheckStrategy();
-
-            }
             switch (selectedIndex) {
                 //Income
                 case 0:
@@ -258,8 +247,8 @@ namespace BudgetManager.non_mvc {
                                   
                 //Saving
                 case 4:
-                    //generalCheckStrategy = new GeneralInsertionCheckStrategy();
-                    dataInsertionCheckContext.setStrategy(generalCheckStrategy);
+                    GeneralInsertionCheckStrategy dataCheckStrategy = new GeneralInsertionCheckStrategy();
+                    dataInsertionCheckContext.setStrategy(dataCheckStrategy);
 
                     generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
 
@@ -280,19 +269,9 @@ namespace BudgetManager.non_mvc {
                     break;
                 //Receivables  
                 case 3:
-                      //Checks if the start and end dates for the receivable are in chronological order
-                     if (checkReceivableDates() == -1) {
-                        return;
-                    }
-                    dataInsertionCheckContext.setStrategy(generalCheckStrategy);
-                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
-
-                    if (generalCheckExecutionResult == -1) {
-                        break;
-                    } else {
-                        allChecksExecutionResult = 0;
-                    }
-
+                    //IMPLEMENT INSERTION LOGIC                
+                    checkReceivableDates();
+                    
                 break; 
                 //Creditor
                 case 5:
@@ -311,12 +290,10 @@ namespace BudgetManager.non_mvc {
             //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
             if (allChecksExecutionResult != -1) {
                 dataInsertionExecutionResult = insertSelectedItem(selectedIndex);
-            } 
-            
-            //else {
-            //    MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //    return;
-            //}
+            } else {
+                MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
 
 
             //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
@@ -473,7 +450,7 @@ namespace BudgetManager.non_mvc {
 
                 //Selected item -> receivables
                 case 3:
-                    activeControls = new ArrayList() { datePicker, receivableDueDatePicker, itemNameTextBox, itemValueTextBox, debtorNameComboBox, generalIncomesRadioButton, savingAccountRadioButton};
+                    activeControls = new ArrayList() { datePicker, receivableDueDatePicker, itemNameTextBox, itemValueTextBox, debtorNameComboBox};
                     break;
 
                 //Selected item -> savings
@@ -481,9 +458,8 @@ namespace BudgetManager.non_mvc {
                     activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox};
                     break;
 
-                //Selected item -> creditors or debtors(intentional fall through since the layout is identical)
+                //Selected item -> creditors
                 case 5:
-                case 6:
                     activeControls = new ArrayList() { itemNameTextBox};
                     break;
 
@@ -559,20 +535,17 @@ namespace BudgetManager.non_mvc {
             return incomeSource;
         }
 
-        private int checkReceivableDates() {
-            int checkResult = -1;
+        private void checkReceivableDates() {
+            //Might need to extract this check to a separate method
             DateTime startDate = datePicker.Value;
             DateTime endDate = receivableDueDatePicker.Value;
             if (!isChronological(startDate, endDate)) {
                 MessageBox.Show("The creation date and due date of the receivable must be in chronological order or at least equal!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 //Resets the values of the date time pickers for the receivable item if the user tries to insert incorrect values for creation date/due date
                 datePicker.Value = DateTime.Now;
-                receivableDueDatePicker.Value = DateTime.Now;                
-            } else {
-                checkResult = 0;
+                receivableDueDatePicker.Value = DateTime.Now;
+                //return;
             }
-
-            return checkResult;
         }
 
         //Method for retrieving the user selected budget item type 
@@ -643,13 +616,13 @@ namespace BudgetManager.non_mvc {
 
                 //Receivable insertion
                 case 3:
-                    paramContainer = configureParamContainer(BudgetItemType.RECEIVABLE);
-                    Guard.notNull(paramContainer, "receivable parameter container");
+                    //paramContainer = configureParamContainer(BudgetItemType.SAVING);
+                    //Guard.notNull(paramContainer, "saving parameter container");
 
-                    ReceivableInsertionStrategy receivableInsertionStrategy = new ReceivableInsertionStrategy();
-                    dataInsertionContext.setStrategy(receivableInsertionStrategy);
+                    //SavingInsertionStrategy savingInsertionStrategy = new SavingInsertionStrategy();
+                    //dataInsertionContext.setStrategy(savingInsertionStrategy);
 
-                    executionResult = dataInsertionContext.invoke(paramContainer);
+                    //executionResult = dataInsertionContext.invoke(paramContainer);
                     break;
                 //Saving insertion
                 case 4:
@@ -748,27 +721,6 @@ namespace BudgetManager.non_mvc {
                         .build();
                     break;
 
-                //Receivable insertion object configuration
-                case BudgetItemType.RECEIVABLE:
-                    String receivableName = itemNameTextBox.Text;
-                    int receivableValue = Convert.ToInt32(itemValueTextBox.Text);
-                    int totalPaidAmount = 0;//the total paid amount is set to 0 since this is a new record and there were no money paid yet
-                    String debtorName = debtorNameComboBox.Text;
-                    String receivableStartDate = datePicker.Value.ToString("yyy-MM-dd");
-                    String receivableEndDate = receivableDueDatePicker.Value.ToString("yyy-MM-dd");
-                    IncomeSource receivableIncomeSource = getIncomeSource();
-
-                    paramContainer = new QueryData.Builder(userID)
-                        .addItemName(receivableName)
-                        .addItemValue(receivableValue)
-                        .addDebtorName(debtorName)
-                        .addStartDate(receivableStartDate)
-                        .addEndDate(receivableEndDate)
-                        .addIncomeSource(receivableIncomeSource)
-                        .addPaidAmount(totalPaidAmount)
-                        .build();
-                    break;
-
                 //Saving insertion object configuration
                 case BudgetItemType.SAVING:
                     //Getting the necessary data
@@ -818,10 +770,6 @@ namespace BudgetManager.non_mvc {
             DescriptionAttribute attribute = (DescriptionAttribute) Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute));
 
             return attribute == null ? value.ToString() : attribute.Description;
-        }
-
-        private void cancelButton_Click(object sender, EventArgs e) {
-
         }
     }
 }
