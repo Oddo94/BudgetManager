@@ -207,8 +207,8 @@ namespace BudgetManager.non_mvc {
 
         private void addEntryButton_Click(object sender, EventArgs e) {
             int allChecksExecutionResult = -1;
-            int generalCheckExecutionResult = -1;
-            int budgetPlanCheckExecutionResult = -1;
+            //int generalCheckExecutionResult = -1;
+            //int budgetPlanCheckExecutionResult = -1;
             int dataInsertionExecutionResult = -1;
             int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
 
@@ -217,107 +217,101 @@ namespace BudgetManager.non_mvc {
             if (userOptionConfirmInsertion == DialogResult.No) {
                 return;
             }
-
-            //String selectedItemString = getEnumDescriptionAttribute(getSelectedType(itemTypeSelectionComboBox));
-            //MessageBox.Show("The selected item is: " + selectedItemString);
-
+        
             String selectedItemName = itemTypeSelectionComboBox.Text;
 
-            QueryData paramContainerGeneralCheck = null;
-            QueryData paramContainerBPCheck = null;
-            DataInsertionCheckerContext dataInsertionCheckContext = null;
-            GeneralInsertionCheckStrategy generalCheckStrategy = null;
-            int valueToInsert = 0;
+            //QueryData paramContainerGeneralCheck = null;
+            //QueryData paramContainerBPCheck = null;
+            //DataInsertionCheckerContext dataInsertionCheckContext = null;
+            //GeneralInsertionCheckStrategy generalCheckStrategy = null;
+            //int valueToInsert = 0;
 
-            //Check if it can be improved
-            if (!selectedItemName.Equals("Debtor") && !selectedItemName.Equals("Creditor")  && !selectedItemName.Equals("Income")) {
-                //Checks if the user has enough money left to insert the selected item value
-                valueToInsert = Convert.ToInt32(itemValueTextBox.Text);
-                int selectedMonth = datePicker.Value.Month;
-                int selectedYear = datePicker.Value.Year;
-                IncomeSource incomeSource = getIncomeSource();
-                //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
-                //Query data parameter object for general checks
-                 paramContainerGeneralCheck = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addIncomeSource(incomeSource).build(); //CHANGE
-                                                                                                                                                                          //Query data parameter object for budget plan checks
-                 paramContainerBPCheck = new QueryData.Builder(userID).addItemCreationDate(datePicker.Value.ToString("yyyy-MM-dd")).addBudgetItemType(getSelectedType(itemTypeSelectionComboBox)).build();
+            ////Check if it can be improved
+            //if (!selectedItemName.Equals("Debtor") && !selectedItemName.Equals("Creditor")  && !selectedItemName.Equals("Income")) {
+            //    //Checks if the user has enough money left to insert the selected item value
+            //    valueToInsert = Convert.ToInt32(itemValueTextBox.Text);
+            //    int selectedMonth = datePicker.Value.Month;
+            //    int selectedYear = datePicker.Value.Year;
+            //    IncomeSource incomeSource = getIncomeSource();
+            //    //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
+            //    //Query data parameter object for general checks
+            //     paramContainerGeneralCheck = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addIncomeSource(incomeSource).build(); //CHANGE
+            //                                                                                                                                                              //Query data parameter object for budget plan checks
+            //     paramContainerBPCheck = new QueryData.Builder(userID).addItemCreationDate(datePicker.Value.ToString("yyyy-MM-dd")).addBudgetItemType(getSelectedType(itemTypeSelectionComboBox)).build();
 
-                dataInsertionCheckContext = new DataInsertionCheckerContext();
-                generalCheckStrategy = new GeneralInsertionCheckStrategy();
+            //    dataInsertionCheckContext = new DataInsertionCheckerContext();
+            //    generalCheckStrategy = new GeneralInsertionCheckStrategy();
 
-            }
-            switch (selectedIndex) {
-                //Income
-                case 0:
-                    allChecksExecutionResult = 0;
-                    break;                
-                //Expense
-                case 1: 
-                //Debt                                 
-                case 2:
-                                  
-                //Saving
-                case 4:
-                    //generalCheckStrategy = new GeneralInsertionCheckStrategy();
-                    dataInsertionCheckContext.setStrategy(generalCheckStrategy);
+            //}
+            //switch (selectedIndex) {
+            //    //Income
+            //    case 0:
+            //        allChecksExecutionResult = 0;
+            //        break;                
+            //    //Expense
+            //    case 1: 
+            //    //Debt                                 
+            //    case 2:
 
-                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
+            //    //Saving
+            //    case 4:
+            //        //generalCheckStrategy = new GeneralInsertionCheckStrategy();
+            //        dataInsertionCheckContext.setStrategy(generalCheckStrategy);
 
-                    BudgetPlanCheckStrategy budgetPlanCheckStrategy = new BudgetPlanCheckStrategy();
-                    dataInsertionCheckContext.setStrategy(budgetPlanCheckStrategy);
+            //        generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
 
-                    budgetPlanCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerBPCheck, selectedItemName, valueToInsert);
+            //        BudgetPlanCheckStrategy budgetPlanCheckStrategy = new BudgetPlanCheckStrategy();
+            //        dataInsertionCheckContext.setStrategy(budgetPlanCheckStrategy);
 
-                    //If the general check fails(not enough money) then the general check execution result will rmain -1 (no data can be inserted)
-                    //Else, if the general check is passed and the budget plan check returns -1 (fail because there might not be a budget plan in place) the data can be inserted
-                    //Otherwise the allChecksExecutionResult keeps its initial value(-1) and no data will be inserted(for example if a warning message is shown during budget plan checks due to the inserted value being higher than the value allowed by the budget plan item limit) 
-                    if (generalCheckExecutionResult == -1) {
-                        break;
-                    } else if (generalCheckExecutionResult == 0 && budgetPlanCheckExecutionResult == -1) {
-                        allChecksExecutionResult = 0;
-                    }
-                            
-                    break;
-                //Receivables  
-                case 3:
-                      //Checks if the start and end dates for the receivable are in chronological order
-                     if (checkReceivableDates() == -1) {
-                        return;
-                    }
-                    dataInsertionCheckContext.setStrategy(generalCheckStrategy);
-                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
+            //        budgetPlanCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerBPCheck, selectedItemName, valueToInsert);
 
-                    if (generalCheckExecutionResult == -1) {
-                        break;
-                    } else {
-                        allChecksExecutionResult = 0;
-                    }
+            //        //If the general check fails(not enough money) then the general check execution result will rmain -1 (no data can be inserted)
+            //        //Else, if the general check is passed and the budget plan check returns -1 (fail because there might not be a budget plan in place) the data can be inserted
+            //        //Otherwise the allChecksExecutionResult keeps its initial value(-1) and no data will be inserted(for example if a warning message is shown during budget plan checks due to the inserted value being higher than the value allowed by the budget plan item limit) 
+            //        if (generalCheckExecutionResult == -1) {
+            //            break;
+            //        } else if (generalCheckExecutionResult == 0 && budgetPlanCheckExecutionResult == -1) {
+            //            allChecksExecutionResult = 0;
+            //        }
 
-                break; 
-                //Creditor
-                case 5:
-                    allChecksExecutionResult = 0;
-                    break;
+            //        break;
+            //    //Receivables  
+            //    case 3:
+            //          //Checks if the start and end dates for the receivable are in chronological order
+            //         if (checkReceivableDates() == -1) {
+            //            return;
+            //        }
+            //        dataInsertionCheckContext.setStrategy(generalCheckStrategy);
+            //        generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
 
-                //Debtor
-                case 6:
-                    allChecksExecutionResult = 0;
-                    break;
+            //        if (generalCheckExecutionResult == -1) {
+            //            break;
+            //        } else {
+            //            allChecksExecutionResult = 0;
+            //        }
 
-                default:
-                    break;
-            }
+            //    break; 
+            //    //Creditor
+            //    case 5:
+            //        allChecksExecutionResult = 0;
+            //        break;
+
+            //    //Debtor
+            //    case 6:
+            //        allChecksExecutionResult = 0;
+            //        break;
+
+            //    default:
+            //        break;
+            //}
+
+            allChecksExecutionResult = performDataChecks();
 
             //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
             if (allChecksExecutionResult != -1) {
                 dataInsertionExecutionResult = insertSelectedItem(selectedIndex);
             } 
-            
-            //else {
-            //    MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //    return;
-            //}
-
+                  
 
             //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
             if (dataInsertionExecutionResult != -1) {
@@ -808,6 +802,102 @@ namespace BudgetManager.non_mvc {
             return paramContainer;
         }
 
+
+        private int performDataChecks() {
+            int allChecksExecutionResult = -1;
+            int generalCheckExecutionResult = -1;
+            int budgetPlanCheckExecutionResult = -1;
+            int dataInsertionExecutionResult = -1;
+
+            int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
+            String selectedItemName = itemTypeSelectionComboBox.Text;
+
+            QueryData paramContainerGeneralCheck = null;
+            QueryData paramContainerBPCheck = null;
+            DataInsertionCheckerContext dataInsertionCheckContext = null;
+            GeneralInsertionCheckStrategy generalCheckStrategy = null;
+            int valueToInsert = 0;
+
+            //Check if it can be improved
+            if (!selectedItemName.Equals("Debtor") && !selectedItemName.Equals("Creditor") && !selectedItemName.Equals("Income")) {
+                //Checks if the user has enough money left to insert the selected item value
+                valueToInsert = Convert.ToInt32(itemValueTextBox.Text);
+                int selectedMonth = datePicker.Value.Month;
+                int selectedYear = datePicker.Value.Year;
+                IncomeSource incomeSource = getIncomeSource();
+                //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
+                //Query data parameter object for general checks
+                paramContainerGeneralCheck = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addIncomeSource(incomeSource).build(); //CHANGE
+                                                                                                                                                                //Query data parameter object for budget plan checks
+                paramContainerBPCheck = new QueryData.Builder(userID).addItemCreationDate(datePicker.Value.ToString("yyyy-MM-dd")).addBudgetItemType(getSelectedType(itemTypeSelectionComboBox)).build();
+
+                dataInsertionCheckContext = new DataInsertionCheckerContext();
+                generalCheckStrategy = new GeneralInsertionCheckStrategy();
+
+            }
+            switch (selectedIndex) {
+                //Income
+                case 0:
+                    allChecksExecutionResult = 0;
+                    break;
+                //Expense
+                case 1:
+                //Debt                                 
+                case 2:
+
+                //Saving
+                case 4:                   
+                    dataInsertionCheckContext.setStrategy(generalCheckStrategy);
+
+                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
+
+                    BudgetPlanCheckStrategy budgetPlanCheckStrategy = new BudgetPlanCheckStrategy();
+                    dataInsertionCheckContext.setStrategy(budgetPlanCheckStrategy);
+
+                    budgetPlanCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerBPCheck, selectedItemName, valueToInsert);
+
+                    //If the general check fails(not enough money) then the general check execution result will rmain -1 (no data can be inserted)
+                    //Else, if the general check is passed and the budget plan check returns -1 (fail because there might not be a budget plan in place) the data can be inserted
+                    //Otherwise the allChecksExecutionResult keeps its initial value(-1) and no data will be inserted(for example if a warning message is shown during budget plan checks due to the inserted value being higher than the value allowed by the budget plan item limit) 
+                    if (generalCheckExecutionResult == -1) {
+                        break;
+                    } else if (generalCheckExecutionResult == 0 && budgetPlanCheckExecutionResult == -1) {
+                        allChecksExecutionResult = 0;
+                    }
+
+                    break;
+                //Receivables  
+                case 3:
+                    //Checks if the start and end dates for the receivable are in chronological order
+                    if (checkReceivableDates() == -1) {
+                        break;
+                    }
+                    dataInsertionCheckContext.setStrategy(generalCheckStrategy);
+                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
+
+                    if (generalCheckExecutionResult == -1) {
+                        break;
+                    } else {
+                        allChecksExecutionResult = 0;
+                    }
+
+                    break;
+                //Creditor
+                case 5:
+                    allChecksExecutionResult = 0;
+                    break;
+
+                //Debtor
+                case 6:
+                    allChecksExecutionResult = 0;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return allChecksExecutionResult;
+        }
 
 
 
