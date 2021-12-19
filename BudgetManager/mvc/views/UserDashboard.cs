@@ -16,17 +16,23 @@ using System.Windows.Forms.DataVisualization.Charting;
 using static BudgetManager.QueryData;
 
 namespace BudgetManager {
-    public partial class UserDashboard : Form, IView {     
+    public enum ApplicationCloseMode {
+        EXIT,
+        LOGOUT,
+        UNDEFINED
+    }
+
+    public partial class UserDashboard : Form, IView {
         private readonly int userID;//ar trebui transformat in variabila statica pt a se pastra valoarea pe toata executia programului(mai ales pt situatia in care utilizatorul navigheaza in alte ferestre si dupa aceea revine la dashboard)       
         private IControl controller = new MainController();
         private IModel model = new BudgetSummaryModel();
         private DataGridViewManager gridViewManager;
 
         //Lista DateTimePicker care vor fi dezactivate in situatia in care nu exista conexiune la baza de date
-        private DateTimePicker[] datePickers = new DateTimePicker[]{};
+        private DateTimePicker[] datePickers = new DateTimePicker[] { };
         private bool hasResetDatePickers = false;
 
-        
+
         public UserDashboard(int userID, String userName) {
             InitializeComponent();
             this.userID = userID;
@@ -37,10 +43,10 @@ namespace BudgetManager {
 
             //Configuring DataGridViewManager object
             //It initially receives the dataGridViewIncomes object and later this can be changed as needed through the setDataGridView() method
-            gridViewManager = new utils.DataGridViewManager(dataGridViewIncomes);         
+            gridViewManager = new utils.DataGridViewManager(dataGridViewIncomes);
 
             wireUp(controller, model);
-            
+
 
         }
 
@@ -116,7 +122,7 @@ namespace BudgetManager {
             //Obtinere index pentru pagina curenta
             int tabIndex = mainTabControl.SelectedIndex;
 
-            switch(tabIndex) {
+            switch (tabIndex) {
                 case 0:
                     model = new BudgetSummaryModel();
                     controller = new MainController();
@@ -153,6 +159,36 @@ namespace BudgetManager {
 
         }
 
+
+        private void createPlanToolStripMenuItem_Click(object sender, EventArgs e) {
+            new BudgetPlanCreator(userID).ShowDialog();
+        }
+
+        private void editDeleteExistingPlansToolStripMenuItem_Click(object sender, EventArgs e) {
+            new BudgetPlanManagementForm(userID).ShowDialog();
+        }
+        //Control method for the button that displays the aving account manager window
+        private void savingAccountButton_Click(object sender, EventArgs e) {
+            new SavingAccountForm(userID).ShowDialog();
+        }
+
+        private void UserDashboard_FormClosing(object sender, FormClosingEventArgs e) {
+            //Checks the close reason
+            if (e.CloseReason == CloseReason.UserClosing) {
+                //Displays the appropriate message to the user
+                DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
+
+                if (userOption == DialogResult.Yes) {
+                    Application.Exit();
+                } else {
+                    e.Cancel = true;//Cancels the event if the user selected the "No" option
+                }
+
+            } else {
+                e.Cancel = true;////Cancels the event if the user has not requested the window closing 
+            }
+        }
+
         //1.METODE TAB BUDGET SUMMARY
         private void intervalCheckBoxBS_CheckedChanged(object sender, EventArgs e) {
             if (intervalCheckBoxBS.Checked) {
@@ -162,10 +198,10 @@ namespace BudgetManager {
                 monthPickerPanelBS.Visible = false;
                 startLabelBS.Text = "Month";
             }
-           
+
         }
 
-        private void dateTimePickerStartBS_ValueChanged(object sender, EventArgs e) {          
+        private void dateTimePickerStartBS_ValueChanged(object sender, EventArgs e) {
             String message = "Budget summary";
             //Verifica daca controlul a fost resetat caz in care nu se mai executa din nou intreaga metoda
             if (hasResetDatePickers) {
@@ -189,7 +225,7 @@ namespace BudgetManager {
             }
 
             sendDataToController(DataUpdateControl.END_PICKER, intervalCheckBoxBS, dateTimePickerStartBS, dateTimePickerEndBS);
-        }          
+        }
 
         private void fillDataGridViewBS(DataTable inputDataTable) {
             //dataGridView1.DataSource = dTableInput;
@@ -227,11 +263,11 @@ namespace BudgetManager {
             }
         }
 
-        
+
         //Metoda speciala pt popularea cu date a graficului din tabul Budget summary
         private void fillPieChartBS(DataTable inputDataTable) {
             String[] pointNames = new String[] { "Expenses", "Debts", "Savings", "Amount left" };
-            if (inputDataTable != null && inputDataTable.Rows.Count > 0) {               
+            if (inputDataTable != null && inputDataTable.Rows.Count > 0) {
                 pieChartBS.Series[0].Points.Clear();
                 int[] dTableValues = Array.ConvertAll(inputDataTable.Rows[0].ItemArray, x => x != DBNull.Value ? Convert.ToInt32(x) : 0);
 
@@ -305,7 +341,7 @@ namespace BudgetManager {
 
         private void dateTimePickerEndIncomes_ValueChanged(object sender, EventArgs e) {
             String message = "Incomes list";
-            
+
             if (hasResetDatePickers) {
                 hasResetDatePickers = false;
                 return;
@@ -331,17 +367,17 @@ namespace BudgetManager {
             String[] typeNames = new String[] { "Active income", "Passive income" };
             String title = "Monthly income evolution";
             int currentYear = dateTimePickerMonthlyIncomes.Value.Year;
-           
+
             DataTable[] results = model.DataSources;
             //fillDataGridView(dataGridViewIncomes, (DataTable) results[0]);
             //CHANGE-DGW MANAGEMENT
             gridViewManager.setDataGridView(dataGridViewIncomes);
             gridViewManager.fillDataGridView(results[0]);
 
-            fillPieChart(pieChartIncomes, (DataTable)results[1], typeNames);          
+            fillPieChart(pieChartIncomes, (DataTable)results[1], typeNames);
             fillColumnChart(columnChartIncomes, (DataTable)results[2], currentYear, title);
-            
-            
+
+
         }
 
         //3.METODE TAB EXPENSES
@@ -355,7 +391,7 @@ namespace BudgetManager {
             }
         }
 
-    
+
         private void dateTimePickerStartExpenses_ValueChanged(object sender, EventArgs e) {
             String message = "Expenses list";
 
@@ -396,7 +432,7 @@ namespace BudgetManager {
             String[] typeNames = new String[] { "Fixed expenses", "Periodic expenses", "Variable expenses" };
             String title = "Monthly expense evolution";
             int currentYear = dateTimePickerMonthlyExpenses.Value.Year;
-       
+
             //fillDataGridView(dataGridViewExpenses, model.DataSources[0]);
             //CHANGE-DGW MANAGEMENT
             //Sets the DataGridView object of the gridViewManager object and fills it with the provided data
@@ -460,7 +496,7 @@ namespace BudgetManager {
         private void updateDebtsTab(IModel model) {
             String title = "Monthly debts";
             int currentYear = dateTimePickerMonthlyDebts.Value.Year;
-          
+
             //fillDataGridView(dataGridViewDebts, model.DataSources[0]);
             //CHANGE-DGW MANAGEMENT
             gridViewManager.setDataGridView(dataGridViewDebts);
@@ -472,7 +508,7 @@ namespace BudgetManager {
 
 
         //METODE TAB SAVINGS
-        private void intervalCheckBoxSavings_CheckedChanged(object sender, EventArgs e) {     
+        private void intervalCheckBoxSavings_CheckedChanged(object sender, EventArgs e) {
             if (intervalCheckBoxSavings.Checked) {
                 monthPickerPanelSavings.Visible = true;
                 startLabelSavings.Text = "Starting month";
@@ -483,7 +519,7 @@ namespace BudgetManager {
         }
 
 
-        private void dateTimePickerStartSavings_ValueChanged(object sender, EventArgs e) {        
+        private void dateTimePickerStartSavings_ValueChanged(object sender, EventArgs e) {
             String message = "Savings list";
 
             if (hasResetDatePickers) {
@@ -520,7 +556,7 @@ namespace BudgetManager {
 
         private void updateSavingsTab(IModel model) {
             String title = "Monthly savings";
-            String[] typeNames = new String[] { "Total savings", "Total incomes"};
+            String[] typeNames = new String[] { "Total savings", "Total incomes" };
             int currentYear = dateTimePickerMonthlySavings.Value.Year;
 
             //fillDataGridView(dataGridViewSavings, model.DataSources[0]);
@@ -545,7 +581,7 @@ namespace BudgetManager {
             //Eliminare puncte din grafic
             chart.Series[0].Points.Clear();
 
-            if (dTable != null && dTable.Rows.Count > 0) {                              
+            if (dTable != null && dTable.Rows.Count > 0) {
                 //Creare lista de date(prima zi a fiecarei luni a anului selectat)
                 List<DateTime> dates = new List<DateTime>();
                 for (int i = 1; i <= 12; i++) {
@@ -581,18 +617,18 @@ namespace BudgetManager {
                     }
                 }
             }
-                 //Setare titlu pentru grafic
-                chart.Titles[0].Text = String.Format("{0} for {1}", title, currentYear);
+            //Setare titlu pentru grafic
+            chart.Titles[0].Text = String.Format("{0} for {1}", title, currentYear);
         }
 
-        
+
         //Metoda generala de populare a graficelor de tip PieChart
         private void fillPieChart(Chart chart, DataTable dTable, String[] typeNames) {
             //Eliminare conținut anterior din grafic
             chart.Series[0].Points.Clear();
 
             //Verificarea continutului obiectului DataTable
-            if (dTable != null && dTable.Rows.Count > 0) {                
+            if (dTable != null && dTable.Rows.Count > 0) {
                 //Se transforma sirul de obiecte de pe randul avand inThis dexul zero in 
                 int[] itemTypeSums = Array.ConvertAll(dTable.Rows[0].ItemArray, x => x != DBNull.Value ? Convert.ToInt32(x) : 0);
 
@@ -608,7 +644,7 @@ namespace BudgetManager {
                 } else if ("pieChartSavings".Equals(chart.Name)) {
                     totalAmount = itemTypeSums[itemTypeSums.Length - 1];
                 }
-              
+
 
 
                 //Adaugare puncte pe grafic
@@ -635,7 +671,7 @@ namespace BudgetManager {
 
             if (inputDataTable != null && inputDataTable.Rows.Count > 0) {
                 //Transforma ArrayList in int[] iar daca rezultatul returnat de metoda e null creaza un sir int[] gol
-                int[] debtValues = getColumnData(inputDataTable, 1) != null ? getColumnData(inputDataTable, 1).ToArray() : new int[]{ };
+                int[] debtValues = getColumnData(inputDataTable, 1) != null ? getColumnData(inputDataTable, 1).ToArray() : new int[] { };
 
                 int totalAmount = ViewCalculator.calculateSum(debtValues);
 
@@ -695,7 +731,7 @@ namespace BudgetManager {
                 dataGrid.Rows[i].Cells[columnNumber].Value = "";
             }
         }
-    
+
 
         private void setEndPickerPanelVisibility(CheckBox checkbox, Panel panel, Label label) {
             if (checkbox.Checked == true) {
@@ -707,7 +743,7 @@ namespace BudgetManager {
             }
         }
 
-    
+
 
         //Metoda generica pentru afisarea mesajului legat de intervalul de timp selectat(labelul de deasupra tabelelor din taburi)
         private void setMonthInfoSelectionMessage(String message, Label targetLabel, DateTimePicker startPicker, DateTimePicker endPicker, Panel dateTimePickerContainer) {
@@ -735,8 +771,8 @@ namespace BudgetManager {
                 resetDateTimePicker(startPicker);
                 resetDateTimePicker(endPicker);
 
-                MessageBox.Show("Invalid date selection!", "Warning",MessageBoxButtons.OK,MessageBoxIcon.Warning);
-            
+                MessageBox.Show("Invalid date selection!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
             } else if (dateTimePickerContainer.Visible == false) {
                 targetLabel.Text = String.Format("{0} for {1} {2}", message, startPicker.Value.ToString("MMMM"), startPicker.Value.ToString("yyyy"));
                 //return;    
@@ -760,7 +796,7 @@ namespace BudgetManager {
             return false;
         }
 
-      
+
 
         private void UserDashboard_Load(object sender, EventArgs e) {
             infoLabelBS.Text = String.Format("Budget summary for {0} {1}", dateTimePickerStartBS.Value.ToString("MMMM"), dateTimePickerStartBS.Value.ToString("yyyy"));
@@ -775,11 +811,16 @@ namespace BudgetManager {
 
 
         private void UserDashboard_FormClosed(object sender, FormClosedEventArgs e) {
-            Application.Exit();
+            DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
+
+            if (userOption == DialogResult.Yes) {
+                Application.Exit();
+            }
+
         }
 
         private String getDateStringInSQLFormat(DateTimePicker datePicker, DateType dateType) {
-            if(datePicker == null) {
+            if (datePicker == null) {
                 return "";
             }
             String sqlFormatDateString = "";
@@ -790,14 +831,14 @@ namespace BudgetManager {
             } else {
                 sqlFormatDateString = datePicker.Value.ToString("yyyy-MM-dd");// daca e data de inceput se va lua doar data din dateTimePicker intrucat aceasta incepe deja de la prima zi a lunii(vezi setarea din designer)
             }
-           
+
 
             return sqlFormatDateString;
         }
 
-        
+
         private void resetDateTimePicker(DateTimePicker targetPicker) {
-            if(targetPicker == null) {
+            if (targetPicker == null) {
                 return;
             }
 
@@ -825,7 +866,7 @@ namespace BudgetManager {
                     QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).build(); //CHANGE
 
                     controller.requestData(option, paramContainer);
-                  
+
                 } else {
                     //Altfel, se selecteaza datele pe o singura luna
                     QueryType option = QueryType.SINGLE_MONTH;
@@ -836,7 +877,7 @@ namespace BudgetManager {
 
                     //Se configurează obiectul de stocare al datelor si se trimit controllerului tipul de interogare și respectivul obiect                    
                     QueryData paramContainer = new QueryData.Builder(userID).addMonth(month).addYear(year).build(); //CHANGE
-                    
+
                     controller.requestData(option, paramContainer);
 
 
@@ -847,11 +888,11 @@ namespace BudgetManager {
 
                 String startDate = getDateStringInSQLFormat(startPicker, DateType.START_DATE);
                 String endDate = getDateStringInSQLFormat(endPicker, DateType.END_DATE);
-               
+
                 QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).build(); //CHANGE
                 controller.requestData(option, paramContainer);
 
-            } else if(pickerType == DataUpdateControl.MONTHLY_PICKER) {
+            } else if (pickerType == DataUpdateControl.MONTHLY_PICKER) {
                 //Se alege interogarea ce insumeaza valorile elementului pt fiecare luna a anului selectat
                 QueryType option = QueryType.MONTHLY_TOTALS;
 
@@ -876,10 +917,10 @@ namespace BudgetManager {
                     Object currentValue = inputDataTable.Rows[i][columnIndex];
                     //Transforma obiectele prezente in valori de tip int(daca vreunul dintre aceste obiecte este nul impune valoarea implicita 0) adaugandu-le in lista
                     columnData.Add(currentValue != DBNull.Value ? Convert.ToInt32(currentValue) : 0);
-                    
+
                 }
                 //Returneaza lista obținuta
-                return columnData;              
+                return columnData;
             }
             //Returneaza null daca obietul de tip DataTable nu contine date
             return null;
@@ -890,17 +931,29 @@ namespace BudgetManager {
         }
 
         private void logoutToolStripMenuItem_Click(object sender, EventArgs e) {
-            this.Visible = false;
-            new LoginForm().Visible = true;
+            DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.LOGOUT);
+
+            if (userOption == DialogResult.Yes) {
+                this.Visible = false;
+                new LoginForm().Visible = true;
+            }
+
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e) {
-            Application.Exit();
+            DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
+
+            if (userOption == DialogResult.Yes) {
+                Environment.Exit(0);
+            }
+
         }
 
         private void insertDataToolStripMenuItem_Click(object sender, EventArgs e) {
             //Se foloseste metoda "ShowDialog()" pentru a nu permite utilizarea ferestrei din fundal cat timp cea selectata este deschisa; de asemenea previne deschiderea mai multor instante ale aceleasi ferestre
-            new InsertDataForm(userID).ShowDialog();
+            //new InsertDataForm(userID).ShowDialog();//Uncomment this and comment the below statement in order to use the old data insertion window
+            //CHANGE-links the new Dynamic data insertion form to the rest of the app
+            new InsertDataForm2(userID).ShowDialog();
         }
 
         //Seteaza data curenta a obiectelor de tip DateTimePicker ca prima zi a lunii curente a anului curent
@@ -912,7 +965,7 @@ namespace BudgetManager {
             int month = defaultDate.Month;
             int year = defaultDate.Year;
             int day = 1;
-         
+
             foreach (DateTimePicker currentPicker in dateTimePickers) {
                 //Seteaza valoarea variabilei la true ca sa nu se apeleze metoda asociata atunci cand se modifica data
                 hasResetDatePickers = true;
@@ -922,17 +975,30 @@ namespace BudgetManager {
             }
         }
 
-        private void createPlanToolStripMenuItem_Click(object sender, EventArgs e) {
-            new BudgetPlanCreator(userID).ShowDialog();
+        //Method for displaying the correct message to the user according to the close option selected(Logout/Exit)
+        //It displays the message and returns the value of the user option to the calling method
+        private DialogResult displayApplicationCloseMessage(ApplicationCloseMode closeMode) {
+            Guard.notNull(closeMode, "close mode");
+
+            DialogResult userOption = DialogResult.None;
+            switch (closeMode) {
+                case ApplicationCloseMode.EXIT:
+                    userOption = MessageBox.Show("Are you sure that you want to exit?", "Budget manager", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    break;
+
+                case ApplicationCloseMode.LOGOUT:
+                    userOption = MessageBox.Show("Are you sure that you want to logout?", "Budget manager", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    break;
+
+                case ApplicationCloseMode.UNDEFINED:
+                    break;
+
+            }
+
+            return userOption;
         }
 
-        private void editDeleteExistingPlansToolStripMenuItem_Click(object sender, EventArgs e) {
-            new BudgetPlanManagementForm(userID).ShowDialog();
-        }
-        //Control method for the button that displays the aving account manager window
-        private void savingAccountButton_Click(object sender, EventArgs e) {
-            new SavingAccountForm(userID).ShowDialog();
-        }
     }
- }
+}
+
 

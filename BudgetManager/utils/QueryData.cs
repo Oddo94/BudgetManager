@@ -8,22 +8,30 @@ namespace BudgetManager {
     //Clasa utilitara ca ajuta la crearea unui obiect care incapsuleaza datele necesare pt executia frazei SQL(parametri efectivi ce vor fi folositi pt inlocuirea placeholders)
     public class QueryData {
         private int userID;
+        private int debtorID;
         private int month;
         private int year;            
         private int expenseLimit;
         private int debtLimit;
         private int savingLimit;
-        private int estimatedIncome;        
+        private int estimatedIncome;
+        private int paidAmount;        
         private int planTypeID;
         private int thresholdPercentage;
         private int alarmExistenceValue;
         private int itemValue;
+        private int itemTypeID;
+        private String itemCreationDate;
         private String startDate;
         private String endDate;
         private String tableName;
         private String budgetPlanName;
         private String typeName;
         private String itemName;
+        private String creditorName;
+        private String debtorName;
+        private IncomeSource incomeSource;
+        private BudgetItemType budgetItemType;
 
         private QueryData() {
 
@@ -35,6 +43,13 @@ namespace BudgetManager {
             }
            
         }
+
+        public int DebtorID {
+            get {
+                return this.debtorID;
+            }
+        }
+
         public int Month {
             get {
                 return this.month;
@@ -70,6 +85,12 @@ namespace BudgetManager {
             }
         }
 
+        public int PaidAmount {
+            get {
+                return this.paidAmount;
+            }
+        }
+
         public int PlanTypeID {
             get {
                 return this.planTypeID;
@@ -91,6 +112,18 @@ namespace BudgetManager {
         public int ItemValue {
             get {
                 return this.itemValue;
+            }
+        }
+
+        public int ItemTypeID {
+            get {
+                return this.itemTypeID;
+            }
+        }
+
+        public String ItemCreationDate {
+            get {
+                return this.itemCreationDate;
             }
         }
 
@@ -131,31 +164,66 @@ namespace BudgetManager {
             }
         }
 
+        public String CreditorName {
+            get {
+                return this.creditorName;
+            }
+        }
+
+        public String DebtorName {
+            get {
+                return this.debtorName;
+            }
+        }
+
+        public IncomeSource IncomeSource {
+            get {
+                return this.incomeSource;
+            }
+        }
+
+        public BudgetItemType BudgetItemType {
+            get {
+                return this.budgetItemType;
+            }
+        }
       
-
-
         public class Builder {
             private int userID;
+            private int debtorID;
             private int month;
             private int year;            
             private int expenseLimit;
             private int debtLimit;
             private int savingLimit;
             private int estimatedIncome;
+            private int paidAmount;
             private int planTypeID;
             private int thresholdPercentage;
             private int alarmExistenceValue;
             private int itemValue;
+            private int itemTypeID;
+            private String itemCreationDate;
             private String startDate;
             private String endDate;
             private String tableName;
             private String budgetPlanName;
             private String typeName;
             private String itemName;
+            private String creditorName;
+            private String debtorName;
+            private IncomeSource incomeSource;
+            private BudgetItemType budgetItemType;
 
 
             public Builder(int userID) {
                 this.userID = userID;
+            }
+
+            public Builder addDebtorID(int debtorID) {
+                this.debtorID = debtorID;
+
+                return this;
             }
 
             public Builder addMonth(int month) {
@@ -194,6 +262,12 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addPaidAmount (int paidAmount) {
+                this.paidAmount = paidAmount;
+
+                return this;
+            }
+
             public Builder addPlanTypeID(int planTypeID) {
                 this.planTypeID = planTypeID;
 
@@ -214,6 +288,18 @@ namespace BudgetManager {
 
             public Builder addItemValue(int itemValue) {
                 this.itemValue = itemValue;
+
+                return this;
+            }
+
+            public Builder addItemTypeID(int itemTypeID) {
+                this.itemTypeID = itemTypeID;
+
+                return this;
+            }
+
+            public Builder addItemCreationDate(String itemCreationDate) {
+                this.itemCreationDate = itemCreationDate;
 
                 return this;
             }
@@ -254,16 +340,36 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addCreditorName(String creditorName) {
+                this.creditorName = creditorName;
+
+                return this;
+            }
+
+            public Builder addDebtorName(String debtorName) {
+                this.debtorName = debtorName;
+
+                return this;
+            } 
+
+            public Builder addIncomeSource(IncomeSource incomeSource) {
+                this.incomeSource = incomeSource;
+
+                return this;
+            }
+
+            public Builder addBudgetItemType(BudgetItemType budgetItemType) {
+                this.budgetItemType = budgetItemType;
+
+                return this;
+            }
+
             public QueryData build() {
                 return new QueryData {
                     userID = this.userID,
+                    debtorID = this.debtorID,
                     month = this.month,
                     year = this.year,
-                    startDate = this.startDate,
-                    endDate = this.endDate,
-                    tableName = this.tableName,
-                    budgetPlanName = this.budgetPlanName,
-                    typeName = this.typeName,
                     expenseLimit = this.expenseLimit,
                     debtLimit = this.debtLimit,
                     savingLimit = this.savingLimit,
@@ -272,9 +378,20 @@ namespace BudgetManager {
                     thresholdPercentage = this.thresholdPercentage,
                     alarmExistenceValue = this.alarmExistenceValue,
                     itemValue = this.itemValue,
-                    itemName = this.itemName
+                    itemTypeID = this.itemTypeID,
+                    itemCreationDate = this.itemCreationDate,
+                    startDate = this.startDate,
+                    endDate = this.endDate,
+                    tableName = this.tableName,
+                    budgetPlanName = this.budgetPlanName,
+                    typeName = this.typeName,
+                    itemName = this.itemName,
+                    creditorName = this.creditorName,
+                    debtorName = this.debtorName,
+                    incomeSource = this.incomeSource,
+                    budgetItemType = this.budgetItemType
                 };
-            }
+        }
         }
     }
 }

@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>budget-vector-free-icon-set-35.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MySql.Data, Version=8.0.19.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
@@ -78,9 +81,29 @@
     <Compile Include="non-mvc\BudgetPlanManagementCalculator.Designer.cs">
       <DependentUpon>BudgetPlanManagementCalculator.cs</DependentUpon>
     </Compile>
+    <Compile Include="non-mvc\CreditorInsertionStrategy.cs" />
+    <Compile Include="non-mvc\DataInsertionContext.cs" />
+    <Compile Include="non-mvc\DataInsertionStrategy.cs" />
+    <Compile Include="non-mvc\DebtInsertionContext.cs" />
+    <Compile Include="non-mvc\DebtorInsertionStrategy.cs" />
+    <Compile Include="non-mvc\ExpenseInsertionStrategy.cs" />
+    <Compile Include="non-mvc\IncomeInsertionStrategy.cs" />
+    <Compile Include="non-mvc\InsertDataForm2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="non-mvc\InsertDataForm2.Designer.cs">
+      <DependentUpon>InsertDataForm2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="non-mvc\ReceivableInsertionStrategy.cs" />
+    <Compile Include="non-mvc\SavingInsertionStrategy.cs" />
     <Compile Include="utils\BudgetPlanChecker.cs" />
+    <Compile Include="utils\BudgetPlanCheckStrategy.cs" />
     <Compile Include="utils\ConfirmationSender.cs" />
     <Compile Include="utils\DataGridViewManager.cs" />
+    <Compile Include="utils\DataInsertionCheckerContext.cs" />
+    <Compile Include="utils\DataInsertionCheckStrategy.cs" />
+    <Compile Include="utils\DataInsertionUtils.cs" />
+    <Compile Include="utils\DataProvider.cs" />
     <Compile Include="utils\DBConnectionManager.cs" />
     <Compile Include="mvc\models\DebtsModel.cs" />
     <Compile Include="mvc\models\ExpensesModel.cs" />
@@ -99,6 +122,7 @@
     <Compile Include="non-mvc\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="utils\GeneralInsertionCheckStrategy.cs" />
     <Compile Include="utils\Guard.cs" />
     <Compile Include="utils\PasswordResetManager.cs" />
     <Compile Include="utils\PasswordSecurityManager.cs" />
@@ -148,6 +172,9 @@
     <EmbeddedResource Include="non-mvc\InsertDataForm.resx">
       <DependentUpon>InsertDataForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="non-mvc\InsertDataForm2.resx">
+      <DependentUpon>InsertDataForm2.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -182,7 +209,10 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="budget-vector-free-icon-set-23.ico" />
+    <Content Include="budget-vector-free-icon-set-35.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
