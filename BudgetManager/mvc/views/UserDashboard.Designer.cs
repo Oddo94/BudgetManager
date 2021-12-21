@@ -425,6 +425,7 @@
             title2.Name = "Title1";
             title2.Text = "Monthly income evolution";
             this.columnChartIncomes.Titles.Add(title2);
+            this.columnChartIncomes.MouseHover += new System.EventHandler(this.columnChartIncomes_MouseHover);
             // 
             // pieChartIncomes
             // 

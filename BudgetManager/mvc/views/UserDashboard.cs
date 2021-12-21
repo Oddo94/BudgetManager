@@ -179,7 +179,7 @@ namespace BudgetManager {
                 DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
 
                 if (userOption == DialogResult.Yes) {
-                    Application.Exit();
+                    Environment.Exit(0);
                 } else {
                     e.Cancel = true;//Cancels the event if the user selected the "No" option
                 }
@@ -811,6 +811,7 @@ namespace BudgetManager {
 
 
         private void UserDashboard_FormClosed(object sender, FormClosedEventArgs e) {
+            Console.WriteLine("Inside FormClosed event handler...");
             DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
 
             if (userOption == DialogResult.Yes) {
@@ -998,6 +999,12 @@ namespace BudgetManager {
             return userOption;
         }
 
+        private void columnChartIncomes_MouseHover(object sender, EventArgs e) {
+            //Sets the date format of the value returned from the X axis of the column chart(#VALX) to display only the month
+            //Retrieves the value of the Y axis(#VALY) which represents the total sum of incomes
+            columnChartIncomes.Series[0].ToolTip = String.Format("Total incomes for {0}: {1}", "#VALX{MMMM}", "#VALY");
+          
+        }
     }
 }
 
