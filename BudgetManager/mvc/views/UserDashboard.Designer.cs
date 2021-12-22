@@ -425,6 +425,7 @@
             title2.Name = "Title1";
             title2.Text = "Monthly income evolution";
             this.columnChartIncomes.Titles.Add(title2);
+            this.columnChartIncomes.MouseHover += new System.EventHandler(this.columnChartIncomes_MouseHover);
             // 
             // pieChartIncomes
             // 
@@ -607,6 +608,7 @@
             title4.Name = "Title1";
             title4.Text = "Monthly expense evolution";
             this.columnChartExpenses.Titles.Add(title4);
+            this.columnChartExpenses.MouseHover += new System.EventHandler(this.columnChartExpenses_MouseHover);
             // 
             // pieChartExpenses
             // 
@@ -791,6 +793,7 @@
             title6.Name = "Title1";
             title6.Text = "Monthly debts evoulution for";
             this.columnChartDebts.Titles.Add(title6);
+            this.columnChartDebts.MouseHover += new System.EventHandler(this.columnChartDebts_MouseHover);
             // 
             // pieChartDebts
             // 
@@ -983,6 +986,7 @@
             title8.Name = "Title1";
             title8.Text = "Monthly savings evolution for";
             this.columnChartSavings.Titles.Add(title8);
+            this.columnChartSavings.MouseHover += new System.EventHandler(this.columnChartSavings_MouseHover);
             // 
             // pieChartSavings
             // 

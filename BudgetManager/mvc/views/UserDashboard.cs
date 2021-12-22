@@ -179,7 +179,7 @@ namespace BudgetManager {
                 DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
 
                 if (userOption == DialogResult.Yes) {
-                    Application.Exit();
+                    Application.Exit();                
                 } else {
                     e.Cancel = true;//Cancels the event if the user selected the "No" option
                 }
@@ -362,6 +362,14 @@ namespace BudgetManager {
             sendDataToController(DataUpdateControl.MONTHLY_PICKER, intervalCheckBoxIncomes, dateTimePickerMonthlyIncomes, dateTimePickerEndIncomes);
         }
 
+        //Method for displaying the income column chart column values(month and income value) on mouse hover
+        private void columnChartIncomes_MouseHover(object sender, EventArgs e) {
+            //Sets the date format of the value returned from the X axis of the column chart(#VALX) to display only the month
+            //Retrieves the value of the Y axis(#VALY) which represents the total sum of incomes
+            columnChartIncomes.Series[0].ToolTip = String.Format("Total incomes for {0}: {1}", "#VALX{MMMM}", "#VALY");
+
+        }
+
         //Metoda generala de actualizare a tabului Incomes(apeleaza metodele specifice de actualizare pentru fiecare componenta)
         private void updateIncomesTab(IModel model) {
             String[] typeNames = new String[] { "Active income", "Passive income" };
@@ -425,6 +433,12 @@ namespace BudgetManager {
             }
 
             sendDataToController(DataUpdateControl.MONTHLY_PICKER, intervalCheckBoxExpenses, dateTimePickerMonthlyExpenses, dateTimePickerEndExpenses);
+        }
+
+        private void columnChartExpenses_MouseHover(object sender, EventArgs e) {
+
+            columnChartExpenses.Series[0].ToolTip = String.Format("Total expenses for {0}: {1}", "#VALX{MMMM}", "#VALY");
+
         }
 
 
@@ -493,6 +507,11 @@ namespace BudgetManager {
             sendDataToController(DataUpdateControl.MONTHLY_PICKER, intervalCheckBoxDebts, dateTimePickerMonthlyDebts, dateTimePickerEndDebts);
         }
 
+        private void columnChartDebts_MouseHover(object sender, EventArgs e) {
+
+            columnChartDebts.Series[0].ToolTip = String.Format("Total debts for {0}: {1}", "#VALX{MMMM}", "#VALY");
+        }
+
         private void updateDebtsTab(IModel model) {
             String title = "Monthly debts";
             int currentYear = dateTimePickerMonthlyDebts.Value.Year;
@@ -552,6 +571,11 @@ namespace BudgetManager {
             }
 
             sendDataToController(DataUpdateControl.MONTHLY_PICKER, intervalCheckBoxSavings, dateTimePickerMonthlySavings, dateTimePickerEndSavings);
+        }
+
+        private void columnChartSavings_MouseHover(object sender, EventArgs e) {
+
+            columnChartSavings.Series[0].ToolTip = String.Format("Total savings for {0}: {1}", "#VALX{MMMM}", "#VALY");
         }
 
         private void updateSavingsTab(IModel model) {
@@ -811,6 +835,7 @@ namespace BudgetManager {
 
 
         private void UserDashboard_FormClosed(object sender, FormClosedEventArgs e) {
+            Console.WriteLine("Inside FormClosed event handler...");
             DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
 
             if (userOption == DialogResult.Yes) {
@@ -944,7 +969,7 @@ namespace BudgetManager {
             DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
 
             if (userOption == DialogResult.Yes) {
-                Environment.Exit(0);
+               Application.Exit();
             }
 
         }
@@ -997,8 +1022,8 @@ namespace BudgetManager {
 
             return userOption;
         }
-
     }
 }
+
 
 

@@ -153,6 +153,7 @@
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Monthly balance value";
+            series1.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
             this.columnChartMonthlyBalance.Series.Add(series1);
             this.columnChartMonthlyBalance.Size = new System.Drawing.Size(714, 181);
             this.columnChartMonthlyBalance.TabIndex = 9;
