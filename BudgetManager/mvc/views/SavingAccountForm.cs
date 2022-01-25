@@ -257,7 +257,7 @@ namespace BudgetManager.mvc.views {
                     return "General expenses";
 
                 case BudgetItemType.SAVING_ACCOUNT_EXPENSE:
-                    return "Saving account expenses";
+                    return "Saving accounts expenses";
 
                 case BudgetItemType.DEBT:
                     return "Debts";

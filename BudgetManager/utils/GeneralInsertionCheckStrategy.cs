@@ -17,7 +17,11 @@ namespace BudgetManager.utils {
         private String sqlStatementSingleMonthSavings = @"SELECT SUM(value) from savings WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
 
         //SQL query to get the saving account current balance value in order to allow further checks when the user selects the saving account as the income source for the inserted expense
-        private String sqlStatementGetSavingAccountBalance = @"SELECT SUM(value) FROM saving_account_balance WHERE user_ID = @paramID";
+        //Currently the check is made to allow the balance retrieval only for the default saving account(typeName = SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT)
+        private String sqlStatementGetSavingAccountBalance = @"SELECT SUM(value) FROM saving_accounts_balance sab
+                                                               INNER JOIN saving_accounts sa on sab.account_ID = sa.accountID
+                                                               INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
+                                                               WHERE sab.user_ID = @paramID AND sat.typeID = 1";
 
 
         public int performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert) {

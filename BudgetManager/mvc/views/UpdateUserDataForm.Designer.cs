@@ -43,7 +43,7 @@
             this.tableSelectionComboBox.Items.AddRange(new object[] {
             "Incomes",
             "General expenses",
-            "Saving account expenses",
+            "Saving accounts expenses",
             "Debts",
             "Savings"});
             this.tableSelectionComboBox.Location = new System.Drawing.Point(46, 100);

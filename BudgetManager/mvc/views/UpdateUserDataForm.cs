@@ -165,11 +165,12 @@ namespace BudgetManager {
 
          
                 //Retrieving the execution result of the method responsible for updating the balance record table               
-                int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, selectedRecordDate, getSelectedBudgetItemType(), false);
+                //TEST TRIGGER DB
+                //int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, selectedRecordDate, getSelectedBudgetItemType(), false);
 
-                if (savingAccountBalanceUpdateResult == -1) {
-                    MessageBox.Show("Unable to update the saving account balance record.", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                //if (savingAccountBalanceUpdateResult == -1) {
+                //    MessageBox.Show("Unable to update the saving account balance record.", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //}
             }
 
             submitButton.Enabled = false;//Disables the Submit button after deleting data from the table
@@ -251,17 +252,17 @@ namespace BudgetManager {
             }
 
             //Balance record update section
-            BudgetItemType selectedItemType = getSelectedBudgetItemType();
-            if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE || selectedItemType == BudgetItemType.SAVING) {               
-                int month = deletedRecordDate.Month;
-                int year = deletedRecordDate.Year;
+            //BudgetItemType selectedItemType = getSelectedBudgetItemType();
+            //if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE || selectedItemType == BudgetItemType.SAVING) {               
+            //    int month = deletedRecordDate.Month;
+            //    int year = deletedRecordDate.Year;
                 
-                int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, deletedRecordDate, getSelectedBudgetItemType(), true);
+            //    int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, deletedRecordDate, getSelectedBudgetItemType(), true);
 
-                if (savingAccountBalanceUpdateResult == -1) {
-                    MessageBox.Show("Unable to update the saving account balance record", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
+            //    if (savingAccountBalanceUpdateResult == -1) {
+            //        MessageBox.Show("Unable to update the saving account balance record", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //    }
+            //}
 
             submitButton.Enabled = false;//Disables the Submit button after deleting data from the table
             deleteButton.Enabled = false;//Disables the Delete button after deleting data from the table
