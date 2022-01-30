@@ -650,41 +650,102 @@ namespace BudgetManager {
         private void fillPieChart(Chart chart, DataTable dTable, String[] typeNames) {
             //Eliminare conținut anterior din grafic
             chart.Series[0].Points.Clear();
-
-            //Verificarea continutului obiectului DataTable
+                      
             if (dTable != null && dTable.Rows.Count > 0) {
-                //Se transforma sirul de obiecte de pe randul avand inThis dexul zero in 
-                int[] itemTypeSums = Array.ConvertAll(dTable.Rows[0].ItemArray, x => x != DBNull.Value ? Convert.ToInt32(x) : 0);
+                if ("pieChartExpenses".Equals(chart.Name)) {
+                    String[] typeNamesExpenses = dTable.AsEnumerable().Select(expenseTypeName => expenseTypeName.Field<String>("Expense type")).ToArray();
+                    Type fieldType = dTable.Columns[1].DataType;
+                    decimal[] itemTypeSumsExpenses = dTable.AsEnumerable().Select(expenseTypeSum => expenseTypeSum.Field<decimal>("Total value")).ToArray();
+                    Type fieldType2 = dTable.Columns[2].DataType;
+                    String[] itemTypePercentagesExpenses = dTable.AsEnumerable().Select(expenseTypePercentage => expenseTypePercentage.Field<String>("Percentage from total expenses")).ToArray();
 
-                //Daca valoarea sirurilor nu e egala nu se va popula graficul cu valori
-                if (typeNames.Length != itemTypeSums.Length) {
+                    //Adaugare puncte pe grafic
+                    for (int i = 0; i < typeNamesExpenses.Length; i++) {
+                        chart.Series[0].Points.AddXY(typeNamesExpenses[i], itemTypeSumsExpenses[i]);
+                        chart.Series[0].Points[i].LegendText = typeNamesExpenses[i];
+
+                        //Calculare procentaj pt fiecare tip prezent prin raportare la valoarea totala calculata anterior
+                        //double percentage = ViewCalculator.calculatePercentage(itemTypeSums[i], totalAmount);
+                        String percentage = itemTypePercentagesExpenses[i];
+                        if (Convert.ToDouble(percentage) > 0) {
+                            //Adaugare eticheta pentru elementul curent
+                            chart.Series[0].Points[i].Label = percentage + "%";
+                        } else {
+                            chart.Series[0].Points[i].Label = " ";//daca procentajul e zero nu se adauga nimic in textul etichetei
+                        }
+                    }                  
+
+                } else if ("pieChartIncomes".Equals(chart.Name) || "pieChartSavings".Equals(chart.Name)) {
+                    //Se transforma sirul de obiecte de pe randul avand inThis dexul zero in 
+                    int[] itemTypeSums = Array.ConvertAll(dTable.Rows[0].ItemArray, x => x != DBNull.Value ? Convert.ToInt32(x) : 0);
+
+                    //Daca valoarea sirurilor nu e egala nu se va popula graficul cu valori
+                    if (typeNames.Length != itemTypeSums.Length) {
+                        return;
+                    }
+
+                    int totalAmount = 0;
+                    //For the expense and incomes pie charts the total value is calculated by adding all the item values present in the array while for the savings the total value is represented by the total income sum(the array contains only two values, total savings and total incomes)
+                    if ("pieChartIncomes".Equals(chart.Name)) {
+                        totalAmount = ViewCalculator.calculateSum(itemTypeSums);
+                    } else if ("pieChartSavings".Equals(chart.Name)) {
+                        totalAmount = itemTypeSums[itemTypeSums.Length - 1];
+                    }
+
+
+                    //Adaugare puncte pe grafic
+                    for (int i = 0; i < typeNames.Length; i++) {
+                        chart.Series[0].Points.AddXY(typeNames[i], itemTypeSums[i]);
+                        chart.Series[0].Points[i].LegendText = typeNames[i];
+
+                        //Calculare procentaj pt fiecare tip prezent prin raportare la valoarea totala calculata anterior
+                        double percentage = ViewCalculator.calculatePercentage(itemTypeSums[i], totalAmount);
+                        if (percentage > 0) {
+                            //Adaugare eticheta pentru elementul curent
+                            chart.Series[0].Points[i].Label = percentage + "%";
+                        } else {
+                            chart.Series[0].Points[i].Label = " ";//daca procentajul e zero nu se adauga nimic in textul etichetei
+                        }
+                    }
+                } else {
                     return;
                 }
 
-                int totalAmount = 0;
-                //For the expense and incomes pie charts the total value is calculated by adding all the item values present in the array while for the savings the total value is represented by the total income sum(the array contains only two values, total savings and total incomes)
-                if ("pieChartExpenses".Equals(chart.Name) || "pieChartIncomes".Equals(chart.Name)) {
-                    totalAmount = ViewCalculator.calculateSum(itemTypeSums);
-                } else if ("pieChartSavings".Equals(chart.Name)) {
-                    totalAmount = itemTypeSums[itemTypeSums.Length - 1];
-                }
+
+                ////Verificarea continutului obiectului DataTable
+                //if (dTable != null && dTable.Rows.Count > 0) {
+                //    //Se transforma sirul de obiecte de pe randul avand inThis dexul zero in 
+                //    int[] itemTypeSums = Array.ConvertAll(dTable.Rows[0].ItemArray, x => x != DBNull.Value ? Convert.ToInt32(x) : 0);
+
+                //    //Daca valoarea sirurilor nu e egala nu se va popula graficul cu valori
+                //    if (typeNames.Length != itemTypeSums.Length) {
+                //        return;
+                //    }
+
+                //    int totalAmount = 0;
+                //    //For the expense and incomes pie charts the total value is calculated by adding all the item values present in the array while for the savings the total value is represented by the total income sum(the array contains only two values, total savings and total incomes)
+                //    if ("pieChartExpenses".Equals(chart.Name) || "pieChartIncomes".Equals(chart.Name)) {
+                //        totalAmount = ViewCalculator.calculateSum(itemTypeSums);
+                //    } else if ("pieChartSavings".Equals(chart.Name)) {
+                //        totalAmount = itemTypeSums[itemTypeSums.Length - 1];
+                //    }
 
 
+                //    //Adaugare puncte pe grafic
+                //    for (int i = 0; i < typeNames.Length; i++) {
+                //        chart.Series[0].Points.AddXY(typeNames[i], itemTypeSums[i]);
+                //        chart.Series[0].Points[i].LegendText = typeNames[i];
 
-                //Adaugare puncte pe grafic
-                for (int i = 0; i < typeNames.Length; i++) {
-                    chart.Series[0].Points.AddXY(typeNames[i], itemTypeSums[i]);
-                    chart.Series[0].Points[i].LegendText = typeNames[i];
-
-                    //Calculare procentaj pt fiecare tip prezent prin raportare la valoarea totala calculata anterior
-                    double percentage = ViewCalculator.calculatePercentage(itemTypeSums[i], totalAmount);
-                    if (percentage > 0) {
-                        //Adaugare eticheta pentru elementul curent
-                        chart.Series[0].Points[i].Label = percentage + "%";
-                    } else {
-                        chart.Series[0].Points[i].Label = " ";//daca procentajul e zero nu se adauga nimic in textul etichetei
-                    }
-                }
+                //        //Calculare procentaj pt fiecare tip prezent prin raportare la valoarea totala calculata anterior
+                //        double percentage = ViewCalculator.calculatePercentage(itemTypeSums[i], totalAmount);
+                //        if (percentage > 0) {
+                //            //Adaugare eticheta pentru elementul curent
+                //            chart.Series[0].Points[i].Label = percentage + "%";
+                //        } else {
+                //            chart.Series[0].Points[i].Label = " ";//daca procentajul e zero nu se adauga nimic in textul etichetei
+                //        }
+                //    }
+                //}
             }
         }
 

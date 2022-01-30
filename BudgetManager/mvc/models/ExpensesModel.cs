@@ -24,31 +24,49 @@ namespace BudgetManager {
 
         //Fraze SQL pt pie chart   
         //Selecteaza valoarea totala a cheltuielilor pt luna selectata pt fiecare tip de cheltuiala(fixa, periodica, variabila) pt utilizatorul curent
-        private String sqlStatementExpenseTypeSumSingle = @"SELECT SUM(CASE WHEN user_ID = @paramID 
-                AND type = (SELECT categoryID FROM expense_types WHERE categoryName = 'Fixed expense')
-                AND MONTH(date) = @paramMonth
-                AND YEAR(date) = @paramYear THEN value ELSE 0 END) AS 'Fixed expenses',
-                SUM(CASE WHEN user_ID = @paramID 
-                AND type = (SELECT categoryID FROM expense_types WHERE categoryName = 'Periodic expense')
-                AND MONTH(date) = @paramMonth
-                AND YEAR(date) = @paramYear THEN value ELSE 0 END) AS 'Periodic expenses',
-                SUM(CASE WHEN user_ID = @paramID 
-                AND type = (SELECT categoryID FROM expense_types WHERE categoryName = 'Variable expense')
-                AND MONTH(date) = @paramMonth
-                AND YEAR(date) = @paramYear THEN value ELSE 0 END) AS 'Variable expenses'
-                FROM expenses";
+        //private String sqlStatementExpenseTypeSumSingle = @"SELECT SUM(CASE WHEN user_ID = @paramID 
+        //        AND type = (SELECT categoryID FROM expense_types WHERE categoryName = 'Fixed expense')
+        //        AND MONTH(date) = @paramMonth
+        //        AND YEAR(date) = @paramYear THEN value ELSE 0 END) AS 'Fixed expenses',
+        //        SUM(CASE WHEN user_ID = @paramID 
+        //        AND type = (SELECT categoryID FROM expense_types WHERE categoryName = 'Periodic expense')
+        //        AND MONTH(date) = @paramMonth
+        //        AND YEAR(date) = @paramYear THEN value ELSE 0 END) AS 'Periodic expenses',
+        //        SUM(CASE WHEN user_ID = @paramID 
+        //        AND type = (SELECT categoryID FROM expense_types WHERE categoryName = 'Variable expense')
+        //        AND MONTH(date) = @paramMonth
+        //        AND YEAR(date) = @paramYear THEN value ELSE 0 END) AS 'Variable expenses'
+        //        FROM expenses";
 
-        //Selecteaza valoarea totala a cheltuielilor pe mai multe luni pt fiecare tip de cheltuiala(fixa, periodica, variabila) pt utilizatorul curent
-        private String sqlStatementExpenseTypeSumMultiple = @"SELECT SUM(CASE WHEN user_ID = @paramID 
-                AND type = (SELECT categoryID FROM expense_types WHERE categoryName = 'Fixed expense')
-                AND date BETWEEN @paramStartDate AND @paramEndDate THEN value ELSE 0 END) AS 'Fixed expenses',
-                SUM(CASE WHEN user_ID = @paramID 
-                AND type = (SELECT categoryID FROM expense_types WHERE categoryName = 'Periodic expense')
-                AND date BETWEEN @paramStartDate AND @paramEndDate THEN value ELSE 0 END) AS 'Periodic expenses',
-                SUM(CASE WHEN user_ID = @paramID 
-                AND type = (SELECT categoryID FROM expense_types WHERE categoryName = 'Variable expense')
-                AND date BETWEEN @paramStartDate AND @paramEndDate THEN value ELSE 0 END) AS 'Variable expenses'
-                FROM expenses";
+        private String sqlStatementExpenseTypeSumSingle = @"SELECT et.categoryName AS 'Expense type', 
+                SUM(ex.value) AS 'Total value', 
+                FORMAT(((SUM(ex.value) * 100) / (SELECT SUM(value) FROM expenses WHERE MONTH(date) = @paramMonth and YEAR(date) = @paramYear AND user_ID = @paramID)), 2) AS 'Percentage from total expenses' 
+                FROM expenses ex
+                INNER JOIN expense_types et ON ex.type = et.categoryID
+                WHERE MONTH(ex.date) = @paramMonth 
+                    AND YEAR(ex.date) = @paramYear 
+                    AND ex.user_ID = @paramID
+                GROUP BY et.categoryName";
+        ////Selecteaza valoarea totala a cheltuielilor pe mai multe luni pt fiecare tip de cheltuiala(fixa, periodica, variabila) pt utilizatorul curent
+        //private String sqlStatementExpenseTypeSumMultiple = @"SELECT SUM(CASE WHEN user_ID = @paramID 
+        //        AND type = (SELECT categoryID FROM expense_types WHERE categoryName = 'Fixed expense')
+        //        AND date BETWEEN @paramStartDate AND @paramEndDate THEN value ELSE 0 END) AS 'Fixed expenses',
+        //        SUM(CASE WHEN user_ID = @paramID 
+        //        AND type = (SELECT categoryID FROM expense_types WHERE categoryName = 'Periodic expense')
+        //        AND date BETWEEN @paramStartDate AND @paramEndDate THEN value ELSE 0 END) AS 'Periodic expenses',
+        //        SUM(CASE WHEN user_ID = @paramID 
+        //        AND type = (SELECT categoryID FROM expense_types WHERE categoryName = 'Variable expense')
+        //        AND date BETWEEN @paramStartDate AND @paramEndDate THEN value ELSE 0 END) AS 'Variable expenses'
+        //        FROM expenses";
+
+        private String sqlStatementExpenseTypeSumMultiple = @"SELECT et.categoryName AS 'Expense type', 
+                SUM(ex.value) AS 'Total value', 
+                FORMAT(((SUM(ex.value) * 100) / (SELECT SUM(value) FROM expenses WHERE date BETWEEN @paramStartDate AND @paramEndDate AND user_ID = @paramID)), 2) AS 'Percentage from total expenses' 
+                FROM expenses ex
+                INNER JOIN expense_types et ON ex.type = et.categoryID
+                WHERE ex.date BETWEEN @paramStartDate AND @paramEndDate 
+                    AND ex.user_ID = @paramID
+                GROUP BY et.categoryName;";
 
         //Fraze SQL pt column chart
         //Selecteaza valoarea totala a cheltuielilor pt fiecare luna a anului specificat,pentru utilizatorul curent
