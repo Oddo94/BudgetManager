@@ -13,37 +13,65 @@ namespace BudgetManager {
         private ArrayList observerList = new ArrayList();
         private DataTable[] dataSources = new DataTable[10];
  
-        //Fraze SQL pt tabel
-        //Selecteaza lista veniturilor pe o singura luna
+        //SQL queries for populating the table
+        //Selects the list of incomes for a single month
         private String sqlStatementSingleMonthIncomes = @"SELECT name AS 'Income name', (SELECT typeName FROM income_types WHERE income_types.typeID = incomes.incomeType) AS 'Income type', value AS 'Value', date AS 'Date' 
                 FROM incomes 
                 WHERE user_ID = @paramID AND(MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)
                 ORDER BY date ASC";
-        //Selecteaza lista veniturilor pe mai multe luni
+
+        //Selects the list of incomes for multiple months
         private String sqlStatementMultipleMonthsIncomes = @"SELECT name AS 'Income name',(SELECT typeName FROM income_types WHERE income_types.typeID = incomes.incomeType) AS 'Income type' , value AS 'Value', date AS 'Date'
                 FROM incomes
                 WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate
                 ORDER BY date ASC";
         //Fraze SQL pt pie chart
         //Selecteaza suma veniturilor pe o luna dupa tipul de venit selectat(Active/Passive)      
-        private String sqlStatementIncomeTypeSumSingle = @"SELECT SUM(CASE WHEN user_ID = @paramID 
-                AND incomeType = (SELECT typeID FROM income_types WHERE typeName = 'Active income') 
-                AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) THEN value ELSE 0 END) AS 'Active income',
-                SUM(CASE WHEN user_ID = @paramID 
-                AND incomeType = (SELECT typeID FROM income_types WHERE typeName = 'Passive income') 
-                AND(MONTH(date) = @paramMonth  AND YEAR(date) = @paramYear) THEN value ELSE 0 END) AS 'Passive income'
-                FROM incomes";
+        //private String sqlStatementIncomeTypeSumSingle = @"SELECT SUM(CASE WHEN user_ID = @paramID 
+        //        AND incomeType = (SELECT typeID FROM income_types WHERE typeName = 'Active income') 
+        //        AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) THEN value ELSE 0 END) AS 'Active income',
+        //        SUM(CASE WHEN user_ID = @paramID 
+        //        AND incomeType = (SELECT typeID FROM income_types WHERE typeName = 'Passive income') 
+        //        AND(MONTH(date) = @paramMonth  AND YEAR(date) = @paramYear) THEN value ELSE 0 END) AS 'Passive income'
+        //        FROM incomes";
+
+        //SQL queries for populating the pie chart
+        //Selects the type name and percentage for each type of income from the total incomes for a single month
+        private String sqlStatementIncomeTypeSumSingle = @"SELECT it.typeName AS 'Income type', 
+                SUM(inc.value) AS 'Total value', 
+                FORMAT(((SUM(inc.value) * 100) / (SELECT SUM(value) FROM incomes WHERE MONTH(date) = @paramMonth and YEAR(date) = @paramYear AND user_ID = @paramID)), 2) AS 'Percentage from total incomes' 
+                FROM incomes inc
+                INNER JOIN income_types it ON inc.incomeType = it.typeID
+                WHERE MONTH(inc.date) = @paramMonth
+                    AND YEAR(inc.date) = @paramYear
+                    AND inc.user_ID = @paramID
+                GROUP BY it.typeName";
+
+
         //Selecteaza suma veniturilor pe mai multe luni dupa tipul de venit selectat(Active/Passive)      
-        private String sqlStatementIncomeTypeSumMultiple = @"SELECT SUM(CASE WHEN user_ID = @paramID
-                AND incomeType = (SELECT typeID FROM income_types WHERE typeName = 'Active income')
-                AND date BETWEEN @paramStartDate AND  @paramEndDate
-                THEN value ELSE 0 END) AS 'Active income',
-                SUM(CASE WHEN user_ID = @paramID
-                AND incomeType = (SELECT typeID FROM income_types WHERE typeName = 'Passive income')
-                AND date BETWEEN @paramStartDate AND @paramEndDate THEN value ELSE 0 END) AS 'Passive income'
-                FROM incomes";
+        //private String sqlStatementIncomeTypeSumMultiple = @"SELECT SUM(CASE WHEN user_ID = @paramID
+        //        AND incomeType = (SELECT typeID FROM income_types WHERE typeName = 'Active income')
+        //        AND date BETWEEN @paramStartDate AND  @paramEndDate
+        //        THEN value ELSE 0 END) AS 'Active income',
+        //        SUM(CASE WHEN user_ID = @paramID
+        //        AND incomeType = (SELECT typeID FROM income_types WHERE typeName = 'Passive income')
+        //        AND date BETWEEN @paramStartDate AND @paramEndDate THEN value ELSE 0 END) AS 'Passive income'
+        //        FROM incomes";
+
+        //Selects the type name and percentage for each type of income from the total incomes for multiple months
+        private String sqlStatementIncomeTypeSumMultiple = @"SELECT it.typeName AS 'Income type', 
+                SUM(inc.value) AS 'Total value', 
+                FORMAT(((SUM(inc.value) * 100) / (SELECT SUM(value) FROM incomes WHERE date BETWEEN @paramStartDate AND @paramEndDate AND user_ID = @paramID)), 2) AS 'Percentage from total incomes' 
+                FROM incomes inc
+                INNER JOIN income_types it ON inc.incomeType = it.typeID
+                WHERE date BETWEEN @paramStartDate AND @paramEndDate
+                    AND inc.user_ID = @paramID
+                GROUP BY it.typeName;";
+
         //Fraze SQL pt column chart
         //Selecteaza valoarea totala a venitului pt fiecare luna a anului specificat, pentru utilizatorul curent
+        //SQL queries for populating the column chart
+        //Selects the total incomes for each month of the specified year, for the current user
         private String sqlStatementMonthlyTotalIncomes = @"SELECT MONTH(date), SUM(value)
                 FROM incomes
                 WHERE user_ID = @paramID AND YEAR(date) = @paramYear
@@ -61,12 +89,12 @@ namespace BudgetManager {
             }
         }
 
-        //Metoda returneaza un obiect de tip DataTable utilizand parametri furnizati pt a decide fraza SQL efectiva ce va fi executata(se tine cont de tipul de optiune(una sau mai multe luni) respectiv de sursa de date care se doreste a fi populata)
+        //The method returns a DataTable object using the provided arguments to decide the actual SQl query that will be executed(the query type(single/multiple months) and the data source that will be populated with data are taken into account for this decision)
         public DataTable getNewData(QueryType option, QueryData paramContainer,SelectedDataSource dataSource) {
-            //Se creaza o referită de tipul MySqlCommand careia ii va fi atribuita obiectul creat in urma executiei blocului if/else si a blocului switch
+            //Creates a MySqlCommand object tht will be populated with the actual command object selected after analyzing the previously mentioned arguments inside the if/else and switch block
             MySqlCommand command = null;
-            //Interogare date pe o luna
-            //Pentru fiecare sursă de date se selectează fraza SQL specifica pe baza careia se creaza comanda, in functie de tipul de date ce se doresc a fi afisate
+            //Single month query
+            //The specific SQL query from which the command will be created  is selected based on the data source and the type of data that needs to be displayed
             if (option == QueryType.SINGLE_MONTH) {
                 switch (dataSource) {
                     case SelectedDataSource.DYNAMIC_DATASOURCE_1:
@@ -84,8 +112,8 @@ namespace BudgetManager {
                     default:
                         break;
 
-             }
-              //Interogare date pe mai multe luni                
+             }           
+              //Multiple months query               
             } else if (option == QueryType.MULTIPLE_MONTHS) {
                 switch (dataSource) {
                     case SelectedDataSource.DYNAMIC_DATASOURCE_1:
@@ -103,14 +131,14 @@ namespace BudgetManager {
                     default:
                         break;
 
-                }
-              //Interogare date pt situatia lunara dintr-un an 
+                }           
+              //Monthly totals query
             } else if (option == QueryType.MONTHLY_TOTALS) {
                 command = SQLCommandBuilder.getMonthlyTotalsCommand(sqlStatementMonthlyTotalIncomes, paramContainer);
 
             }
 
-            //In final se apeleaza metoda getData() a clasei DBConnection Manager utilizand comanda creata
+            //The data is retrieved by passing the previously obtained command to the DBConnectionManger's getData() method
             return DBConnectionManager.getData(command);
         }
 
