@@ -25,15 +25,6 @@ namespace BudgetManager {
                 FROM incomes
                 WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate
                 ORDER BY date ASC";
-        //Fraze SQL pt pie chart
-        //Selecteaza suma veniturilor pe o luna dupa tipul de venit selectat(Active/Passive)      
-        //private String sqlStatementIncomeTypeSumSingle = @"SELECT SUM(CASE WHEN user_ID = @paramID 
-        //        AND incomeType = (SELECT typeID FROM income_types WHERE typeName = 'Active income') 
-        //        AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) THEN value ELSE 0 END) AS 'Active income',
-        //        SUM(CASE WHEN user_ID = @paramID 
-        //        AND incomeType = (SELECT typeID FROM income_types WHERE typeName = 'Passive income') 
-        //        AND(MONTH(date) = @paramMonth  AND YEAR(date) = @paramYear) THEN value ELSE 0 END) AS 'Passive income'
-        //        FROM incomes";
 
         //SQL queries for populating the pie chart
         //Selects the type name and percentage for each type of income from the total incomes for a single month
@@ -47,17 +38,6 @@ namespace BudgetManager {
                     AND inc.user_ID = @paramID
                 GROUP BY it.typeName";
 
-
-        //Selecteaza suma veniturilor pe mai multe luni dupa tipul de venit selectat(Active/Passive)      
-        //private String sqlStatementIncomeTypeSumMultiple = @"SELECT SUM(CASE WHEN user_ID = @paramID
-        //        AND incomeType = (SELECT typeID FROM income_types WHERE typeName = 'Active income')
-        //        AND date BETWEEN @paramStartDate AND  @paramEndDate
-        //        THEN value ELSE 0 END) AS 'Active income',
-        //        SUM(CASE WHEN user_ID = @paramID
-        //        AND incomeType = (SELECT typeID FROM income_types WHERE typeName = 'Passive income')
-        //        AND date BETWEEN @paramStartDate AND @paramEndDate THEN value ELSE 0 END) AS 'Passive income'
-        //        FROM incomes";
-
         //Selects the type name and percentage for each type of income from the total incomes for multiple months
         private String sqlStatementIncomeTypeSumMultiple = @"SELECT it.typeName AS 'Income type', 
                 SUM(inc.value) AS 'Total value', 
@@ -68,8 +48,7 @@ namespace BudgetManager {
                     AND inc.user_ID = @paramID
                 GROUP BY it.typeName;";
 
-        //Fraze SQL pt column chart
-        //Selecteaza valoarea totala a venitului pt fiecare luna a anului specificat, pentru utilizatorul curent
+    
         //SQL queries for populating the column chart
         //Selects the total incomes for each month of the specified year, for the current user
         private String sqlStatementMonthlyTotalIncomes = @"SELECT MONTH(date), SUM(value)
