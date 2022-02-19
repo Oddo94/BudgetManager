@@ -31,6 +31,7 @@ namespace BudgetManager {
         //The list that contains the DateTimePicker objects that will be deactivated when there's no conection to the database
         private DateTimePicker[] datePickers = new DateTimePicker[] { };
         private bool hasResetDatePickers = false;
+        private bool userAgreedToExit = false;
 
 
         public UserDashboard(int userID, String userName) {
@@ -174,19 +175,18 @@ namespace BudgetManager {
         }
 
         private void UserDashboard_FormClosing(object sender, FormClosingEventArgs e) {
-            //Checks the close reason
-            if (e.CloseReason == CloseReason.UserClosing) {
-                //Displays the appropriate message to the user
-                DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
+            if (userAgreedToExit) {
+                return;
+            }
 
-                if (userOption == DialogResult.Yes) {
-                    Application.Exit();                
-                } else {
-                    e.Cancel = true;//Cancels the event if the user selected the "No" option
-                }
+            DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
 
+            if (userOption == DialogResult.Yes) {
+                userAgreedToExit = true;
+                //hasRequestedExitFromToolStripOption = true;
+                Application.Exit();
             } else {
-                e.Cancel = true;////Cancels the event if the user has not requested the window closing 
+                e.Cancel = true;
             }
         }
 
@@ -881,17 +881,6 @@ namespace BudgetManager {
             dataGridViewBS[0, 4].Value = "Left to spend";
         }
 
-
-        private void UserDashboard_FormClosed(object sender, FormClosedEventArgs e) {
-            Console.WriteLine("Inside FormClosed event handler...");
-            DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
-
-            if (userOption == DialogResult.Yes) {
-                Application.Exit();
-            }
-
-        }
-
         //Method for converting the date retrieved from the provided DatePicker object into an SQL compatible format
         private String getDateStringInSQLFormat(DateTimePicker datePicker, DateType dateType) {
             if (datePicker == null) {
@@ -1018,9 +1007,9 @@ namespace BudgetManager {
             DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
 
             if (userOption == DialogResult.Yes) {
-               Application.Exit();
-            }
-
+                userAgreedToExit = true;
+                Application.Exit();
+            }  
         }
 
         private void insertDataToolStripMenuItem_Click(object sender, EventArgs e) {     

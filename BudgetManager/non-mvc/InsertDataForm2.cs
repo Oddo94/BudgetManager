@@ -69,7 +69,9 @@ namespace BudgetManager.non_mvc {
 
             groupBox1.Controls.Add(container);
 
-            
+            itemTypeSelectionComboBox.SelectedIndex = 0;
+            //incomeTypeComboBox.SelectedIndex = -1;
+                 
         }
 
         private void InsertDataForm2_Load(object sender, EventArgs e) {
@@ -338,7 +340,7 @@ namespace BudgetManager.non_mvc {
             incomeTypeComboBox = new ComboBox();
             //incomeTypeComboBox.DataSource = new List<String>() { "Active income", "Passive income" };
             dataProvider.fillComboBox(incomeTypeComboBox, ComboBoxType.INCOME_TYPE_COMBOBOX, userID);
-            incomeTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            incomeTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;        
 
 
             expenseTypeComboBox = new ComboBox();

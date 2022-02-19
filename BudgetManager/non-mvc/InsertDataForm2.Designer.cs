@@ -109,7 +109,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.itemTypeSelectionComboBox);
             this.Name = "InsertDataForm2";
-            this.Text = "InsertDataForm2";
+            this.Text = "Data insertion form";
             this.Load += new System.EventHandler(this.InsertDataForm2_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
