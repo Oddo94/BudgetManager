@@ -20,19 +20,28 @@ namespace BudgetManager.mvc.models {
                 ORDER BY date ASC";
 
         //SQL statements for retrieving single month/multiple months saving account expenses data
-        private String sqlStatementSingleMonthSavingAccountExpenses = @"SELECT expenseID AS 'ID', name AS 'Name', (SELECT categoryName FROM expense_types WHERE categoryID = type) AS 'Expense type', value AS 'Value', date AS 'Date' FROM saving_account_expenses WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
-        private String sqlStatementMultipleMonthsSavingAccountExpenses = @"SELECT expenseID AS 'ID', name AS 'Name', (SELECT categoryName FROM expense_types WHERE categoryID = type) AS 'Expense type', value AS 'Value', date AS 'Date' FROM saving_account_expenses WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate ORDER BY date ASC";
+        private String sqlStatementSingleMonthSavingAccountExpenses = @"SELECT expenseID AS 'ID', name AS 'Name', (SELECT categoryName FROM expense_types WHERE categoryID = type) AS 'Expense type', value AS 'Value', date AS 'Date' FROM saving_accounts_expenses WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
+        private String sqlStatementMultipleMonthsSavingAccountExpenses = @"SELECT expenseID AS 'ID', name AS 'Name', (SELECT categoryName FROM expense_types WHERE categoryID = type) AS 'Expense type', value AS 'Value', date AS 'Date' FROM saving_accounts_expenses WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate ORDER BY date ASC";
 
         //SQL statement for calculating the current total balance of the saving account(up to the current month of the current year)
         private String sqlStatementSavingAccountCurrentBalance = @"SELECT SUM(value) FROM
-                (SELECT * FROM saving_account_balance WHERE user_ID = @paramID AND year <= year(CURDATE())) AS subquery
+                (SELECT sab.value, sab.account_ID, sat.typeID, sab.month, sab.year FROM saving_accounts_balance sab
+                  INNER JOIN saving_accounts sa on sab.account_ID = sa.accountID
+                  INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
+                  WHERE sab.user_ID = @paramID
+                  AND sat.typeID = 1
+                  AND year <= year(CURDATE())) AS subquery
                 WHERE (subquery.month <= MONTH(CURDATE()) AND subquery.year <= YEAR(CURDATE())) OR (subquery.month > MONTH(CURDATE()) AND subquery.year < YEAR(CURDATE()))";
 
         //SQL statement for retrieving the data showing the yearly saving account balance evolution
         private String sqlStatementFullYearBalanceEvolution = @"SELECT * FROM
-                (SELECT year, month, SUM(value) OVER(PARTITION BY user_ID ORDER BY year, month) AS 'Running total'
-                FROM saving_account_balance
-                WHERE user_ID = @paramID) AS subquery
+                (SELECT sab.year, sab.month, SUM(sab.value) OVER(PARTITION BY sab.user_ID ORDER BY sab.year, sab.month) AS 'Running total'
+                  FROM saving_accounts_balance sab
+                  INNER JOIN saving_accounts sa on sab.account_ID = sa.accountID
+                  INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
+                  WHERE sab.user_ID = @paramID
+                  AND sat.typeID = 1
+               ) AS subquery
                 WHERE year = @paramYear";
 
 
@@ -125,7 +134,7 @@ namespace BudgetManager.mvc.models {
                         return null;
                     }
 
-                case "Saving account expenses":
+                case "Saving accounts expenses":
                     if (option == QueryType.SINGLE_MONTH) {
                         return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSingleMonthSavingAccountExpenses, paramContainer);                   
                     } else if (option == QueryType.MULTIPLE_MONTHS) {

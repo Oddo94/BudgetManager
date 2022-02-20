@@ -117,7 +117,7 @@ namespace BudgetManager.mvc.views {
 
         private void columnChartMonthlyBalance_MouseHover(object sender, EventArgs e) {
             //Displays the current value of the column on which the mouse hovers 
-            columnChartMonthlyBalance.Series[0].ToolTip = "Monthly balance: #VALY";
+            columnChartMonthlyBalance.Series[0].ToolTip = String.Format("{0} balance: {1}", "#VALX{MMMM}", "#VALY");
         }
 
         //UTIL METHODS SECTION
@@ -257,7 +257,7 @@ namespace BudgetManager.mvc.views {
                     return "General expenses";
 
                 case BudgetItemType.SAVING_ACCOUNT_EXPENSE:
-                    return "Saving account expenses";
+                    return "Saving accounts expenses";
 
                 case BudgetItemType.DEBT:
                     return "Debts";

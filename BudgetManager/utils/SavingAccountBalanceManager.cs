@@ -15,14 +15,14 @@ namespace BudgetManager.utils {
         private DateTime date;//Used for creating the record name when a new balance record is inserted or set the saving account expense date when a new record is inserted
 
         //SQL query for checking balance record existence
-        private String sqlStatementCheckRecordExistence = @"SELECT * FROM saving_account_balance WHERE user_ID = @paramID AND month = @paramMonth AND year = @paramYear";
+        private String sqlStatementCheckRecordExistence = @"SELECT * FROM saving_accounts_balance WHERE user_ID = @paramID AND month = @paramMonth AND year = @paramYear";
    
         //SQL query for inserting data
-        private String sqlStatementCreateBalanceRecord = @"INSERT INTO saving_account_balance(user_ID, recordName, value, month, year) VALUES(@paramID, @paramRecordName, @paramValue, @paramMonth, @paramYear)";
-        private String sqlStatementCreateSavingAccountExpense = @"INSERT INTO saving_account_expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
+        private String sqlStatementCreateBalanceRecord = @"INSERT INTO saving_accounts_balance(user_ID, recordName, value, month, year) VALUES(@paramID, @paramRecordName, @paramValue, @paramMonth, @paramYear)";
+        private String sqlStatementCreateSavingAccountExpense = @"INSERT INTO saving_accounts_expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
 
         //SQL query for updating data contained in the saving_account_balance table
-        private String sqlStatementUpdateBalanceRecord = @"UPDATE saving_account_balance SET recordName = @paramRecordName, value = @paramValue WHERE user_ID = @paramID AND (month = @paramMonth AND year = @paramYear)";
+        private String sqlStatementUpdateBalanceRecord = @"UPDATE saving_accounts_balance SET recordName = @paramRecordName, value = @paramValue WHERE user_ID = @paramID AND (month = @paramMonth AND year = @paramYear)";
 
 
         public SavingAccountBalanceManager(int userID, int balanceRecordMonth, int balanceRecordYear, DateTime date) {

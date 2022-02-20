@@ -16,14 +16,14 @@ namespace BudgetManager {
         //SQL statements for selecting single month data
         String sqlStatementSelectSingleMonthIncomes = @"SELECT incomeID, name, incomeType, value, date FROM incomes WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
         String sqlStatementSelectSingleMonthGeneralExpenses = @"SELECT expenseID, name, type, value, date FROM expenses WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
-        String sqlStatementSelectSingleMonthSavingAccountExpenses = @"SELECT expenseID AS 'ID', name AS 'Name', (SELECT categoryName FROM expense_types WHERE categoryID = type) AS 'Expense type', value AS 'Value', date AS 'Date' FROM `saving_account_expenses` WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
+        String sqlStatementSelectSingleMonthSavingAccountExpenses = @"SELECT expenseID AS 'ID', name AS 'Name', (SELECT categoryName FROM expense_types WHERE categoryID = type) AS 'Expense type', value AS 'Value', date AS 'Date' FROM `saving_accounts_expenses` WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
         String sqlStatementSelectSingleMonthDebts = @"SELECT debtID, name, value, creditor_ID, date FROM debts WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
         String sqlStatementSelectSingleMonthSavings = @"SELECT savingID, name, value, date FROM savings WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
 
         //SQL statements for selecting full year data
         String sqlStatementSelectFullYearIncomes = @"SELECT incomeID, name, incomeType, value, date FROM incomes WHERE user_ID = @paramID AND YEAR(date) = @paramYear ORDER BY date ASC";
         String sqlStatementSelectFullYearGeneralExpenses = @"SELECT expenseID, name, type, value, date FROM expenses WHERE user_ID = @paramID AND YEAR(date) = @paramYear ORDER BY date ASC";
-        String sqlStatementSelectFullYearSavingAccountExpenses = @"SELECT expenseID AS 'ID', name AS 'Name', (SELECT categoryName FROM expense_types WHERE categoryID = type) AS 'Expense type', value AS 'Value', date AS 'Date' FROM `saving_account_expenses` WHERE user_ID = @paramID AND YEAR(date) = @paramYear ORDER BY date ASC";
+        String sqlStatementSelectFullYearSavingAccountExpenses = @"SELECT expenseID AS 'ID', name AS 'Name', (SELECT categoryName FROM expense_types WHERE categoryID = type) AS 'Expense type', value AS 'Value', date AS 'Date' FROM `saving_accounts_expenses` WHERE user_ID = @paramID AND YEAR(date) = @paramYear ORDER BY date ASC";
         String sqlStatementSelectFullYearDebts = @"SELECT debtID, name, value, creditor_ID, date FROM debts WHERE user_ID = @paramID AND YEAR(date) = @paramYear ORDER BY date ASC";
         String sqlStatementSelectFullYearSavings = @"SELECT savingID, name, value, date FROM savings WHERE user_ID = @paramID AND YEAR(date) = @paramYear ORDER BY date ASC";
 
@@ -157,7 +157,7 @@ namespace BudgetManager {
                         return null;
                     }            
 
-                case "Saving account expenses":
+                case "Saving accounts expenses":
                     if (option == QueryType.SINGLE_MONTH) {
                         return SQLCommandBuilder.getSingleMonthCommand(sqlStatementSelectSingleMonthSavingAccountExpenses, new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build());
                     } else if (option == QueryType.FULL_YEAR) {
