@@ -65,7 +65,7 @@ namespace BudgetManager {
             return dataTable;
         }
 
-   
+
         public static int insertData(MySqlCommand command) {
             int executionResult = 0;
             MySqlConnection conn = getConnection(BUDGET_MANAGER_CONN_STRING);
@@ -120,6 +120,7 @@ namespace BudgetManager {
 
             return -1;
         }
+
 
         public static int updateData(MySqlCommand command, DataTable sourceTable) {
             int executionResult = 0;

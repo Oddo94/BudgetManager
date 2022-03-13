@@ -21,6 +21,8 @@ namespace BudgetManager {
         private int alarmExistenceValue;
         private int itemValue;
         private int itemTypeID;
+        private int bankID;
+        private int currencyID;
         private String itemCreationDate;
         private String startDate;
         private String endDate;
@@ -121,6 +123,18 @@ namespace BudgetManager {
             }
         }
 
+        public int BankID {
+            get {
+                return this.bankID;
+            }
+        }
+
+        public int CurrencyID {
+            get {
+                return this.currencyID;
+            }
+        }
+ 
         public String ItemCreationDate {
             get {
                 return this.itemCreationDate;
@@ -203,6 +217,8 @@ namespace BudgetManager {
             private int alarmExistenceValue;
             private int itemValue;
             private int itemTypeID;
+            private int bankID;
+            private int currencyID;
             private String itemCreationDate;
             private String startDate;
             private String endDate;
@@ -298,6 +314,18 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addBankID(int bankID) {
+                this.bankID = bankID;
+
+                return this;
+            }
+
+            public Builder addCurrencyID(int currencyID) {
+                this.currencyID = currencyID;
+
+                return this;
+            } 
+
             public Builder addItemCreationDate(String itemCreationDate) {
                 this.itemCreationDate = itemCreationDate;
 
@@ -379,6 +407,8 @@ namespace BudgetManager {
                     alarmExistenceValue = this.alarmExistenceValue,
                     itemValue = this.itemValue,
                     itemTypeID = this.itemTypeID,
+                    bankID = this.bankID,
+                    currencyID = this.currencyID,
                     itemCreationDate = this.itemCreationDate,
                     startDate = this.startDate,
                     endDate = this.endDate,

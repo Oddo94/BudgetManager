@@ -1018,7 +1018,7 @@ namespace BudgetManager {
         }
 
         private void createExternalAccountToolStripMenuItem_Click(object sender, EventArgs e) {
-            new ExternalAccountsInsertionForm().ShowDialog();
+            new ExternalAccountsInsertionForm(userID).ShowDialog();
         }
 
         //Sets the default date for the DateTimePicker objects as the first day of the current month of the current year

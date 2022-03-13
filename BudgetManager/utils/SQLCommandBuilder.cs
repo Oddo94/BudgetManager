@@ -231,6 +231,7 @@ namespace BudgetManager {
             }
         }
 
+        //Method used for creating the receivable insertion command
         public static MySqlCommand getReceivableInsertionCommand(String sqlStatement, QueryData paramContainer) {
             Guard.notNull(paramContainer, "parameter container");
 
@@ -244,6 +245,23 @@ namespace BudgetManager {
             insertReceivableCommand.Parameters.AddWithValue("@paramEndDate", paramContainer.EndDate);
 
             return insertReceivableCommand;
+        }
+
+        //Method used for creating the external account insertion command
+        public static MySqlCommand getExternalAccountInsertionCommand(String sqlStatement, QueryData paramContainer) {
+            Guard.notNull(sqlStatement, "external account insertion SQL statement");
+            Guard.notNull(paramContainer, "external account insertion parameter container");
+
+            MySqlCommand externalAccountInsertionCommand = new MySqlCommand(sqlStatement);
+            externalAccountInsertionCommand.Parameters.AddWithValue("@paramAccountName", paramContainer.ItemName);
+            externalAccountInsertionCommand.Parameters.AddWithValue("@paramUserId", paramContainer.UserID);
+            externalAccountInsertionCommand.Parameters.AddWithValue("@paramAccountTypeId", paramContainer.ItemTypeID);
+            externalAccountInsertionCommand.Parameters.AddWithValue("@@paramBankId", paramContainer.BankID);
+            externalAccountInsertionCommand.Parameters.AddWithValue("@paramCurrencyId", paramContainer.CurrencyID);
+            externalAccountInsertionCommand.Parameters.AddWithValue("@paramCreationDate", paramContainer.ItemCreationDate);
+
+            return externalAccountInsertionCommand;
+
         }
     }
 }

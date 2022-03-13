@@ -24,7 +24,7 @@
         /// </summary>
         private void InitializeComponent() {
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.externalAccountNameTextField = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -32,11 +32,11 @@
             this.accountBankComboBox = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.accountCurrencyComboBox = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.createAccountButton = new System.Windows.Forms.Button();
+            this.resetFieldsButton = new System.Windows.Forms.Button();
+            this.cancelButton = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.accountCreationDateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.SuspendLayout();
             // 
             // label1
@@ -48,12 +48,12 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Account name";
             // 
-            // textBox1
+            // externalAccountNameTextField
             // 
-            this.textBox1.Location = new System.Drawing.Point(140, 120);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(206, 20);
-            this.textBox1.TabIndex = 1;
+            this.externalAccountNameTextField.Location = new System.Drawing.Point(140, 120);
+            this.externalAccountNameTextField.Name = "externalAccountNameTextField";
+            this.externalAccountNameTextField.Size = new System.Drawing.Size(206, 20);
+            this.externalAccountNameTextField.TabIndex = 1;
             // 
             // label2
             // 
@@ -115,32 +115,33 @@
             this.accountCurrencyComboBox.Size = new System.Drawing.Size(64, 21);
             this.accountCurrencyComboBox.TabIndex = 10;
             // 
-            // button1
+            // createAccountButton
             // 
-            this.button1.Location = new System.Drawing.Point(28, 399);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(88, 23);
-            this.button1.TabIndex = 11;
-            this.button1.Text = "Create account";
-            this.button1.UseVisualStyleBackColor = true;
+            this.createAccountButton.Location = new System.Drawing.Point(28, 399);
+            this.createAccountButton.Name = "createAccountButton";
+            this.createAccountButton.Size = new System.Drawing.Size(88, 23);
+            this.createAccountButton.TabIndex = 11;
+            this.createAccountButton.Text = "Create account";
+            this.createAccountButton.UseVisualStyleBackColor = true;
+            this.createAccountButton.Click += new System.EventHandler(this.createAccountButton_Click);
             // 
-            // button2
+            // resetFieldsButton
             // 
-            this.button2.Location = new System.Drawing.Point(186, 399);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 12;
-            this.button2.Text = "Reset fields";
-            this.button2.UseVisualStyleBackColor = true;
+            this.resetFieldsButton.Location = new System.Drawing.Point(186, 399);
+            this.resetFieldsButton.Name = "resetFieldsButton";
+            this.resetFieldsButton.Size = new System.Drawing.Size(75, 23);
+            this.resetFieldsButton.TabIndex = 12;
+            this.resetFieldsButton.Text = "Reset fields";
+            this.resetFieldsButton.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // cancelButton
             // 
-            this.button3.Location = new System.Drawing.Point(334, 399);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 13;
-            this.button3.Text = "Cancel";
-            this.button3.UseVisualStyleBackColor = true;
+            this.cancelButton.Location = new System.Drawing.Point(334, 399);
+            this.cancelButton.Name = "cancelButton";
+            this.cancelButton.Size = new System.Drawing.Size(75, 23);
+            this.cancelButton.TabIndex = 13;
+            this.cancelButton.Text = "Cancel";
+            this.cancelButton.UseVisualStyleBackColor = true;
             // 
             // label6
             // 
@@ -151,23 +152,23 @@
             this.label6.TabIndex = 14;
             this.label6.Text = "Account creation date";
             // 
-            // dateTimePicker1
+            // accountCreationDateTimePicker
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(140, 303);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(200, 20);
-            this.dateTimePicker1.TabIndex = 15;
+            this.accountCreationDateTimePicker.Location = new System.Drawing.Point(140, 303);
+            this.accountCreationDateTimePicker.Name = "accountCreationDateTimePicker";
+            this.accountCreationDateTimePicker.Size = new System.Drawing.Size(200, 20);
+            this.accountCreationDateTimePicker.TabIndex = 15;
             // 
             // ExternalAccountsInsertionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(498, 449);
-            this.Controls.Add(this.dateTimePicker1);
+            this.Controls.Add(this.accountCreationDateTimePicker);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.cancelButton);
+            this.Controls.Add(this.resetFieldsButton);
+            this.Controls.Add(this.createAccountButton);
             this.Controls.Add(this.accountCurrencyComboBox);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.accountBankComboBox);
@@ -175,7 +176,7 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.externalAccountNameTextField);
             this.Controls.Add(this.label1);
             this.Name = "ExternalAccountsInsertionForm";
             this.Text = "Insert external accounts";
@@ -187,7 +188,7 @@
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox externalAccountNameTextField;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
@@ -195,10 +196,10 @@
         private System.Windows.Forms.ComboBox accountBankComboBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox accountCurrencyComboBox;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button createAccountButton;
+        private System.Windows.Forms.Button resetFieldsButton;
+        private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.DateTimePicker accountCreationDateTimePicker;
     }
 }
