@@ -15,6 +15,12 @@ namespace BudgetManager.utils {
             }
         }
 
+        public static void notNull(Object value, String paramName, String messageToDisplay) {
+            if (value == null) {
+                throw new ArgumentNullException(paramName, messageToDisplay);
+            }
+        }
+
         //Method for checking if the provided row index of the DataGridView object is in range
         public static void inRange(DataGridView gridView, int rowIndex) {
             int maxRowIndex = gridView.Rows.Count - 1;

@@ -14,7 +14,7 @@ using BudgetManager.utils;
 namespace BudgetManager.non_mvc {
     public partial class ExternalAccountsInsertionForm : Form {
 
-        private int userID;
+        private int userID;    
 
         private String sqlStatementRetrieveAccountTypes = @"SELECT typeName FROM saving_account_types WHERE typeName != 'SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT'";
         private String sqlStatementRetrieveAvailableBanks = @"SELECT bankName FROM banks";
@@ -28,7 +28,7 @@ namespace BudgetManager.non_mvc {
         public ExternalAccountsInsertionForm(int userID) {
             InitializeComponent();
             fillComboBoxesWithData();
-            this.userID = userID;
+            this.userID = userID;          
         }
 
         private void createAccountButton_Click(object sender, EventArgs e) {
@@ -136,6 +136,37 @@ namespace BudgetManager.non_mvc {
             return itemIdDictionary;
         }
 
-       
+        private void resetFieldsButton_Click(object sender, EventArgs e) {
+            List<Control> activeControls = new List<Control>() { externalAccountNameTextField, accountTypeComboBox, accountCurrencyComboBox, accountBankComboBox, accountCreationDateTimePicker};
+
+            UserControlsManager.clearActiveControls(activeControls);
+        }
+
+        private void cancelButton_Click(object sender, EventArgs e) {
+            this.Visible = false;
+            this.Dispose(true);
+        }
+
+        private void externalAccountNameTextField_TextChanged(object sender, EventArgs e) {
+            List<Control> activeControls = new List<Control>() { externalAccountNameTextField, accountTypeComboBox, accountCurrencyComboBox, accountBankComboBox};
+            UserControlsManager.setButtonState(createAccountButton, activeControls);
+        }
+
+        private void accountTypeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            List<Control> activeControls = new List<Control>() { externalAccountNameTextField, accountTypeComboBox, accountCurrencyComboBox, accountBankComboBox };
+            UserControlsManager.setButtonState(createAccountButton, activeControls);
+        }
+
+        private void accountCurrencyComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            List<Control> activeControls = new List<Control>() { externalAccountNameTextField, accountTypeComboBox, accountCurrencyComboBox, accountBankComboBox };
+            UserControlsManager.setButtonState(createAccountButton, activeControls);
+        }
+
+        private void accountBankComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            List<Control> activeControls = new List<Control>() { externalAccountNameTextField, accountTypeComboBox, accountCurrencyComboBox, accountBankComboBox };
+            UserControlsManager.setButtonState(createAccountButton, activeControls);
+        }
+
+        
     }
 }

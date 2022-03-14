@@ -54,6 +54,7 @@
             this.externalAccountNameTextField.Name = "externalAccountNameTextField";
             this.externalAccountNameTextField.Size = new System.Drawing.Size(206, 20);
             this.externalAccountNameTextField.TabIndex = 1;
+            this.externalAccountNameTextField.TextChanged += new System.EventHandler(this.externalAccountNameTextField_TextChanged);
             // 
             // label2
             // 
@@ -89,6 +90,7 @@
             this.accountTypeComboBox.Name = "accountTypeComboBox";
             this.accountTypeComboBox.Size = new System.Drawing.Size(206, 21);
             this.accountTypeComboBox.TabIndex = 7;
+            this.accountTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.accountTypeComboBox_SelectedIndexChanged);
             // 
             // accountBankComboBox
             // 
@@ -97,6 +99,7 @@
             this.accountBankComboBox.Name = "accountBankComboBox";
             this.accountBankComboBox.Size = new System.Drawing.Size(161, 21);
             this.accountBankComboBox.TabIndex = 8;
+            this.accountBankComboBox.SelectedIndexChanged += new System.EventHandler(this.accountBankComboBox_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -114,9 +117,11 @@
             this.accountCurrencyComboBox.Name = "accountCurrencyComboBox";
             this.accountCurrencyComboBox.Size = new System.Drawing.Size(64, 21);
             this.accountCurrencyComboBox.TabIndex = 10;
+            this.accountCurrencyComboBox.SelectedIndexChanged += new System.EventHandler(this.accountCurrencyComboBox_SelectedIndexChanged);
             // 
             // createAccountButton
             // 
+            this.createAccountButton.Enabled = false;
             this.createAccountButton.Location = new System.Drawing.Point(28, 399);
             this.createAccountButton.Name = "createAccountButton";
             this.createAccountButton.Size = new System.Drawing.Size(88, 23);
@@ -133,6 +138,7 @@
             this.resetFieldsButton.TabIndex = 12;
             this.resetFieldsButton.Text = "Reset fields";
             this.resetFieldsButton.UseVisualStyleBackColor = true;
+            this.resetFieldsButton.Click += new System.EventHandler(this.resetFieldsButton_Click);
             // 
             // cancelButton
             // 
@@ -142,6 +148,7 @@
             this.cancelButton.TabIndex = 13;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
             // label6
             // 
