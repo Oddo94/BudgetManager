@@ -155,13 +155,14 @@
             this.dataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.insertDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manageExternalAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createExternalAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userPreferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.budgetPlannerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editDeleteExistingPlansToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.manageExternalAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createExternalAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.externalAccountTransfersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainTabControl.SuspendLayout();
             this.tabPageBS.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pieChartBS)).BeginInit();
@@ -1164,6 +1165,22 @@
             this.updateDataToolStripMenuItem.Text = "Update/Delete data";
             this.updateDataToolStripMenuItem.Click += new System.EventHandler(this.updateDataToolStripMenuItem_Click);
             // 
+            // manageExternalAccountsToolStripMenuItem
+            // 
+            this.manageExternalAccountsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createExternalAccountToolStripMenuItem,
+            this.externalAccountTransfersToolStripMenuItem});
+            this.manageExternalAccountsToolStripMenuItem.Name = "manageExternalAccountsToolStripMenuItem";
+            this.manageExternalAccountsToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.manageExternalAccountsToolStripMenuItem.Text = "Manage external accounts";
+            // 
+            // createExternalAccountToolStripMenuItem
+            // 
+            this.createExternalAccountToolStripMenuItem.Name = "createExternalAccountToolStripMenuItem";
+            this.createExternalAccountToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.createExternalAccountToolStripMenuItem.Text = "Create external account";
+            this.createExternalAccountToolStripMenuItem.Click += new System.EventHandler(this.createExternalAccountToolStripMenuItem_Click);
+            // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1203,20 +1220,12 @@
             this.editDeleteExistingPlansToolStripMenuItem.Text = "Edit/Delete budget plans";
             this.editDeleteExistingPlansToolStripMenuItem.Click += new System.EventHandler(this.editDeleteExistingPlansToolStripMenuItem_Click);
             // 
-            // manageExternalAccountsToolStripMenuItem
+            // externalAccountTransfersToolStripMenuItem
             // 
-            this.manageExternalAccountsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createExternalAccountToolStripMenuItem});
-            this.manageExternalAccountsToolStripMenuItem.Name = "manageExternalAccountsToolStripMenuItem";
-            this.manageExternalAccountsToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
-            this.manageExternalAccountsToolStripMenuItem.Text = "Manage external accounts";
-            // 
-            // createExternalAccountToolStripMenuItem
-            // 
-            this.createExternalAccountToolStripMenuItem.Name = "createExternalAccountToolStripMenuItem";
-            this.createExternalAccountToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.createExternalAccountToolStripMenuItem.Text = "Create external account";
-            this.createExternalAccountToolStripMenuItem.Click += new System.EventHandler(this.createExternalAccountToolStripMenuItem_Click);
+            this.externalAccountTransfersToolStripMenuItem.Name = "externalAccountTransfersToolStripMenuItem";
+            this.externalAccountTransfersToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.externalAccountTransfersToolStripMenuItem.Text = "External account transfers";
+            this.externalAccountTransfersToolStripMenuItem.Click += new System.EventHandler(this.externalAccountTransfersToolStripMenuItem_Click);
             // 
             // UserDashboard
             // 
@@ -1362,6 +1371,7 @@
         private System.Windows.Forms.Button savingAccountButton;
         private System.Windows.Forms.ToolStripMenuItem manageExternalAccountsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createExternalAccountToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem externalAccountTransfersToolStripMenuItem;
     }
 }
 

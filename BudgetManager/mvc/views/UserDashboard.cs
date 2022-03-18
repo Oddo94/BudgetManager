@@ -1064,7 +1064,9 @@ namespace BudgetManager {
             return userOption;
         }
 
-       
+        private void externalAccountTransfersToolStripMenuItem_Click(object sender, EventArgs e) {
+            new ExternalAccountTransfersForm(userID).ShowDialog();
+        }
     }
 }
 
