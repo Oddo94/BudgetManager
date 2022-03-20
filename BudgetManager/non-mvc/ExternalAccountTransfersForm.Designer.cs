@@ -41,6 +41,7 @@
             this.resetButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.charactersLeftLabel = new System.Windows.Forms.Label();
+            this.invalidExchangeRateFormatLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -120,6 +121,7 @@
             this.exchangeRateTextBox.Size = new System.Drawing.Size(121, 20);
             this.exchangeRateTextBox.TabIndex = 8;
             this.exchangeRateTextBox.TextChanged += new System.EventHandler(this.exchangeRateTextBox_TextChanged);
+            this.exchangeRateTextBox.Leave += new System.EventHandler(this.exchangeRateTextBox_Leave);
             // 
             // label6
             // 
@@ -202,11 +204,21 @@
             this.charactersLeftLabel.TabIndex = 17;
             this.charactersLeftLabel.Text = "You have 100 characters left";
             // 
-            // ExternalAccountsTransfersForm
+            // invalidExchangeRateFormatLabel
+            // 
+            this.invalidExchangeRateFormatLabel.AutoSize = true;
+            this.invalidExchangeRateFormatLabel.ForeColor = System.Drawing.Color.Red;
+            this.invalidExchangeRateFormatLabel.Location = new System.Drawing.Point(255, 297);
+            this.invalidExchangeRateFormatLabel.Name = "invalidExchangeRateFormatLabel";
+            this.invalidExchangeRateFormatLabel.Size = new System.Drawing.Size(0, 13);
+            this.invalidExchangeRateFormatLabel.TabIndex = 18;
+            // 
+            // ExternalAccountTransfersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(581, 570);
+            this.Controls.Add(this.invalidExchangeRateFormatLabel);
             this.Controls.Add(this.charactersLeftLabel);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.resetButton);
@@ -225,7 +237,7 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Name = "ExternalAccountsTransfersForm";
+            this.Name = "ExternalAccountTransfersForm";
             this.Text = "ExternalAccountsTransfersForm";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -252,5 +264,6 @@
         private System.Windows.Forms.Button resetButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Label charactersLeftLabel;
+        private System.Windows.Forms.Label invalidExchangeRateFormatLabel;
     }
 }

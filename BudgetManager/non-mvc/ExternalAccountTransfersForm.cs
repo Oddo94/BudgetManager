@@ -31,14 +31,14 @@ namespace BudgetManager.non_mvc {
         }
 
         private void exchangeRateTextBox_TextChanged(object sender, EventArgs e) {
-            String exchangeRateValue = exchangeRateTextBox.Text;
-            Regex exchangeRateRegex = new Regex("^\\d+\\.\\d+$");
+            //String exchangeRateValue = exchangeRateTextBox.Text;
+            //Regex exchangeRateRegex = new Regex("^\\d+\\.\\d+$");
 
-            if (!isValidInputAmount(exchangeRateValue, exchangeRateRegex)) {               
-                exchangeRateTextBox.BackColor = Color.Red;
-            } else {
-                exchangeRateTextBox.BackColor = Color.White;
-            }
+            //if (!isValidInputAmount(exchangeRateValue, exchangeRateRegex)) {               
+            //    exchangeRateTextBox.BackColor = Color.Red;
+            //} else {
+            //    exchangeRateTextBox.BackColor = Color.White;
+            //}
 
         }
 
@@ -69,6 +69,20 @@ namespace BudgetManager.non_mvc {
             if (characterCount >= transferObservationsRichTextBox.MaxLength) {
                 e.Handled = true;
                 return;
+            }
+
+        }
+
+        private void exchangeRateTextBox_Leave(object sender, EventArgs e) {
+            String exchangeRateValue = exchangeRateTextBox.Text;
+            Regex exchangeRateRegexNonZeroValue = new Regex("[^0+]");
+            Regex exchangeRateRegexGeneralFormat = new Regex("^\\d+(?(?=\\.{1})\\.\\d+|\\b)$");
+
+            if (!isValidInputAmount(exchangeRateValue, exchangeRateRegexNonZeroValue) || !isValidInputAmount(exchangeRateValue, exchangeRateRegexGeneralFormat)) {
+                exchangeRateTextBox.Text = "";               
+                invalidExchangeRateFormatLabel.Text = "Invalid exchange rate value.It must be an integer/double value";
+            } else {
+                invalidExchangeRateFormatLabel.Text = "";
             }
 
         }
