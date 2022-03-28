@@ -176,6 +176,7 @@
             this.transferButton.TabIndex = 14;
             this.transferButton.Text = "Transfer money";
             this.transferButton.UseVisualStyleBackColor = true;
+            this.transferButton.Click += new System.EventHandler(this.transferButton_Click);
             // 
             // resetButton
             // 

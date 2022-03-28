@@ -80,11 +80,33 @@ namespace BudgetManager.non_mvc {
 
             if (!isValidInputAmount(exchangeRateValue, exchangeRateRegexNonZeroValue) || !isValidInputAmount(exchangeRateValue, exchangeRateRegexGeneralFormat)) {
                 exchangeRateTextBox.Text = "";               
-                invalidExchangeRateFormatLabel.Text = "Invalid exchange rate value.It must be an integer/double value";
+                invalidExchangeRateFormatLabel.Text = "Invalid exchange rate value.It must be a positive integer/double value";
             } else {
                 invalidExchangeRateFormatLabel.Text = "";
             }
 
+        }
+
+        private void transferButton_Click(object sender, EventArgs e) {
+            //Improve the check method (performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert)) to accept all the parameters being sent as attributes of the QueryData object
+            String itemName = "account transfer";
+            int transferValue = Convert.ToInt32(amountTransferredTextBox.Text);
+
+            QueryData paramContainer = new QueryData.Builder(userID).addIncomeSource(IncomeSource.SAVING_ACCOUNT).build();
+                                        
+
+
+            GeneralInsertionCheckStrategy generalInsertionCheckStrategy = new GeneralInsertionCheckStrategy();
+            DataInsertionCheckerContext dataInsertionCheckerContext = new DataInsertionCheckerContext();
+            dataInsertionCheckerContext.setStrategy(generalInsertionCheckStrategy);
+
+            int dataInsertionCheckResult = dataInsertionCheckerContext.invoke(paramContainer, itemName, transferValue);
+
+            //FOR TESTING PURPOSES ONLY
+            if (dataInsertionCheckResult == -1) {
+                MessageBox.Show("General check failed.Returning from the method...");
+                return;
+            }
         }
     }
 }
