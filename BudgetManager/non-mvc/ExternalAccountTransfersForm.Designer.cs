@@ -94,7 +94,7 @@
             this.sourceAccountComboBox.FormattingEnabled = true;
             this.sourceAccountComboBox.Location = new System.Drawing.Point(127, 132);
             this.sourceAccountComboBox.Name = "sourceAccountComboBox";
-            this.sourceAccountComboBox.Size = new System.Drawing.Size(121, 21);
+            this.sourceAccountComboBox.Size = new System.Drawing.Size(169, 21);
             this.sourceAccountComboBox.TabIndex = 5;
             // 
             // destinationAccountComboBox
@@ -103,7 +103,7 @@
             this.destinationAccountComboBox.FormattingEnabled = true;
             this.destinationAccountComboBox.Location = new System.Drawing.Point(127, 184);
             this.destinationAccountComboBox.Name = "destinationAccountComboBox";
-            this.destinationAccountComboBox.Size = new System.Drawing.Size(121, 21);
+            this.destinationAccountComboBox.Size = new System.Drawing.Size(169, 21);
             this.destinationAccountComboBox.TabIndex = 6;
             // 
             // amountTransferredTextBox

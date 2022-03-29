@@ -179,6 +179,18 @@ namespace BudgetManager {
             return getTypeIDCommand;
         }
 
+        public static MySqlCommand getTypeNameForItemCommand(String sqlStatement, QueryData paramContainer) {
+            Guard.notNull(sqlStatement, "SQL statement");
+            Guard.notNull(paramContainer, "parameter container");
+
+            int userID = paramContainer.UserID;
+
+            MySqlCommand getTypeNameRetrievalCommand = new MySqlCommand(sqlStatement);
+            getTypeNameRetrievalCommand.Parameters.AddWithValue("@paramID", userID);
+
+            return getTypeNameRetrievalCommand;
+        }
+
         //SHOULD replace the previous ID retrieval method and be more generic
         //Method for retrieving the ID of a specified element type from the DB (e.g. budget plan)
         public static MySqlCommand getRecordIDCommand(String sqlStatement, String recordName) {
@@ -263,5 +275,7 @@ namespace BudgetManager {
             return externalAccountInsertionCommand;
 
         }
+
+       
     }
 }

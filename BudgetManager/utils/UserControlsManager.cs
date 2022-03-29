@@ -1,6 +1,8 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,11 +47,11 @@ namespace BudgetManager.utils {
             //If it is of the specified type it casts it to that type before invoking the specific method needed to clear it
             foreach (Control control in activeControls) {
                 if (control is TextBox) {
-                    content = ((TextBox) control).Text;
+                    content = ((TextBox)control).Text;
                     isEmpty = "".Equals(content) ? true : false;
                 } else if (control is ComboBox) {
                     //Setting SelectedIndex to -1 when any item other than the first one is selected does not work properly
-                    index = ((ComboBox) control).SelectedIndex;
+                    index = ((ComboBox)control).SelectedIndex;
                     isEmpty = index == -1 ? true : false;
                 } else if (control is CheckBox) {
                     isEmpty = ((CheckBox)control).Checked;
@@ -58,7 +60,7 @@ namespace BudgetManager.utils {
                 if (isEmpty) {
                     return false;
                 }
-            
+
             }
 
             return true;
@@ -76,6 +78,24 @@ namespace BudgetManager.utils {
 
             targetButton.Enabled = false;
 
+        }
+
+        public static void fillComboBoxWithData(ComboBox targetComboBox, MySqlCommand dataRetrievalCommand, String displayMember) {
+            Guard.notNull(targetComboBox, "The combobox object provided for being populated with data cannot be null.");
+            Guard.notNull(displayMember, "column name");
+
+            DataTable sourceDataTable = retrieveData(dataRetrievalCommand);
+            targetComboBox.DataSource = sourceDataTable;
+            targetComboBox.DisplayMember = displayMember;
+        }
+
+
+        private static DataTable retrieveData(MySqlCommand dataRetrievalCommand) {
+            Guard.notNull(dataRetrievalCommand, "SQL command");
+         
+            DataTable comboBoxDataTable = DBConnectionManager.getData(dataRetrievalCommand);
+
+            return comboBoxDataTable;
         }
     }
 }

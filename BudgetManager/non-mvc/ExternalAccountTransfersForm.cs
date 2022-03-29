@@ -1,4 +1,5 @@
 ﻿using BudgetManager.utils;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,11 +16,30 @@ namespace BudgetManager.non_mvc {
 
         private int userID;
 
+        private String sqlStatementGetSourceAccounts = @"SELECT sa.accountName FROM saving_accounts sa
+                                                        INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
+                                                        WHERE sa.user_ID = @paramID AND sat.typeName like '%SYSTEM_DEFINED%'";
+
         public ExternalAccountTransfersForm(int userID) {
             InitializeComponent();
             this.userID = userID;
+
+            populateControls(userID);
+            setDefaultIndexForComboBoxes();
+
         }
 
+        private void populateControls(int userID) {
+            QueryData paramContainer = new QueryData.Builder(userID).build();
+            MySqlCommand sourceAccountsDataRetrievalCommand = SQLCommandBuilder.getTypeNameForItemCommand(sqlStatementGetSourceAccounts, paramContainer);
+
+            UserControlsManager.fillComboBoxWithData(sourceAccountComboBox, sourceAccountsDataRetrievalCommand, "accountName");
+
+        }
+
+        private void setDefaultIndexForComboBoxes() {
+            sourceAccountComboBox.SelectedIndex = -1;
+        }
 
         private void amountTransferredTextBox_TextChanged(object sender, EventArgs e) {
             String transferredAmount = amountTransferredTextBox.Text;
@@ -79,7 +99,7 @@ namespace BudgetManager.non_mvc {
             Regex exchangeRateRegexGeneralFormat = new Regex("^\\d+(?(?=\\.{1})\\.\\d+|\\b)$");
 
             if (!isValidInputAmount(exchangeRateValue, exchangeRateRegexNonZeroValue) || !isValidInputAmount(exchangeRateValue, exchangeRateRegexGeneralFormat)) {
-                exchangeRateTextBox.Text = "";               
+                exchangeRateTextBox.Text = "";
                 invalidExchangeRateFormatLabel.Text = "Invalid exchange rate value.It must be a positive integer/double value";
             } else {
                 invalidExchangeRateFormatLabel.Text = "";
@@ -93,7 +113,7 @@ namespace BudgetManager.non_mvc {
             int transferValue = Convert.ToInt32(amountTransferredTextBox.Text);
 
             QueryData paramContainer = new QueryData.Builder(userID).addIncomeSource(IncomeSource.SAVING_ACCOUNT).build();
-                                        
+
 
 
             GeneralInsertionCheckStrategy generalInsertionCheckStrategy = new GeneralInsertionCheckStrategy();
