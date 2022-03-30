@@ -96,6 +96,7 @@
             this.sourceAccountComboBox.Name = "sourceAccountComboBox";
             this.sourceAccountComboBox.Size = new System.Drawing.Size(169, 21);
             this.sourceAccountComboBox.TabIndex = 5;
+            this.sourceAccountComboBox.SelectedIndexChanged += new System.EventHandler(this.sourceAccountComboBox_SelectedIndexChanged);
             // 
             // destinationAccountComboBox
             // 
@@ -105,6 +106,7 @@
             this.destinationAccountComboBox.Name = "destinationAccountComboBox";
             this.destinationAccountComboBox.Size = new System.Drawing.Size(169, 21);
             this.destinationAccountComboBox.TabIndex = 6;
+            this.destinationAccountComboBox.SelectedIndexChanged += new System.EventHandler(this.destinationAccountComboBox_SelectedIndexChanged);
             // 
             // amountTransferredTextBox
             // 
@@ -162,7 +164,7 @@
             this.transferObservationsRichTextBox.Location = new System.Drawing.Point(128, 392);
             this.transferObservationsRichTextBox.MaxLength = 100;
             this.transferObservationsRichTextBox.Name = "transferObservationsRichTextBox";
-            this.transferObservationsRichTextBox.Size = new System.Drawing.Size(324, 82);
+            this.transferObservationsRichTextBox.Size = new System.Drawing.Size(358, 86);
             this.transferObservationsRichTextBox.TabIndex = 13;
             this.transferObservationsRichTextBox.Text = "";
             this.transferObservationsRichTextBox.TextChanged += new System.EventHandler(this.transferObservationsRichTextBox_TextChanged);
@@ -180,7 +182,7 @@
             // 
             // resetButton
             // 
-            this.resetButton.Location = new System.Drawing.Point(233, 515);
+            this.resetButton.Location = new System.Drawing.Point(258, 515);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(82, 23);
             this.resetButton.TabIndex = 15;
@@ -189,7 +191,7 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(432, 515);
+            this.cancelButton.Location = new System.Drawing.Point(475, 515);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(83, 23);
             this.cancelButton.TabIndex = 16;
@@ -218,7 +220,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(581, 570);
+            this.ClientSize = new System.Drawing.Size(623, 573);
             this.Controls.Add(this.invalidExchangeRateFormatLabel);
             this.Controls.Add(this.charactersLeftLabel);
             this.Controls.Add(this.cancelButton);

@@ -19,26 +19,21 @@ namespace BudgetManager.non_mvc {
         private String sqlStatementGetSourceAccounts = @"SELECT sa.accountName FROM saving_accounts sa
                                                         INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
                                                         WHERE sa.user_ID = @paramID AND sat.typeName like '%SYSTEM_DEFINED%'";
+        private String sqlStatementGetDestinationAccounts = @"SELECT sa.accountName FROM saving_accounts sa
+                                                        INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
+                                                        WHERE sa.user_ID = @paramID AND sat.typeName like '%USER_DEFINED%'";
+
+        private List<Control> activeControls;
 
         public ExternalAccountTransfersForm(int userID) {
             InitializeComponent();
+            activeControls = new List<Control>() { sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox };
             this.userID = userID;
 
             populateControls(userID);
             setDefaultIndexForComboBoxes();
+            
 
-        }
-
-        private void populateControls(int userID) {
-            QueryData paramContainer = new QueryData.Builder(userID).build();
-            MySqlCommand sourceAccountsDataRetrievalCommand = SQLCommandBuilder.getTypeNameForItemCommand(sqlStatementGetSourceAccounts, paramContainer);
-
-            UserControlsManager.fillComboBoxWithData(sourceAccountComboBox, sourceAccountsDataRetrievalCommand, "accountName");
-
-        }
-
-        private void setDefaultIndexForComboBoxes() {
-            sourceAccountComboBox.SelectedIndex = -1;
         }
 
         private void amountTransferredTextBox_TextChanged(object sender, EventArgs e) {
@@ -48,18 +43,55 @@ namespace BudgetManager.non_mvc {
             if (!isValidInputAmount(transferredAmount, transferredAmountRegex)) {
                 amountTransferredTextBox.Text = "";
             }
+
+            //if("".Equals(transferredAmount)) {
+            //    transferButton.Enabled = false;
+            //}
+
         }
 
         private void exchangeRateTextBox_TextChanged(object sender, EventArgs e) {
-            //String exchangeRateValue = exchangeRateTextBox.Text;
-            //Regex exchangeRateRegex = new Regex("^\\d+\\.\\d+$");
+            String exchangeRateValue = exchangeRateTextBox.Text;
+            Regex exchangeRateRegexNonZeroValue = new Regex("[^0+]");
+            Regex exchangeRateRegexGeneralFormat = new Regex("^\\d+(?(?=\\.{1})\\.\\d+|\\b)$");
 
-            //if (!isValidInputAmount(exchangeRateValue, exchangeRateRegex)) {               
-            //    exchangeRateTextBox.BackColor = Color.Red;
-            //} else {
-            //    exchangeRateTextBox.BackColor = Color.White;
+            if (!isValidInputAmount(exchangeRateValue, exchangeRateRegexNonZeroValue) || !isValidInputAmount(exchangeRateValue, exchangeRateRegexGeneralFormat)) {
+                //exchangeRateTextBox.Text = "";
+                invalidExchangeRateFormatLabel.Text = "Invalid exchange rate value.It must be a positive integer/double value";
+            } else {
+                invalidExchangeRateFormatLabel.Text = "";
+            }
+
+            //if("".Equals(exchangeRateValue)) {
+            //    transferButton.Enabled = false;
             //}
+        }
 
+        private int performInputChecks() {
+            if(sourceAccountComboBox.SelectedIndex == -1) {
+                MessageBox.Show("Please select the source account for your transfer!", "Account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return -1;
+            }
+
+            if (destinationAccountComboBox.SelectedIndex == -1) {
+                MessageBox.Show("Please select the destination account for your transfer!", "Account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return -1;
+            }
+
+            if("".Equals(amountTransferredTextBox.Text)) {
+                MessageBox.Show("Please specify the transferred amount!", "Account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return -1;
+            }
+
+            if ("".Equals(exchangeRateTextBox.Text)) {
+                MessageBox.Show("Please specify the exchange rate value!", "Account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return -1;
+            } else if (!"".Equals(invalidExchangeRateFormatLabel.Text)) {
+                MessageBox.Show("Invalid exchange rate value!", "Account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return -1;
+            }
+
+            return 0;
         }
 
 
@@ -94,20 +126,30 @@ namespace BudgetManager.non_mvc {
         }
 
         private void exchangeRateTextBox_Leave(object sender, EventArgs e) {
-            String exchangeRateValue = exchangeRateTextBox.Text;
-            Regex exchangeRateRegexNonZeroValue = new Regex("[^0+]");
-            Regex exchangeRateRegexGeneralFormat = new Regex("^\\d+(?(?=\\.{1})\\.\\d+|\\b)$");
+            //String exchangeRateValue = exchangeRateTextBox.Text;
+            //Regex exchangeRateRegexNonZeroValue = new Regex("[^0+]");
+            //Regex exchangeRateRegexGeneralFormat = new Regex("^\\d+(?(?=\\.{1})\\.\\d+|\\b)$");
 
-            if (!isValidInputAmount(exchangeRateValue, exchangeRateRegexNonZeroValue) || !isValidInputAmount(exchangeRateValue, exchangeRateRegexGeneralFormat)) {
-                exchangeRateTextBox.Text = "";
-                invalidExchangeRateFormatLabel.Text = "Invalid exchange rate value.It must be a positive integer/double value";
-            } else {
-                invalidExchangeRateFormatLabel.Text = "";
-            }
+            //if (!isValidInputAmount(exchangeRateValue, exchangeRateRegexNonZeroValue) || !isValidInputAmount(exchangeRateValue, exchangeRateRegexGeneralFormat)) {
+            //    exchangeRateTextBox.Text = "";
+            //    invalidExchangeRateFormatLabel.Text = "Invalid exchange rate value.It must be a positive integer/double value";
+            //} else {
+            //    invalidExchangeRateFormatLabel.Text = "";
+            //}
+
+            //UserControlsManager.setButtonState(transferButton, activeControls);
 
         }
 
         private void transferButton_Click(object sender, EventArgs e) {
+            int userInputCheckResult = performInputChecks();
+
+            if(userInputCheckResult == -1) {
+                return;
+            }
+
+
+
             //Improve the check method (performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert)) to accept all the parameters being sent as attributes of the QueryData object
             String itemName = "account transfer";
             int transferValue = Convert.ToInt32(amountTransferredTextBox.Text);
@@ -127,6 +169,30 @@ namespace BudgetManager.non_mvc {
                 MessageBox.Show("General check failed.Returning from the method...");
                 return;
             }
+        }
+
+        //Methods for populating comboboxes with data
+        private void populateControls(int userID) {
+            QueryData paramContainer = new QueryData.Builder(userID).build();
+            MySqlCommand sourceAccountsDataRetrievalCommand = SQLCommandBuilder.getTypeNameForItemCommand(sqlStatementGetSourceAccounts, paramContainer);
+            MySqlCommand destinationAccountsDataRetrievalCommand = SQLCommandBuilder.getTypeNameForItemCommand(sqlStatementGetDestinationAccounts, paramContainer);
+
+
+            UserControlsManager.fillComboBoxWithData(sourceAccountComboBox, sourceAccountsDataRetrievalCommand, "accountName");
+            UserControlsManager.fillComboBoxWithData(destinationAccountComboBox, destinationAccountsDataRetrievalCommand, "accountName");
+        }
+
+        private void setDefaultIndexForComboBoxes() {
+            sourceAccountComboBox.SelectedIndex = -1;
+            destinationAccountComboBox.SelectedIndex = -1;
+        }
+
+        private void sourceAccountComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            //UserControlsManager.setButtonState(transferButton, activeControls);
+        }
+
+        private void destinationAccountComboBox_SelectedIndexChanged(object sender, EventArgs e) {         
+            //UserControlsManager.setButtonState(transferButton, activeControls);
         }
     }
 }

@@ -85,6 +85,7 @@
             // 
             // accountTypeComboBox
             // 
+            this.accountTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.accountTypeComboBox.FormattingEnabled = true;
             this.accountTypeComboBox.Location = new System.Drawing.Point(140, 168);
             this.accountTypeComboBox.Name = "accountTypeComboBox";
@@ -94,6 +95,7 @@
             // 
             // accountBankComboBox
             // 
+            this.accountBankComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.accountBankComboBox.FormattingEnabled = true;
             this.accountBankComboBox.Location = new System.Drawing.Point(140, 258);
             this.accountBankComboBox.Name = "accountBankComboBox";
@@ -112,6 +114,7 @@
             // 
             // accountCurrencyComboBox
             // 
+            this.accountCurrencyComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.accountCurrencyComboBox.FormattingEnabled = true;
             this.accountCurrencyComboBox.Location = new System.Drawing.Point(140, 216);
             this.accountCurrencyComboBox.Name = "accountCurrencyComboBox";
