@@ -30,6 +30,8 @@ namespace BudgetManager.utils {
                     //Sets the "General incomes" radio button as the default selection
                     RadioButton radioButton = (RadioButton)control;
                     radioButton.Checked = false;
+                } else if (control is RichTextBox) {
+                    ((RichTextBox)control).Text = "";
                 }
             }
         }

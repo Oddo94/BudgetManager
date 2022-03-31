@@ -27,7 +27,7 @@ namespace BudgetManager.non_mvc {
 
         public ExternalAccountTransfersForm(int userID) {
             InitializeComponent();
-            activeControls = new List<Control>() { sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox };
+            activeControls = new List<Control>() { sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox, transferDateTimePicker, transferObservationsRichTextBox};
             this.userID = userID;
 
             populateControls(userID);
@@ -69,25 +69,25 @@ namespace BudgetManager.non_mvc {
 
         private int performInputChecks() {
             if(sourceAccountComboBox.SelectedIndex == -1) {
-                MessageBox.Show("Please select the source account for your transfer!", "Account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please select the source account for your transfer!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return -1;
             }
 
             if (destinationAccountComboBox.SelectedIndex == -1) {
-                MessageBox.Show("Please select the destination account for your transfer!", "Account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please select the destination account for your transfer!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return -1;
             }
 
             if("".Equals(amountTransferredTextBox.Text)) {
-                MessageBox.Show("Please specify the transferred amount!", "Account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please specify the transferred amount!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return -1;
             }
 
             if ("".Equals(exchangeRateTextBox.Text)) {
-                MessageBox.Show("Please specify the exchange rate value!", "Account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please specify the exchange rate value!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return -1;
             } else if (!"".Equals(invalidExchangeRateFormatLabel.Text)) {
-                MessageBox.Show("Invalid exchange rate value!", "Account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Invalid exchange rate value!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return -1;
             }
 
@@ -148,8 +148,6 @@ namespace BudgetManager.non_mvc {
                 return;
             }
 
-
-
             //Improve the check method (performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert)) to accept all the parameters being sent as attributes of the QueryData object
             String itemName = "account transfer";
             int transferValue = Convert.ToInt32(amountTransferredTextBox.Text);
@@ -170,6 +168,16 @@ namespace BudgetManager.non_mvc {
                 return;
             }
         }
+
+        private void resetButton_Click(object sender, EventArgs e) {
+            UserControlsManager.clearActiveControls(activeControls);
+        }
+
+        private void cancelButton_Click(object sender, EventArgs e) {
+            this.Visible = false;
+            this.Dispose();
+        }
+
 
         //Methods for populating comboboxes with data
         private void populateControls(int userID) {
@@ -194,5 +202,7 @@ namespace BudgetManager.non_mvc {
         private void destinationAccountComboBox_SelectedIndexChanged(object sender, EventArgs e) {         
             //UserControlsManager.setButtonState(transferButton, activeControls);
         }
+
+       
     }
 }

@@ -188,6 +188,7 @@
             this.resetButton.TabIndex = 15;
             this.resetButton.Text = "Reset fields";
             this.resetButton.UseVisualStyleBackColor = true;
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
             // 
             // cancelButton
             // 
@@ -197,6 +198,7 @@
             this.cancelButton.TabIndex = 16;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
             // charactersLeftLabel
             // 
@@ -240,8 +242,10 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
             this.Name = "ExternalAccountTransfersForm";
-            this.Text = "ExternalAccountsTransfersForm";
+            this.Text = "External account transfers";
             this.ResumeLayout(false);
             this.PerformLayout();
 
