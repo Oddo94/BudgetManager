@@ -42,12 +42,14 @@
             this.cancelButton = new System.Windows.Forms.Button();
             this.charactersLeftLabel = new System.Windows.Forms.Label();
             this.invalidExchangeRateFormatLabel = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.transferNameTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 81);
+            this.label1.Location = new System.Drawing.Point(13, 29);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(119, 13);
             this.label1.TabIndex = 0;
@@ -92,11 +94,10 @@
             // 
             this.sourceAccountComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.sourceAccountComboBox.FormattingEnabled = true;
-            this.sourceAccountComboBox.Location = new System.Drawing.Point(127, 132);
+            this.sourceAccountComboBox.Location = new System.Drawing.Point(128, 132);
             this.sourceAccountComboBox.Name = "sourceAccountComboBox";
-            this.sourceAccountComboBox.Size = new System.Drawing.Size(169, 21);
+            this.sourceAccountComboBox.Size = new System.Drawing.Size(190, 21);
             this.sourceAccountComboBox.TabIndex = 5;
-            this.sourceAccountComboBox.SelectedIndexChanged += new System.EventHandler(this.sourceAccountComboBox_SelectedIndexChanged);
             // 
             // destinationAccountComboBox
             // 
@@ -104,9 +105,8 @@
             this.destinationAccountComboBox.FormattingEnabled = true;
             this.destinationAccountComboBox.Location = new System.Drawing.Point(127, 184);
             this.destinationAccountComboBox.Name = "destinationAccountComboBox";
-            this.destinationAccountComboBox.Size = new System.Drawing.Size(169, 21);
+            this.destinationAccountComboBox.Size = new System.Drawing.Size(190, 21);
             this.destinationAccountComboBox.TabIndex = 6;
-            this.destinationAccountComboBox.SelectedIndexChanged += new System.EventHandler(this.destinationAccountComboBox_SelectedIndexChanged);
             // 
             // amountTransferredTextBox
             // 
@@ -123,7 +123,6 @@
             this.exchangeRateTextBox.Size = new System.Drawing.Size(121, 20);
             this.exchangeRateTextBox.TabIndex = 8;
             this.exchangeRateTextBox.TextChanged += new System.EventHandler(this.exchangeRateTextBox_TextChanged);
-            this.exchangeRateTextBox.Leave += new System.EventHandler(this.exchangeRateTextBox_Leave);
             // 
             // label6
             // 
@@ -218,11 +217,29 @@
             this.invalidExchangeRateFormatLabel.Size = new System.Drawing.Size(0, 13);
             this.invalidExchangeRateFormatLabel.TabIndex = 18;
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(15, 90);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(75, 13);
+            this.label9.TabIndex = 19;
+            this.label9.Text = "Transfer name";
+            // 
+            // transferNameTextBox
+            // 
+            this.transferNameTextBox.Location = new System.Drawing.Point(127, 83);
+            this.transferNameTextBox.Name = "transferNameTextBox";
+            this.transferNameTextBox.Size = new System.Drawing.Size(190, 20);
+            this.transferNameTextBox.TabIndex = 20;
+            // 
             // ExternalAccountTransfersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(623, 573);
+            this.Controls.Add(this.transferNameTextBox);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.invalidExchangeRateFormatLabel);
             this.Controls.Add(this.charactersLeftLabel);
             this.Controls.Add(this.cancelButton);
@@ -272,5 +289,7 @@
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Label charactersLeftLabel;
         private System.Windows.Forms.Label invalidExchangeRateFormatLabel;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox transferNameTextBox;
     }
 }
