@@ -485,6 +485,7 @@ namespace BudgetManager {
                     expenseLimit = this.expenseLimit,
                     debtLimit = this.debtLimit,
                     savingLimit = this.savingLimit,
+                    paidAmount = this.paidAmount,
                     estimatedIncome = this.estimatedIncome,
                     planTypeID = this.planTypeID,
                     thresholdPercentage = this.thresholdPercentage,
@@ -507,6 +508,7 @@ namespace BudgetManager {
                     itemName = this.itemName,
                     creditorName = this.creditorName,
                     debtorName = this.debtorName,
+                    additionalData = this.additionalData,
                     incomeSource = this.incomeSource,
                     budgetItemType = this.budgetItemType
                 };

@@ -297,7 +297,7 @@ namespace BudgetManager {
 
             MySqlCommand transferInsertionCommand = new MySqlCommand(sqlStatement);
             transferInsertionCommand.Parameters.AddWithValue("@paramSenderAccountId", paramContainer.SourceAccountID);
-            transferInsertionCommand.Parameters.AddWithValue("paramReceivingAccountId", paramContainer.DestinationAccountID);
+            transferInsertionCommand.Parameters.AddWithValue("@paramReceivingAccountId", paramContainer.DestinationAccountID);
             transferInsertionCommand.Parameters.AddWithValue("@paramTransferName", paramContainer.ItemName);
             transferInsertionCommand.Parameters.AddWithValue("@paramSentValue", paramContainer.SentValue);
             transferInsertionCommand.Parameters.AddWithValue("@paramReceivedValue", paramContainer.ReceivedValue);

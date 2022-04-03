@@ -809,7 +809,7 @@ namespace BudgetManager.non_mvc {
             int allChecksExecutionResult = -1;
             int generalCheckExecutionResult = -1;
             int budgetPlanCheckExecutionResult = -1;
-            int dataInsertionExecutionResult = -1;
+            //int dataInsertionExecutionResult = -1;
 
             int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
             String selectedItemName = itemTypeSelectionComboBox.Text;

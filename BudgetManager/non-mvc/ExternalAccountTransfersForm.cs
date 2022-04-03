@@ -25,12 +25,20 @@ namespace BudgetManager.non_mvc {
         private String sqlStatementGetAccountID = @"SELECT accountID FROM saving_accounts WHERE user_ID = @paramID AND accountName = @paramRecordName";
         private string sqlStatementInsertTransfer = @"INSERT INTO saving_accounts_transfers(senderAccountID, receivingAccountID, transferName, sentValue, receivedValue, exchangeRate, observations, transferDate) 
                                                     VALUES(@paramSenderAccountId, @paramReceivingAccountId, @paramTransferName, @paramSentValue, @paramReceivedValue, @paramExchangeRate, @paramObservations, @paramTransferDate)";
-
+        private String transferDetails = @"Transfer details
+                                           Transfer name: {0}
+                                           Source account: {1}
+                                           Destination account: {2}
+                                           Amount transferred: {3}
+                                           Amount received: {4}
+                                           Exchange rate: {5}
+                                           Transfer date: {6}
+                                           Transfer observations: {7}";
         private List<Control> activeControls;
 
         public ExternalAccountTransfersForm(int userID) {
             InitializeComponent();
-            activeControls = new List<Control>() { sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox, transferDateTimePicker, transferObservationsRichTextBox};
+            activeControls = new List<Control>() { transferNameTextBox, sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox, transferDateTimePicker, transferObservationsRichTextBox};
             this.userID = userID;
 
             populateControls(userID);
@@ -96,9 +104,9 @@ namespace BudgetManager.non_mvc {
             //General input check
             int userInputCheckResult = performInputChecks();
             //Transfer amount check(checks if it's less than the available balance of the saving account)
-            int transferAmounthCheckResult = performTransferValueCheck(transferValue);
+            int transferAmountCheckResult = performTransferValueCheck(transferValue);
 
-            if(userInputCheckResult == -1 || transferAmounthCheckResult == -1) {
+            if(userInputCheckResult == -1 || transferAmountCheckResult == -1) {
                 return;
             }
 
@@ -107,19 +115,18 @@ namespace BudgetManager.non_mvc {
 
             int executionResult = DBConnectionManager.insertData(transferInsertionCommand);
 
-
             if (executionResult > 0) {
                 //Additional details for transfers and info message type
-                MessageBox.Show("Transfer performed successfully");
+                MessageBox.Show("The transfer was successfully performed!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                String transferInfo = String.Format(transferDetails, transferNameTextBox.Text, sourceAccountComboBox.Text, destinationAccountComboBox.Text, amountTransferredTextBox.Text, paramContainer.ReceivedValue, exchangeRateTextBox.Text, transferDateTimePicker.Value.ToString("dd-MM-yyy"), transferObservationsRichTextBox.Text);
+                MessageBox.Show(transferInfo, "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                UserControlsManager.clearActiveControls(activeControls);
+                
             } else {
                 //Error message type
-                MessageBox.Show("Unable to perform the requested transfer");
-            }
-
-            
-
-
-
+                MessageBox.Show("Unable to perform the requested transfer!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }        
         }
 
         private void resetButton_Click(object sender, EventArgs e) {
@@ -221,7 +228,7 @@ namespace BudgetManager.non_mvc {
             double exchangeRate = Convert.ToDouble(exchangeRateTextBox.Text);
             int sentValue = Convert.ToInt32(amountTransferredTextBox.Text);
             int receivedValue = (int) (sentValue / exchangeRate);
-            String transferDate = transferDateTimePicker.Value.ToString("dd-MM-yyyy");
+            String transferDate = transferDateTimePicker.Value.ToString("yyyy-MM-dd");
             String transferObservations = transferObservationsRichTextBox.Text;
 
             QueryData paramContainer = new QueryData.Builder(userID)

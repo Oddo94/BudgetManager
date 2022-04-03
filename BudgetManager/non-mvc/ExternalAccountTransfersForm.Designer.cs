@@ -161,7 +161,7 @@
             // transferObservationsRichTextBox
             // 
             this.transferObservationsRichTextBox.Location = new System.Drawing.Point(128, 392);
-            this.transferObservationsRichTextBox.MaxLength = 100;
+            this.transferObservationsRichTextBox.MaxLength = 150;
             this.transferObservationsRichTextBox.Name = "transferObservationsRichTextBox";
             this.transferObservationsRichTextBox.Size = new System.Drawing.Size(358, 86);
             this.transferObservationsRichTextBox.TabIndex = 13;
