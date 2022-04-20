@@ -34,16 +34,25 @@ namespace BudgetManager.non_mvc {
                                            Exchange rate: {5}
                                            Transfer date: {6}
                                            Transfer observations: {7}";
+        //String transferDetails = $@"Transfer details
+        //                                   Transfer name: {name}
+        //                                   Source account: {1}
+        //                                   Destination account: {2}
+        //                                   Amount transferred: {3}
+        //                                   Amount received: {4}
+        //                                   Exchange rate: {5}
+        //                                   Transfer date: {6}
+        //                                   Transfer observations: {7}";
         private List<Control> activeControls;
 
         public ExternalAccountTransfersForm(int userID) {
             InitializeComponent();
-            activeControls = new List<Control>() { transferNameTextBox, sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox, transferDateTimePicker, transferObservationsRichTextBox};
+            activeControls = new List<Control>() { transferNameTextBox, sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox, transferDateTimePicker, transferObservationsRichTextBox };
             this.userID = userID;
 
             populateControls(userID);
             setDefaultIndexForComboBoxes();
-            
+
 
         }
 
@@ -61,7 +70,7 @@ namespace BudgetManager.non_mvc {
             Regex exchangeRateRegexNonZeroValue = new Regex("[^0+]");
             Regex exchangeRateRegexGeneralFormat = new Regex("^\\d+(?(?=\\.{1})\\.\\d+|\\b)$");
 
-            if (!isValidInputAmount(exchangeRateValue, exchangeRateRegexNonZeroValue) || !isValidInputAmount(exchangeRateValue, exchangeRateRegexGeneralFormat)) {             
+            if (!isValidInputAmount(exchangeRateValue, exchangeRateRegexNonZeroValue) || !isValidInputAmount(exchangeRateValue, exchangeRateRegexGeneralFormat)) {
                 invalidExchangeRateFormatLabel.Text = "Invalid exchange rate value.It must be a positive integer/double value";
             } else {
                 invalidExchangeRateFormatLabel.Text = "";
@@ -99,6 +108,12 @@ namespace BudgetManager.non_mvc {
         }
 
         private void transferButton_Click(object sender, EventArgs e) {
+            DialogResult userOptionConfirmTransfer = MessageBox.Show("Are you sure that you want to perform the requested transfer?", "External account transfers", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (userOptionConfirmTransfer == DialogResult.No) {
+                return;
+            }
+
             int transferValue = Convert.ToInt32(amountTransferredTextBox.Text);
 
             //General input check
@@ -106,7 +121,7 @@ namespace BudgetManager.non_mvc {
             //Transfer amount check(checks if it's less than the available balance of the saving account)
             int transferAmountCheckResult = performTransferValueCheck(transferValue);
 
-            if(userInputCheckResult == -1 || transferAmountCheckResult == -1) {
+            if (userInputCheckResult == -1 || transferAmountCheckResult == -1) {
                 return;
             }
 
@@ -119,14 +134,15 @@ namespace BudgetManager.non_mvc {
                 //Additional details for transfers and info message type
                 MessageBox.Show("The transfer was successfully performed!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 String transferInfo = String.Format(transferDetails, transferNameTextBox.Text, sourceAccountComboBox.Text, destinationAccountComboBox.Text, amountTransferredTextBox.Text, paramContainer.ReceivedValue, exchangeRateTextBox.Text, transferDateTimePicker.Value.ToString("dd-MM-yyy"), transferObservationsRichTextBox.Text);
+                //String transferInfo = getTransferSummary(paramContainer);
                 MessageBox.Show(transferInfo, "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 UserControlsManager.clearActiveControls(activeControls);
-                
+
             } else {
                 //Error message type
                 MessageBox.Show("Unable to perform the requested transfer!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }        
+            }
         }
 
         private void resetButton_Click(object sender, EventArgs e) {
@@ -224,10 +240,10 @@ namespace BudgetManager.non_mvc {
 
             String transferName = transferNameTextBox.Text;
             int sourceAccountId = getAccountId(sourceAccountIdRetrievalCommand);
-            int destinationAccountId = getAccountId(destinationAccountIdRetrievalCommand);           
+            int destinationAccountId = getAccountId(destinationAccountIdRetrievalCommand);
             double exchangeRate = Convert.ToDouble(exchangeRateTextBox.Text);
             int sentValue = Convert.ToInt32(amountTransferredTextBox.Text);
-            int receivedValue = (int) (sentValue / exchangeRate);
+            int receivedValue = (int)(sentValue / exchangeRate);
             String transferDate = transferDateTimePicker.Value.ToString("yyyy-MM-dd");
             String transferObservations = transferObservationsRichTextBox.Text;
 
@@ -239,7 +255,7 @@ namespace BudgetManager.non_mvc {
                 .addReceivedValue(receivedValue)
                 .addExchangeRate(exchangeRate)
                 .addAdditionalData(transferObservations)
-                .addItemCreationDate(transferDate)              
+                .addItemCreationDate(transferDate)
                 .build();
 
             return paramContainer;
@@ -259,5 +275,26 @@ namespace BudgetManager.non_mvc {
 
             return accountID;
         }
+
+    //    private String getTransferSummary(QueryData paramContainer) {
+    //        Guard.notNull(paramContainer, "transfer summary details");
+
+           
+    //          String transferDetails = $@"Transfer details
+    //                                       Transfer name: {paramContainer.ItemName}
+    //                                       Source account: {sourceAccountComboBox.Text}
+    //                                       Destination account: {destinationAccountComboBox.Text}
+    //                                       Amount transferred: {paramContainer.SentValue}
+    //                                       Amount received: {paramContainer.ReceivedValue} 
+    //                                       Exchange rate: {paramContainer.ExchangeRate}
+    //                                       Transfer date: {paramContainer.ItemCreationDate}
+    //                                       Transfer observations: {paramContainer.AdditionalData}";
+
+    //    return transferDetails;
+
+    //}
+    
     }
 }
+    
+
