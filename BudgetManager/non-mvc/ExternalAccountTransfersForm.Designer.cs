@@ -98,6 +98,7 @@
             this.sourceAccountComboBox.Name = "sourceAccountComboBox";
             this.sourceAccountComboBox.Size = new System.Drawing.Size(190, 21);
             this.sourceAccountComboBox.TabIndex = 5;
+            this.sourceAccountComboBox.MouseHover += new System.EventHandler(this.sourceAccountComboBox_MouseHover);
             // 
             // destinationAccountComboBox
             // 
@@ -107,6 +108,7 @@
             this.destinationAccountComboBox.Name = "destinationAccountComboBox";
             this.destinationAccountComboBox.Size = new System.Drawing.Size(190, 21);
             this.destinationAccountComboBox.TabIndex = 6;
+            this.destinationAccountComboBox.MouseHover += new System.EventHandler(this.destinationAccountComboBox_MouseHover);
             // 
             // amountTransferredTextBox
             // 

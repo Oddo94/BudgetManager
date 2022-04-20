@@ -91,6 +91,31 @@ namespace BudgetManager.utils {
             targetComboBox.DisplayMember = displayMember;
         }
 
+        //Method used to transform a two column DataTable object into a map(for example retrieving account names and their corresponding currencies as key-value pairs)
+        public static Dictionary<String, String> getMapFromDataTable(MySqlCommand dataRetrievalCommand) {
+            Guard.notNull(dataRetrievalCommand, "data retrieval command");
+
+            DataTable resultDataTable = retrieveData(dataRetrievalCommand);
+
+            int columnCount = resultDataTable.Columns.Count;
+            int expectedColumns = 2;
+            //Checks to see if the result DataTable can be mapped to a Dictionary object(map)
+            //The provided SQL command MUST retrieve a DataTable object with exactly two columns, otherwise this cannot be processed and transformed into a Dictionary object(map)
+            if (columnCount !=  expectedColumns) {
+                return null;
+            }
+
+            Dictionary<String, String> outputMap = new Dictionary<String, String>();
+
+            for(int i = 0; i < resultDataTable.Rows.Count; i++) {
+                String key = Convert.ToString(resultDataTable.Rows[i].ItemArray[0]);
+                String value = Convert.ToString(resultDataTable.Rows[i].ItemArray[1]);
+
+                outputMap.Add(key, value);
+            }
+
+            return outputMap;
+        }
 
         private static DataTable retrieveData(MySqlCommand dataRetrievalCommand) {
             Guard.notNull(dataRetrievalCommand, "SQL command");

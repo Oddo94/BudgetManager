@@ -12,19 +12,29 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BudgetManager.non_mvc {
+    public enum AccountType {
+        SOURCE_ACCOUNT,
+        DESTINATION_ACCOUNT
+    }
+
     public partial class ExternalAccountTransfersForm : Form {
 
         private int userID;
 
-        private String sqlStatementGetSourceAccounts = @"SELECT sa.accountName FROM saving_accounts sa
+        private String sqlStatementGetSourceAccounts = @"SELECT sa.accountName, ccy.currencyName FROM saving_accounts sa
+                                                         INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
+                                                         INNER JOIN currencies ccy ON sa.currency_ID = ccy.currencyID 
+                                                         WHERE sa.user_ID = @paramID AND sat.typeName like '%SYSTEM_DEFINED%'";
+        private String sqlStatementGetDestinationAccounts = @"SELECT sa.accountName, ccy.currencyName FROM saving_accounts sa
                                                         INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
-                                                        WHERE sa.user_ID = @paramID AND sat.typeName like '%SYSTEM_DEFINED%'";
-        private String sqlStatementGetDestinationAccounts = @"SELECT sa.accountName FROM saving_accounts sa
-                                                        INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
-                                                        WHERE sa.user_ID = @paramID AND sat.typeName like '%USER_DEFINED%'";
+                                                        INNER JOIN currencies ccy ON sa.currency_ID = ccy.currencyID 
+                                                        WHERE sa.user_ID = @paramID AND sat.typeName like '%USER_DEFINED%';";
         private String sqlStatementGetAccountID = @"SELECT accountID FROM saving_accounts WHERE user_ID = @paramID AND accountName = @paramRecordName";
         private string sqlStatementInsertTransfer = @"INSERT INTO saving_accounts_transfers(senderAccountID, receivingAccountID, transferName, sentValue, receivedValue, exchangeRate, observations, transferDate) 
                                                     VALUES(@paramSenderAccountId, @paramReceivingAccountId, @paramTransferName, @paramSentValue, @paramReceivedValue, @paramExchangeRate, @paramObservations, @paramTransferDate)";
+
+        MySqlCommand sourceAccountsDataRetrievalCommand;
+        MySqlCommand destinationAccountsDataRetrievalCommand;
         private String transferDetails = @"Transfer details
                                            Transfer name: {0}
                                            Source account: {1}
@@ -44,6 +54,8 @@ namespace BudgetManager.non_mvc {
         //                                   Transfer date: {6}
         //                                   Transfer observations: {7}";
         private List<Control> activeControls;
+        private Dictionary<String, String> sourceAccountMap;
+        private Dictionary<String, String> destinationAccountMap;
 
         public ExternalAccountTransfersForm(int userID) {
             InitializeComponent();
@@ -51,8 +63,8 @@ namespace BudgetManager.non_mvc {
             this.userID = userID;
 
             populateControls(userID);
+            populateDataMaps();
             setDefaultIndexForComboBoxes();
-
 
         }
 
@@ -154,6 +166,15 @@ namespace BudgetManager.non_mvc {
             this.Dispose();
         }
 
+        private void sourceAccountComboBox_MouseHover(object sender, EventArgs e) {
+            displayCurrencyInformation(sourceAccountComboBox, AccountType.SOURCE_ACCOUNT);
+        }
+
+        private void destinationAccountComboBox_MouseHover(object sender, EventArgs e) {
+            displayCurrencyInformation(destinationAccountComboBox, AccountType.DESTINATION_ACCOUNT);
+        }
+
+
         //DATA CHECKS METHODS
 
         //Method for performing general input checks
@@ -213,8 +234,8 @@ namespace BudgetManager.non_mvc {
         //Methods for populating comboboxes with data
         private void populateControls(int userID) {
             QueryData paramContainer = new QueryData.Builder(userID).build();
-            MySqlCommand sourceAccountsDataRetrievalCommand = SQLCommandBuilder.getTypeNameForItemCommand(sqlStatementGetSourceAccounts, paramContainer);
-            MySqlCommand destinationAccountsDataRetrievalCommand = SQLCommandBuilder.getTypeNameForItemCommand(sqlStatementGetDestinationAccounts, paramContainer);
+            sourceAccountsDataRetrievalCommand = SQLCommandBuilder.getTypeNameForItemCommand(sqlStatementGetSourceAccounts, paramContainer);
+            destinationAccountsDataRetrievalCommand = SQLCommandBuilder.getTypeNameForItemCommand(sqlStatementGetDestinationAccounts, paramContainer);
 
 
             UserControlsManager.fillComboBoxWithData(sourceAccountComboBox, sourceAccountsDataRetrievalCommand, "accountName");
@@ -224,6 +245,13 @@ namespace BudgetManager.non_mvc {
         private void setDefaultIndexForComboBoxes() {
             sourceAccountComboBox.SelectedIndex = -1;
             destinationAccountComboBox.SelectedIndex = -1;
+        }
+
+        //Method used for populating the source/destination account maps with data whichc will later be used for dislaying the currency for each account involved in the transfer
+        private void populateDataMaps() {
+
+            sourceAccountMap = UserControlsManager.getMapFromDataTable(sourceAccountsDataRetrievalCommand);
+            destinationAccountMap = UserControlsManager.getMapFromDataTable(destinationAccountsDataRetrievalCommand);
         }
 
         //UTILITY METHODS
@@ -276,24 +304,64 @@ namespace BudgetManager.non_mvc {
             return accountID;
         }
 
-    //    private String getTransferSummary(QueryData paramContainer) {
-    //        Guard.notNull(paramContainer, "transfer summary details");
+        private String getAccountCurrency(AccountType accountType, String accountName) {
+            String retrievedCurrency = null;
 
-           
-    //          String transferDetails = $@"Transfer details
-    //                                       Transfer name: {paramContainer.ItemName}
-    //                                       Source account: {sourceAccountComboBox.Text}
-    //                                       Destination account: {destinationAccountComboBox.Text}
-    //                                       Amount transferred: {paramContainer.SentValue}
-    //                                       Amount received: {paramContainer.ReceivedValue} 
-    //                                       Exchange rate: {paramContainer.ExchangeRate}
-    //                                       Transfer date: {paramContainer.ItemCreationDate}
-    //                                       Transfer observations: {paramContainer.AdditionalData}";
+            switch (accountType) {
+                case AccountType.SOURCE_ACCOUNT:
+                    sourceAccountMap.TryGetValue(accountName, out retrievedCurrency);
+                    break;
 
-    //    return transferDetails;
+                case AccountType.DESTINATION_ACCOUNT:
+                    destinationAccountMap.TryGetValue(accountName, out retrievedCurrency);
+                    break;
 
-    //}
-    
+                default:
+                    break;
+            }
+
+            return retrievedCurrency;
+        }
+
+        private void displayCurrencyInformation(ComboBox targetComboBox, AccountType accountType) {
+            int selectedIndex = targetComboBox.SelectedIndex;
+            String selectedAccountName = targetComboBox.Text;
+
+            ToolTip toolTip = new ToolTip();
+            String toolTipMessage;
+            
+            if (selectedIndex <= -1) {
+                toolTipMessage = "No account selected";
+                toolTip.SetToolTip(targetComboBox, toolTipMessage);
+            } else {                
+                String selectedAccountCurrency = getAccountCurrency(accountType, selectedAccountName);
+
+                toolTipMessage = String.Format("Account currency: {0}", selectedAccountCurrency);
+
+                toolTip.SetToolTip(targetComboBox, toolTipMessage);
+            }
+        }
+
+
+
+        //    private String getTransferSummary(QueryData paramContainer) {
+        //        Guard.notNull(paramContainer, "transfer summary details");
+
+
+        //          String transferDetails = $@"Transfer details
+        //                                       Transfer name: {paramContainer.ItemName}
+        //                                       Source account: {sourceAccountComboBox.Text}
+        //                                       Destination account: {destinationAccountComboBox.Text}
+        //                                       Amount transferred: {paramContainer.SentValue}
+        //                                       Amount received: {paramContainer.ReceivedValue} 
+        //                                       Exchange rate: {paramContainer.ExchangeRate}
+        //                                       Transfer date: {paramContainer.ItemCreationDate}
+        //                                       Transfer observations: {paramContainer.AdditionalData}";
+
+        //    return transferDetails;
+
+        //}
+
     }
 }
     
