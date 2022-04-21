@@ -21,6 +21,7 @@ namespace BudgetManager.non_mvc {
 
         private int userID;
 
+        //Data retrieval SQL statements
         private String sqlStatementGetSourceAccounts = @"SELECT sa.accountName, ccy.currencyName FROM saving_accounts sa
                                                          INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
                                                          INNER JOIN currencies ccy ON sa.currency_ID = ccy.currencyID 
@@ -33,27 +34,12 @@ namespace BudgetManager.non_mvc {
         private string sqlStatementInsertTransfer = @"INSERT INTO saving_accounts_transfers(senderAccountID, receivingAccountID, transferName, sentValue, receivedValue, exchangeRate, observations, transferDate) 
                                                     VALUES(@paramSenderAccountId, @paramReceivingAccountId, @paramTransferName, @paramSentValue, @paramReceivedValue, @paramExchangeRate, @paramObservations, @paramTransferDate)";
 
-        MySqlCommand sourceAccountsDataRetrievalCommand;
-        MySqlCommand destinationAccountsDataRetrievalCommand;
-        private String transferDetails = @"Transfer details
-                                           Transfer name: {0}
-                                           Source account: {1}
-                                           Destination account: {2}
-                                           Amount transferred: {3}
-                                           Amount received: {4}
-                                           Exchange rate: {5}
-                                           Transfer date: {6}
-                                           Transfer observations: {7}";
-        //String transferDetails = $@"Transfer details
-        //                                   Transfer name: {name}
-        //                                   Source account: {1}
-        //                                   Destination account: {2}
-        //                                   Amount transferred: {3}
-        //                                   Amount received: {4}
-        //                                   Exchange rate: {5}
-        //                                   Transfer date: {6}
-        //                                   Transfer observations: {7}";
+        //Commands were added at class level so that they can be reused by other methods (they are initialized once the comboboxes are populated)
+        private MySqlCommand sourceAccountsDataRetrievalCommand;
+        private MySqlCommand destinationAccountsDataRetrievalCommand;
+ 
         private List<Control> activeControls;
+        //Maps containing key-value pairs of account names and their corresponding currencies
         private Dictionary<String, String> sourceAccountMap;
         private Dictionary<String, String> destinationAccountMap;
 
@@ -145,8 +131,8 @@ namespace BudgetManager.non_mvc {
             if (executionResult > 0) {
                 //Additional details for transfers and info message type
                 MessageBox.Show("The transfer was successfully performed!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                String transferInfo = String.Format(transferDetails, transferNameTextBox.Text, sourceAccountComboBox.Text, destinationAccountComboBox.Text, amountTransferredTextBox.Text, paramContainer.ReceivedValue, exchangeRateTextBox.Text, transferDateTimePicker.Value.ToString("dd-MM-yyy"), transferObservationsRichTextBox.Text);
-                //String transferInfo = getTransferSummary(paramContainer);
+                //String transferInfo = String.Format(transferDetails, transferNameTextBox.Text, sourceAccountComboBox.Text, destinationAccountComboBox.Text, amountTransferredTextBox.Text, paramContainer.ReceivedValue, exchangeRateTextBox.Text, transferDateTimePicker.Value.ToString("dd-MM-yyy"), transferObservationsRichTextBox.Text);
+                String transferInfo = getTransferSummary(paramContainer);
                 MessageBox.Show(transferInfo, "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 UserControlsManager.clearActiveControls(activeControls);
@@ -155,6 +141,22 @@ namespace BudgetManager.non_mvc {
                 //Error message type
                 MessageBox.Show("Unable to perform the requested transfer!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        //Shows a preview of the transfer that is about to be performed
+        private void previewTransferButton_Click(object sender, EventArgs e) {
+            int checkResult = performInputChecks();
+
+            if(checkResult == -1) {
+                return;
+            }
+
+            QueryData paramContainer = retrieveUserInputData();
+
+            String transferPreviewData = getTransferSummary(paramContainer);
+
+            MessageBox.Show(transferPreviewData, "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
         }
 
         private void resetButton_Click(object sender, EventArgs e) {
@@ -180,6 +182,11 @@ namespace BudgetManager.non_mvc {
         //Method for performing general input checks
         private int performInputChecks() {
             int transferNameMaxLength = 50;
+
+            if ("".Equals(transferNameTextBox.Text)) {
+                MessageBox.Show("Please provide a name for your transfer!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return -1;
+            }
 
             if (transferNameTextBox.Text.Length > transferNameMaxLength) {
                 MessageBox.Show("The transfer name length cannot exceed 50 characters", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -255,6 +262,8 @@ namespace BudgetManager.non_mvc {
         }
 
         //UTILITY METHODS
+
+        //Method used for retrieving the data provided by the user and creating a QueryData object based on it
         private QueryData retrieveUserInputData() {
             String sourceAccountName = sourceAccountComboBox.Text;
             String destinationAccountName = destinationAccountComboBox.Text;
@@ -304,25 +313,50 @@ namespace BudgetManager.non_mvc {
             return accountID;
         }
 
-        private String getAccountCurrency(AccountType accountType, String accountName) {
-            String retrievedCurrency = null;
+        //Method used for creating and formatting the string containing the transfer details
+        private String getTransferSummary(QueryData paramContainer) {
+            Guard.notNull(paramContainer, "transfer summary details");
+            String sourceAccountCurrency = getAccountCurrency(AccountType.SOURCE_ACCOUNT, sourceAccountComboBox.Text);
+            String destinationAccountCurrency = getAccountCurrency(AccountType.DESTINATION_ACCOUNT, destinationAccountComboBox.Text);
 
-            switch (accountType) {
-                case AccountType.SOURCE_ACCOUNT:
-                    sourceAccountMap.TryGetValue(accountName, out retrievedCurrency);
-                    break;
+            //Creates each line of datat separately in order to allow the correct text alignment(to the left)
+            //Newline characters are added to insert a blank line after each data (in addition to the newline character added when appending the data to the StringBuilder object)
+            String titleData = String.Format("{0, -10}", "TRANSFER DETAILS\n");
+            String transferNameData = String.Format("{0, -10}: {1, -10}\n", "Transfer name", paramContainer.ItemName);
+            String sourceAccountData = String.Format("{0, -10}: {1, -10}\n", "Source account", sourceAccountComboBox.Text);
+            String destinationAccountData = String.Format("{0, -10}: {1, -10}\n", "Destination account", destinationAccountComboBox.Text);
+            String amountTransferredData = String.Format("{0, -10}: {1} {2}\n", "Amount transferred", paramContainer.SentValue, sourceAccountCurrency);
+            String amountReceivedData = String.Format("{0, -10}: {1} {2}\n", "Amount received", paramContainer.ReceivedValue, destinationAccountCurrency);
+            String exchangeRateData = String.Format("{0, -10}: {1, -10}\n", "Exchange rate", paramContainer.ExchangeRate);
+            String transferDateData = String.Format("{0, -10}: {1, -10}\n", "Transfer date", paramContainer.ItemCreationDate);
+            String transferObservationsData = String.Format("{0, -10}: {1, 10}\n\n", "Transfer observations", paramContainer.AdditionalData);
+            String hintData = String.Format("{0, -10}", "Press Ctrl + C to copy the transfer details information.");
 
-                case AccountType.DESTINATION_ACCOUNT:
-                    destinationAccountMap.TryGetValue(accountName, out retrievedCurrency);
-                    break;
+            List<String> dataList = new List<String>();
 
-                default:
-                    break;
+            dataList.Add(titleData);
+            dataList.Add(transferNameData);
+            dataList.Add(sourceAccountData);
+            dataList.Add(destinationAccountData);
+            dataList.Add(amountTransferredData);
+            dataList.Add(amountReceivedData);
+            dataList.Add(exchangeRateData);
+            dataList.Add(transferDateData);
+            dataList.Add(transferObservationsData);
+            dataList.Add(hintData);
+
+
+            StringBuilder sb = new StringBuilder();
+            foreach (String data in dataList) {
+                sb.Append(data + "\n");
             }
 
-            return retrievedCurrency;
+            return sb.ToString();
+
         }
 
+
+        //Method used for displaying the currency for each selected account inside a tool tip which is displayed on mouse hover over the combobox
         private void displayCurrencyInformation(ComboBox targetComboBox, AccountType accountType) {
             int selectedIndex = targetComboBox.SelectedIndex;
             String selectedAccountName = targetComboBox.Text;
@@ -342,25 +376,25 @@ namespace BudgetManager.non_mvc {
             }
         }
 
+        //Method used for retrieving the selected account currency from the maps(sourceAccountMap, destinationAccountMap)
+        private String getAccountCurrency(AccountType accountType, String accountName) {
+            String retrievedCurrency = null;
 
+            switch (accountType) {
+                case AccountType.SOURCE_ACCOUNT:
+                    sourceAccountMap.TryGetValue(accountName, out retrievedCurrency);
+                    break;
 
-        //    private String getTransferSummary(QueryData paramContainer) {
-        //        Guard.notNull(paramContainer, "transfer summary details");
+                case AccountType.DESTINATION_ACCOUNT:
+                    destinationAccountMap.TryGetValue(accountName, out retrievedCurrency);
+                    break;
 
+                default:
+                    break;
+            }
 
-        //          String transferDetails = $@"Transfer details
-        //                                       Transfer name: {paramContainer.ItemName}
-        //                                       Source account: {sourceAccountComboBox.Text}
-        //                                       Destination account: {destinationAccountComboBox.Text}
-        //                                       Amount transferred: {paramContainer.SentValue}
-        //                                       Amount received: {paramContainer.ReceivedValue} 
-        //                                       Exchange rate: {paramContainer.ExchangeRate}
-        //                                       Transfer date: {paramContainer.ItemCreationDate}
-        //                                       Transfer observations: {paramContainer.AdditionalData}";
-
-        //    return transferDetails;
-
-        //}
+            return retrievedCurrency;
+        }
 
     }
 }

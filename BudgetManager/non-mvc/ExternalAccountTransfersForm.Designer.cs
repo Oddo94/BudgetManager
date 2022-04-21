@@ -44,6 +44,7 @@
             this.invalidExchangeRateFormatLabel = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.transferNameTextBox = new System.Windows.Forms.TextBox();
+            this.previewTransferButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -183,7 +184,7 @@
             // 
             // resetButton
             // 
-            this.resetButton.Location = new System.Drawing.Point(258, 515);
+            this.resetButton.Location = new System.Drawing.Point(348, 515);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(82, 23);
             this.resetButton.TabIndex = 15;
@@ -193,7 +194,7 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(475, 515);
+            this.cancelButton.Location = new System.Drawing.Point(485, 515);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(83, 23);
             this.cancelButton.TabIndex = 16;
@@ -235,11 +236,22 @@
             this.transferNameTextBox.Size = new System.Drawing.Size(190, 20);
             this.transferNameTextBox.TabIndex = 20;
             // 
+            // previewTransferButton
+            // 
+            this.previewTransferButton.Location = new System.Drawing.Point(188, 515);
+            this.previewTransferButton.Name = "previewTransferButton";
+            this.previewTransferButton.Size = new System.Drawing.Size(100, 23);
+            this.previewTransferButton.TabIndex = 21;
+            this.previewTransferButton.Text = "Preview transfer";
+            this.previewTransferButton.UseVisualStyleBackColor = true;
+            this.previewTransferButton.Click += new System.EventHandler(this.previewTransferButton_Click);
+            // 
             // ExternalAccountTransfersForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(623, 573);
+            this.Controls.Add(this.previewTransferButton);
             this.Controls.Add(this.transferNameTextBox);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.invalidExchangeRateFormatLabel);
@@ -293,5 +305,6 @@
         private System.Windows.Forms.Label invalidExchangeRateFormatLabel;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox transferNameTextBox;
+        private System.Windows.Forms.Button previewTransferButton;
     }
 }
