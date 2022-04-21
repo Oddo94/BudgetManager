@@ -157,12 +157,12 @@
             this.updateDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manageExternalAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createExternalAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.externalAccountTransfersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userPreferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.budgetPlannerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editDeleteExistingPlansToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.externalAccountTransfersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainTabControl.SuspendLayout();
             this.tabPageBS.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pieChartBS)).BeginInit();
@@ -311,6 +311,8 @@
             // 
             // dataGridViewBS
             // 
+            this.dataGridViewBS.AllowUserToAddRows = false;
+            this.dataGridViewBS.AllowUserToDeleteRows = false;
             this.dataGridViewBS.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewBS.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewBS.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -319,23 +321,27 @@
             this.PercentageColumn});
             this.dataGridViewBS.Location = new System.Drawing.Point(52, 303);
             this.dataGridViewBS.Name = "dataGridViewBS";
-            this.dataGridViewBS.Size = new System.Drawing.Size(343, 198);
+            this.dataGridViewBS.ReadOnly = true;
+            this.dataGridViewBS.Size = new System.Drawing.Size(345, 158);
             this.dataGridViewBS.TabIndex = 3;
             // 
             // CategoryColumn
             // 
             this.CategoryColumn.HeaderText = "Category";
             this.CategoryColumn.Name = "CategoryColumn";
+            this.CategoryColumn.ReadOnly = true;
             // 
             // ValueColumn
             // 
             this.ValueColumn.HeaderText = "Value";
             this.ValueColumn.Name = "ValueColumn";
+            this.ValueColumn.ReadOnly = true;
             // 
             // PercentageColumn
             // 
             this.PercentageColumn.HeaderText = "Percentage from total income";
             this.PercentageColumn.Name = "PercentageColumn";
+            this.PercentageColumn.ReadOnly = true;
             // 
             // intervalCheckBoxBS
             // 
@@ -456,10 +462,13 @@
             // 
             // dataGridViewIncomes
             // 
+            this.dataGridViewIncomes.AllowUserToAddRows = false;
+            this.dataGridViewIncomes.AllowUserToDeleteRows = false;
             this.dataGridViewIncomes.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewIncomes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewIncomes.Location = new System.Drawing.Point(35, 217);
             this.dataGridViewIncomes.Name = "dataGridViewIncomes";
+            this.dataGridViewIncomes.ReadOnly = true;
             this.dataGridViewIncomes.Size = new System.Drawing.Size(436, 200);
             this.dataGridViewIncomes.TabIndex = 6;
             // 
@@ -672,10 +681,13 @@
             // 
             // dataGridViewExpenses
             // 
+            this.dataGridViewExpenses.AllowUserToAddRows = false;
+            this.dataGridViewExpenses.AllowUserToDeleteRows = false;
             this.dataGridViewExpenses.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewExpenses.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewExpenses.Location = new System.Drawing.Point(21, 237);
             this.dataGridViewExpenses.Name = "dataGridViewExpenses";
+            this.dataGridViewExpenses.ReadOnly = true;
             this.dataGridViewExpenses.Size = new System.Drawing.Size(449, 200);
             this.dataGridViewExpenses.TabIndex = 7;
             // 
@@ -853,10 +865,13 @@
             // 
             // dataGridViewDebts
             // 
+            this.dataGridViewDebts.AllowUserToAddRows = false;
+            this.dataGridViewDebts.AllowUserToDeleteRows = false;
             this.dataGridViewDebts.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewDebts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewDebts.Location = new System.Drawing.Point(29, 247);
             this.dataGridViewDebts.Name = "dataGridViewDebts";
+            this.dataGridViewDebts.ReadOnly = true;
             this.dataGridViewDebts.Size = new System.Drawing.Size(429, 184);
             this.dataGridViewDebts.TabIndex = 7;
             // 
@@ -1018,10 +1033,13 @@
             // 
             // dataGridViewSavings
             // 
+            this.dataGridViewSavings.AllowUserToAddRows = false;
+            this.dataGridViewSavings.AllowUserToDeleteRows = false;
             this.dataGridViewSavings.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridViewSavings.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewSavings.Location = new System.Drawing.Point(28, 261);
             this.dataGridViewSavings.Name = "dataGridViewSavings";
+            this.dataGridViewSavings.ReadOnly = true;
             this.dataGridViewSavings.Size = new System.Drawing.Size(340, 191);
             this.dataGridViewSavings.TabIndex = 8;
             // 
@@ -1181,6 +1199,13 @@
             this.createExternalAccountToolStripMenuItem.Text = "Create external account";
             this.createExternalAccountToolStripMenuItem.Click += new System.EventHandler(this.createExternalAccountToolStripMenuItem_Click);
             // 
+            // externalAccountTransfersToolStripMenuItem
+            // 
+            this.externalAccountTransfersToolStripMenuItem.Name = "externalAccountTransfersToolStripMenuItem";
+            this.externalAccountTransfersToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.externalAccountTransfersToolStripMenuItem.Text = "External account transfers";
+            this.externalAccountTransfersToolStripMenuItem.Click += new System.EventHandler(this.externalAccountTransfersToolStripMenuItem_Click);
+            // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1219,13 +1244,6 @@
             this.editDeleteExistingPlansToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.editDeleteExistingPlansToolStripMenuItem.Text = "Edit/Delete budget plans";
             this.editDeleteExistingPlansToolStripMenuItem.Click += new System.EventHandler(this.editDeleteExistingPlansToolStripMenuItem_Click);
-            // 
-            // externalAccountTransfersToolStripMenuItem
-            // 
-            this.externalAccountTransfersToolStripMenuItem.Name = "externalAccountTransfersToolStripMenuItem";
-            this.externalAccountTransfersToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.externalAccountTransfersToolStripMenuItem.Text = "External account transfers";
-            this.externalAccountTransfersToolStripMenuItem.Click += new System.EventHandler(this.externalAccountTransfersToolStripMenuItem_Click);
             // 
             // UserDashboard
             // 
