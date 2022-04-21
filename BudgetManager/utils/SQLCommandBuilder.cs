@@ -179,6 +179,18 @@ namespace BudgetManager {
             return getTypeIDCommand;
         }
 
+        public static MySqlCommand getTypeNameForItemCommand(String sqlStatement, QueryData paramContainer) {
+            Guard.notNull(sqlStatement, "SQL statement");
+            Guard.notNull(paramContainer, "parameter container");
+
+            int userID = paramContainer.UserID;
+
+            MySqlCommand getTypeNameRetrievalCommand = new MySqlCommand(sqlStatement);
+            getTypeNameRetrievalCommand.Parameters.AddWithValue("@paramID", userID);
+
+            return getTypeNameRetrievalCommand;
+        }
+
         //SHOULD replace the previous ID retrieval method and be more generic
         //Method for retrieving the ID of a specified element type from the DB (e.g. budget plan)
         public static MySqlCommand getRecordIDCommand(String sqlStatement, String recordName) {
@@ -187,6 +199,21 @@ namespace BudgetManager {
 
             MySqlCommand getRecordIDCommand = new MySqlCommand(sqlStatement);
             getRecordIDCommand.Parameters.AddWithValue("@paramRecordName", recordName);
+
+            return getRecordIDCommand;
+        }
+
+        //Method for retrieving the ID of a specified record from the DB based on its name and user ID 
+        public static MySqlCommand getRecordIDCommand(String sqlStatement, QueryData paramContainer) {
+            String recordName = paramContainer.ItemName;
+            int userID = paramContainer.UserID;
+
+            Guard.notNull(sqlStatement, "SQL statement");
+            Guard.notNull(recordName, "record name");
+
+            MySqlCommand getRecordIDCommand = new MySqlCommand(sqlStatement);
+            getRecordIDCommand.Parameters.AddWithValue("@paramRecordName", recordName);
+            getRecordIDCommand.Parameters.AddWithValue("@paramID", userID);
 
             return getRecordIDCommand;
         }
@@ -263,5 +290,25 @@ namespace BudgetManager {
             return externalAccountInsertionCommand;
 
         }
+
+        public static MySqlCommand getTransferInsertionCommand(String sqlStatement, QueryData paramContainer) {
+            Guard.notNull(sqlStatement, "transfer insertion SQL statement");
+            Guard.notNull(paramContainer, "transfer insertion parameter container");
+
+            MySqlCommand transferInsertionCommand = new MySqlCommand(sqlStatement);
+            transferInsertionCommand.Parameters.AddWithValue("@paramSenderAccountId", paramContainer.SourceAccountID);
+            transferInsertionCommand.Parameters.AddWithValue("@paramReceivingAccountId", paramContainer.DestinationAccountID);
+            transferInsertionCommand.Parameters.AddWithValue("@paramTransferName", paramContainer.ItemName);
+            transferInsertionCommand.Parameters.AddWithValue("@paramSentValue", paramContainer.SentValue);
+            transferInsertionCommand.Parameters.AddWithValue("@paramReceivedValue", paramContainer.ReceivedValue);
+            transferInsertionCommand.Parameters.AddWithValue("@paramExchangeRate", paramContainer.ExchangeRate);
+            transferInsertionCommand.Parameters.AddWithValue("@paramObservations", paramContainer.AdditionalData);
+            transferInsertionCommand.Parameters.AddWithValue("@paramTransferDate", paramContainer.ItemCreationDate);
+
+            return transferInsertionCommand;
+
+        }
+
+       
     }
 }
