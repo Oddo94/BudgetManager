@@ -21,6 +21,13 @@ namespace BudgetManager {
         private int alarmExistenceValue;
         private int itemValue;
         private int itemTypeID;
+        private int bankID;
+        private int currencyID;
+        private int sourceAccountID;    
+        private int destinationAccountID;
+        private int sentValue;
+        private int receivedValue;
+        private double exchangeRate;
         private String itemCreationDate;
         private String startDate;
         private String endDate;
@@ -30,6 +37,7 @@ namespace BudgetManager {
         private String itemName;
         private String creditorName;
         private String debtorName;
+        private String additionalData;    
         private IncomeSource incomeSource;
         private BudgetItemType budgetItemType;
 
@@ -121,6 +129,48 @@ namespace BudgetManager {
             }
         }
 
+        public int BankID {
+            get {
+                return this.bankID;
+            }
+        }
+
+        public int CurrencyID {
+            get {
+                return this.currencyID;
+            }
+        }
+
+        public int SourceAccountID {
+            get {
+                return this.sourceAccountID;
+            }
+        }
+
+        public int DestinationAccountID {
+            get {
+                return this.destinationAccountID;
+            }
+        }
+
+        public int SentValue {
+            get {
+                return this.sentValue;
+            }
+        }
+
+        public int ReceivedValue {
+            get {
+                return this.receivedValue;
+            }
+        }
+
+        public double ExchangeRate {
+            get {
+                return this.exchangeRate;
+            }
+        }
+
         public String ItemCreationDate {
             get {
                 return this.itemCreationDate;
@@ -176,6 +226,12 @@ namespace BudgetManager {
             }
         }
 
+        public String AdditionalData {
+            get {
+                return this.additionalData;
+            }
+        }
+
         public IncomeSource IncomeSource {
             get {
                 return this.incomeSource;
@@ -203,6 +259,13 @@ namespace BudgetManager {
             private int alarmExistenceValue;
             private int itemValue;
             private int itemTypeID;
+            private int bankID;
+            private int currencyID;
+            private int sourceAccountID;           
+            private int destinationAccountID;
+            private int sentValue;
+            private int receivedValue;
+            private double exchangeRate;
             private String itemCreationDate;
             private String startDate;
             private String endDate;
@@ -212,6 +275,7 @@ namespace BudgetManager {
             private String itemName;
             private String creditorName;
             private String debtorName;
+            private String additionalData;
             private IncomeSource incomeSource;
             private BudgetItemType budgetItemType;
 
@@ -298,6 +362,48 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addBankID(int bankID) {
+                this.bankID = bankID;
+
+                return this;
+            }
+
+            public Builder addCurrencyID(int currencyID) {
+                this.currencyID = currencyID;
+
+                return this;
+            } 
+
+            public Builder addSourceAccountID(int sourceAccountID) {
+                this.sourceAccountID = sourceAccountID;
+
+                return this;
+            }
+
+            public Builder addDestinationAccountID(int destinationAccountID) {
+                this.destinationAccountID = destinationAccountID;
+
+                return this;
+            }
+
+            public Builder addExchangeRate(double exchangeRate) {
+                this.exchangeRate = exchangeRate;
+
+                return this;
+            }
+
+            public Builder addSentValue(int sentValue) {
+                this.sentValue = sentValue;
+
+                return this;
+            }
+
+            public Builder addReceivedValue(int receivedValue) {
+                this.receivedValue = receivedValue;
+
+                return this;
+            }
+
             public Builder addItemCreationDate(String itemCreationDate) {
                 this.itemCreationDate = itemCreationDate;
 
@@ -352,6 +458,12 @@ namespace BudgetManager {
                 return this;
             } 
 
+            public Builder addAdditionalData(String additionalData) {
+                this.additionalData = additionalData;
+
+                return this;
+            }
+
             public Builder addIncomeSource(IncomeSource incomeSource) {
                 this.incomeSource = incomeSource;
 
@@ -373,12 +485,20 @@ namespace BudgetManager {
                     expenseLimit = this.expenseLimit,
                     debtLimit = this.debtLimit,
                     savingLimit = this.savingLimit,
+                    paidAmount = this.paidAmount,
                     estimatedIncome = this.estimatedIncome,
                     planTypeID = this.planTypeID,
                     thresholdPercentage = this.thresholdPercentage,
                     alarmExistenceValue = this.alarmExistenceValue,
                     itemValue = this.itemValue,
                     itemTypeID = this.itemTypeID,
+                    bankID = this.bankID,
+                    currencyID = this.currencyID,
+                    sourceAccountID = this.sourceAccountID,
+                    sentValue = this.sentValue,
+                    receivedValue = this.receivedValue,
+                    exchangeRate = this.exchangeRate,
+                    destinationAccountID = this.destinationAccountID,
                     itemCreationDate = this.itemCreationDate,
                     startDate = this.startDate,
                     endDate = this.endDate,
@@ -388,6 +508,7 @@ namespace BudgetManager {
                     itemName = this.itemName,
                     creditorName = this.creditorName,
                     debtorName = this.debtorName,
+                    additionalData = this.additionalData,
                     incomeSource = this.incomeSource,
                     budgetItemType = this.budgetItemType
                 };

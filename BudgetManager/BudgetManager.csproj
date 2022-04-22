@@ -87,6 +87,18 @@
     <Compile Include="non-mvc\DebtInsertionContext.cs" />
     <Compile Include="non-mvc\DebtorInsertionStrategy.cs" />
     <Compile Include="non-mvc\ExpenseInsertionStrategy.cs" />
+    <Compile Include="non-mvc\ExternalAccountsInsertionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="non-mvc\ExternalAccountsInsertionForm.Designer.cs">
+      <DependentUpon>ExternalAccountsInsertionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="non-mvc\ExternalAccountTransfersForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="non-mvc\ExternalAccountTransfersForm.Designer.cs">
+      <DependentUpon>ExternalAccountTransfersForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="non-mvc\IncomeInsertionStrategy.cs" />
     <Compile Include="non-mvc\InsertDataForm2.cs">
       <SubType>Form</SubType>
@@ -156,6 +168,7 @@
     <Compile Include="utils\QueryData.cs" />
     <Compile Include="utils\SavingAccountBalanceManager.cs" />
     <Compile Include="utils\SQLCommandBuilder.cs" />
+    <Compile Include="utils\UserControlsManager.cs" />
     <Compile Include="utils\ViewCalculator.cs" />
     <EmbeddedResource Include="mvc\views\BudgetPlanManagementForm.resx">
       <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
@@ -168,6 +181,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\BudgetPlanManagementCalculator.resx">
       <DependentUpon>BudgetPlanManagementCalculator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="non-mvc\ExternalAccountsInsertionForm.resx">
+      <DependentUpon>ExternalAccountsInsertionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="non-mvc\ExternalAccountTransfersForm.resx">
+      <DependentUpon>ExternalAccountTransfersForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\InsertDataForm.resx">
       <DependentUpon>InsertDataForm.cs</DependentUpon>
