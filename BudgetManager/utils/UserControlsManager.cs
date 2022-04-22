@@ -82,13 +82,21 @@ namespace BudgetManager.utils {
 
         }
 
-        public static void fillComboBoxWithData(ComboBox targetComboBox, MySqlCommand dataRetrievalCommand, String displayMember) {
+        public static int fillComboBoxWithData(ComboBox targetComboBox, MySqlCommand dataRetrievalCommand, String displayMember) {
             Guard.notNull(targetComboBox, "The combobox object provided for being populated with data cannot be null.");
             Guard.notNull(displayMember, "column name");
 
             DataTable sourceDataTable = retrieveData(dataRetrievalCommand);
+
+            //If there are now rows inside the retrieved DataTable object then it means that no data was found
+            if(sourceDataTable.Rows.Count == 0) {
+                return -1;
+            }
+
             targetComboBox.DataSource = sourceDataTable;
             targetComboBox.DisplayMember = displayMember;
+
+            return 0;
         }
 
         //Method used to transform a two column DataTable object into a map(for example retrieving account names and their corresponding currencies as key-value pairs)
