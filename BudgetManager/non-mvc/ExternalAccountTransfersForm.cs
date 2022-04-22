@@ -131,7 +131,6 @@ namespace BudgetManager.non_mvc {
             if (executionResult > 0) {
                 //Additional details for transfers and info message type
                 MessageBox.Show("The transfer was successfully performed!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                //String transferInfo = String.Format(transferDetails, transferNameTextBox.Text, sourceAccountComboBox.Text, destinationAccountComboBox.Text, amountTransferredTextBox.Text, paramContainer.ReceivedValue, exchangeRateTextBox.Text, transferDateTimePicker.Value.ToString("dd-MM-yyy"), transferObservationsRichTextBox.Text);
                 String transferInfo = getTransferSummary(paramContainer);
                 MessageBox.Show(transferInfo, "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -245,8 +244,20 @@ namespace BudgetManager.non_mvc {
             destinationAccountsDataRetrievalCommand = SQLCommandBuilder.getTypeNameForItemCommand(sqlStatementGetDestinationAccounts, paramContainer);
 
 
-            UserControlsManager.fillComboBoxWithData(sourceAccountComboBox, sourceAccountsDataRetrievalCommand, "accountName");
-            UserControlsManager.fillComboBoxWithData(destinationAccountComboBox, destinationAccountsDataRetrievalCommand, "accountName");
+            int sourceAccountPopulationResult = UserControlsManager.fillComboBoxWithData(sourceAccountComboBox, sourceAccountsDataRetrievalCommand, "accountName");
+            int destinationAccountPopulationResult = UserControlsManager.fillComboBoxWithData(destinationAccountComboBox, destinationAccountsDataRetrievalCommand, "accountName");
+
+            //Checks are performed to see if source/destination accounts could be retrieved
+            if(sourceAccountPopulationResult == -1) {
+                MessageBox.Show("Unable to retrieve the source account/s for the current user! Please consider creating an account before proceeding.", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                //Disables the transfer button to avoid performing useless checks in this situation
+                transferButton.Enabled = false;
+            }
+
+            if (sourceAccountPopulationResult == -1) {
+                MessageBox.Show("Unable to retrieve the destination account/s for the current user! Please consider creating an account before proceeding.", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                transferButton.Enabled = false;
+            }
         }
 
         private void setDefaultIndexForComboBoxes() {
