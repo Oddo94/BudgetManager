@@ -18,6 +18,13 @@ namespace BudgetManager {
         private int minimumPasswordLength;
         private String sqlStatementCheckUserExistence = "SELECT userID, username FROM users WHERE username = @paramUserName";
         private String sqlStatementCreateNewUser = @"INSERT INTO users(username, salt, password, email) VALUES(@paramUserName, @paramSalt, @paramHashCode, @paramEmailAddress)";
+        private String sqlStatementCreateDefaultSavingAccount = @"INSERT INTO saving_accounts(accountName, user_ID, type_ID, bank_ID, currency_ID, creationDate) 
+                                                                  VALUES(@paramAccountName, 
+                                                                        (SELECT userID FROM users WHERE username = @paramUserName), 
+                                                                        (SELECT typeID FROM saving_account_types WHERE typeName = @paramAccountTypeName), 
+                                                                        (SELECT bankID FROM banks WHERE bankName = @paramBankName), 
+                                                                        (SELECT currencyID FROM currencies WHERE currencyName = @paramCurrencyName)
+                                                                        ,@paramCreationDate)";
 
         public RegisterForm() {
             InitializeComponent();
@@ -91,16 +98,25 @@ namespace BudgetManager {
             String userInputConfirmationCode = Interaction.InputBox("Enter the code received on your email to finish the user creation process:", "Confirmation Code", "Enter code", 200, 200);
 
             if (emailSender.confirmationCodesMatch(generatedConfirmationCode, userInputConfirmationCode)) {
+                //User creation
                 PasswordSecurityManager securityManager = new PasswordSecurityManager();
                 byte[] salt = securityManager.getSalt(16);
                 string hashCode = securityManager.createPasswordHash(password, salt);
                 MySqlCommand userCreationCommand = SQLCommandBuilder.getNewUserCreationCommand(sqlStatementCreateNewUser, userName, salt, hashCode, emailAddress);
-                int executionResult = DBConnectionManager.insertData(userCreationCommand);
+                int userCreationResult = DBConnectionManager.insertData(userCreationCommand);
 
-                if (executionResult == -1) {
+                //Default saving account creation
+                int savingAccountCreationResult = createDefaultSavingAccount(sqlStatementCreateDefaultSavingAccount, userName); 
+
+                if (userCreationResult == -1) {
                     MessageBox.Show("Could not create the requested user!", "Register", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
+
+                if (savingAccountCreationResult == -1) {
+                    MessageBox.Show("Could not create the default saving account for the registered user! Please contact the application administrator for fixing this issue.", "Register", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }          
 
                 MessageBox.Show("Your user was succesfully created!", "Register", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 clearInputFields(textBoxes);
@@ -117,6 +133,9 @@ namespace BudgetManager {
             this.Visible = false;
             new LoginForm().Visible = true;
         }
+
+        
+
 
         private void toggleButtonState(Button targetButton, TextBox[] textBoxes) {
             //Regex care identifica existenta unuia sau mai multor spatii goale        
@@ -185,6 +204,47 @@ namespace BudgetManager {
                 Console.WriteLine(ex.Message);
                 return false;
             }
+        }
+
+        //private int getIdForNewlyRegisteredUser(String sqlStatement, String userName) {
+        //    if(sqlStatement == null || userName == null) {
+        //        return -1;
+        //    }
+
+        //    MySqlCommand getUserIdCommand = new MySqlCommand(sqlStatement);
+        //    getUserIdCommand
+        //}
+
+        private int createDefaultSavingAccount(String sqlStatement, String userName) {
+            if(userName == null) {
+                return -1;
+            }
+
+            String defaultAccountName = "SYSTEM_DEFINED_SAVING_ACCOUNT";
+            String accountTypeName = "SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT";
+            String bankName = "NO_BANK";
+            String currencyName = "RON";
+            String accountCreationDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+            QueryData paramContainer = new QueryData.Builder()
+                .addItemName(defaultAccountName)
+                .addUserName(userName)
+                .addTypeName(accountTypeName)
+                .addBankName(bankName)
+                .addCurrencyName(currencyName)
+                .addItemCreationDate(accountCreationDate)
+                .build();
+
+            MySqlCommand getAccountCreationCommand = SQLCommandBuilder.getDefaultSavingAccountCreationCommand(sqlStatementCreateDefaultSavingAccount, paramContainer);
+
+            int executionResult = DBConnectionManager.insertData(getAccountCreationCommand);
+
+            //If a value greater than 0 is returned by the data insertion method it means that the operation was successful
+            if(executionResult > 0) {
+                return 0;
+            }
+
+            return -1; ;
         }
 
         //Metoda de verificare a existentei utilizatorului

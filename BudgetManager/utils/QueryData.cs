@@ -31,6 +31,9 @@ namespace BudgetManager {
         private String itemCreationDate;
         private String startDate;
         private String endDate;
+        private String userName;
+        private String bankName;
+        private String currencyName; 
         private String tableName;
         private String budgetPlanName;
         private String typeName;
@@ -189,6 +192,25 @@ namespace BudgetManager {
             }
         }
 
+        public String UserName {
+            get {
+                return this.userName;
+            }
+        }
+
+        public String BankName {
+            get {
+                return this.bankName;
+            }
+        }
+
+        public String CurrencyName {
+            get {
+                return this.currencyName;
+            }
+        }
+
+
         public String TableName {
             get {
                 return this.tableName;
@@ -269,6 +291,9 @@ namespace BudgetManager {
             private String itemCreationDate;
             private String startDate;
             private String endDate;
+            private String userName;
+            private String bankName;
+            private String currencyName;
             private String tableName;
             private String budgetPlanName;
             private String typeName;
@@ -279,6 +304,9 @@ namespace BudgetManager {
             private IncomeSource incomeSource;
             private BudgetItemType budgetItemType;
 
+            public Builder() {
+
+            }
 
             public Builder(int userID) {
                 this.userID = userID;
@@ -422,6 +450,24 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addUserName(String userName) {
+                this.userName = userName;
+
+                return this;
+            }
+
+            public Builder addBankName(String bankName) {
+                this.bankName = bankName;
+
+                return this;
+            }
+
+            public Builder addCurrencyName(string currencyName) {
+                this.currencyName = currencyName;
+
+                return this;
+            }
+
             public Builder addTableName(String tableName) {
                 this.tableName = tableName;
 
@@ -502,6 +548,9 @@ namespace BudgetManager {
                     itemCreationDate = this.itemCreationDate,
                     startDate = this.startDate,
                     endDate = this.endDate,
+                    userName = this.userName,
+                    bankName = this.bankName,
+                    currencyName = this.currencyName,
                     tableName = this.tableName,
                     budgetPlanName = this.budgetPlanName,
                     typeName = this.typeName,
