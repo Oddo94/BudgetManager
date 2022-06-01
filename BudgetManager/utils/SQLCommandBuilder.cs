@@ -309,6 +309,23 @@ namespace BudgetManager {
 
         }
 
+        //Method used for generating the SQL command use to create the default saving account for the newly registered user
+        public static MySqlCommand getDefaultSavingAccountCreationCommand(String sqlStatement, QueryData paramContainer) {
+            Guard.notNull(sqlStatement, "account creation SQL statement");
+            Guard.notNull(paramContainer, "account creation parameter container");
+
+            MySqlCommand defaultSavingAccountCreationCommand = new MySqlCommand(sqlStatement);
+            defaultSavingAccountCreationCommand.Parameters.AddWithValue("@paramAccountName", paramContainer.ItemName);
+            defaultSavingAccountCreationCommand.Parameters.AddWithValue("@paramUserName", paramContainer.UserName);
+            defaultSavingAccountCreationCommand.Parameters.AddWithValue("@paramAccountTypeName", paramContainer.TypeName);
+            defaultSavingAccountCreationCommand.Parameters.AddWithValue("@paramBankName", paramContainer.BankName);
+            defaultSavingAccountCreationCommand.Parameters.AddWithValue("@paramCurrencyName", paramContainer.CurrencyName);
+            defaultSavingAccountCreationCommand.Parameters.AddWithValue("@paramCreationDate", paramContainer.ItemCreationDate);
+
+            return defaultSavingAccountCreationCommand;
+
+        }
+
        
     }
 }
