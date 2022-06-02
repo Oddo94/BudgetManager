@@ -145,8 +145,8 @@ namespace BudgetManager {
                 ConfirmationSender confirmationSender = new ConfirmationSender();
               
                 //Date necesare pt trimiterea emailului
-                string emailSubject = "Password reset";
-                string emailBody = "A password reset was requested for the account associated to this email address.\nPlease enter the following code to finish the password reset process: {0} \nIf you have not requested the password reset please ignore this email and delete it.";
+                string emailSubject = "BudgetManager-password reset";
+                string emailBody = "A password reset was requested for the BudgetManager application account associated to this email address.\nPlease enter the following code to finish the password reset process: {0} \nIf you have not requested the password reset please ignore this email and delete it immediately.";
                 string onSuccessMessage = "An email containing the reset password procedure has been sent to your email address";
                 string parentWindowName = "Password reset manager";
 
@@ -273,7 +273,7 @@ namespace BudgetManager {
 
         private bool isValidPassword(String password) {
             //Verifica daca parola contine litere mari, litere mici si cifre
-            Regex firstRegexPattern = new Regex("^(?=.*[a - z])(?=.*[A - Z])(?=.*[\\d]).+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            Regex firstRegexPattern = new Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*[\\d]).+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             //Verifca daca parola contine caractere speciale
             Regex secondRegexPattern = new Regex(".*[!@#\\$%^&*()_\\+\\-\\=\\[\\[{};'\\:\"\\|,.\\/<>\\?`~]+.*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
