@@ -198,6 +198,7 @@
             this.MaximizeBox = false;
             this.Name = "LoginForm";
             this.Text = "Login";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LoginForm_FormClosing);
             this.resetPasswordPanel.ResumeLayout(false);
             this.resetPasswordPanel.PerformLayout();
             this.ResumeLayout(false);
