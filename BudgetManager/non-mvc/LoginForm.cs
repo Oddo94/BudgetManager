@@ -13,10 +13,13 @@ using System.Windows.Forms;
 
 namespace BudgetManager {
     public partial class LoginForm : Form {
+        public static int userID;
+        public static String userName;
 
         private String sqlStatementGetAuthenticationData = @"SELECT userID, username, salt, password FROM users WHERE username = @paramUserName";
         private String sqlStatementGetDataForPasswordReset = @"SELECT userID, username, email FROM users WHERE username = @paramUserName";
         private int minimumPasswordLength;
+        private bool isSuccessfullyAuthenticated;
 
         public LoginForm() {
             InitializeComponent();
@@ -38,28 +41,33 @@ namespace BudgetManager {
                 MessageBox.Show(this, "No database connection! Unable to login.", "Login", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            String userName = userNameTextBox.Text;
-            String password = passwordTextBox.Text;
+            String inputUserName = userNameTextBox.Text;
+            String inputPassword = passwordTextBox.Text;
 
            
             MySqlCommand authenticationDataCommand = new MySqlCommand(sqlStatementGetAuthenticationData);
-            authenticationDataCommand.Parameters.AddWithValue("@paramUserName", userName);
+            authenticationDataCommand.Parameters.AddWithValue("@paramUserName", inputUserName);
 
             //Retrieves authentication data from the database
             DataTable authenticationData = DBConnectionManager.getData(authenticationDataCommand);
 
             //Checks that the user exists and his credentials are correct
-            if (userExists(authenticationData) && hasValidCredentials(authenticationData, password)) {              
+            if (userExists(authenticationData) && hasValidCredentials(authenticationData, inputPassword)) {              
                 //Extracts the user ID
-                int userID = getUserID(authenticationData);
-                this.Visible = false;
-                         
-                //Sends the user ID to the UserDashboard class constructor in order to use it later for extracting data from the database
-                UserDashboard userDashboard = new UserDashboard(userID, userName);
+                userID = getUserID(authenticationData);
+                userName = inputUserName;
+                //this.Visible = false;
 
-                userDashboard.Visible = true;
+                ////Sends the user ID to the UserDashboard class constructor in order to use it later for extracting data from the database
+                //UserDashboard userDashboard = new UserDashboard(userID, userName);
+                //userDashboard.Visible = true;
+
+                //this.Close();
+                DialogResult = DialogResult.OK;
+                isSuccessfullyAuthenticated = true;
+
             } else {             
-                MessageBox.Show("Invalid username and/or password! Please try again", "Login",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //MessageBox.Show("Invalid username and/or password! Please try again", "Login",MessageBoxButtons.OK, MessageBoxIcon.Error);
             }     
         }
 
@@ -234,11 +242,13 @@ namespace BudgetManager {
         }
 
         private void LoginForm_FormClosing(object sender, FormClosingEventArgs e) {
+            if (!isSuccessfullyAuthenticated) {
                 DialogResult userOption = MessageBox.Show("Are you sure that you want to exit?", "Login form", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (userOption == DialogResult.No) {
                     e.Cancel = true;
                 }
+            }
         }
 
         private bool userExists(DataTable inputDataTable) {
