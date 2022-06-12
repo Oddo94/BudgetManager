@@ -38,6 +38,7 @@ namespace BudgetManager {
         private String budgetPlanName;
         private String typeName;
         private String itemName;
+        private String itemIdentificationNumber;
         private String creditorName;
         private String debtorName;
         private String additionalData;    
@@ -236,6 +237,12 @@ namespace BudgetManager {
             }
         }
 
+        public String ItemIdentificationNumber {
+            get {
+                return this.itemIdentificationNumber;
+            }
+        }
+
         public String CreditorName {
             get {
                 return this.creditorName;
@@ -298,6 +305,7 @@ namespace BudgetManager {
             private String budgetPlanName;
             private String typeName;
             private String itemName;
+            private String itemIdentificationNumber;
             private String creditorName;
             private String debtorName;
             private String additionalData;
@@ -492,6 +500,12 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addItemIdentificationNumber(String itemIdentificationNumber) {
+                this.itemIdentificationNumber = itemIdentificationNumber;
+
+                return this;
+            }
+
             public Builder addCreditorName(String creditorName) {
                 this.creditorName = creditorName;
 
@@ -555,6 +569,7 @@ namespace BudgetManager {
                     budgetPlanName = this.budgetPlanName,
                     typeName = this.typeName,
                     itemName = this.itemName,
+                    itemIdentificationNumber = this.itemIdentificationNumber,
                     creditorName = this.creditorName,
                     debtorName = this.debtorName,
                     additionalData = this.additionalData,
