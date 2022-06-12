@@ -67,7 +67,7 @@ namespace BudgetManager {
                 isSuccessfullyAuthenticated = true;
 
             } else {             
-                //MessageBox.Show("Invalid username and/or password! Please try again", "Login",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Invalid username and/or password! Please try again", "Login",MessageBoxButtons.OK, MessageBoxIcon.Error);
             }     
         }
 
