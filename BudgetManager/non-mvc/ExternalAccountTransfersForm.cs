@@ -314,7 +314,7 @@ namespace BudgetManager.non_mvc {
             int destinationAccountId = getAccountId(destinationAccountIdRetrievalCommand);
             double exchangeRate = Convert.ToDouble(exchangeRateTextBox.Text);
             int sentValue = Convert.ToInt32(amountTransferredTextBox.Text);
-            int receivedValue = (int)(sentValue / exchangeRate);
+            int receivedValue = (int)(sentValue * exchangeRate);
             String transferDate = transferDateTimePicker.Value.ToString("yyyy-MM-dd");
             String transferObservations = transferObservationsRichTextBox.Text;
 
