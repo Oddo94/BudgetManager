@@ -312,7 +312,7 @@ namespace BudgetManager.non_mvc {
             String transferName = transferNameTextBox.Text;
             int sourceAccountId = getAccountId(sourceAccountIdRetrievalCommand);
             int destinationAccountId = getAccountId(destinationAccountIdRetrievalCommand);
-            double exchangeRate = Convert.ToDouble(exchangeRateTextBox.Text);
+            double exchangeRate = Convert.ToDouble(exchangeRateTextBox.Text);//How much one unit of the sent currency represents compared to one unit of the received currency(e.g-GBP-EUR-1.17 => 1 GBP is equal to 1.17 EUR)
             int sentValue = Convert.ToInt32(amountTransferredTextBox.Text);
             int receivedValue = (int)(sentValue * exchangeRate);
             String transferDate = transferDateTimePicker.Value.ToString("yyyy-MM-dd");
