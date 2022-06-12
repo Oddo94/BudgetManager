@@ -53,7 +53,7 @@ namespace BudgetManager {
                 //Extracts the user ID
                 int userID = getUserID(authenticationData);
                 this.Visible = false;
-              
+                         
                 //Sends the user ID to the UserDashboard class constructor in order to use it later for extracting data from the database
                 UserDashboard userDashboard = new UserDashboard(userID, userName);
 
@@ -234,11 +234,11 @@ namespace BudgetManager {
         }
 
         private void LoginForm_FormClosing(object sender, FormClosingEventArgs e) {
-            DialogResult userOption = MessageBox.Show("Are you sure that you want to exit?", "Login form", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult userOption = MessageBox.Show("Are you sure that you want to exit?", "Login form", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (userOption == DialogResult.No) {
-                e.Cancel = true;
-            }
+                if (userOption == DialogResult.No) {
+                    e.Cancel = true;
+                }
         }
 
         private bool userExists(DataTable inputDataTable) {
