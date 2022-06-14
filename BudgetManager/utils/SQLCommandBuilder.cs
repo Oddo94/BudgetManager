@@ -281,6 +281,7 @@ namespace BudgetManager {
 
             MySqlCommand externalAccountInsertionCommand = new MySqlCommand(sqlStatement);
             externalAccountInsertionCommand.Parameters.AddWithValue("@paramAccountName", paramContainer.ItemName);
+            externalAccountInsertionCommand.Parameters.AddWithValue("@paramAccountNumber", paramContainer.ItemIdentificationNumber);
             externalAccountInsertionCommand.Parameters.AddWithValue("@paramUserId", paramContainer.UserID);
             externalAccountInsertionCommand.Parameters.AddWithValue("@paramAccountTypeId", paramContainer.ItemTypeID);
             externalAccountInsertionCommand.Parameters.AddWithValue("@@paramBankId", paramContainer.BankID);

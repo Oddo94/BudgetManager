@@ -19,7 +19,7 @@ namespace BudgetManager.non_mvc {
         private String sqlStatementRetrieveAccountTypes = @"SELECT typeName FROM saving_account_types WHERE typeName != 'SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT'";
         private String sqlStatementRetrieveAvailableBanks = @"SELECT bankName FROM banks";
         private String sqlStatementRetrieveAvailableCurrencies = @"SELECT currencyName FROM currencies";
-        private String sqlStatementInsertExternalAccount = @"INSERT INTO saving_accounts(accountName, user_ID, type_ID, bank_ID, currency_ID, creationDate) VALUES(@paramAccountName, @paramUserId, @paramAccountTypeId, @paramBankId, @paramCurrencyId, @paramCreationDate)";
+        private String sqlStatementInsertExternalAccount = @"INSERT INTO saving_accounts(accountName, accountNumber, user_ID, type_ID, bank_ID, currency_ID, creationDate) VALUES(@paramAccountName, @paramAccountNumber, @paramUserId, @paramAccountTypeId, @paramBankId, @paramCurrencyId, @paramCreationDate)";
 
         private String sqlStatementGetAccountTypeId = @"SELECT typeID FROM saving_account_types WHERE typeName = @paramTypeName";
         private String sqlStatementGetCurrencyId = @"SELECT currencyID  FROM currencies WHERE currencyName = @paramTypeName";
@@ -31,7 +31,13 @@ namespace BudgetManager.non_mvc {
             this.userID = userID;          
         }
 
-        private void createAccountButton_Click(object sender, EventArgs e) {
+        private void createAccountButton_Click(object sender, EventArgs e) {           
+            DialogResult userOptionConfirmCreation = MessageBox.Show("Are you sure that you want the create a new account?", "External account creation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if(userOptionConfirmCreation == DialogResult.No) {
+                return;
+            }
+
             QueryData paramContainer = getDataForInsertion();
 
             MySqlCommand externalAccountInsertionCommand = SQLCommandBuilder.getExternalAccountInsertionCommand(sqlStatementInsertExternalAccount, paramContainer);
@@ -88,6 +94,7 @@ namespace BudgetManager.non_mvc {
 
         private QueryData getDataForInsertion() {
             String accountName = externalAccountNameTextField.Text;
+            String accountNumber = externalAccountNumberTextField.Text;
             String accountType = accountTypeComboBox.Text;
             String accountCurrency = accountCurrencyComboBox.Text;
             String accountBank = accountBankComboBox.Text;
@@ -100,6 +107,7 @@ namespace BudgetManager.non_mvc {
 
             QueryData paramContainer = new QueryData.Builder(userID)
                 .addItemName(accountName)
+                .addItemIdentificationNumber(accountNumber)
                 .addItemTypeID(accountTypeId)
                 .addCurrencyID(accountCurrencyId)
                 .addBankID(accountBankId)
@@ -166,7 +174,5 @@ namespace BudgetManager.non_mvc {
             List<Control> activeControls = new List<Control>() { externalAccountNameTextField, accountTypeComboBox, accountCurrencyComboBox, accountBankComboBox };
             UserControlsManager.setButtonState(createAccountButton, activeControls);
         }
-
-        
     }
 }
