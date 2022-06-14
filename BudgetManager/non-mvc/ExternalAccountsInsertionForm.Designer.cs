@@ -37,12 +37,14 @@
             this.cancelButton = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.accountCreationDateTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.label7 = new System.Windows.Forms.Label();
+            this.externalAccountNumberTextField = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(25, 123);
+            this.label1.Location = new System.Drawing.Point(25, 110);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(76, 13);
             this.label1.TabIndex = 0;
@@ -50,7 +52,7 @@
             // 
             // externalAccountNameTextField
             // 
-            this.externalAccountNameTextField.Location = new System.Drawing.Point(140, 120);
+            this.externalAccountNameTextField.Location = new System.Drawing.Point(140, 103);
             this.externalAccountNameTextField.Name = "externalAccountNameTextField";
             this.externalAccountNameTextField.Size = new System.Drawing.Size(206, 20);
             this.externalAccountNameTextField.TabIndex = 1;
@@ -59,7 +61,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(25, 176);
+            this.label2.Location = new System.Drawing.Point(25, 193);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(70, 13);
             this.label2.TabIndex = 2;
@@ -68,7 +70,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(25, 58);
+            this.label3.Location = new System.Drawing.Point(25, 44);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(179, 13);
             this.label3.TabIndex = 4;
@@ -77,7 +79,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(25, 266);
+            this.label4.Location = new System.Drawing.Point(25, 287);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(32, 13);
             this.label4.TabIndex = 5;
@@ -87,7 +89,7 @@
             // 
             this.accountTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.accountTypeComboBox.FormattingEnabled = true;
-            this.accountTypeComboBox.Location = new System.Drawing.Point(140, 168);
+            this.accountTypeComboBox.Location = new System.Drawing.Point(140, 185);
             this.accountTypeComboBox.Name = "accountTypeComboBox";
             this.accountTypeComboBox.Size = new System.Drawing.Size(206, 21);
             this.accountTypeComboBox.TabIndex = 7;
@@ -97,7 +99,7 @@
             // 
             this.accountBankComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.accountBankComboBox.FormattingEnabled = true;
-            this.accountBankComboBox.Location = new System.Drawing.Point(140, 258);
+            this.accountBankComboBox.Location = new System.Drawing.Point(140, 279);
             this.accountBankComboBox.Name = "accountBankComboBox";
             this.accountBankComboBox.Size = new System.Drawing.Size(161, 21);
             this.accountBankComboBox.TabIndex = 8;
@@ -106,7 +108,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(25, 216);
+            this.label5.Location = new System.Drawing.Point(25, 239);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(91, 13);
             this.label5.TabIndex = 9;
@@ -116,7 +118,7 @@
             // 
             this.accountCurrencyComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.accountCurrencyComboBox.FormattingEnabled = true;
-            this.accountCurrencyComboBox.Location = new System.Drawing.Point(140, 216);
+            this.accountCurrencyComboBox.Location = new System.Drawing.Point(140, 231);
             this.accountCurrencyComboBox.Name = "accountCurrencyComboBox";
             this.accountCurrencyComboBox.Size = new System.Drawing.Size(64, 21);
             this.accountCurrencyComboBox.TabIndex = 10;
@@ -156,7 +158,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(25, 309);
+            this.label6.Location = new System.Drawing.Point(25, 327);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(112, 13);
             this.label6.TabIndex = 14;
@@ -164,16 +166,35 @@
             // 
             // accountCreationDateTimePicker
             // 
-            this.accountCreationDateTimePicker.Location = new System.Drawing.Point(140, 303);
+            this.accountCreationDateTimePicker.Location = new System.Drawing.Point(140, 321);
             this.accountCreationDateTimePicker.Name = "accountCreationDateTimePicker";
             this.accountCreationDateTimePicker.Size = new System.Drawing.Size(200, 20);
             this.accountCreationDateTimePicker.TabIndex = 15;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(25, 149);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(32, 13);
+            this.label7.TabIndex = 16;
+            this.label7.Text = "IBAN";
+            // 
+            // externalAccountNumberTextField
+            // 
+            this.externalAccountNumberTextField.Location = new System.Drawing.Point(140, 142);
+            this.externalAccountNumberTextField.MaxLength = 34;
+            this.externalAccountNumberTextField.Name = "externalAccountNumberTextField";
+            this.externalAccountNumberTextField.Size = new System.Drawing.Size(206, 20);
+            this.externalAccountNumberTextField.TabIndex = 17;
             // 
             // ExternalAccountsInsertionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(498, 449);
+            this.Controls.Add(this.externalAccountNumberTextField);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.accountCreationDateTimePicker);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.cancelButton);
@@ -211,5 +232,7 @@
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.DateTimePicker accountCreationDateTimePicker;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox externalAccountNumberTextField;
     }
 }

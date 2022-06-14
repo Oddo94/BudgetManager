@@ -1,0 +1,389 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="d:\iap\visual studio community 2015\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
+<FxCopReport Version="14.0">
+ <Targets>
+  <Target Name="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\bin\Debug\BudgetManager.exe">
+   <Modules>
+    <Module Name="budgetmanager.exe">
+     <Namespaces>
+      <Namespace Name="BudgetManager">
+       <Types>
+        <Type Name="InsertDataForm" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#.ctor(System.Int32)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="InsertDataForm.cs" Line="97">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'InsertDataForm.InsertDataForm(int)' could contain the following variables 'this.sqlStatementSelectExpenseTypes'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="InsertDataForm.cs" Line="91">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'InsertDataForm.InsertDataForm(int)' could contain the following variables 'this.sqlStatementSelectIncomeTypes'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#fillCreditorsComboBox()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="InsertDataForm.cs" Line="456">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'InsertDataForm.fillCreditorsComboBox()' could contain the following variables 'this.sqlStatementSelectCreditors'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getID(System.String,System.String)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="InsertDataForm.cs" Line="466">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'InsertDataForm.getID(string, string)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="LoginForm" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#loginButton_Click(System.Object,System.EventArgs)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="LoginForm.cs" Line="45">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'LoginForm.loginButton_Click(object, EventArgs)' could contain the following variables 'this.sqlStatementGetAuthenticationData'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#resetPasswordButton_Click(System.Object,System.EventArgs)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="LoginForm.cs" Line="118">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'LoginForm.resetPasswordButton_Click(object, EventArgs)' could contain the following variables 'this.sqlStatementGetDataForPasswordReset'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="PasswordResetManager" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
+         <Members>
+          <Member Name="#getUserEmail(System.String)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="PasswordResetManager.cs" Line="110">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'PasswordResetManager.getUserEmail(string)' could contain the following variables 'this.sqlStatementRetrieveUserEmail'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="RegisterForm" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#getUser(System.String,System.String)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="RegisterForm.cs" Line="262">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'RegisterForm.getUser(string, string)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="SQLCommandBuilder" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
+         <Members>
+          <Member Name="#getBalanceRecordInsertUpdateCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="138">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getBalanceRecordInsertUpdateCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getBudgetPlanCheckCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="164">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getBudgetPlanCheckCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getBudgetPlanCreationCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="226">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getBudgetPlanCreationCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getDebtInsertionCommand(System.String,System.Int32,System.String,System.Int32,System.Int32,System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="110">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getDebtInsertionCommand(string, int, string, int, int, string)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getDefaultSavingAccountCreationCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="317">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getDefaultSavingAccountCreationCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getExternalAccountInsertionCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="282">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getExternalAccountInsertionCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getFullYearRecordsCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="32">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getFullYearRecordsCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getInsertCommandForMultipleTypeItem(System.String,System.Int32,System.String,System.Int32,System.Int32,System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="95">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getInsertCommandForMultipleTypeItem(string, int, string, int, int, string)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getMonthlyTotalsCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="58">The query string passed to 'MySqlCommand.MySqlCommand(string, MySqlConnection)' in 'SQLCommandBuilder.getMonthlyTotalsCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getMultipleMonthsCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="45">The query string passed to 'MySqlCommand.MySqlCommand(string, MySqlConnection)' in 'SQLCommandBuilder.getMultipleMonthsCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getNewUserCreationCommand(System.String,System.String,System.Byte[],System.String,System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="70">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getNewUserCreationCommand(string, string, byte[], string, string)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getReceivableInsertionCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="265">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getReceivableInsertionCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getRecordIDCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="214">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getRecordIDCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getRecordIDCommand(System.String,System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="200">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getRecordIDCommand(string, string)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getRecordSumValueCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="153">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getRecordSumValueCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getSavingInsertionCommand(System.String,System.Int32,System.String,System.Int32,System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="124">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getSavingInsertionCommand(string, int, string, int, string)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getSingleMonthCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="19">The query string passed to 'MySqlCommand.MySqlCommand(string, MySqlConnection)' in 'SQLCommandBuilder.getSingleMonthCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getSpecificUserRecordsCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="246">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getSpecificUserRecordsCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getTransferInsertionCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="298">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getTransferInsertionCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getTypeIDForItemCommand(System.String,System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="176">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getTypeIDForItemCommand(string, string)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getTypeNameForItemCommand(System.String,BudgetManager.QueryData)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="188">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getTypeNameForItemCommand(string, QueryData)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#getUpdatePasswordCommand(System.String,System.Byte[],System.String,System.Int32)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="SQLCommandBuilder.cs" Line="83">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'SQLCommandBuilder.getUpdatePasswordCommand(string, byte[], string, int)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+      <Namespace Name="BudgetManager.non_mvc">
+       <Types>
+        <Type Name="CreditorInsertionStrategy" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
+         <Members>
+          <Member Name="#execute(BudgetManager.QueryData)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="CreditorInsertionStrategy.cs" Line="32">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'CreditorInsertionStrategy.execute(QueryData)' could contain the following variables 'this.sqlStatementCheckCreditorExistence'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="CreditorInsertionStrategy.cs" Line="38">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'CreditorInsertionStrategy.execute(QueryData)' could contain the following variables 'this.sqlStatementCheckCreditorExistenceInUserList'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="CreditorInsertionStrategy.cs" Line="59">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'CreditorInsertionStrategy.execute(QueryData)' could contain the following variables 'this.sqlStatementInsertCreditor'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="CreditorInsertionStrategy.cs" Line="46">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'CreditorInsertionStrategy.execute(QueryData)' could contain the following variables 'this.sqlStatementInsertCreditorID'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="CreditorInsertionStrategy.cs" Line="69">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'CreditorInsertionStrategy.execute(QueryData)' could contain the following variables 'this.sqlStatementInsertCreditorID'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="DebtorInsertionStrategy" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
+         <Members>
+          <Member Name="#execute(BudgetManager.QueryData)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="DebtorInsertionStrategy.cs" Line="31">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'DebtorInsertionStrategy.execute(QueryData)' could contain the following variables 'this.sqlStatementCheckDebtorExistence'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="DebtorInsertionStrategy.cs" Line="37">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'DebtorInsertionStrategy.execute(QueryData)' could contain the following variables 'this.sqlStatementCheckDebtorExistenceInUserList'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="DebtorInsertionStrategy.cs" Line="58">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'DebtorInsertionStrategy.execute(QueryData)' could contain the following variables 'this.sqlStatementInsertDebtor'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="DebtorInsertionStrategy.cs" Line="45">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'DebtorInsertionStrategy.execute(QueryData)' could contain the following variables 'this.sqlStatementInsertDebtorID'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="DebtorInsertionStrategy.cs" Line="68">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'DebtorInsertionStrategy.execute(QueryData)' could contain the following variables 'this.sqlStatementInsertDebtorID'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="ExternalAccountsInsertionForm" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#retrieveComboBoxData(System.String)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="ExternalAccountsInsertionForm.cs" Line="82">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'ExternalAccountsInsertionForm.retrieveComboBoxData(string)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="IncomeInsertionStrategy" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
+         <Members>
+          <Member Name="#getID(System.String,System.String)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\non-mvc" File="IncomeInsertionStrategy.cs" Line="37">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'IncomeInsertionStrategy.getID(string, string)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+      <Namespace Name="BudgetManager.Properties">
+       <Types>
+        <Type Name="Resources" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
+         <Members>
+          <Member Name="#.ctor()" Kind="Method" Static="False" Accessibility="Assembly" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="ExcludedInSource" Created="2022-06-04 08:53:30Z" FixCategory="NonBreaking" LastSeen="0001-01-01 00:00:00Z" />
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+      <Namespace Name="BudgetManager.utils">
+       <Types>
+        <Type Name="DataInsertionUtils" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
+         <Members>
+          <Member Name="#getID(System.String,System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="DataInsertionUtils.cs" Line="17">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'DataInsertionUtils.getID(string, string)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="DataProvider" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
+         <Members>
+          <Member Name="#retrieveData(System.String)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="DataProvider.cs" Line="90">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'DataProvider.retrieveData(string)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#retrieveData(System.String,System.Int32)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100" Status="Active" Created="2022-06-04 08:53:30Z" FixCategory="DependsOnFix">
+             <Issue Name="WithNonLiterals" Certainty="75" Level="Warning" Path="D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\utils" File="DataProvider.cs" Line="79">The query string passed to 'MySqlCommand.MySqlCommand(string)' in 'DataProvider.retrieveData(string, int)' could contain the following variables 'sqlStatement'. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+ </Targets>
+ <Rules>
+  <Rule TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811">
+   <Name>Avoid uncalled private code</Name>
+   <Description>There is uncalled code that is not externally visible and is not a known runtime entry point. If this violation fires in error, please send a problem report to the Visual Studio Code Analysis team.</Description>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182264.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="75">Warning</MessageLevel>
+   <File Name="performancerules.dll" Version="14.0.0.0" />
+  </Rule>
+  <Rule TypeName="Review SQL queries for security vulnerabilities" Category="Microsoft.Security" CheckId="CA2100">
+   <Name>Review SQL queries for security vulnerabilities</Name>
+   <Description>A SQL command string built from user input is vulnerable to SQL injection attacks. Microsoft SQL Server and other database servers support stored procedures and parameterized SQL queries, which reduce the risk of injection attacks.</Description>
+   <Resolution Name="WithNonLiterals">The query string passed to {0} in {1} could contain the following variables {2}. If any of these variables could come from user input, consider using a stored procedure or a parameterized SQL query instead of building the query with string concatenations.</Resolution>
+   <Owner>RuleOwner</Owner>
+   <Url>http://msdn.microsoft.com/library/ms182310.aspx</Url>
+   <Email />
+   <MessageLevel Certainty="75">Warning</MessageLevel>
+   <File Name="dataflowrules.dll" Version="14.0.0.0" />
+  </Rule>
+ </Rules>
+ <Localized>
+  <String Key="Category">Category</String>
+  <String Key="Certainty">Certainty</String>
+  <String Key="CollapseAll">Collapse All</String>
+  <String Key="CheckId">Check Id</String>
+  <String Key="Error">Error</String>
+  <String Key="Errors">error(s)</String>
+  <String Key="ExpandAll">Expand All</String>
+  <String Key="Help">Help</String>
+  <String Key="Line">Line</String>
+  <String Key="Messages">message(s)</String>
+  <String Key="LocationNotStoredInPdb">[Location not stored in Pdb]</String>
+  <String Key="Project">Project</String>
+  <String Key="Resolution">Resolution</String>
+  <String Key="Rule">Rule</String>
+  <String Key="RuleFile">Rule File</String>
+  <String Key="RuleDescription">Rule Description</String>
+  <String Key="Source">Source</String>
+  <String Key="Status">Status</String>
+  <String Key="Target">Target</String>
+  <String Key="Warning">Warning</String>
+  <String Key="Warnings">warning(s)</String>
+  <String Key="ReportTitle">Code Analysis Report</String>
+ </Localized>
+</FxCopReport>

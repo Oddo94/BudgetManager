@@ -23,7 +23,7 @@ namespace BudgetManager {
     }
 
     public partial class UserDashboard : Form, IView {
-        private readonly int userID;    
+        private readonly int userID;
         private IControl controller = new MainController();
         private IModel model = new BudgetSummaryModel();
         private DataGridViewManager gridViewManager;
@@ -32,6 +32,7 @@ namespace BudgetManager {
         private DateTimePicker[] datePickers = new DateTimePicker[] { };
         private bool hasResetDatePickers = false;
         private bool userAgreedToExit = false;
+        private bool hasRestartedApplication = false;
 
 
         public UserDashboard(int userID, String userName) {
@@ -72,7 +73,7 @@ namespace BudgetManager {
             int tabIndex = mainTabControl.SelectedIndex;
 
             switch (tabIndex) {
-                case 0:                    
+                case 0:
                     //Calls the update method of the budget summary tab which in turn updates the data grid view and the pie chart of this tab
                     updateBudgetSummaryTab(model);
                     break;
@@ -98,7 +99,7 @@ namespace BudgetManager {
             }
         }
 
-        public void wireUp(IControl paramController, IModel paramModel) {     
+        public void wireUp(IControl paramController, IModel paramModel) {
             //Checks if there's an active refernce to a model object
             //If this is the case there's no point in monitoring the old model so the observer reference is removed
             if (model != null) {
@@ -109,18 +110,18 @@ namespace BudgetManager {
             this.model = paramModel;
             this.controller = paramController;
 
-            
+
             //Sets up the links inside the controller to the new View and the new Model
             //Changes the order in which the two methods are called to avoid NPE
             controller.setView(this);
             controller.setModel(model);
-     
+
             //Adds the current View to the model object(the view will be notified of any changes performed to the state of the model)
             model.addObserver(this);
         }
 
         //The method that changes the currently used model when a different tab is selected
-        private void mainTabControl_SelectedIndexChanged(object sender, EventArgs e) {         
+        private void mainTabControl_SelectedIndexChanged(object sender, EventArgs e) {
             //Getting the index of the currently selected tab
             int tabIndex = mainTabControl.SelectedIndex;
 
@@ -175,18 +176,20 @@ namespace BudgetManager {
         }
 
         private void UserDashboard_FormClosing(object sender, FormClosingEventArgs e) {
-            if (userAgreedToExit) {
-                return;
-            }
+            if (!hasRestartedApplication) {
+                if (userAgreedToExit) {
+                    return;
+                }
 
-            DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
+                DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.EXIT);
 
-            if (userOption == DialogResult.Yes) {
-                userAgreedToExit = true;
-                //hasRequestedExitFromToolStripOption = true;
-                Application.Exit();
-            } else {
-                e.Cancel = true;
+                if (userOption == DialogResult.Yes) {
+                    userAgreedToExit = true;
+                    //hasRequestedExitFromToolStripOption = true;
+                    Application.Exit();
+                } else {
+                    e.Cancel = true;
+                }
             }
         }
 
@@ -203,7 +206,7 @@ namespace BudgetManager {
         }
 
         private void dateTimePickerStartBS_ValueChanged(object sender, EventArgs e) {
-            String message = "Budget summary";     
+            String message = "Budget summary";
             //Checks if the DateTimePicker was reset and if so it will not execute the event handling code
             if (hasResetDatePickers) {
                 hasResetDatePickers = false;
@@ -228,17 +231,17 @@ namespace BudgetManager {
             sendDataToController(DataUpdateControl.END_PICKER, intervalCheckBoxBS, dateTimePickerStartBS, dateTimePickerEndBS);
         }
 
-        private void fillDataGridViewBS(DataTable inputDataTable) {        
+        private void fillDataGridViewBS(DataTable inputDataTable) {
             if (inputDataTable.Rows.Count == 1) {
                 int gridViewBSRows = 5;//The total number of rows contained by the table present in the Budget summary tab               
                 //Filling the second column with the general budget data
                 for (int i = 0; i < inputDataTable.Rows[0].ItemArray.Length; i++) {
                     dataGridViewBS.Rows[i].Cells[1].Value = inputDataTable.Rows[0].ItemArray[i];
-                }                
+                }
                 //Calculating the amount left to spend for the selected interval(data is retrieved from the DB on a single row which contains multiple columns)
                 dataGridViewBS.Rows[gridViewBSRows - 1].Cells[1].Value = calculateAmountLeftToSpend(Array.ConvertAll(inputDataTable.Rows[0].ItemArray, x => x != DBNull.Value ? Convert.ToInt32(x) : 0));
 
-                try {                 
+                try {
                     //Converting the income value from String to int
                     int totalIncome = 0;
                     if (inputDataTable.Rows[0].ItemArray[0] != DBNull.Value) {
@@ -246,13 +249,13 @@ namespace BudgetManager {
                     } else {
                         clearDataGridColumn(dataGridViewBS, 2);
                         return;
-                    }             
+                    }
                     //Calculating the percentage value of each element from the second column of the table based on the total income value
                     for (int i = 0; i < gridViewBSRows; i++) {
                         int currentValue = 0;
                         if (dataGridViewBS.Rows[i].Cells[1].Value != DBNull.Value) {
                             currentValue = Convert.ToInt32(dataGridViewBS.Rows[i].Cells[1].Value);
-                        }                     
+                        }
                         //Inserting the percentage values into the third column of the table
                         dataGridViewBS.Rows[i].Cells[2].Value = String.Format("{0}%", ViewCalculator.calculatePercentage(currentValue, totalIncome));
                     }
@@ -279,31 +282,31 @@ namespace BudgetManager {
                 int amountLeft = totalAmount - (expenses + debts + savings);
 
                 int[] finalPieChartValues = new int[] { expenses, debts, savings, amountLeft };
-              
+
                 //Adding points on the pie chart
-                for (int i = 0; i < pointNames.Length; i++) {                 
+                for (int i = 0; i < pointNames.Length; i++) {
                     //If the total value of incomes is lower than or equal to zero then nothing is diplayed on the pie chart 
                     if (totalAmount <= 0) {
                         return;
                     }
-                   
+
                     //If the current value is lower than or equal to zero then it will not be added to the pie chart and the next element will be processed
                     if (finalPieChartValues[i] <= 0) {
                         continue;
                     }
-                  
+
                     //Check out the index value used to acces data from the Points collection in case of issues              
-                    pieChartBS.Series[0].Points.AddXY(pointNames[i], finalPieChartValues[i]);                
+                    pieChartBS.Series[0].Points.AddXY(pointNames[i], finalPieChartValues[i]);
                     //Selects the most recent point(latest) from the list of points that are present in the pie chart and adds the corresponding label from the String array
                     int lastPointIndex = pieChartBS.Series[0].Points.Count - 1;
                     pieChartBS.Series[0].Points[lastPointIndex].LegendText = pointNames[i];
-                  
+
                     //Calculates the percentage value of each type based on the previously calculated total value                
                     double percentage = ViewCalculator.calculatePercentage(finalPieChartValues[i], totalAmount);
-                    if (percentage > 0) {                   
+                    if (percentage > 0) {
                         //If the percentage value is greater than 0 the respective avalue is added to the pie chart                     
                         pieChartBS.Series[0].Points[lastPointIndex].Label = percentage + "%";
-                    } else {                      
+                    } else {
                         //If the percentage is zero then nothing is added to label text
                         pieChartBS.Series[0].Points[lastPointIndex].Label = " ";
                     }
@@ -368,7 +371,7 @@ namespace BudgetManager {
             columnChartIncomes.Series[0].ToolTip = String.Format("Total incomes for {0}: {1}", "#VALX{MMMM}", "#VALY");
 
         }
-      
+
         //General method for updating the components that are present in the Incomea tab(it calls the specific methods for updating each component)
         private void updateIncomesTab(IModel model) {
             String[] typeNames = new String[] { "Active income", "Passive income" };
@@ -376,7 +379,7 @@ namespace BudgetManager {
             int currentYear = dateTimePickerMonthlyIncomes.Value.Year;
 
             DataTable[] results = model.DataSources;
-           
+
             gridViewManager.setDataGridView(dataGridViewIncomes);
             gridViewManager.fillDataGridView(results[0]);
 
@@ -512,7 +515,7 @@ namespace BudgetManager {
             String title = "Monthly debts";
             int currentYear = dateTimePickerMonthlyDebts.Value.Year;
 
-          
+
             gridViewManager.setDataGridView(dataGridViewDebts);
             gridViewManager.fillDataGridView(model.DataSources[0]);
 
@@ -589,32 +592,32 @@ namespace BudgetManager {
 
         //Metoda generica pt populare grafice de tip ColumnChart
         //Generic method for filling ColumnChart objects with data
-        private void fillColumnChart(Chart chart, DataTable dTable, int currentYear, String title) {        
+        private void fillColumnChart(Chart chart, DataTable dTable, int currentYear, String title) {
             //Removes all the existing points from the chart
             chart.Series[0].Points.Clear();
 
-            if (dTable != null && dTable.Rows.Count > 0) {               
+            if (dTable != null && dTable.Rows.Count > 0) {
                 //Creates a list of dates(the first day of each month of the selected year)
                 List<DateTime> dates = new List<DateTime>();
                 for (int i = 1; i <= 12; i++) {
                     dates.Add(new DateTime(currentYear, i, 1));
                 }
-          
+
                 //Ads the month names to the chart
                 foreach (DateTime currentDate in dates) {
                     chart.Series[0].Points.AddXY(currentDate, 0);
                 }
 
                 int j = 0;//the index of the current row of the DataTable retrieved from the DB
-                for (int i = 0; i < chart.Series[0].Points.Count; i++) {                   
+                for (int i = 0; i < chart.Series[0].Points.Count; i++) {
                     //If all the rows from the DataTable were processed(e.g. there aren;t results for each month of the year) the 0 value is added for the respective month
                     if (j > dTable.Rows.Count - 1) {
                         chart.Series[0].Points[i].SetValueY(0);
                         continue;
                     }
-                
+
                     //A DateTime object is created for the X value of the current chart point
-                    System.DateTime currentPointDate = System.DateTime.FromOADate(chart.Series[0].Points[i].XValue);              
+                    System.DateTime currentPointDate = System.DateTime.FromOADate(chart.Series[0].Points[i].XValue);
                     //The month value is extracted from the previously created DateTime object
                     int currentChartMonth = Convert.ToInt32(DateTime.ParseExact(currentPointDate.ToString("MMM"), "MMM", CultureInfo.CurrentCulture).Month);
                     int currentDataTableMonth = Convert.ToInt32(dTable.Rows[j].ItemArray[0]);
@@ -638,7 +641,7 @@ namespace BudgetManager {
         private void fillDynamicTypePieChart(Chart chart, DataTable dTable) {
             //Eliminare conținut anterior din grafic
             chart.Series[0].Points.Clear();
-                      
+
             if (dTable != null && dTable.Rows.Count > 0) {
                 if ("pieChartExpenses".Equals(chart.Name) || "pieChartIncomes".Equals(chart.Name)) {
                     String[] typeNamesExpenses = dTable.AsEnumerable().Select(expenseTypeName => expenseTypeName.Field<String>(0)).ToArray();
@@ -836,9 +839,9 @@ namespace BudgetManager {
                     string startYearString = startPicker.Value.ToString("yyyy");
                     string endYearString = endPicker.Value.ToString("yyyy");
 
-                    targetLabel.Text = String.Format("{0} for {1} {2}-{3} {4}", message, startMonthString, startYearString, endMonthString, endYearString);                  
+                    targetLabel.Text = String.Format("{0} for {1} {2}-{3} {4}", message, startMonthString, startYearString, endMonthString, endYearString);
                 } else {
-                    targetLabel.Text = String.Format("{0} for {1}-{2} {3}", message, startPicker.Value.ToString("MMMM"), endPicker.Value.ToString("MMMM"), startPicker.Value.ToString("yyyy"));                 
+                    targetLabel.Text = String.Format("{0} for {1}-{2} {3}", message, startPicker.Value.ToString("MMMM"), endPicker.Value.ToString("MMMM"), startPicker.Value.ToString("yyyy"));
                 }
 
             } else if (dateTimePickerContainer.Visible == true && !isValidDateSelection(startPicker, endPicker)) {
@@ -848,7 +851,7 @@ namespace BudgetManager {
                 MessageBox.Show("Invalid date selection!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
             } else if (dateTimePickerContainer.Visible == false) {
-                targetLabel.Text = String.Format("{0} for {1} {2}", message, startPicker.Value.ToString("MMMM"), startPicker.Value.ToString("yyyy"));          
+                targetLabel.Text = String.Format("{0} for {1} {2}", message, startPicker.Value.ToString("MMMM"), startPicker.Value.ToString("yyyy"));
             }
         }
 
@@ -888,7 +891,7 @@ namespace BudgetManager {
             }
             String sqlFormatDateString = "";
             //If this is the end date of the interval it will be modified so that the last day of the month will also be taken into account
-            if (dateType == DateType.END_DATE) {             
+            if (dateType == DateType.END_DATE) {
                 //Takes the current date from the provided DateTimePicker, adds a month to its value and subtracts a day(in order to get the date of the last day of the month)
                 sqlFormatDateString = datePicker.Value.AddMonths(1).AddDays(-1).ToString("yyyy-MM-dd");
             } else {
@@ -913,14 +916,14 @@ namespace BudgetManager {
         }
 
         //Generic method for sendung data to the controller
-        private void sendDataToController(DataUpdateControl pickerType, CheckBox checkBox, DateTimePicker startPicker, DateTimePicker endPicker) {          
+        private void sendDataToController(DataUpdateControl pickerType, CheckBox checkBox, DateTimePicker startPicker, DateTimePicker endPicker) {
             //Checks the type of control whose state has been modified
             if (pickerType == DataUpdateControl.START_PICKER) {
                 //If the interval checkbox is checked it means that the user wants to get data for multiple months
-                if (checkBox.Checked == true) {                  
+                if (checkBox.Checked == true) {
                     //Selects the multiple months option                 
                     QueryType option = QueryType.MULTIPLE_MONTHS;
-                
+
                     //The start and end dates are retrieved, having the format required by the MySQL database
                     String startDate = getDateStringInSQLFormat(startPicker, DateType.START_DATE);
                     String endDate = getDateStringInSQLFormat(endPicker, DateType.END_DATE);
@@ -930,7 +933,7 @@ namespace BudgetManager {
 
                     controller.requestData(option, paramContainer);
 
-                } else {       
+                } else {
                     //Otherwise the single month query type is selected
                     QueryType option = QueryType.SINGLE_MONTH;
 
@@ -945,7 +948,7 @@ namespace BudgetManager {
 
 
                 }
-            } else if (pickerType == DataUpdateControl.END_PICKER) {             
+            } else if (pickerType == DataUpdateControl.END_PICKER) {
                 //Selectes multiple months data if the end date picker is the one whose state was modified by the user
                 QueryType option = QueryType.MULTIPLE_MONTHS;
 
@@ -955,10 +958,10 @@ namespace BudgetManager {
                 QueryData paramContainer = new QueryData.Builder(userID).addStartDate(startDate).addEndDate(endDate).build(); //CHANGE
                 controller.requestData(option, paramContainer);
 
-            } else if (pickerType == DataUpdateControl.MONTHLY_PICKER) {        
+            } else if (pickerType == DataUpdateControl.MONTHLY_PICKER) {
                 //Selects the query type that will lead to the calculation of monthly total values for each month of the selected year
                 QueryType option = QueryType.MONTHLY_TOTALS;
-       
+
                 //Retrieves the start and end dates
                 int month = startPicker.Value.Month;
                 int year = startPicker.Value.Year;
@@ -973,18 +976,18 @@ namespace BudgetManager {
             //Checks if the DataTable object contains values and is not null
             if (inputDataTable != null && inputDataTable.Rows.Count > 0) {
                 List<int> columnData = new List<int>();
-          
+
                 //Iterates over the rows of the DataTable
-                for (int i = 0; i < inputDataTable.Rows.Count; i++) {           
+                for (int i = 0; i < inputDataTable.Rows.Count; i++) {
                     //Retrieves the value from the current row and the specified column to the ArrayList
                     Object currentValue = inputDataTable.Rows[i][columnIndex];
                     //Transforms the object into an int value and adds it to the list (if any of these objects is null then the default value set for it will be 0)
                     columnData.Add(currentValue != DBNull.Value ? Convert.ToInt32(currentValue) : 0);
 
-                }              
+                }
                 //Returns the created list
                 return columnData;
-            }      
+            }
             //Returns null if the DataTable object does not contain data
             return null;
         }
@@ -997,8 +1000,12 @@ namespace BudgetManager {
             DialogResult userOption = displayApplicationCloseMessage(ApplicationCloseMode.LOGOUT);
 
             if (userOption == DialogResult.Yes) {
-                this.Visible = false;
-                new LoginForm().Visible = true;
+                //this.Visible = false;               
+                //new LoginForm().Visible = true;
+                hasRestartedApplication = true;
+                Application.Restart();
+
+
             }
 
         }
@@ -1009,10 +1016,10 @@ namespace BudgetManager {
             if (userOption == DialogResult.Yes) {
                 userAgreedToExit = true;
                 Application.Exit();
-            }  
+            }
         }
 
-        private void insertDataToolStripMenuItem_Click(object sender, EventArgs e) {     
+        private void insertDataToolStripMenuItem_Click(object sender, EventArgs e) {
             //The ShowDialog() method is used in order to prevent the usage of the background window while the selected one is open(it also prevents the opening of multiple instances of the same window)
             new InsertDataForm2(userID).ShowDialog();
         }
@@ -1032,7 +1039,7 @@ namespace BudgetManager {
             int year = defaultDate.Year;
             int day = 1;
 
-            foreach (DateTimePicker currentPicker in dateTimePickers) {          
+            foreach (DateTimePicker currentPicker in dateTimePickers) {
                 //Sets the flag value to true so that the event handler method of the DateTimePicker will not be called when the date is changed
                 hasResetDatePickers = true;
 
