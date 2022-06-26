@@ -2,4 +2,8 @@ BudgetManager/Properties/*
 BudgetManager/App.config
 BudgetManager/bin/Debug/BudgetManager.exe.config
 BudgetManager/bin/Debug/BudgetManager.vshost.exe.config
+BudgetManager/bin/Debug/BudgetManager.exe
+BudgetManager/bin/Debug/BudgetManager.pdb
+BudgetManager/obj/Debug/BudgetManager.exe
+BudgetManager/obj/Debug/BudgetManager.pdb
 .vs/*
