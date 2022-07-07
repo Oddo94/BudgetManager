@@ -287,6 +287,10 @@ namespace BudgetManager.non_mvc {
             //debtorNameComboBox.DataSource = new List<String>() { "Michael", "Gerard", "Adam", "James" };
             dataProvider.fillComboBox(debtorNameComboBox, ComboBoxType.DEBTOR_COMBOBOX, userID);
             debtorNameComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            accountTypeComboBox = new ComboBox()
+            
+
         }
 
 
