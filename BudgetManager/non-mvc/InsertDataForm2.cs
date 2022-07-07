@@ -51,6 +51,16 @@ namespace BudgetManager.non_mvc {
         private Label receivableDueDateLabel;
         private Label debtorSelectionLabel;
 
+        //Saving account interest
+        private ComboBox accountTypeComboBox;
+        private ComboBox interestTypeComboBox;
+        private ComboBox paymentTypeComboBox;
+        private TextBox interestRateTextBox;
+        private TextBox interestValueTextBox;
+        private Label savingAccountLabel;
+        private Label interestTypeLabel;
+        private Label paymentTypeLabel;
+        private Label interestRateLabel;
 
         //Other variables
         private ArrayList activeControls;
@@ -250,6 +260,9 @@ namespace BudgetManager.non_mvc {
             itemNameTextBox.Width = 200;
 
             itemValueTextBox = new TextBox();
+
+            interestRateTextBox = new TextBox();
+            interestRateTextBox.Width = 200;
         }
 
         private void createComboBoxes() {
@@ -313,6 +326,20 @@ namespace BudgetManager.non_mvc {
             debtorSelectionLabel = new Label();
             debtorSelectionLabel.Text = "Select debtor";
 
+            savingAccountLabel = new Label();
+            savingAccountLabel.Text = "Saving account";
+
+            interestTypeLabel = new Label();
+            interestTypeLabel.Text = "Interest type";
+
+            interestTypeLabel = new Label();
+            interestTypeLabel.Text = "Interest type";
+
+            paymentTypeLabel = new Label();
+            paymentTypeLabel.Text = "Payment type";
+
+            interestRateLabel = new Label();
+            interestRateLabel.Text = "Interest rate";
         }
 
         private void createRadioButtons() {

@@ -14,7 +14,10 @@ namespace BudgetManager.utils {
             INCOME_TYPE_COMBOBOX,
             EXPENSE_TYPE_COMBOBOX,
             CREDITOR_COMBOBOX,
-            DEBTOR_COMBOBOX
+            DEBTOR_COMBOBOX,
+            SAVING_ACCOUNT_COMBOBOX,
+            INTEREST_TYPE_COMBOBOX,
+            PAYMENT_TYPE_COMBOBOX
         }
 
         //SQL queries used for selecting the values that fill comboboxes
@@ -27,7 +30,14 @@ namespace BudgetManager.utils {
         private String sqlStatementSelectDebtors = @"SELECT debtorName FROM users_debtors
                 INNER JOIN users ON users.userID = users_debtors.user_ID
                 INNER JOIN debtors ON debtors.debtorID = users_debtors.debtor_ID
-                WHERE users_debtors.user_ID = 3";
+                WHERE users_debtors.user_ID = @paramUserID";//REMOVE HARDCODED USER ID!!!!!
+        private String sqlStatementSelectSavingAccounts = @"SELECT sa.accountName 
+                FROM saving_accounts sa 
+                INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID 
+                WHERE sa.user_ID = @paramUserID 
+                AND sat.typeName NOT LIKE '%SYSTEM_DEFINED%'";
+        private String sqlStatementSelectInterestTypes = @"SELECT typeName FROM interest_types";
+        private String sqlStatementSelectPaymentTypes = @"SELECT typeName FROM interest_payment_type";
 
         public void fillComboBox(ComboBox targetComboBox, ComboBoxType comboBoxType, int userID) {
             Guard.notNull(targetComboBox, "ComboBox");
@@ -60,6 +70,30 @@ namespace BudgetManager.utils {
 
                 case ComboBoxType.INCOME_TYPE_COMBOBOX:
                     retrievedData = retrieveData(sqlStatementSelectIncomeTypes);
+                    Guard.notNull(retrievedData, "DataTable");
+
+                    targetComboBox.DataSource = retrievedData;
+                    targetComboBox.DisplayMember = "typeName";
+                    break;
+
+                case ComboBoxType.SAVING_ACCOUNT_COMBOBOX:
+                    retrievedData = retrieveData(sqlStatementSelectSavingAccounts, userID);
+                    Guard.notNull(retrievedData, "DataTable");
+
+                    targetComboBox.DataSource = retrievedData;
+                    targetComboBox.DisplayMember = "accountName";
+                    break;
+
+                case ComboBoxType.INTEREST_TYPE_COMBOBOX:
+                    retrievedData = retrieveData(sqlStatementSelectInterestTypes);
+                    Guard.notNull(retrievedData, "DataTable");
+
+                    targetComboBox.DataSource = retrievedData;
+                    targetComboBox.DisplayMember = "typeName";
+                    break;
+
+                case ComboBoxType.PAYMENT_TYPE_COMBOBOX:
+                    retrievedData = retrieveData(sqlStatementSelectPaymentTypes);
                     Guard.notNull(retrievedData, "DataTable");
 
                     targetComboBox.DataSource = retrievedData;
