@@ -30,7 +30,7 @@ namespace BudgetManager.utils {
         private String sqlStatementSelectDebtors = @"SELECT debtorName FROM users_debtors
                 INNER JOIN users ON users.userID = users_debtors.user_ID
                 INNER JOIN debtors ON debtors.debtorID = users_debtors.debtor_ID
-                WHERE users_debtors.user_ID = @paramUserID";//REMOVE HARDCODED USER ID!!!!!
+                WHERE users_debtors.user_ID = @paramUserID";
         private String sqlStatementSelectSavingAccounts = @"SELECT sa.accountName 
                 FROM saving_accounts sa 
                 INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID 

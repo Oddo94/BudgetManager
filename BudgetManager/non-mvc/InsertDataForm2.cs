@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -52,7 +53,7 @@ namespace BudgetManager.non_mvc {
         private Label debtorSelectionLabel;
 
         //Saving account interest
-        private ComboBox accountTypeComboBox;
+        private ComboBox savingAccountComboBox;
         private ComboBox interestTypeComboBox;
         private ComboBox paymentTypeComboBox;
         private TextBox interestRateTextBox;
@@ -91,7 +92,11 @@ namespace BudgetManager.non_mvc {
             expenseTypeComboBox.SelectedIndexChanged += new EventHandler(expenseTypeComboBox_SelectedIndexChanged);
             creditorNameComboBox.SelectedIndexChanged += new EventHandler(creditorNameComboBox_IndexChanged);
             debtorNameComboBox.SelectedIndexChanged += new EventHandler(debtorNameComboBox_IndexChanged);
-            //receivableDueDatePicker.ValueChanged += new EventHandler(receivableDueDatePicker_ValueChanged);       
+            //receivableDueDatePicker.ValueChanged += new EventHandler(receivableDueDatePicker_ValueChanged);
+            savingAccountComboBox.SelectedIndexChanged += new EventHandler(savingAccountComboBox_SelectedIndexChanged);
+            interestTypeComboBox.SelectedIndexChanged += new EventHandler(interestTypeComboBox_SelectedIndexChanged);
+            paymentTypeComboBox.SelectedIndexChanged += new EventHandler(paymentTypeComboBox_SelectedIndexChanged);
+            interestRateTextBox.Leave += new EventHandler(interestRateTextBox_Leave);       
         }
 
         private void itemTypeSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -162,6 +167,16 @@ namespace BudgetManager.non_mvc {
                     clearActiveControls(activeControls);
                     break;
 
+                //Saving account interest insertion layout
+                case 7:
+                    container.Controls.Clear();
+                    List<Control> controlsListSavingAccountInterest = new List<Control> { itemDatePickerLabel, datePicker, itemNameLabel, itemNameTextBox, savingAccountLabel, savingAccountComboBox, interestTypeLabel, interestTypeComboBox,
+                        paymentTypeLabel, paymentTypeComboBox, interestRateLabel, interestRateTextBox, itemValueLabel, itemValueTextBox};
+                    addControlsToContainer(container, controlsListSavingAccountInterest);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
+                    clearActiveControls(activeControls);
+                    break;
+
                 default:
                     break;
             }
@@ -216,6 +231,30 @@ namespace BudgetManager.non_mvc {
 
         }
 
+        private void savingAccountComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            setAddEntryButtonState(activeControls);
+        }
+
+        private void interestTypeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            setAddEntryButtonState(activeControls);
+        }
+
+        private void paymentTypeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            setAddEntryButtonState(activeControls);
+        }
+
+        private void interestRateTextBox_Leave(object sender, EventArgs e) {
+            String inputValue = interestRateTextBox.Text;
+            double result;
+            bool isValid = Double.TryParse(inputValue, NumberStyles.AllowDecimalPoint, new NumberFormatInfo { NumberDecimalSeparator = "." }, out result);
+
+            if(!isValid) {
+                interestRateTextBox.Clear();
+                return;
+            }
+
+            setAddEntryButtonState(activeControls);       
+        }
 
         private void addEntryButton_Click(object sender, EventArgs e) {
             int allChecksExecutionResult = -1;           
@@ -260,6 +299,7 @@ namespace BudgetManager.non_mvc {
             itemNameTextBox.Width = 200;
 
             itemValueTextBox = new TextBox();
+            itemValueTextBox.Width = 200;
 
             interestRateTextBox = new TextBox();
             interestRateTextBox.Width = 200;
@@ -288,8 +328,17 @@ namespace BudgetManager.non_mvc {
             dataProvider.fillComboBox(debtorNameComboBox, ComboBoxType.DEBTOR_COMBOBOX, userID);
             debtorNameComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            accountTypeComboBox = new ComboBox()
-            
+            savingAccountComboBox = new ComboBox();
+            dataProvider.fillComboBox(savingAccountComboBox, ComboBoxType.SAVING_ACCOUNT_COMBOBOX, userID);
+            savingAccountComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            interestTypeComboBox = new ComboBox();
+            dataProvider.fillComboBox(interestTypeComboBox, ComboBoxType.INTEREST_TYPE_COMBOBOX, userID);
+            interestTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            paymentTypeComboBox = new ComboBox();
+            dataProvider.fillComboBox(paymentTypeComboBox, ComboBoxType.PAYMENT_TYPE_COMBOBOX, userID);
+            paymentTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 
         }
 
@@ -427,6 +476,10 @@ namespace BudgetManager.non_mvc {
                 case 5:
                 case 6:
                     activeControls = new ArrayList() { itemNameTextBox};
+                    break;
+
+                case 7:
+                    activeControls = new ArrayList() { datePicker, savingAccountComboBox, interestTypeComboBox, paymentTypeComboBox, interestRateTextBox, itemValueTextBox };
                     break;
 
                 default:
