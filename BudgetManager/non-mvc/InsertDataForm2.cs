@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -96,7 +97,7 @@ namespace BudgetManager.non_mvc {
             savingAccountComboBox.SelectedIndexChanged += new EventHandler(savingAccountComboBox_SelectedIndexChanged);
             interestTypeComboBox.SelectedIndexChanged += new EventHandler(interestTypeComboBox_SelectedIndexChanged);
             paymentTypeComboBox.SelectedIndexChanged += new EventHandler(paymentTypeComboBox_SelectedIndexChanged);
-            interestRateTextBox.Leave += new EventHandler(interestRateTextBox_Leave);       
+            interestRateTextBox.TextChanged += new EventHandler(interestRateTextBox_TextChanged);       
         }
 
         private void itemTypeSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -120,7 +121,7 @@ namespace BudgetManager.non_mvc {
                 case 1:
                     container.Controls.Clear();
                     addGeneralPurposeControls();
-                    List<Control> controlsListExpenses = new List<Control>() { expenseTypeLabel, expenseTypeComboBox, generalIncomesRadioButton, savingAccountRadioButton };
+                    List<Control> controlsListExpenses = new List<Control>() { expenseTypeLabel, expenseTypeComboBox, incomeSourceLabel, generalIncomesRadioButton, savingAccountRadioButton };
                     addControlsToContainer(container, controlsListExpenses);
                     populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
@@ -243,14 +244,13 @@ namespace BudgetManager.non_mvc {
             setAddEntryButtonState(activeControls);
         }
 
-        private void interestRateTextBox_Leave(object sender, EventArgs e) {
+        private void interestRateTextBox_TextChanged(object sender, EventArgs e) {
             String inputValue = interestRateTextBox.Text;
             double result;
             bool isValid = Double.TryParse(inputValue, NumberStyles.AllowDecimalPoint, new NumberFormatInfo { NumberDecimalSeparator = "." }, out result);
 
             if(!isValid) {
                 interestRateTextBox.Clear();
-                return;
             }
 
             setAddEntryButtonState(activeControls);       
@@ -297,48 +297,54 @@ namespace BudgetManager.non_mvc {
         private void createTextBoxes() {
             itemNameTextBox = new TextBox();
             itemNameTextBox.Width = 200;
+            itemNameTextBox.Margin = new Padding(0, 0, 0, 0);
 
             itemValueTextBox = new TextBox();
             itemValueTextBox.Width = 200;
+            itemValueTextBox.Margin = new Padding(0, 0, 0, 0);
 
             interestRateTextBox = new TextBox();
             interestRateTextBox.Width = 200;
+            interestRateTextBox.Margin = new Padding(0, 0, 0, 0);
         }
 
         private void createComboBoxes() {
             DataProvider dataProvider = new DataProvider();
-            incomeTypeComboBox = new ComboBox();
-            //incomeTypeComboBox.DataSource = new List<String>() { "Active income", "Passive income" };
+            incomeTypeComboBox = new ComboBox();           
             dataProvider.fillComboBox(incomeTypeComboBox, ComboBoxType.INCOME_TYPE_COMBOBOX, userID);
-            incomeTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;        
+            incomeTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            incomeTypeComboBox.Margin = new Padding(0, 0, 0, 0);       
 
 
             expenseTypeComboBox = new ComboBox();
-            //expenseTypeComboBox.DataSource = new List<String>() { "Fixed expense", "Periodic expense", "Variable expense" };
             dataProvider.fillComboBox(expenseTypeComboBox, ComboBoxType.EXPENSE_TYPE_COMBOBOX, userID);
             expenseTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            expenseTypeComboBox.Margin = new Padding(0, 0, 0, 0);
 
             creditorNameComboBox = new ComboBox();
-            //creditorNameComboBox.DataSource = new List<String>() { "John", "David", "Andrew", "Steven" };
             dataProvider.fillComboBox(creditorNameComboBox, ComboBoxType.CREDITOR_COMBOBOX, userID);
             creditorNameComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            creditorNameComboBox.Margin = new Padding(0, 0, 0, 0);
 
             debtorNameComboBox = new ComboBox();
-            //debtorNameComboBox.DataSource = new List<String>() { "Michael", "Gerard", "Adam", "James" };
             dataProvider.fillComboBox(debtorNameComboBox, ComboBoxType.DEBTOR_COMBOBOX, userID);
             debtorNameComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            debtorNameComboBox.Margin = new Padding(0, 0, 0, 0);
 
             savingAccountComboBox = new ComboBox();
             dataProvider.fillComboBox(savingAccountComboBox, ComboBoxType.SAVING_ACCOUNT_COMBOBOX, userID);
             savingAccountComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            savingAccountComboBox.Margin = new Padding(0, 0, 0, 0);
 
             interestTypeComboBox = new ComboBox();
             dataProvider.fillComboBox(interestTypeComboBox, ComboBoxType.INTEREST_TYPE_COMBOBOX, userID);
             interestTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-
+            interestTypeComboBox.Margin = new Padding(0, 0, 0, 0);
+            
             paymentTypeComboBox = new ComboBox();
             dataProvider.fillComboBox(paymentTypeComboBox, ComboBoxType.PAYMENT_TYPE_COMBOBOX, userID);
             paymentTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            paymentTypeComboBox.Margin = new Padding(0, 0, 0, 0);
 
         }
 
@@ -351,48 +357,59 @@ namespace BudgetManager.non_mvc {
         private void createLabels() {
             itemDatePickerLabel = new Label();
             itemDatePickerLabel.Text = "Date";
-
+           
             itemNameLabel = new Label();
             itemNameLabel.Text = "Name";
+            itemNameLabel.Margin = new Padding(0, 10, 0, 0);
 
             itemValueLabel = new Label();
             itemValueLabel.Text = "Value";
+            itemValueLabel.Margin = new Padding(0, 10, 0, 0);       
 
             incomeTypeLabel = new Label();
             incomeTypeLabel.Text = "Income type";
-
+            incomeTypeLabel.Margin = new Padding(0, 10, 0, 0);
+            
             incomeSourceLabel = new Label();
             incomeSourceLabel.Text = "Income source";
+            incomeSourceLabel.Margin = new Padding(0, 10, 0, 0);
 
             expenseTypeLabel = new Label();
             expenseTypeLabel.Text = "Expense type";
+            expenseTypeLabel.Margin = new Padding(0, 10, 0, 0);
 
             creditorNameLabel = new Label();
             creditorNameLabel.Text = "Creditor name";
+            creditorNameLabel.Margin = new Padding(0, 10, 0, 0);
 
             receivableCreationDateLabel = new Label();
             receivableCreationDateLabel.Text = "Creation date";
+            receivableCreationDateLabel.Margin = new Padding(0, 10, 0, 0);
 
             receivableDueDateLabel = new Label();
             receivableDueDateLabel.Text = "Due date";
+            receivableDueDateLabel.Margin = new Padding(0, 10, 0, 0);
 
             debtorSelectionLabel = new Label();
             debtorSelectionLabel.Text = "Select debtor";
-
+            debtorSelectionLabel.Margin = new Padding(0, 10, 0, 0);
+            
             savingAccountLabel = new Label();
             savingAccountLabel.Text = "Saving account";
+            savingAccountLabel.Margin = new Padding(0, 10, 0, 0);
 
             interestTypeLabel = new Label();
             interestTypeLabel.Text = "Interest type";
-
-            interestTypeLabel = new Label();
-            interestTypeLabel.Text = "Interest type";
+            interestTypeLabel.Margin = new Padding(0, 10, 0, 0);
 
             paymentTypeLabel = new Label();
             paymentTypeLabel.Text = "Payment type";
+            paymentTypeLabel.Margin = new Padding(0, 10, 0, 0);
 
             interestRateLabel = new Label();
             interestRateLabel.Text = "Interest rate";
+            interestRateLabel.Margin = new Padding(0, 10, 0, 0);
+
         }
 
         private void createRadioButtons() {
@@ -408,12 +425,16 @@ namespace BudgetManager.non_mvc {
 
         private void createDatePickers() {
             datePicker = new DateTimePicker();
+            datePicker.Margin = new Padding(0, 0, 0, -0);
+
             receivableDueDatePicker = new DateTimePicker();
+            receivableDueDatePicker.Margin = new Padding(0, 0, 0, 0);
         }
 
         private void createContainer() {
             container = new FlowLayoutPanel();
             container.FlowDirection = FlowDirection.TopDown;
+            container.Margin = new Padding(20, 20, 20, 20);
             container.Dock = DockStyle.Fill;
 
         }
@@ -479,7 +500,7 @@ namespace BudgetManager.non_mvc {
                     break;
 
                 case 7:
-                    activeControls = new ArrayList() { datePicker, savingAccountComboBox, interestTypeComboBox, paymentTypeComboBox, interestRateTextBox, itemValueTextBox };
+                    activeControls = new ArrayList() { datePicker, itemNameTextBox, savingAccountComboBox, interestTypeComboBox, paymentTypeComboBox, interestRateTextBox, itemValueTextBox };
                     break;
 
                 default:
