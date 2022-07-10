@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BudgetManager.mvc.models.dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,5 +24,14 @@ namespace BudgetManager.non_mvc {
 
             return result;
         }
+
+        //Future refactoring test(change QueryData class to specific DTO class containing the specific fields for the inserted item)
+        public int invoke(IDataInsertionDTO dataInsertionDTO) {
+            int result = this.insertionStrategy.execute(dataInsertionDTO);
+
+            return result;
+        }
+
+
     }
 }

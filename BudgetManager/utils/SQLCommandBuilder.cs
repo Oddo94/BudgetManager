@@ -1,4 +1,5 @@
-﻿using BudgetManager.utils;
+﻿using BudgetManager.mvc.models.dto;
+using BudgetManager.utils;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -325,6 +326,27 @@ namespace BudgetManager {
 
             return defaultSavingAccountCreationCommand;
 
+        }
+
+        //method for creating the command used to insert a saving account interest recrod into the database
+        public static MySqlCommand getSavingAccountInterestInsertionCommand(String sqlStatement, IDataInsertionDTO dataInsertionDTO) {
+            Guard.notNull(sqlStatement, "saving account interest insertion SQL statement");
+            Guard.notNull(dataInsertionDTO, "saving account interest DTO");
+
+            SavingAccountInterestDTO savingAccountInterestDTO = (SavingAccountInterestDTO) dataInsertionDTO;
+
+            MySqlCommand savingAccountInterestInsertionCommand = new MySqlCommand(sqlStatement);
+            savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramAccountName", savingAccountInterestDTO.AccountName);
+            savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramInterestName", savingAccountInterestDTO.InterestName);
+            savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramUserId", savingAccountInterestDTO.UserID);
+            savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramInterestTypeName", savingAccountInterestDTO.InterestType);
+            savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramInterestPaymentTypeName", savingAccountInterestDTO.PaymentType);
+            savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramInterestRate", savingAccountInterestDTO.InterestRate);
+            savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramInterestValue", savingAccountInterestDTO.InterestValue);
+            savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramCreationDate", savingAccountInterestDTO.CreationDate);
+            savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramUpdatedDate", null);
+
+            return savingAccountInterestInsertionCommand;
         }
 
        

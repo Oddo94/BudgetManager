@@ -32,6 +32,8 @@ namespace BudgetManager {
         CREDITOR,
         [Description("debtor")]
         DEBTOR,
+        [Description("saving account interest")]
+        SAVING_ACCOUNT_INTEREST,
         UNDEFINED
     }
 

@@ -56,6 +56,8 @@
     <Compile Include="mvc\controllers\SavingAccountController.cs" />
     <Compile Include="mvc\models\BudgetPlanManagementModel.cs" />
     <Compile Include="mvc\models\BudgetSummaryModel.cs" />
+    <Compile Include="mvc\models\dto\IDataInsertionDTO.cs" />
+    <Compile Include="mvc\models\dto\SavingAccountInterestDTO.cs" />
     <Compile Include="mvc\models\SavingAccountModel.cs" />
     <Compile Include="mvc\views\BudgetPlanManagementForm.cs">
       <SubType>Form</SubType>
@@ -69,6 +71,7 @@
     <Compile Include="mvc\views\SavingAccountForm.Designer.cs">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="non-mvc\AccountInterestInsertionStrategy.cs" />
     <Compile Include="non-mvc\BudgetPlanCreator.cs">
       <SubType>Form</SubType>
     </Compile>

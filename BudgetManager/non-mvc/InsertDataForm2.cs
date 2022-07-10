@@ -1,4 +1,5 @@
-﻿using BudgetManager.utils;
+﻿using BudgetManager.mvc.models.dto;
+using BudgetManager.utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -614,6 +615,8 @@ namespace BudgetManager.non_mvc {
         private int insertSelectedItem(int selectedItemIndex) {
             int executionResult = -1;
             QueryData paramContainer = null;
+            IDataInsertionDTO dataInsertionDTO = null;
+
             DataInsertionContext dataInsertionContext = new DataInsertionContext();
             switch (selectedItemIndex) {
                 //Income insertion
@@ -699,6 +702,17 @@ namespace BudgetManager.non_mvc {
 
                     executionResult = dataInsertionContext.invoke(paramContainer);
                     break;
+
+                case 7:
+                    dataInsertionDTO = configureDataInsertionDTO(BudgetItemType.SAVING_ACCOUNT_INTEREST);
+                    Guard.notNull(dataInsertionDTO, "saving account interest DTO");
+
+                    DataInsertionStrategy accountInterestInsertionStrategy = new AccountInterestInsertionStrategy();
+                    dataInsertionContext.setStrategy(accountInterestInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(dataInsertionDTO);                   
+                    break;
+                
 
                 default:
                     break;
@@ -824,6 +838,28 @@ namespace BudgetManager.non_mvc {
             return paramContainer;
         }
 
+        //Method for testing a future refactoring(using DTO classes instead of QueryData class)
+        private IDataInsertionDTO configureDataInsertionDTO(BudgetItemType selectedItemType) {
+            IDataInsertionDTO dataInsertionDTO = null;
+
+            switch(selectedItemType) {
+
+                case BudgetItemType.SAVING_ACCOUNT_INTEREST:
+                    String interestCreationDate = datePicker.Value.ToString("yyyy-MM-dd");
+                    String interestName = itemNameTextBox.Text;
+                    String accountName = savingAccountComboBox.Text;
+                    String interestType = interestTypeComboBox.Text;
+                    String paymentType = paymentTypeComboBox.Text;
+                    double interestRate = Convert.ToDouble(interestRateTextBox.Text);
+                    int interestValue = Convert.ToInt32(itemValueTextBox.Text);
+
+                    dataInsertionDTO = new SavingAccountInterestDTO(interestCreationDate, interestName, accountName, interestType, paymentType, interestRate, interestValue, userID);              
+                    break;
+            }
+
+            return dataInsertionDTO;
+        }
+
 
         private int performDataChecks() {
             int allChecksExecutionResult = -1;
@@ -911,6 +947,11 @@ namespace BudgetManager.non_mvc {
 
                 //Debtor
                 case 6:
+                    allChecksExecutionResult = 0;
+                    break;
+                
+                //Saving account interest
+                case 7:
                     allChecksExecutionResult = 0;
                     break;
 
