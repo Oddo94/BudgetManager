@@ -12,14 +12,14 @@ namespace BudgetManager.mvc.models.dto {
         private String interestType;
         private String paymentType;
         private double interestRate;
-        private int interestValue;
+        private double interestValue;
         private int userID;
 
         public SavingAccountInterestDTO() {
 
         }
 
-        public SavingAccountInterestDTO(String creationDate, String interestName, String accountName, String interestType, String paymentType, double interestRate, int interestValue, int userID) {
+        public SavingAccountInterestDTO(String creationDate, String interestName, String accountName, String interestType, String paymentType, double interestRate, double interestValue, int userID) {
             this.creationDate = creationDate;
             this.interestName = interestName;
             this.accountName = accountName;
@@ -90,7 +90,7 @@ namespace BudgetManager.mvc.models.dto {
             }
         }
 
-        public int InterestValue {
+        public double InterestValue {
             get {
                 return this.interestValue;
             }

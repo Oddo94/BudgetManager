@@ -185,12 +185,28 @@ namespace BudgetManager.non_mvc {
         }
 
         private void itemValueTextBox_TextChanged(object sender, EventArgs e) {
-            Regex numberRegex = new Regex("\\b[0-9]+\\b", RegexOptions.Compiled);
-            Regex specialCharacterRegex = new Regex("[^\\w\\d\\s]", RegexOptions.Compiled);
+            String selectedItemName = itemTypeSelectionComboBox.Text;
+            String specialItem = "Saving account interest";
 
-            String value = itemValueTextBox.Text;
-            if (!numberRegex.IsMatch(value) || specialCharacterRegex.IsMatch(value)) {
-                itemValueTextBox.Text = "";
+            //Special check to verify if the saving account interest value can be parsed as a double(to allow for a greater precision when calculating the account balance)
+            //The values of the other items will still be treated as integers
+            if (specialItem.Equals(selectedItemName)) {
+                String inputValue = itemValueTextBox.Text;
+                double result;
+                bool isValid = Double.TryParse(inputValue, NumberStyles.AllowDecimalPoint, new NumberFormatInfo { NumberDecimalSeparator = "." }, out result);
+
+                if (!isValid) {
+                    itemValueTextBox.Clear();
+                }
+            } else {
+                Regex numberRegex = new Regex("\\b[0-9]+\\b", RegexOptions.Compiled);
+                Regex specialCharacterRegex = new Regex("[^\\w\\d\\s]", RegexOptions.Compiled);
+
+                String value = itemValueTextBox.Text;
+                if (!numberRegex.IsMatch(value) || specialCharacterRegex.IsMatch(value)) {
+                    //itemValueTextBox.Text = "";
+                    itemValueTextBox.Clear();
+                }
             }
 
             setAddEntryButtonState(activeControls);
@@ -269,14 +285,19 @@ namespace BudgetManager.non_mvc {
             }
         
             String selectedItemName = itemTypeSelectionComboBox.Text;
+            String specialItemName = "Saving account interest";
 
-            allChecksExecutionResult = performDataChecks();
+            //There is no need to perform checks when inserting a saving account interest item
+            if (!specialItemName.Equals(selectedItemName)) {
+                allChecksExecutionResult = performDataChecks();
 
-            //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
-            if (allChecksExecutionResult != -1) {
-                dataInsertionExecutionResult = insertSelectedItem(selectedIndex);
-            } 
-                  
+                //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
+                if (allChecksExecutionResult != -1) {
+                    dataInsertionExecutionResult = insertSelectedItem(selectedIndex);
+                }
+            } else {
+                dataInsertionExecutionResult = insertSelectedItem(selectedIndex);//The saving account interest can be inserted directly without performing a precheck
+            }   
 
             //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
             if (dataInsertionExecutionResult != -1) {
@@ -851,7 +872,7 @@ namespace BudgetManager.non_mvc {
                     String interestType = interestTypeComboBox.Text;
                     String paymentType = paymentTypeComboBox.Text;
                     double interestRate = Convert.ToDouble(interestRateTextBox.Text);
-                    int interestValue = Convert.ToInt32(itemValueTextBox.Text);
+                    double interestValue = Convert.ToDouble(itemValueTextBox.Text);
 
                     dataInsertionDTO = new SavingAccountInterestDTO(interestCreationDate, interestName, accountName, interestType, paymentType, interestRate, interestValue, userID);              
                     break;
