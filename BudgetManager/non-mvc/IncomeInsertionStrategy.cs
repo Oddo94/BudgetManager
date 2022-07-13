@@ -1,4 +1,5 @@
-﻿using BudgetManager.utils;
+﻿using BudgetManager.mvc.models.dto;
+using BudgetManager.utils;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,10 @@ namespace BudgetManager.non_mvc {
 
 
             return -1;
+        }
+
+        public int execute(IDataInsertionDTO dataInsertionDTO) {
+            throw new NotImplementedException();
         }
     }
 }
