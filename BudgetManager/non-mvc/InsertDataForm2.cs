@@ -1,10 +1,13 @@
-﻿using BudgetManager.utils;
+﻿using BudgetManager.mvc.models.dto;
+using BudgetManager.utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Printing;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -51,6 +54,16 @@ namespace BudgetManager.non_mvc {
         private Label receivableDueDateLabel;
         private Label debtorSelectionLabel;
 
+        //Saving account interest
+        private ComboBox savingAccountComboBox;
+        private ComboBox interestTypeComboBox;
+        private ComboBox paymentTypeComboBox;
+        private TextBox interestRateTextBox;
+        private TextBox interestValueTextBox;
+        private Label savingAccountLabel;
+        private Label interestTypeLabel;
+        private Label paymentTypeLabel;
+        private Label interestRateLabel;
 
         //Other variables
         private ArrayList activeControls;
@@ -81,7 +94,11 @@ namespace BudgetManager.non_mvc {
             expenseTypeComboBox.SelectedIndexChanged += new EventHandler(expenseTypeComboBox_SelectedIndexChanged);
             creditorNameComboBox.SelectedIndexChanged += new EventHandler(creditorNameComboBox_IndexChanged);
             debtorNameComboBox.SelectedIndexChanged += new EventHandler(debtorNameComboBox_IndexChanged);
-            //receivableDueDatePicker.ValueChanged += new EventHandler(receivableDueDatePicker_ValueChanged);       
+            //receivableDueDatePicker.ValueChanged += new EventHandler(receivableDueDatePicker_ValueChanged);
+            savingAccountComboBox.SelectedIndexChanged += new EventHandler(savingAccountComboBox_SelectedIndexChanged);
+            interestTypeComboBox.SelectedIndexChanged += new EventHandler(interestTypeComboBox_SelectedIndexChanged);
+            paymentTypeComboBox.SelectedIndexChanged += new EventHandler(paymentTypeComboBox_SelectedIndexChanged);
+            interestRateTextBox.TextChanged += new EventHandler(interestRateTextBox_TextChanged);       
         }
 
         private void itemTypeSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -105,7 +122,7 @@ namespace BudgetManager.non_mvc {
                 case 1:
                     container.Controls.Clear();
                     addGeneralPurposeControls();
-                    List<Control> controlsListExpenses = new List<Control>() { expenseTypeLabel, expenseTypeComboBox, generalIncomesRadioButton, savingAccountRadioButton };
+                    List<Control> controlsListExpenses = new List<Control>() { expenseTypeLabel, expenseTypeComboBox, incomeSourceLabel, generalIncomesRadioButton, savingAccountRadioButton };
                     addControlsToContainer(container, controlsListExpenses);
                     populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
@@ -152,18 +169,44 @@ namespace BudgetManager.non_mvc {
                     clearActiveControls(activeControls);
                     break;
 
+                //Saving account interest insertion layout
+                case 7:
+                    container.Controls.Clear();
+                    List<Control> controlsListSavingAccountInterest = new List<Control> { itemDatePickerLabel, datePicker, itemNameLabel, itemNameTextBox, savingAccountLabel, savingAccountComboBox, interestTypeLabel, interestTypeComboBox,
+                        paymentTypeLabel, paymentTypeComboBox, interestRateLabel, interestRateTextBox, itemValueLabel, itemValueTextBox};
+                    addControlsToContainer(container, controlsListSavingAccountInterest);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
+                    clearActiveControls(activeControls);
+                    break;
+
                 default:
                     break;
             }
         }
 
         private void itemValueTextBox_TextChanged(object sender, EventArgs e) {
-            Regex numberRegex = new Regex("\\b[0-9]+\\b", RegexOptions.Compiled);
-            Regex specialCharacterRegex = new Regex("[^\\w\\d\\s]", RegexOptions.Compiled);
+            String selectedItemName = itemTypeSelectionComboBox.Text;
+            String specialItem = "Saving account interest";
 
-            String value = itemValueTextBox.Text;
-            if (!numberRegex.IsMatch(value) || specialCharacterRegex.IsMatch(value)) {
-                itemValueTextBox.Text = "";
+            //Special check to verify if the saving account interest value can be parsed as a double(to allow for a greater precision when calculating the account balance)
+            //The values of the other items will still be treated as integers
+            if (specialItem.Equals(selectedItemName)) {
+                String inputValue = itemValueTextBox.Text;
+                double result;
+                bool isValid = Double.TryParse(inputValue, NumberStyles.AllowDecimalPoint, new NumberFormatInfo { NumberDecimalSeparator = "." }, out result);
+
+                if (!isValid) {
+                    itemValueTextBox.Clear();
+                }
+            } else {
+                Regex numberRegex = new Regex("\\b[0-9]+\\b", RegexOptions.Compiled);
+                Regex specialCharacterRegex = new Regex("[^\\w\\d\\s]", RegexOptions.Compiled);
+
+                String value = itemValueTextBox.Text;
+                if (!numberRegex.IsMatch(value) || specialCharacterRegex.IsMatch(value)) {
+                    //itemValueTextBox.Text = "";
+                    itemValueTextBox.Clear();
+                }
             }
 
             setAddEntryButtonState(activeControls);
@@ -206,6 +249,29 @@ namespace BudgetManager.non_mvc {
 
         }
 
+        private void savingAccountComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            setAddEntryButtonState(activeControls);
+        }
+
+        private void interestTypeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            setAddEntryButtonState(activeControls);
+        }
+
+        private void paymentTypeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            setAddEntryButtonState(activeControls);
+        }
+
+        private void interestRateTextBox_TextChanged(object sender, EventArgs e) {
+            String inputValue = interestRateTextBox.Text;
+            double result;
+            bool isValid = Double.TryParse(inputValue, NumberStyles.AllowDecimalPoint, new NumberFormatInfo { NumberDecimalSeparator = "." }, out result);
+
+            if(!isValid) {
+                interestRateTextBox.Clear();
+            }
+
+            setAddEntryButtonState(activeControls);       
+        }
 
         private void addEntryButton_Click(object sender, EventArgs e) {
             int allChecksExecutionResult = -1;           
@@ -219,14 +285,19 @@ namespace BudgetManager.non_mvc {
             }
         
             String selectedItemName = itemTypeSelectionComboBox.Text;
+            String specialItemName = "Saving account interest";
 
-            allChecksExecutionResult = performDataChecks();
+            //There is no need to perform checks when inserting a saving account interest item
+            if (!specialItemName.Equals(selectedItemName)) {
+                allChecksExecutionResult = performDataChecks();
 
-            //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
-            if (allChecksExecutionResult != -1) {
-                dataInsertionExecutionResult = insertSelectedItem(selectedIndex);
-            } 
-                  
+                //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
+                if (allChecksExecutionResult != -1) {
+                    dataInsertionExecutionResult = insertSelectedItem(selectedIndex);
+                }
+            } else {
+                dataInsertionExecutionResult = insertSelectedItem(selectedIndex);//The saving account interest can be inserted directly without performing a precheck
+            }   
 
             //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
             if (dataInsertionExecutionResult != -1) {
@@ -248,32 +319,55 @@ namespace BudgetManager.non_mvc {
         private void createTextBoxes() {
             itemNameTextBox = new TextBox();
             itemNameTextBox.Width = 200;
+            itemNameTextBox.Margin = new Padding(0, 0, 0, 0);
 
             itemValueTextBox = new TextBox();
+            itemValueTextBox.Width = 200;
+            itemValueTextBox.Margin = new Padding(0, 0, 0, 0);
+
+            interestRateTextBox = new TextBox();
+            interestRateTextBox.Width = 200;
+            interestRateTextBox.Margin = new Padding(0, 0, 0, 0);
         }
 
         private void createComboBoxes() {
             DataProvider dataProvider = new DataProvider();
-            incomeTypeComboBox = new ComboBox();
-            //incomeTypeComboBox.DataSource = new List<String>() { "Active income", "Passive income" };
+            incomeTypeComboBox = new ComboBox();           
             dataProvider.fillComboBox(incomeTypeComboBox, ComboBoxType.INCOME_TYPE_COMBOBOX, userID);
-            incomeTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;        
+            incomeTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            incomeTypeComboBox.Margin = new Padding(0, 0, 0, 0);       
 
 
             expenseTypeComboBox = new ComboBox();
-            //expenseTypeComboBox.DataSource = new List<String>() { "Fixed expense", "Periodic expense", "Variable expense" };
             dataProvider.fillComboBox(expenseTypeComboBox, ComboBoxType.EXPENSE_TYPE_COMBOBOX, userID);
             expenseTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            expenseTypeComboBox.Margin = new Padding(0, 0, 0, 0);
 
             creditorNameComboBox = new ComboBox();
-            //creditorNameComboBox.DataSource = new List<String>() { "John", "David", "Andrew", "Steven" };
             dataProvider.fillComboBox(creditorNameComboBox, ComboBoxType.CREDITOR_COMBOBOX, userID);
             creditorNameComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            creditorNameComboBox.Margin = new Padding(0, 0, 0, 0);
 
             debtorNameComboBox = new ComboBox();
-            //debtorNameComboBox.DataSource = new List<String>() { "Michael", "Gerard", "Adam", "James" };
             dataProvider.fillComboBox(debtorNameComboBox, ComboBoxType.DEBTOR_COMBOBOX, userID);
             debtorNameComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            debtorNameComboBox.Margin = new Padding(0, 0, 0, 0);
+
+            savingAccountComboBox = new ComboBox();
+            dataProvider.fillComboBox(savingAccountComboBox, ComboBoxType.SAVING_ACCOUNT_COMBOBOX, userID);
+            savingAccountComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            savingAccountComboBox.Margin = new Padding(0, 0, 0, 0);
+
+            interestTypeComboBox = new ComboBox();
+            dataProvider.fillComboBox(interestTypeComboBox, ComboBoxType.INTEREST_TYPE_COMBOBOX, userID);
+            interestTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            interestTypeComboBox.Margin = new Padding(0, 0, 0, 0);
+            
+            paymentTypeComboBox = new ComboBox();
+            dataProvider.fillComboBox(paymentTypeComboBox, ComboBoxType.PAYMENT_TYPE_COMBOBOX, userID);
+            paymentTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            paymentTypeComboBox.Margin = new Padding(0, 0, 0, 0);
+
         }
 
 
@@ -285,33 +379,58 @@ namespace BudgetManager.non_mvc {
         private void createLabels() {
             itemDatePickerLabel = new Label();
             itemDatePickerLabel.Text = "Date";
-
+           
             itemNameLabel = new Label();
             itemNameLabel.Text = "Name";
+            itemNameLabel.Margin = new Padding(0, 10, 0, 0);
 
             itemValueLabel = new Label();
             itemValueLabel.Text = "Value";
+            itemValueLabel.Margin = new Padding(0, 10, 0, 0);       
 
             incomeTypeLabel = new Label();
             incomeTypeLabel.Text = "Income type";
-
+            incomeTypeLabel.Margin = new Padding(0, 10, 0, 0);
+            
             incomeSourceLabel = new Label();
             incomeSourceLabel.Text = "Income source";
+            incomeSourceLabel.Margin = new Padding(0, 10, 0, 0);
 
             expenseTypeLabel = new Label();
             expenseTypeLabel.Text = "Expense type";
+            expenseTypeLabel.Margin = new Padding(0, 10, 0, 0);
 
             creditorNameLabel = new Label();
             creditorNameLabel.Text = "Creditor name";
+            creditorNameLabel.Margin = new Padding(0, 10, 0, 0);
 
             receivableCreationDateLabel = new Label();
             receivableCreationDateLabel.Text = "Creation date";
+            receivableCreationDateLabel.Margin = new Padding(0, 10, 0, 0);
 
             receivableDueDateLabel = new Label();
             receivableDueDateLabel.Text = "Due date";
+            receivableDueDateLabel.Margin = new Padding(0, 10, 0, 0);
 
             debtorSelectionLabel = new Label();
             debtorSelectionLabel.Text = "Select debtor";
+            debtorSelectionLabel.Margin = new Padding(0, 10, 0, 0);
+            
+            savingAccountLabel = new Label();
+            savingAccountLabel.Text = "Saving account";
+            savingAccountLabel.Margin = new Padding(0, 10, 0, 0);
+
+            interestTypeLabel = new Label();
+            interestTypeLabel.Text = "Interest type";
+            interestTypeLabel.Margin = new Padding(0, 10, 0, 0);
+
+            paymentTypeLabel = new Label();
+            paymentTypeLabel.Text = "Payment type";
+            paymentTypeLabel.Margin = new Padding(0, 10, 0, 0);
+
+            interestRateLabel = new Label();
+            interestRateLabel.Text = "Interest rate";
+            interestRateLabel.Margin = new Padding(0, 10, 0, 0);
 
         }
 
@@ -328,12 +447,16 @@ namespace BudgetManager.non_mvc {
 
         private void createDatePickers() {
             datePicker = new DateTimePicker();
+            datePicker.Margin = new Padding(0, 0, 0, -0);
+
             receivableDueDatePicker = new DateTimePicker();
+            receivableDueDatePicker.Margin = new Padding(0, 0, 0, 0);
         }
 
         private void createContainer() {
             container = new FlowLayoutPanel();
             container.FlowDirection = FlowDirection.TopDown;
+            container.Margin = new Padding(20, 20, 20, 20);
             container.Dock = DockStyle.Fill;
 
         }
@@ -396,6 +519,10 @@ namespace BudgetManager.non_mvc {
                 case 5:
                 case 6:
                     activeControls = new ArrayList() { itemNameTextBox};
+                    break;
+
+                case 7:
+                    activeControls = new ArrayList() { datePicker, itemNameTextBox, savingAccountComboBox, interestTypeComboBox, paymentTypeComboBox, interestRateTextBox, itemValueTextBox };
                     break;
 
                 default:
@@ -509,6 +636,8 @@ namespace BudgetManager.non_mvc {
         private int insertSelectedItem(int selectedItemIndex) {
             int executionResult = -1;
             QueryData paramContainer = null;
+            IDataInsertionDTO dataInsertionDTO = null;
+
             DataInsertionContext dataInsertionContext = new DataInsertionContext();
             switch (selectedItemIndex) {
                 //Income insertion
@@ -594,6 +723,17 @@ namespace BudgetManager.non_mvc {
 
                     executionResult = dataInsertionContext.invoke(paramContainer);
                     break;
+
+                case 7:
+                    dataInsertionDTO = configureDataInsertionDTO(BudgetItemType.SAVING_ACCOUNT_INTEREST);
+                    Guard.notNull(dataInsertionDTO, "saving account interest DTO");
+
+                    DataInsertionStrategy accountInterestInsertionStrategy = new AccountInterestInsertionStrategy();
+                    dataInsertionContext.setStrategy(accountInterestInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(dataInsertionDTO);                   
+                    break;
+                
 
                 default:
                     break;
@@ -719,6 +859,28 @@ namespace BudgetManager.non_mvc {
             return paramContainer;
         }
 
+        //Method for testing a future refactoring(using DTO classes instead of QueryData class)
+        private IDataInsertionDTO configureDataInsertionDTO(BudgetItemType selectedItemType) {
+            IDataInsertionDTO dataInsertionDTO = null;
+
+            switch(selectedItemType) {
+
+                case BudgetItemType.SAVING_ACCOUNT_INTEREST:
+                    String interestCreationDate = datePicker.Value.ToString("yyyy-MM-dd");
+                    String interestName = itemNameTextBox.Text;
+                    String accountName = savingAccountComboBox.Text;
+                    String interestType = interestTypeComboBox.Text;
+                    String paymentType = paymentTypeComboBox.Text;
+                    double interestRate = Convert.ToDouble(interestRateTextBox.Text);
+                    double interestValue = Convert.ToDouble(itemValueTextBox.Text);
+
+                    dataInsertionDTO = new SavingAccountInterestDTO(interestCreationDate, interestName, accountName, interestType, paymentType, interestRate, interestValue, userID);              
+                    break;
+            }
+
+            return dataInsertionDTO;
+        }
+
 
         private int performDataChecks() {
             int allChecksExecutionResult = -1;
@@ -806,6 +968,11 @@ namespace BudgetManager.non_mvc {
 
                 //Debtor
                 case 6:
+                    allChecksExecutionResult = 0;
+                    break;
+                
+                //Saving account interest
+                case 7:
                     allChecksExecutionResult = 0;
                     break;
 

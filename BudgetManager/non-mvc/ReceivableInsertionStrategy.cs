@@ -1,4 +1,5 @@
-﻿using BudgetManager.utils;
+﻿using BudgetManager.mvc.models.dto;
+using BudgetManager.utils;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BudgetManager.non_mvc {
     class ReceivableInsertionStrategy : DataInsertionStrategy {
-        private String sqlStatementInsertReceivable = @"INSERT INTO receivables(name, value, debtorID, user_ID,  totalPaidAmount, dateCreated, dateDue) VALUES(@paramItemName, @paramItemValue, @paramDebtorID, @paramUserID, @paramPaidAmount, @paramStartDate, @paramEndDate)";
+        private String sqlStatementInsertReceivable = @"INSERT INTO receivables(name, value, debtor_ID, user_ID,  totalPaidAmount, dateCreated, dateDue) VALUES(@paramItemName, @paramItemValue, @paramDebtorID, @paramUserID, @paramPaidAmount, @paramStartDate, @paramEndDate)";
         private String sqlStatementGetDebtorID = @"SELECT debtorID FROM debtors WHERE debtorName = @paramTypeName";//Modify the getID method of DataInsertionUtils class to use a more generic record ID retrieval method from the SQLCommandBuilder class
 
         public int execute(QueryData paramContainer) {
@@ -38,6 +39,10 @@ namespace BudgetManager.non_mvc {
 
             return executionResult;
 
+        }
+
+        public int execute(IDataInsertionDTO dataInsertionDTO) {
+            throw new NotImplementedException();
         }
     }
 }
