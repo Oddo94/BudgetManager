@@ -121,15 +121,17 @@ namespace BudgetManager.non_mvc {
 
             //General input check
             int userInputCheckResult = performInputChecks();
+
+            QueryData paramContainer = retrieveUserInputData();
             //Transfer amount check(checks if it's less than the available balance of the saving account)
             //EXTEND METHOD TO CHECK THE AVAILABLE BALANCE FOR ALL THE DISPLAYED ACCOUNTS!!!
-            int transferAmountCheckResult = performTransferValueCheck(transferValue);
+            int transferAmountCheckResult = performTransferValueCheck(transferValue, paramContainer.SourceAccountID);
 
             if (userInputCheckResult == -1 || transferAmountCheckResult == -1) {
                 return;
             }
 
-            QueryData paramContainer = retrieveUserInputData();
+            //QueryData paramContainer = retrieveUserInputData();
             MySqlCommand transferInsertionCommand = SQLCommandBuilder.getTransferInsertionCommand(sqlStatementInsertTransfer, paramContainer);
 
             int executionResult = DBConnectionManager.insertData(transferInsertionCommand);
@@ -232,16 +234,32 @@ namespace BudgetManager.non_mvc {
             return 0;
         }
 
+        ////Method for checking if the amount to be transferred is greater than the available balance f the saving account
+        //private int performTransferValueCheck(int transferValue) {
+        //    //Improve the check method (performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert)) to accept all the parameters being sent as attributes of the QueryData object
+        //    String itemName = "account transfer";
+
+        //    QueryData paramContainer = new QueryData.Builder(userID).addIncomeSource(IncomeSource.SAVING_ACCOUNT).build();
+
+        //    GeneralInsertionCheckStrategy generalInsertionCheckStrategy = new GeneralInsertionCheckStrategy();
+        //    DataInsertionCheckerContext dataInsertionCheckerContext = new DataInsertionCheckerContext();
+        //    dataInsertionCheckerContext.setStrategy(generalInsertionCheckStrategy);
+
+        //    int transferValueCheckResult = dataInsertionCheckerContext.invoke(paramContainer, itemName, transferValue);
+
+        //    return transferValueCheckResult;
+        //}
+
         //Method for checking if the amount to be transferred is greater than the available balance f the saving account
-        private int performTransferValueCheck(int transferValue) {
+        private int performTransferValueCheck(int transferValue, int sourceAccountID) {
             //Improve the check method (performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert)) to accept all the parameters being sent as attributes of the QueryData object
             String itemName = "account transfer";
 
-            QueryData paramContainer = new QueryData.Builder(userID).addIncomeSource(IncomeSource.SAVING_ACCOUNT).build();
+            QueryData paramContainer = new QueryData.Builder(userID).addSourceAccountID(sourceAccountID).build();
 
-            GeneralInsertionCheckStrategy generalInsertionCheckStrategy = new GeneralInsertionCheckStrategy();
+            DataInsertionCheckStrategy transferCheckStrategy = new TransferCheckStrategy();
             DataInsertionCheckerContext dataInsertionCheckerContext = new DataInsertionCheckerContext();
-            dataInsertionCheckerContext.setStrategy(generalInsertionCheckStrategy);
+            dataInsertionCheckerContext.setStrategy(transferCheckStrategy);
 
             int transferValueCheckResult = dataInsertionCheckerContext.invoke(paramContainer, itemName, transferValue);
 
