@@ -16,33 +16,35 @@ namespace BudgetManager.non_mvc {
         public int performCheck(QueryData inputData, string selectedItemName, int valueToInsert) {
             int balanceCheckResult = checkAvailableBalance(inputData, valueToInsert);
 
-            if(balanceCheckResult == -1) {
-                MessageBox.Show(String.Format("The specified transfer value is higher than the currently available account balance! Please specify a value lower or equal to the account balance and try again.", selectedItemName.ToLower()), "Transfer check", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-            }
-
             return balanceCheckResult;
 
         }
 
+        //Method that checks if the transferred amount is lower/equal to the balance of the specified account, using a database stored procedure
         private int checkAvailableBalance(QueryData inputData, int transferValue) {
             MySqlParameter checkResultOutput = null;
             MySqlParameter accountBalanceOutput = null;
 
             try {
+                //Creates database connection
                 MySqlConnection conn = DBConnectionManager.getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
 
+                //Creates command used for calling the stored procedure
                 MySqlCommand balanceCheckCommand = new MySqlCommand(accountBalanceCheckProcedure, conn);
                 balanceCheckCommand.CommandType = System.Data.CommandType.StoredProcedure;
 
+                //Defines the input parameters
                 balanceCheckCommand.Parameters.Add(new MySqlParameter("p_account_ID", inputData.SourceAccountID));
                 balanceCheckCommand.Parameters.Add(new MySqlParameter("p_transfer_value", transferValue));
 
+                //Defines the output parameters
                 checkResultOutput = new MySqlParameter("p_result", MySqlDbType.Int32);
                 checkResultOutput.Direction = System.Data.ParameterDirection.Output;
 
                 accountBalanceOutput = new MySqlParameter("p_account_balance", MySqlDbType.Int32);
                 accountBalanceOutput.Direction = System.Data.ParameterDirection.Output;
 
+                //Adds parameters to the command
                 balanceCheckCommand.Parameters.Add(checkResultOutput);
                 balanceCheckCommand.Parameters.Add(accountBalanceOutput);
 
