@@ -22,30 +22,18 @@ namespace BudgetManager.non_mvc {
         private int userID;
 
         //Data retrieval SQL statements
-        //private String sqlStatementGetSourceAccounts = @"SELECT sa.accountName, ccy.currencyName FROM saving_accounts sa
-        //                                                 INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
-        //                                                 INNER JOIN currencies ccy ON sa.currency_ID = ccy.currencyID 
-        //                                                 WHERE sa.user_ID = @paramID AND sat.typeName like '%SYSTEM_DEFINED%'";
         private String sqlStatementGetUserAccounts = @"SELECT sa.accountName, ccy.currencyName FROM saving_accounts sa                                                        
                                                          INNER JOIN currencies ccy ON sa.currency_ID = ccy.currencyID 
                                                          WHERE sa.user_ID = @paramID";
-        //private String sqlStatementGetDestinationAccounts = @"SELECT sa.accountName, ccy.currencyName FROM saving_accounts sa
-        //                                                INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
-        //                                                INNER JOIN currencies ccy ON sa.currency_ID = ccy.currencyID 
-        //                                                WHERE sa.user_ID = @paramID AND sat.typeName like '%USER_DEFINED%';";
         private String sqlStatementGetAccountID = @"SELECT accountID FROM saving_accounts WHERE user_ID = @paramID AND accountName = @paramRecordName";
         private string sqlStatementInsertTransfer = @"INSERT INTO saving_accounts_transfers(senderAccountID, receivingAccountID, transferName, sentValue, receivedValue, exchangeRate, observations, transferDate) 
                                                     VALUES(@paramSenderAccountId, @paramReceivingAccountId, @paramTransferName, @paramSentValue, @paramReceivedValue, @paramExchangeRate, @paramObservations, @paramTransferDate)";
 
-        //Commands were added at class level so that they can be reused by other methods (they are initialized once the comboboxes are populated)
-        //private MySqlCommand sourceAccountsDataRetrievalCommand;
-        //private MySqlCommand destinationAccountsDataRetrievalCommand;
+        //Command was added at class level so that it can be reused by other methods (it is initialized once the comboboxes are populated)     
         private MySqlCommand userAccountsDataRetrievalCommand;
- 
+
         private List<Control> activeControls;
-        //Maps containing key-value pairs of account names and their corresponding currencies
-        //private Dictionary<String, String> sourceAccountMap;
-        //private Dictionary<String, String> destinationAccountMap;
+        //Map containing key-value pairs of account names and their corresponding currencies
         private Dictionary<String, String> accountCurrencyMap;
 
         public ExternalAccountTransfersForm(int userID) {
@@ -116,20 +104,26 @@ namespace BudgetManager.non_mvc {
             if (userOptionConfirmTransfer == DialogResult.No) {
                 return;
             }
-
-            int transferValue = Convert.ToInt32(amountTransferredTextBox.Text);
-
+         
             //General input check
-            int userInputCheckResult = performInputChecks();
-            //Transfer amount check(checks if it's less than the available balance of the saving account)
-            //EXTEND METHOD TO CHECK THE AVAILABLE BALANCE FOR ALL THE DISPLAYED ACCOUNTS!!!
-            int transferAmountCheckResult = performTransferValueCheck(transferValue);
-
-            if (userInputCheckResult == -1 || transferAmountCheckResult == -1) {
+            int userInputCheckResult = performInputChecks();        
+         
+            //User input data check
+            if (userInputCheckResult == -1) {
                 return;
             }
 
             QueryData paramContainer = retrieveUserInputData();
+            //Transfer amount check(checks if it's less than the available balance of the saving account)
+            int transferAmountCheckResult = performTransferValueCheck(paramContainer.SentValue, paramContainer.SourceAccountID);
+
+            //Source account balance check
+            if (transferAmountCheckResult == -1) {
+                MessageBox.Show("The specified transfer value is higher than the currently available account balance! Please specify a value lower or equal to the account balance and try again.", "Transfer check", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            //QueryData paramContainer = retrieveUserInputData();
             MySqlCommand transferInsertionCommand = SQLCommandBuilder.getTransferInsertionCommand(sqlStatementInsertTransfer, paramContainer);
 
             int executionResult = DBConnectionManager.insertData(transferInsertionCommand);
@@ -152,7 +146,7 @@ namespace BudgetManager.non_mvc {
         private void previewTransferButton_Click(object sender, EventArgs e) {
             int checkResult = performInputChecks();
 
-            if(checkResult == -1) {
+            if (checkResult == -1) {
                 return;
             }
 
@@ -192,40 +186,40 @@ namespace BudgetManager.non_mvc {
 
 
             if ("".Equals(transferNameTextBox.Text)) {
-                MessageBox.Show("Please provide a name for your transfer!", "External account transfers.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please provide a name for your transfer!", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return -1;
             }
 
             if (transferNameTextBox.Text.Length > transferNameMaxLength) {
-                MessageBox.Show("The transfer name length cannot exceed 50 characters.", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("The transfer name length cannot exceed 50 characters.", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return -1;
             }
 
             if (sourceAccountComboBox.SelectedIndex == -1) {
-                MessageBox.Show("Please select the source account for your transfer!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please select the source account for your transfer!", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return -1;
             }
 
             if (sourceAccountName.Equals(destinationAccountName)) {
-                MessageBox.Show("Cannot perform transfers between the same account! The source and destination accounts must be different.", "External accounts transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return -1;                
+                MessageBox.Show("Cannot perform transfers between the same account! The source and destination accounts must be different.", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return -1;
             }
-         
+
             if (destinationAccountComboBox.SelectedIndex == -1) {
-                MessageBox.Show("Please select the destination account for your transfer!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please select the destination account for your transfer!", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return -1;
             }
 
             if ("".Equals(amountTransferredTextBox.Text)) {
-                MessageBox.Show("Please specify the transferred amount!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please specify the transferred amount!", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return -1;
             }
 
             if ("".Equals(exchangeRateTextBox.Text)) {
-                MessageBox.Show("Please specify the exchange rate value!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please specify the exchange rate value!", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return -1;
             } else if (!"".Equals(invalidExchangeRateFormatLabel.Text)) {
-                MessageBox.Show("Invalid exchange rate value!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Invalid exchange rate value!", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return -1;
             }
 
@@ -233,37 +227,26 @@ namespace BudgetManager.non_mvc {
         }
 
         //Method for checking if the amount to be transferred is greater than the available balance f the saving account
-        private int performTransferValueCheck(int transferValue) {
+        private int performTransferValueCheck(int transferValue, int sourceAccountID) {
             //Improve the check method (performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert)) to accept all the parameters being sent as attributes of the QueryData object
             String itemName = "account transfer";
 
-            QueryData paramContainer = new QueryData.Builder(userID).addIncomeSource(IncomeSource.SAVING_ACCOUNT).build();
+            QueryData paramContainer = new QueryData.Builder(userID).addSourceAccountID(sourceAccountID).build();
 
-            GeneralInsertionCheckStrategy generalInsertionCheckStrategy = new GeneralInsertionCheckStrategy();
+            DataInsertionCheckStrategy transferCheckStrategy = new TransferCheckStrategy();
             DataInsertionCheckerContext dataInsertionCheckerContext = new DataInsertionCheckerContext();
-            dataInsertionCheckerContext.setStrategy(generalInsertionCheckStrategy);
+            dataInsertionCheckerContext.setStrategy(transferCheckStrategy);
 
             int transferValueCheckResult = dataInsertionCheckerContext.invoke(paramContainer, itemName, transferValue);
 
             return transferValueCheckResult;
         }
 
-
-
-
         //Methods for populating comboboxes with data
         private void populateControls(int userID) {
             QueryData paramContainer = new QueryData.Builder(userID).build();
-            //sourceAccountsDataRetrievalCommand = SQLCommandBuilder.getTypeNameForItemCommand(sqlStatementGetSourceAccounts, paramContainer);
-            //destinationAccountsDataRetrievalCommand = SQLCommandBuilder.getTypeNameForItemCommand(sqlStatementGetDestinationAccounts, paramContainer);
-
             //CHANGE-DISPLAY ALL USER ACCOUNTS
             userAccountsDataRetrievalCommand = SQLCommandBuilder.getTypeNameForItemCommand(sqlStatementGetUserAccounts, paramContainer);
-
-
-            //int sourceAccountPopulationResult = UserControlsManager.fillComboBoxWithData(sourceAccountComboBox, sourceAccountsDataRetrievalCommand, "accountName");
-            //int destinationAccountPopulationResult = UserControlsManager.fillComboBoxWithData(destinationAccountComboBox, destinationAccountsDataRetrievalCommand, "accountName");
-
 
             int sourceAccountPopulationResult = UserControlsManager.fillComboBoxWithData(sourceAccountComboBox, userAccountsDataRetrievalCommand, "accountName");
             int destinationAccountPopulationResult = UserControlsManager.fillComboBoxWithData(destinationAccountComboBox, userAccountsDataRetrievalCommand, "accountName");
@@ -286,12 +269,8 @@ namespace BudgetManager.non_mvc {
             destinationAccountComboBox.SelectedIndex = -1;
         }
 
-        //Method used for populating the source/destination account maps with data whichc will later be used for dislaying the currency for each account involved in the transfer
+        //Method used for populating the source/destination account maps with data which will later be used for dislaying the currency for each account involved in the transfer
         private void populateDataMaps() {
-            //CHANGE-DISPLAY ALL ACCOUNTS
-            //sourceAccountMap = UserControlsManager.getMapFromDataTable(sourceAccountsDataRetrievalCommand);
-            //destinationAccountMap = UserControlsManager.getMapFromDataTable(destinationAccountsDataRetrievalCommand);
-
             accountCurrencyMap = UserControlsManager.getMapFromDataTable(userAccountsDataRetrievalCommand);
         }
 
@@ -397,11 +376,11 @@ namespace BudgetManager.non_mvc {
 
             ToolTip toolTip = new ToolTip();
             String toolTipMessage;
-            
+
             if (selectedIndex <= -1) {
                 toolTipMessage = "No account selected";
                 toolTip.SetToolTip(targetComboBox, toolTipMessage);
-            } else {                
+            } else {
                 String selectedAccountCurrency = getAccountCurrency(accountType, selectedAccountName);
 
                 toolTipMessage = String.Format("Account currency: {0}", selectedAccountCurrency);
@@ -414,19 +393,6 @@ namespace BudgetManager.non_mvc {
         private String getAccountCurrency(AccountType accountType, String accountName) {
             String retrievedCurrency = "N/A";
 
-            //switch (accountType) {
-            //    case AccountType.SOURCE_ACCOUNT:
-            //        sourceAccountMap.TryGetValue(accountName, out retrievedCurrency);
-            //        break;
-
-            //    case AccountType.DESTINATION_ACCOUNT:
-            //        destinationAccountMap.TryGetValue(accountName, out retrievedCurrency);
-            //        break;
-
-            //    default:
-            //        break;
-            //}
-
             accountCurrencyMap.TryGetValue(accountName, out retrievedCurrency);
 
             return retrievedCurrency;
@@ -434,5 +400,5 @@ namespace BudgetManager.non_mvc {
 
     }
 }
-    
+
 
