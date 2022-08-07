@@ -111,6 +111,7 @@
     </Compile>
     <Compile Include="non-mvc\ReceivableInsertionStrategy.cs" />
     <Compile Include="non-mvc\SavingInsertionStrategy.cs" />
+    <Compile Include="utils\TransferCheckStrategy.cs" />
     <Compile Include="utils\BudgetPlanChecker.cs" />
     <Compile Include="utils\BudgetPlanCheckStrategy.cs" />
     <Compile Include="utils\ConfirmationSender.cs" />
