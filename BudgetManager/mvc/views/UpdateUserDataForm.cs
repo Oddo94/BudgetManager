@@ -161,16 +161,7 @@ namespace BudgetManager {
 
                     month = selectedRecordDate.Month;
                     year = selectedRecordDate.Year;
-                }
-
-         
-                //Retrieving the execution result of the method responsible for updating the balance record table               
-                //TEST TRIGGER DB
-                //int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, selectedRecordDate, getSelectedBudgetItemType(), false);
-
-                //if (savingAccountBalanceUpdateResult == -1) {
-                //    MessageBox.Show("Unable to update the saving account balance record.", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //}
+                }              
             }
 
             submitButton.Enabled = false;//Disables the Submit button after deleting data from the table
@@ -250,19 +241,6 @@ namespace BudgetManager {
             } else {
                 MessageBox.Show("Unable to delete the selected data! Please try again.", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            //Balance record update section
-            //BudgetItemType selectedItemType = getSelectedBudgetItemType();
-            //if (selectedItemType == BudgetItemType.SAVING_ACCOUNT_EXPENSE || selectedItemType == BudgetItemType.SAVING) {               
-            //    int month = deletedRecordDate.Month;
-            //    int year = deletedRecordDate.Year;
-                
-            //    int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, month, year, deletedRecordDate, getSelectedBudgetItemType(), true);
-
-            //    if (savingAccountBalanceUpdateResult == -1) {
-            //        MessageBox.Show("Unable to update the saving account balance record", "Data update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            //    }
-            //}
 
             submitButton.Enabled = false;//Disables the Submit button after deleting data from the table
             deleteButton.Enabled = false;//Disables the Delete button after deleting data from the table
@@ -410,17 +388,6 @@ namespace BudgetManager {
         /*****************************************************************************/
         //UTILITY METHODS SECTION
 
-        //private void fillDataGridView(DataGridView gridView, DataTable inputDataTable) {
-        //    //Null check and row count check(the condition for row count is set to >= 0 so that if a user selects an item with no available records, 
-        //    //an empty table will be displayed and it will be easier to understand the current status of that item for the selected month)
-        //    if (inputDataTable != null && inputDataTable.Rows.Count >= 0) {
-        //        //Sets the data source for the table
-        //        gridView.DataSource = inputDataTable;             
-        //        //Deactivates the editing for the first table column because it will always contain the primary keys of the records and modifying these values would alter the DB structure
-        //        dataGridViewTableDisplay.Columns[0].ReadOnly = true;               
-        //    }
-        //}
-
         private void sendDataToController(DataUpdateControl pickerType, ComboBox itemComboBox, DateTimePicker datePicker) {
             //Single month data selection
             if (pickerType == DataUpdateControl.MONTHLY_PICKER) {
@@ -527,33 +494,6 @@ namespace BudgetManager {
                 currentPicker.Value = new DateTime(year, month, day);
             }
         }
-
-        ////Method for enabling/disabling all DataGridView rows except for the specified one(if all rows need to be made editable then -1 value can be provided as value for the exceptedRowIndex alongside true as the value for isEditable flag)
-        //private void setRowsEditableProperty(DataGridView dataGridView, bool isEditable, int exceptedRowIndex) {
-        //    if (dataGridView == null && dataGridView.Rows.Count == 0) {
-        //        return;
-        //    }
-
-        //    for(int i = 0; i < dataGridView.Rows.Count; i++) {
-        //        if (exceptedRowIndex != i) {
-        //            dataGridView.Rows[i].ReadOnly = isEditable;
-        //        }
-        //    }
-        //}
-
-        ////Method for checking if the selected row for deletion was previously changed
-        //private bool hasChangedRows() {
-        //    //Retrieves the DataTable object containing the modified rows from the DataGridView
-        //    DataTable changedRowsDataTable = ((DataTable)dataGridViewTableDisplay.DataSource).GetChanges();
-
-        //    //If the DataTable is not null it means that there are pending changes so the method will return true
-        //    if (changedRowsDataTable != null) {
-        //        return true;
-        //    }
-    
-        //    return false;
-        //}
-
 
         private BudgetItemType getSelectedBudgetItemType() {
             int selectedIndex = tableSelectionComboBox.SelectedIndex;
@@ -680,41 +620,6 @@ namespace BudgetManager {
 
         }
 
-        ////Method for retrieving the record date from the specified row of the DataGridView
-        //private DateTime getDateFromRow(int rowIndex, int columnIndex) {
-        //    if(dataGridViewTableDisplay == null || dataGridViewTableDisplay.Rows.Count < rowIndex || rowIndex == -1) {
-        //        return DateTime.MinValue;
-        //    }
-
-        //    if (dataGridViewTableDisplay.Columns.Count - 1 < columnIndex || columnIndex == -1) {
-        //        return DateTime.MinValue;
-        //    }
-            
-        //    DataRow specifiedRow = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[rowIndex];          
-        //    object rowDateObject = specifiedRow.ItemArray[columnIndex];
-        //    DateTime rowDateValue = rowDateObject != DBNull.Value ? DateTime.Parse(Convert.ToString(rowDateObject)) : DateTime.MinValue;
-
-        //    return rowDateValue;   
-        //}
-
-        ////Method for retrieving the record value from the specified row of the DataGridView
-        //private int getValueFromRow(int rowIndex, int columnIndex) {
-        //    if (dataGridViewTableDisplay == null || dataGridViewTableDisplay.Rows.Count - 1 < rowIndex || rowIndex == -1) {
-        //        return -1;
-        //    }
-
-        //    if (dataGridViewTableDisplay.Columns.Count - 1 < columnIndex || columnIndex == -1) {
-        //        return -1;
-        //    }
-         
-        //    DataRow specifiedRow = ((DataTable)dataGridViewTableDisplay.DataSource).Rows[rowIndex];            
-        //    object rowDateObject = specifiedRow.ItemArray[columnIndex];
-        //    int recordValue = rowDateObject != DBNull.Value ? Convert.ToInt32(rowDateObject) : -1;
-
-        //    return recordValue;
-
-        //}
-
         //Method for retrieving the correct data column index for saving account expense/savings
         private int[] getColumnIndexList() {
             int[] columnIndexList = new int[2];
@@ -744,6 +649,11 @@ namespace BudgetManager {
         //As a result, on double click the cellClick() method is triggered, saving the old value and then, after the record is modified the new value is saved by the cellValueChangedMethod()
         private void dataGridViewTableDisplay_CellDoubleClick(object sender, DataGridViewCellEventArgs e) {
             dataGridViewTableDisplay.BeginEdit(true);
+        }
+
+        //Disables column sorting for each of the columns added to the DataGridView (fixes bug related to incorrect record update/delete after the user sorted the content)
+        private void dataGridViewTableDisplay_ColumnAdded(object sender, DataGridViewColumnEventArgs e) {
+            e.Column.SortMode = DataGridViewColumnSortMode.NotSortable;
         }
     }
 }
