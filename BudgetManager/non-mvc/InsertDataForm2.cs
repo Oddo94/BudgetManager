@@ -1,5 +1,6 @@
 ﻿using BudgetManager.mvc.models.dto;
 using BudgetManager.utils;
+using BudgetManager.utils.data_insertion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -60,10 +61,12 @@ namespace BudgetManager.non_mvc {
         private ComboBox paymentTypeComboBox;
         private TextBox interestRateTextBox;
         private TextBox interestValueTextBox;
+        private TextBox transactionIDTextBox;
         private Label savingAccountLabel;
         private Label interestTypeLabel;
         private Label paymentTypeLabel;
         private Label interestRateLabel;
+        private Label transactionIDLabel;
 
         //Other variables
         private ArrayList activeControls;
@@ -173,7 +176,7 @@ namespace BudgetManager.non_mvc {
                 case 7:
                     container.Controls.Clear();
                     List<Control> controlsListSavingAccountInterest = new List<Control> { itemDatePickerLabel, datePicker, itemNameLabel, itemNameTextBox, savingAccountLabel, savingAccountComboBox, interestTypeLabel, interestTypeComboBox,
-                        paymentTypeLabel, paymentTypeComboBox, interestRateLabel, interestRateTextBox, itemValueLabel, itemValueTextBox};
+                        paymentTypeLabel, paymentTypeComboBox, interestRateLabel, interestRateTextBox, itemValueLabel, itemValueTextBox, transactionIDLabel, transactionIDTextBox};
                     addControlsToContainer(container, controlsListSavingAccountInterest);
                     populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
@@ -328,6 +331,12 @@ namespace BudgetManager.non_mvc {
             interestRateTextBox = new TextBox();
             interestRateTextBox.Width = 200;
             interestRateTextBox.Margin = new Padding(0, 0, 0, 0);
+
+            //Input field for the transaction ID.It is currently used only for inserting the saving aaccount interest but it can be used in the future for other items that require the insertion of this data
+            transactionIDTextBox = new TextBox();
+            transactionIDTextBox.Width = 200;
+            transactionIDTextBox.Margin = new Padding(0, 0, 0, 0);
+            transactionIDTextBox.MaxLength = 50;//sets the maxiumum number of characters that can be introduced, in order to match the database field constraints
         }
 
         private void createComboBoxes() {
@@ -432,6 +441,10 @@ namespace BudgetManager.non_mvc {
             interestRateLabel.Text = "Interest rate";
             interestRateLabel.Margin = new Padding(0, 10, 0, 0);
 
+            transactionIDLabel = new Label();
+            transactionIDLabel.Text = "Transaction ID";
+            transactionIDLabel.Margin = new Padding(0, 10, 0, 0);
+
         }
 
         private void createRadioButtons() {
@@ -492,38 +505,42 @@ namespace BudgetManager.non_mvc {
             switch (selectedIndex) {
                 //Selected item -> incomes
                 case 0:
-                    activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox, incomeTypeComboBox};
+                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true), new InsertionFormField(incomeTypeComboBox, true)};
                     break;
 
                 //Selected item -> expenses   
                 case 1:
-                    activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox, expenseTypeComboBox, generalIncomesRadioButton, savingAccountRadioButton};
+                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true), new InsertionFormField(expenseTypeComboBox,true),
+                        new InsertionFormField(generalIncomesRadioButton, true), new InsertionFormField(savingAccountRadioButton, true)};
                     break;
 
                 //Selected item -> debts
                 case 2:
-                    activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox, creditorNameComboBox};
+                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true), new InsertionFormField(creditorNameComboBox, true)};
                     break;
 
                 //Selected item -> receivables
                 case 3:
-                    activeControls = new ArrayList() { datePicker, receivableDueDatePicker, itemNameTextBox, itemValueTextBox, debtorNameComboBox, generalIncomesRadioButton, savingAccountRadioButton};
+                    activeControls = new ArrayList() { new InsertionFormField(datePicker,true), new InsertionFormField(receivableDueDatePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true),
+                        new InsertionFormField(debtorNameComboBox, true), new InsertionFormField(generalIncomesRadioButton, true), new InsertionFormField(savingAccountRadioButton, true)};
                     break;
 
                 //Selected item -> savings
                 case 4:
-                    activeControls = new ArrayList() { datePicker, itemNameTextBox, itemValueTextBox};
+                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true)};
                     break;
 
                 //Selected item -> creditors or debtors(intentional fall through since the layout is identical)
                 case 5:
                 case 6:
-                    activeControls = new ArrayList() { itemNameTextBox};
+                    activeControls = new ArrayList() { new InsertionFormField(itemNameTextBox, true)};
                     break;
 
+                //Selected item-> saving account interest
                 case 7:
-                    activeControls = new ArrayList() { datePicker, itemNameTextBox, savingAccountComboBox, interestTypeComboBox, paymentTypeComboBox, interestRateTextBox, itemValueTextBox };
-                    break;
+                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(savingAccountComboBox, true), new InsertionFormField(interestTypeComboBox, true),
+                        new InsertionFormField(paymentTypeComboBox, true), new InsertionFormField(interestRateTextBox, true), new InsertionFormField(itemValueTextBox, true), new InsertionFormField(transactionIDLabel, true), new InsertionFormField(transactionIDTextBox, false) };
+                    break;              
 
                 default:
                     return;
@@ -533,8 +550,16 @@ namespace BudgetManager.non_mvc {
 
         private bool hasDataOnActiveFields(ArrayList activeControls) {
 
-            foreach (Control control in activeControls) {
-                if ("".Equals(control.Text)) {
+            //foreach (Control control in activeControls) {
+            //    if ("".Equals(control.Text)) {
+            //        return false;
+            //    }
+            //}
+
+            //return true;
+            //Checks if the current control contains value and if it is required (in this case it will return false, meaning that the respective required field is not populated)
+            foreach (InsertionFormField currentItem in activeControls) {
+                if ("".Equals(currentItem.FormField.Text) && currentItem.IsRequired) {
                     return false;
                 }
             }
@@ -547,7 +572,8 @@ namespace BudgetManager.non_mvc {
 
             //Takes each control and checks its type
             //If it is of the specified type it casts it to that type before invoking the specific method needed to clear it
-            foreach (Control control in activeControls) {
+            foreach (InsertionFormField currentItem in activeControls) {
+                Control control = currentItem.FormField;//gets the control object from the InsertionFormField object
                 if (control is TextBox) {
                     ((TextBox)control).Text = "";
                 } else if (control is ComboBox) {
@@ -724,6 +750,7 @@ namespace BudgetManager.non_mvc {
                     executionResult = dataInsertionContext.invoke(paramContainer);
                     break;
 
+                //Saving account interest insertion
                 case 7:
                     dataInsertionDTO = configureDataInsertionDTO(BudgetItemType.SAVING_ACCOUNT_INTEREST);
                     Guard.notNull(dataInsertionDTO, "saving account interest DTO");
@@ -856,7 +883,10 @@ namespace BudgetManager.non_mvc {
                     break;
             }
 
-            return paramContainer;
+            /* NOTE!
+            The parameter container is not used for saving account interest insertion since the necessary data is transfered to the DB using a DTO(see below) */
+
+                    return paramContainer;
         }
 
         //Method for testing a future refactoring(using DTO classes instead of QueryData class)
@@ -871,10 +901,11 @@ namespace BudgetManager.non_mvc {
                     String accountName = savingAccountComboBox.Text;
                     String interestType = interestTypeComboBox.Text;
                     String paymentType = paymentTypeComboBox.Text;
+                    String transactionID = !transactionIDTextBox.Text.Equals("") ? transactionIDTextBox.Text : null; //If the transaction ID field remains empty then a null value will be inserted in the database
                     double interestRate = Convert.ToDouble(interestRateTextBox.Text);
                     double interestValue = Convert.ToDouble(itemValueTextBox.Text);
 
-                    dataInsertionDTO = new SavingAccountInterestDTO(interestCreationDate, interestName, accountName, interestType, paymentType, interestRate, interestValue, userID);              
+                    dataInsertionDTO = new SavingAccountInterestDTO(interestCreationDate, interestName, accountName, interestType, paymentType, interestRate, interestValue, transactionID, userID);              
                     break;
             }
 
