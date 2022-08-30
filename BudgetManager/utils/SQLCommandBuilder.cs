@@ -343,6 +343,7 @@ namespace BudgetManager {
             savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramInterestPaymentTypeName", savingAccountInterestDTO.PaymentType);
             savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramInterestRate", savingAccountInterestDTO.InterestRate);
             savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramInterestValue", savingAccountInterestDTO.InterestValue);
+            savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramTransactionID", savingAccountInterestDTO.TransactionID);
             savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramCreationDate", savingAccountInterestDTO.CreationDate);
             savingAccountInterestInsertionCommand.Parameters.AddWithValue("@paramUpdatedDate", null);
 
