@@ -85,6 +85,7 @@
             this.dataGridViewTableDisplay.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellDoubleClick);
             this.dataGridViewTableDisplay.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewTableDisplay_CellMouseClick);
             this.dataGridViewTableDisplay.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTableDisplay_CellValueChanged);
+            this.dataGridViewTableDisplay.ColumnAdded += new System.Windows.Forms.DataGridViewColumnEventHandler(this.dataGridViewTableDisplay_ColumnAdded);
             // 
             // submitButton
             // 
