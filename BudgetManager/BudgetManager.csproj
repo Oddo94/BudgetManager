@@ -71,7 +71,7 @@
     <Compile Include="mvc\views\SavingAccountForm.Designer.cs">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="non-mvc\AccountInterestInsertionStrategy.cs" />
+    <Compile Include="utils\data_insertion\AccountInterestInsertionStrategy.cs" />
     <Compile Include="non-mvc\BudgetPlanCreator.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -84,12 +84,12 @@
     <Compile Include="non-mvc\BudgetPlanManagementCalculator.Designer.cs">
       <DependentUpon>BudgetPlanManagementCalculator.cs</DependentUpon>
     </Compile>
-    <Compile Include="non-mvc\CreditorInsertionStrategy.cs" />
-    <Compile Include="non-mvc\DataInsertionContext.cs" />
-    <Compile Include="non-mvc\DataInsertionStrategy.cs" />
-    <Compile Include="non-mvc\DebtInsertionContext.cs" />
-    <Compile Include="non-mvc\DebtorInsertionStrategy.cs" />
-    <Compile Include="non-mvc\ExpenseInsertionStrategy.cs" />
+    <Compile Include="utils\data_insertion\CreditorInsertionStrategy.cs" />
+    <Compile Include="utils\data_insertion\DataInsertionContext.cs" />
+    <Compile Include="utils\data_insertion\DataInsertionStrategy.cs" />
+    <Compile Include="utils\data_insertion\DebtInsertionContext.cs" />
+    <Compile Include="utils\data_insertion\DebtorInsertionStrategy.cs" />
+    <Compile Include="utils\data_insertion\ExpenseInsertionStrategy.cs" />
     <Compile Include="non-mvc\ExternalAccountsInsertionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -102,35 +102,31 @@
     <Compile Include="non-mvc\ExternalAccountTransfersForm.Designer.cs">
       <DependentUpon>ExternalAccountTransfersForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="non-mvc\IncomeInsertionStrategy.cs" />
-    <Compile Include="non-mvc\InsertDataForm2.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="non-mvc\InsertDataForm2.Designer.cs">
-      <DependentUpon>InsertDataForm2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="non-mvc\ReceivableInsertionStrategy.cs" />
-    <Compile Include="non-mvc\SavingInsertionStrategy.cs" />
-    <Compile Include="utils\data_insertion\InsertionFormField.cs" />
-    <Compile Include="utils\TransferCheckStrategy.cs" />
-    <Compile Include="utils\BudgetPlanChecker.cs" />
-    <Compile Include="utils\BudgetPlanCheckStrategy.cs" />
-    <Compile Include="utils\ConfirmationSender.cs" />
-    <Compile Include="utils\DataGridViewManager.cs" />
-    <Compile Include="utils\DataInsertionCheckerContext.cs" />
-    <Compile Include="utils\DataInsertionCheckStrategy.cs" />
-    <Compile Include="utils\DataInsertionUtils.cs" />
-    <Compile Include="utils\DataProvider.cs" />
-    <Compile Include="utils\DBConnectionManager.cs" />
-    <Compile Include="mvc\models\DebtsModel.cs" />
-    <Compile Include="mvc\models\ExpensesModel.cs" />
-    <Compile Include="mvc\models\IncomesModel.cs" />
+    <Compile Include="utils\data_insertion\IncomeInsertionStrategy.cs" />
     <Compile Include="non-mvc\InsertDataForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="non-mvc\InsertDataForm.Designer.cs">
       <DependentUpon>InsertDataForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="utils\data_insertion\ReceivableInsertionStrategy.cs" />
+    <Compile Include="utils\data_insertion\SavingInsertionStrategy.cs" />
+    <Compile Include="utils\data_insertion\InsertionFormField.cs" />
+    <Compile Include="utils\data_insertion\TransferCheckStrategy.cs" />
+    <Compile Include="utils\data_insertion\BudgetPlanChecker.cs" />
+    <Compile Include="utils\data_insertion\BudgetPlanCheckStrategy.cs" />
+    <Compile Include="utils\app_authentication\ConfirmationSender.cs" />
+    <Compile Include="utils\enums\BudgetItemType.cs" />
+    <Compile Include="utils\enums\IncomeSource.cs" />
+    <Compile Include="utils\ui_controls\DataGridViewManager.cs" />
+    <Compile Include="utils\data_insertion\DataInsertionCheckerContext.cs" />
+    <Compile Include="utils\data_insertion\DataInsertionCheckStrategy.cs" />
+    <Compile Include="utils\data_insertion\DataInsertionUtils.cs" />
+    <Compile Include="utils\ui_controls\DataProvider.cs" />
+    <Compile Include="utils\database\DBConnectionManager.cs" />
+    <Compile Include="mvc\models\DebtsModel.cs" />
+    <Compile Include="utils\data_insertion\ExpensesModel.cs" />
+    <Compile Include="mvc\models\IncomesModel.cs" />
     <Compile Include="mvc\controllers\IUpdaterController.cs" />
     <Compile Include="mvc\models\IUpdaterModel.cs" />
     <Compile Include="non-mvc\LoginForm.cs">
@@ -139,10 +135,10 @@
     <Compile Include="non-mvc\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="utils\GeneralInsertionCheckStrategy.cs" />
-    <Compile Include="utils\Guard.cs" />
-    <Compile Include="utils\PasswordResetManager.cs" />
-    <Compile Include="utils\PasswordSecurityManager.cs" />
+    <Compile Include="utils\data_insertion\GeneralInsertionCheckStrategy.cs" />
+    <Compile Include="utils\data_validation\Guard.cs" />
+    <Compile Include="utils\app_authentication\PasswordResetManager.cs" />
+    <Compile Include="utils\app_authentication\PasswordSecurityManager.cs" />
     <Compile Include="non-mvc\RegisterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -170,11 +166,11 @@
     <Compile Include="mvc\controllers\MainController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="utils\QueryData.cs" />
-    <Compile Include="utils\SavingAccountBalanceManager.cs" />
-    <Compile Include="utils\SQLCommandBuilder.cs" />
-    <Compile Include="utils\UserControlsManager.cs" />
-    <Compile Include="utils\ViewCalculator.cs" />
+    <Compile Include="utils\data_transfer\QueryData.cs" />
+    <Compile Include="utils\data_insertion\SavingAccountBalanceManager.cs" />
+    <Compile Include="utils\database\SQLCommandBuilder.cs" />
+    <Compile Include="utils\ui_controls\UserControlsManager.cs" />
+    <Compile Include="utils\miscellaneous\ViewCalculator.cs" />
     <EmbeddedResource Include="mvc\views\BudgetPlanManagementForm.resx">
       <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -195,9 +191,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\InsertDataForm.resx">
       <DependentUpon>InsertDataForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="non-mvc\InsertDataForm2.resx">
-      <DependentUpon>InsertDataForm2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
@@ -237,6 +230,7 @@
     <Content Include="budget-vector-free-icon-set-23.ico" />
     <Content Include="budget-vector-free-icon-set-35.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

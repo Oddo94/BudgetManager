@@ -1,443 +1,566 @@
-﻿using BudgetManager.non_mvc;
+﻿using BudgetManager.mvc.models.dto;
 using BudgetManager.utils;
-using MySql.Data.MySqlClient;
+using BudgetManager.utils.data_insertion;
+using BudgetManager.utils.enums;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Printing;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static BudgetManager.utils.DataProvider;
 
-namespace BudgetManager {
-
-    //Note: GENERAL_EXPENSE refers to the usual expenses that the user inserts into the DB while SAVING_ACCOUNT_EXPENSE refers to the expenses made from the saving account available balance(the difference comes from the income source selected at the creation time)
-    public enum BudgetItemType {
-        [Description("income")]
-        INCOME,
-        [Description("expense")]
-        GENERAL_EXPENSE,
-        [Description("saving account expense")]
-        SAVING_ACCOUNT_EXPENSE,
-        [Description("debt")]
-        DEBT,       
-        [Description("receivable")]
-        RECEIVABLE,
-        [Description("saving")]
-        SAVING,
-        [Description("creditor")]
-        CREDITOR,
-        [Description("debtor")]
-        DEBTOR,
-        [Description("saving account interest")]
-        SAVING_ACCOUNT_INTEREST,
-        UNDEFINED
-    }
-
-    public enum IncomeSource {
-        GENERAL_INCOMES,
-        SAVING_ACCOUNT,
-        UNDEFINED
-    }
-
+namespace BudgetManager.non_mvc {
     public partial class InsertDataForm : Form {
+        //Current user ID
+        int userID;
 
-        private int userID;
-        private Control[] inputFields;
-        private bool hasClearedFields = false;
+        //General controls
+        private TextBox itemNameTextBox;
+        private TextBox itemValueTextBox;
+        private DateTimePicker datePicker;
+        private Label itemNameLabel;
+        private Label itemValueLabel;
+        private Label itemDatePickerLabel;
 
-        //SQL queries used for selecting the values that fill comboboxes
-        private String sqlStatementSelectIncomeTypes = @"SELECT typeName FROM income_types";
-        private String sqlStatementSelectExpenseTypes = @"SELECT categoryName FROM expense_types";
-        private String sqlStatementSelectCreditors = @"SELECT creditorName
-                FROM users INNER JOIN users_creditors ON users.userID = users_creditors.user_ID
-                INNER JOIN creditors ON users_creditors.creditor_ID = creditors.creditorID
-                WHERE users_creditors.user_ID = @paramUserID";
-        //private String sqlStatementCheckCreditorExistence = @"SELECT creditorName FROM creditors WHERE creditorName = @paramCreditorName";
 
-        //SQL queries for selecting the ID's used in the INSERT commands
-        //private String sqlStatementSelectIncomeTypeID = @"SELECT typeID FROM income_types WHERE typeName = @paramTypeName";
-        private String sqlStatementSelectExpenseTypeID = @"SELECT categoryID FROM expense_types WHERE categoryName = @paramTypeName";
-        //private String sqlStatementSelectCreditorID = @"SELECT creditorID FROM creditors WHERE creditorName = @paramTypeName";
+        //Incomes     
+        private ComboBox incomeTypeComboBox;
+        private Label incomeTypeLabel;
+        private Label incomeSourceLabel;
+        private RadioButton generalIncomesRadioButton;
+        private RadioButton savingAccountRadioButton;
 
-        //SQL queries for checking the existence of a creditor in the current user creditor list
-        //private String sqlStatementCheckCreditorExistenceInUserList = @"SELECT user_ID, creditor_ID FROM users_creditors WHERE user_ID = @paramUserID AND creditor_ID = @paramCreditorID";
+        //Expenses
+        private ComboBox expenseTypeComboBox;
+        private Label expenseTypeLabel;
 
-        //SQL queries for inserting incomes, expenses, debts and savings
-        //private String sqlStatementInsertIncome = @"INSERT INTO incomes(user_ID, name, incomeType, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
-        //private String sqlStatementInsertGeneralIncomesExpense = @"INSERT INTO expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
-        //private String sqlStatementInsertSavingAccountExpense = @"INSERT INTO saving_account_expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";
-        //private String sqlStatementInsertDebt = @"INSERT INTO debts(user_ID, name, value, creditor_ID, date) VALUES(@paramID, @paramDebtName, @paramDebtValue, @paramCreditorID, @paramDebtDate)";
-        //private String sqlStatementInsertSaving = @"INSERT INTO savings(user_ID, name, value, date) VALUES(@paramID, @paramSavingName, @paramSavingValue, @paramSavingDate)";
-        //private String sqlStatementInsertCreditor = @"INSERT INTO creditors(creditorName) VALUES(@paramCreditorName)";
-        //private String sqlStatementInsertCreditorID = @"INSERT INTO users_creditors(user_ID, creditor_ID) VALUES(@paramUserID, @paramCreditorID)";
+        private FlowLayoutPanel container;
 
-        //SQL queries for getting the total value of budget elements for a month in order to allow further checks
-        private String sqlStatementSingleMonthIncomes = @"SELECT SUM(value) from incomes WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
-        private String sqlStatementSingleMonthExpenses = @"SELECT SUM(value) from expenses WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
-        private String sqlStatementSingleMonthDebts = @"SELECT SUM(value) from debts WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
-        private String sqlStatementSingleMonthSavings = @"SELECT SUM(value) from savings WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
+        //Debts
+        Label creditorNameLabel;
+        ComboBox creditorNameComboBox;
 
-        //SQL query to get the saving account current balance value in order to allow further checks when the user selects the saving account as the income source for the inserted expense
-        private String sqlStatementGetSavingAccountBalance = @"SELECT SUM(value) FROM saving_account_balance WHERE user_ID = @paramID";
+        //Receivables
+        private DateTimePicker receivableDueDatePicker;
+        private ComboBox debtorNameComboBox;
+        private Label receivableCreationDateLabel;
+        private Label receivableDueDateLabel;
+        private Label debtorSelectionLabel;
+
+        //Saving account interest
+        private ComboBox savingAccountComboBox;
+        private ComboBox interestTypeComboBox;
+        private ComboBox paymentTypeComboBox;
+        private TextBox interestRateTextBox;
+        //private TextBox interestValueTextBox;
+        private TextBox transactionIDTextBox;
+        private Label savingAccountLabel;
+        private Label interestTypeLabel;
+        private Label paymentTypeLabel;
+        private Label interestRateLabel;
+        private Label transactionIDLabel;
+
+        //Other variables
+        private ArrayList activeControls;
 
         public InsertDataForm(int userID) {
             InitializeComponent();
+            //The userID must be assigned the correct value BEFORE creating the components and populating the comboboxes otherwise they will be empty
             this.userID = userID;
-            inputFields = new Control[] { nameTextBox, valueTextBox, incomeTypeComboBox, expenseTypeComboBox, creditorNameComboBox };
 
-            //Filling incomeTypeComboBox with income types
-            MySqlCommand fillIncomeTypesCommand = new MySqlCommand(sqlStatementSelectIncomeTypes);
-            DataTable dTableIncomeTypes = DBConnectionManager.getData(fillIncomeTypesCommand);
+            createLabels();
+            createTextBoxes();
+            createComboBoxes();
+            createRadioButtons();
+            createDatePickers();
+            createContainer();
 
-            fillComboBox(incomeTypeComboBox, dTableIncomeTypes);
+            groupBox1.Controls.Add(container);
 
-            //Filling expenseTypeComboBox with expense types
-            MySqlCommand fillExpenseTypesCommand = new MySqlCommand(sqlStatementSelectExpenseTypes);
-            DataTable dTableExpenseTypes = DBConnectionManager.getData(fillExpenseTypesCommand);
-
-            fillComboBox(expenseTypeComboBox, dTableExpenseTypes);
-
-            fillCreditorsComboBox();
-
-            //Deactivating data input fields
-            toggleInputFormFieldsState(inputFields, false);
+            itemTypeSelectionComboBox.SelectedIndex = 0;
+            //incomeTypeComboBox.SelectedIndex = -1;
+                 
         }
 
+        private void InsertDataForm2_Load(object sender, EventArgs e) {
+            itemNameTextBox.TextChanged += new EventHandler(itemNameTextBox_TextChanged);
+            itemValueTextBox.TextChanged += new EventHandler(itemValueTextBox_TextChanged);
+            incomeTypeComboBox.SelectedIndexChanged += new EventHandler(incomeTypeComboBox_SelectedIndexChanged);
+            expenseTypeComboBox.SelectedIndexChanged += new EventHandler(expenseTypeComboBox_SelectedIndexChanged);
+            creditorNameComboBox.SelectedIndexChanged += new EventHandler(creditorNameComboBox_IndexChanged);
+            debtorNameComboBox.SelectedIndexChanged += new EventHandler(debtorNameComboBox_IndexChanged);
+            //receivableDueDatePicker.ValueChanged += new EventHandler(receivableDueDatePicker_ValueChanged);
+            savingAccountComboBox.SelectedIndexChanged += new EventHandler(savingAccountComboBox_SelectedIndexChanged);
+            interestTypeComboBox.SelectedIndexChanged += new EventHandler(interestTypeComboBox_SelectedIndexChanged);
+            paymentTypeComboBox.SelectedIndexChanged += new EventHandler(paymentTypeComboBox_SelectedIndexChanged);
+            interestRateTextBox.TextChanged += new EventHandler(interestRateTextBox_TextChanged);       
+        }
 
-        //CONTROLS METHODS      
-        //When selecting a new option all the data input fields are cleared and then only the necessary fields for entering the selected element are activated       
-        private void budgetItemComboBox_SelectedIndexChanged(object sender, EventArgs e) {
-            int selectedIndex = budgetItemComboBox.SelectedIndex;
+        private void itemTypeSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
+
+
 
             switch (selectedIndex) {
-                //Incomes
+                //Incomes insertion layout
                 case 0:
-                    clearFields(inputFields);//Clearing the previously filled input fields
-                    toggleInputFormFieldsState(inputFields, true);//Activating all the fields                    
-                    expenseTypeComboBox.Enabled = false;//Deactivating the fields that are not necessary for the insertion of the currently selected element
-                    generalIncomesRadioButton.Enabled = false;
-                    savingAccountRadioButton.Enabled = false;
-                    creditorNameComboBox.Enabled = false;
+                    container.Controls.Clear();
+                    addGeneralPurposeControls();
+                    List<Control> controlsListIncomes = new List<Control>() { incomeTypeLabel, incomeTypeComboBox};
+                    addControlsToContainer(container, controlsListIncomes);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
+                    clearActiveControls(activeControls);
+                    incomeTypeComboBox.SelectedIndex = -1;
                     break;
 
-                //Expenses
+                //Expenses insertion layout
                 case 1:
-                    clearFields(inputFields);
-                    toggleInputFormFieldsState(inputFields, true);
-                    incomeTypeComboBox.Enabled = false;
-                    generalIncomesRadioButton.Enabled = true;
-                    savingAccountRadioButton.Enabled = true;
-                    creditorNameComboBox.Enabled = false;
+                    container.Controls.Clear();
+                    addGeneralPurposeControls();
+                    List<Control> controlsListExpenses = new List<Control>() { expenseTypeLabel, expenseTypeComboBox, incomeSourceLabel, generalIncomesRadioButton, savingAccountRadioButton };
+                    addControlsToContainer(container, controlsListExpenses);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
+                    clearActiveControls(activeControls);
+                    expenseTypeComboBox.SelectedIndex = -1;
                     break;
 
-                //Debts
+                //Debt insertion layout
                 case 2:
-                    clearFields(inputFields);
-                    fillCreditorsComboBox();
-                    toggleInputFormFieldsState(inputFields, true);
-                    incomeTypeComboBox.Enabled = false;
-                    generalIncomesRadioButton.Enabled = false;
-                    savingAccountRadioButton.Enabled = false;
-                    expenseTypeComboBox.Enabled = false;
+                    container.Controls.Clear();
+                    addGeneralPurposeControls();
+                    List<Control> controlsListDebts = new List<Control>() { creditorNameLabel, creditorNameComboBox };
+                    addControlsToContainer(container, controlsListDebts);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
+                    clearActiveControls(activeControls);
+                    creditorNameComboBox.SelectedIndex = -1;
                     break;
 
-                //Savings
+                //Receivables insertion layout
                 case 3:
-                    clearFields(inputFields);
-                    toggleInputFormFieldsState(inputFields, true);
-                    incomeTypeComboBox.Enabled = false;
-                    expenseTypeComboBox.Enabled = false;
-                    generalIncomesRadioButton.Enabled = false;
-                    savingAccountRadioButton.Enabled = false;
-                    creditorNameComboBox.Enabled = false;
+                    container.Controls.Clear();
+                    List<Control> controlsListReceivables = new List<Control>() { receivableCreationDateLabel, datePicker, receivableDueDateLabel, receivableDueDatePicker, itemNameLabel,
+                    itemNameTextBox, itemValueLabel, itemValueTextBox, debtorSelectionLabel, debtorNameComboBox, incomeSourceLabel, generalIncomesRadioButton, savingAccountRadioButton };
+                    addControlsToContainer(container, controlsListReceivables);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
+                    clearActiveControls(activeControls);
+                    debtorNameComboBox.SelectedIndex = -1;
                     break;
 
-                //Creditors
+                //Savings insertion layout
                 case 4:
-                    clearFields(inputFields);
-                    toggleInputFormFieldsState(inputFields, true);
-                    valueTextBox.Enabled = false;
-                    incomeTypeComboBox.Enabled = false;
-                    expenseTypeComboBox.Enabled = false;
-                    generalIncomesRadioButton.Enabled = false;
-                    savingAccountRadioButton.Enabled = false;
-                    creditorNameComboBox.Enabled = false;
+                    container.Controls.Clear();
+                    addGeneralPurposeControls();
+                    populateActiveControlsList(itemTypeSelectionComboBox);
+                    clearActiveControls(activeControls);
                     break;
 
-                //Debtors-ONLY FOR TEST PURPOSES
+                //Creditor and debtor insertion layout(the layout is identical hence the intentional fall-through)
                 case 5:
-                    clearFields(inputFields);
-                    toggleInputFormFieldsState(inputFields, true);
-                    valueTextBox.Enabled = false;
-                    incomeTypeComboBox.Enabled = false;
-                    expenseTypeComboBox.Enabled = false;
-                    generalIncomesRadioButton.Enabled = false;
-                    savingAccountRadioButton.Enabled = false;
-                    creditorNameComboBox.Enabled = false;
+                case 6:
+                    container.Controls.Clear();
+                    List<Control> controlsListCreditorDebtor = new List<Control>() { itemNameLabel, itemNameTextBox };
+                    addControlsToContainer(container, controlsListCreditorDebtor);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
+                    clearActiveControls(activeControls);
                     break;
 
+                //Saving account interest insertion layout
+                case 7:
+                    container.Controls.Clear();
+                    List<Control> controlsListSavingAccountInterest = new List<Control> { itemDatePickerLabel, datePicker, itemNameLabel, itemNameTextBox, savingAccountLabel, savingAccountComboBox, interestTypeLabel, interestTypeComboBox,
+                        paymentTypeLabel, paymentTypeComboBox, interestRateLabel, interestRateTextBox, itemValueLabel, itemValueTextBox, transactionIDLabel, transactionIDTextBox};
+                    addControlsToContainer(container, controlsListSavingAccountInterest);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
+                    clearActiveControls(activeControls);
+                    break;
+
+                default:
+                    break;
             }
         }
 
-        private void nameTextBox_TextChanged(object sender, EventArgs e) {
-            if (hasDataOnActiveFields(inputFields)) {
-                addEntryButton.Enabled = true;
+        private void itemValueTextBox_TextChanged(object sender, EventArgs e) {
+            String selectedItemName = itemTypeSelectionComboBox.Text;
+            String specialItem = "Saving account interest";
+
+            //Special check to verify if the saving account interest value can be parsed as a double(to allow for a greater precision when calculating the account balance)
+            //The values of the other items will still be treated as integers
+            if (specialItem.Equals(selectedItemName)) {
+                String inputValue = itemValueTextBox.Text;
+                double result;
+                bool isValid = Double.TryParse(inputValue, NumberStyles.AllowDecimalPoint, new NumberFormatInfo { NumberDecimalSeparator = "." }, out result);
+
+                if (!isValid) {
+                    itemValueTextBox.Clear();
+                }
             } else {
-                addEntryButton.Enabled = false;
+                Regex numberRegex = new Regex("\\b[0-9]+\\b", RegexOptions.Compiled);
+                Regex specialCharacterRegex = new Regex("[^\\w\\d\\s]", RegexOptions.Compiled);
+
+                String value = itemValueTextBox.Text;
+                if (!numberRegex.IsMatch(value) || specialCharacterRegex.IsMatch(value)) {
+                    //itemValueTextBox.Text = "";
+                    itemValueTextBox.Clear();
+                }
             }
+
+            setAddEntryButtonState(activeControls);
+
         }
 
-        private void valueTextBox_TextChanged(object sender, EventArgs e) {
-            //Regex for matching digits
-            Regex numberRegex = new Regex("\\b[0-9]+\\b", RegexOptions.Compiled);
-            //Regex for matching special characters(anything that is not a word, digit or space is matched)
-            Regex specialCharacterRegex = new Regex("[^\\w\\d\\s]", RegexOptions.Compiled);
-
-            //If the input contains any other characters apart from digits(letters or special characters) then the textbox content will be cleared automatically
-            if (!numberRegex.IsMatch(valueTextBox.Text) || specialCharacterRegex.IsMatch(valueTextBox.Text)) {
-                valueTextBox.Text = "";
-            }
-            if (hasDataOnActiveFields(inputFields)) {
-                addEntryButton.Enabled = true;
-            } else {
-                addEntryButton.Enabled = false;
-            }
+        private void itemNameTextBox_TextChanged(object sender, EventArgs e) {
+            setAddEntryButtonState(activeControls);
         }
-
 
         private void incomeTypeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
-            if (hasDataOnActiveFields(inputFields)) {
-                addEntryButton.Enabled = true;
-            } else {
-                addEntryButton.Enabled = false;
+            if (incomeTypeComboBox.SelectedIndex != -1) {
+                setAddEntryButtonState(activeControls);
             }
         }
 
         private void expenseTypeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
-            if (hasDataOnActiveFields(inputFields)) {
-                addEntryButton.Enabled = true;
-            } else {
-                addEntryButton.Enabled = false;
-            }
+            setAddEntryButtonState(activeControls);
         }
 
-        private void creditorNameComboBox_SelectedIndexChanged(object sender, EventArgs e) {
-            if (hasDataOnActiveFields(inputFields)) {
-                addEntryButton.Enabled = true;
-            } else {
+        private void creditorNameComboBox_IndexChanged(object sender, EventArgs e) {
+            setAddEntryButtonState(activeControls);
+        }
+
+        private void debtorNameComboBox_IndexChanged(object sender, EventArgs e) {
+            setAddEntryButtonState(activeControls);
+        }
+
+        private void receivableDueDatePicker_ValueChanged(object sender, EventArgs e) {
+            DateTime startDate = datePicker.Value;
+            DateTime endDate = receivableDueDatePicker.Value;
+
+            //CHECK TO SEE IF THE BEHAVIOR IS CORRECT
+            if (!isChronological(startDate, endDate)) {
+                //MessageBox.Show("The receivable creation date must be before the due date!");
                 addEntryButton.Enabled = false;
+            } else {
+                addEntryButton.Enabled = true;
             }
+
+        }
+
+        private void savingAccountComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            setAddEntryButtonState(activeControls);
+        }
+
+        private void interestTypeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            setAddEntryButtonState(activeControls);
+        }
+
+        private void paymentTypeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            setAddEntryButtonState(activeControls);
+        }
+
+        private void interestRateTextBox_TextChanged(object sender, EventArgs e) {
+            String inputValue = interestRateTextBox.Text;
+            double result;
+            bool isValid = Double.TryParse(inputValue, NumberStyles.AllowDecimalPoint, new NumberFormatInfo { NumberDecimalSeparator = "." }, out result);
+
+            if(!isValid) {
+                interestRateTextBox.Clear();
+            }
+
+            setAddEntryButtonState(activeControls);       
         }
 
         private void addEntryButton_Click(object sender, EventArgs e) {
-            int executionResult = -1;
-            //The index of the currently selected element
-            int selectedItemIndex = budgetItemComboBox.SelectedIndex;
+            int allChecksExecutionResult = -1;           
+            int dataInsertionExecutionResult = -1;
+            int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
 
             DialogResult userOptionConfirmInsertion = MessageBox.Show("Are you sure that you want to insert the provided data?", "Data insertion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (userOptionConfirmInsertion == DialogResult.No) {
                 return;
             }
+        
+            String selectedItemName = itemTypeSelectionComboBox.Text;
+            String specialItemName = "Saving account interest";
 
+            //There is no need to perform checks when inserting a saving account interest item
+            if (!specialItemName.Equals(selectedItemName)) {
+                allChecksExecutionResult = performDataChecks();
 
-            String selectedItem = budgetItemComboBox.Text;
-            //If the user wants to insert a creditor or an income then the available amount check is no longer performed
-            if (!"Creditor".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase) && !"Debtor".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase) && !"Income".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase)) {
-                //Checks if the user has enough money left to insert the selected item value
-                int insertedValue = Convert.ToInt32(valueTextBox.Text);
-                int selectedMonth = newEntryDateTimePicker.Value.Month;
-                int selectedYear = newEntryDateTimePicker.Value.Year;
-                //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
-                QueryData paramContainer = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).build(); //CHANGE
-
-                /****SAVING ACCOUNT SOURCE****/
-                if (getIncomeSource() == IncomeSource.SAVING_ACCOUNT) {
-                    if (!hasEnoughMoney(IncomeSource.SAVING_ACCOUNT, insertedValue, paramContainer)) {
-                        MessageBox.Show("The inserted value is higher than the money left in the saving account! You cannot exceed the currently available balance of the saving account.", "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-
-                    executionResult = insertSelectedItem(selectedItemIndex);
-
-                } else if (getIncomeSource() == IncomeSource.GENERAL_INCOMES) {
-                    /****GENERAL INCOMES SOURCE****/
-                    //GENERAL CHECK(item value(general expense, debt, saving) > available amount)
-                    //Checks if the inserted item value is greater than the amount of money left 
-                    if (!hasEnoughMoney(IncomeSource.GENERAL_INCOMES, insertedValue, paramContainer)) {
-                        MessageBox.Show(String.Format("The inserted value for the current {0} is higher than the money left! You cannot exceed the maximum incomes for the current month.", selectedItem.ToLower()), "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-                        return;
-                    }
-
-                    //BUDGET PLAN CHECKS
-                    String entryDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
-                    int entryValue = Convert.ToInt32(valueTextBox.Text);
-
-                    BudgetPlanChecker planChecker = new BudgetPlanChecker(userID, entryDate);
-
-                    //Checks if a budget plan exists for the month selected when inserting the item
-                    if (planChecker.hasBudgetPlanForSelectedMonth()) {
-                        //Gets the plan data for the currently applicable budget plan
-                        DataTable budgetPlanDataTable = planChecker.getBudgetPlanData();
-                        //Extracts the start date and end date of the budget plan into a String array
-                        String[] budgetPlanBoundaries = planChecker.getBudgetPlanBoundaries(budgetPlanDataTable);
-
-                        //Checks if the array containing the budget plan start and end date contains data
-                        if (budgetPlanBoundaries != null) {
-                            //Calculates the total incomes for the selected time interval
-                            int totalIncomes = planChecker.getTotalIncomes(budgetPlanBoundaries[0], budgetPlanBoundaries[1]);
-                            //Extracts the percentage limit that was set in the budget plan for the currently selected item
-                            int percentageLimitForItem = planChecker.getPercentageLimitForItem(getSelectedType(budgetItemComboBox));
-                            //Calculates the actual limit value for the currently selected item based on the previously extracted percentage
-                            int limitValueForSelectedItem = planChecker.calculateMaxLimitValue(totalIncomes, percentageLimitForItem);
-
-                            //Checks if an alarm was set for the current budget plan
-                            if (planChecker.hasBudgetPlanAlarm(budgetPlanDataTable)) {
-                                //Extracts the threshold percentage set in the budget plan for the triggering of the alarm
-                                int thresholdPercentage = planChecker.getThresholdPercentage(budgetPlanDataTable);
-                                //Calculates the sum of the existing database records for the currently selected item(expense, debt, saving) in the specified time interval
-                                int currentItemTotalValue = planChecker.getTotalValueForSelectedItem(getSelectedType(budgetItemComboBox), budgetPlanBoundaries[0], budgetPlanBoundaries[1]);
-                                //Calculates the actual threshold value at which the alarm will be triggered
-                                int thresholdValue = planChecker.calculateValueFromPercentage(limitValueForSelectedItem, thresholdPercentage);
-
-                                //Calculates the value which will result after adding the current user input value for the selected item to the sum of the existing database records
-                                int futureItemTotalValue = currentItemTotalValue + entryValue;
-
-                                //Checks if the previously calculated value is between the threshold value and the max limit for the selected item(as calculated based on the percentage set in the budget plan)
-                                if (planChecker.isBetweenThresholdAndMaxLimit(futureItemTotalValue, thresholdValue, limitValueForSelectedItem)) {
-                                    //Calculates the percentage of the futureItemTotalValue
-                                    int currentItemPercentageValue = planChecker.calculateCurrentItemPercentageValue(futureItemTotalValue, limitValueForSelectedItem);
-                                    //Calculates the difference between the previous percentage value and the threshold percentage(in order to show the percentage by which the threshold is exceeded) 
-                                    int percentageDifference = currentItemPercentageValue - thresholdPercentage;
-                                    DialogResult userOptionExceedThreshold = MessageBox.Show(String.Format("By inserting the current {0} you will exceed the alarm threshold by {1}%. Are you sure that you want to continue?", selectedItem.ToLower(), percentageDifference), "Insert data", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
-                                    if (userOptionExceedThreshold == DialogResult.No) {
-                                        return;
-                                    } else {
-                                        //If the user confirms that he agrees to exceed the threshold the value is inserted in the DB
-                                        executionResult = insertSelectedItem(selectedItemIndex);
-                                    }
-
-                                } else {
-                                    //If the futureItemTotalValue is above the limit set in the budget plan a warning message is shown and no value is inserted
-                                    if (planChecker.exceedsItemLimitValue(entryValue, limitValueForSelectedItem, getSelectedType(budgetItemComboBox), budgetPlanBoundaries[0], budgetPlanBoundaries[1])) {
-                                        MessageBox.Show(String.Format("Cannot insert the provided {0} since it would exceed the {1}% limit imposed by the currently applicable budget plan! Please revise the plan or insert a lower value.", selectedItem.ToLower(), percentageLimitForItem), "Insert data form", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        return;
-                                        //If the futureItemTotalValue is not between threshold limit and limit value and it doesn't exceed the limit value for the selected item it means that it can be inserted in the DB
-                                    } else {
-                                        executionResult = insertSelectedItem(selectedItemIndex);
-                                    }
-                                }
-                            } else {
-                                //If the plan doesn't contain an alarm a check is made to see if the future total value for the item (user input value + sum of existing database records for the selected item) is greater than the max limit for the selected item(as calculated based on the percentage set in the budget plan)
-                                if (planChecker.exceedsItemLimitValue(entryValue, limitValueForSelectedItem, getSelectedType(budgetItemComboBox), budgetPlanBoundaries[0], budgetPlanBoundaries[1])) {
-                                    MessageBox.Show(String.Format("Cannot insert the provided {0} since it would exceed the {1}% limit imposed by the currently applicable budget plan! Please revise the plan or insert a lower value.", selectedItem.ToLower(), percentageLimitForItem), "Insert data form", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    return;
-                                    //If the value is less than the limit then it is inserted in the DB
-                                } else {
-                                    executionResult = insertSelectedItem(selectedItemIndex);
-                                }
-                            }
-                            //If the String array containing the start and end dates for the budget plan is null then no record is inserted in the database since no check can be performed to see if the limits imposed through it are respected
-                        } else {
-                            MessageBox.Show("Unable to retrieve the start and end dates of the current budget plan! Please revise the plan before trying to insert new data.", "Insert data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return;
-                        }
-                        //If there is no budget plan for the selected month/the existing budget plan doesn't have proper start/end dates it means that no additional checks are made and the value can be inserted(the general check is already passed at this point)
-                    } else {
-                        executionResult = insertSelectedItem(selectedItemIndex);
-                    }
+                //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
+                if (allChecksExecutionResult != -1) {
+                    dataInsertionExecutionResult = insertSelectedItem(selectedIndex);
                 }
-             //If the user wants to insert a creditor or an income in the database no additional checks are made and the value is inserted               
             } else {
-                executionResult = insertSelectedItem(selectedItemIndex);
-            }
-
-
+                dataInsertionExecutionResult = insertSelectedItem(selectedIndex);//The saving account interest can be inserted directly without performing a precheck
+            }   
 
             //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
-            if (executionResult != -1) {
+            if (dataInsertionExecutionResult != -1) {
                 MessageBox.Show("Data inserted successfully!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //Clears the active controls if the data insertion is successful
+                clearActiveControls(activeControls);
             } else {
                 MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-
-            //Checks if the user wants to insert an expense using the saving account as the income source or wants to insert a new saving 
-            if (getIncomeSource() == IncomeSource.SAVING_ACCOUNT || getSelectedType(budgetItemComboBox) == BudgetItemType.SAVING) {                        
-                String recordName = nameTextBox.Text;
-                int recordValue = Convert.ToInt32(valueTextBox.Text);
-                int selectedMonth = newEntryDateTimePicker.Value.Month;
-                int selectedYear = newEntryDateTimePicker.Value.Year;
-                DateTime selectedDate = newEntryDateTimePicker.Value.Date;
-
-                //The saving account balance table update operation result
-                int savingAccountBalanceUpdateResult = updateSavingAccountBalanceTable(userID, recordName, recordValue, selectedMonth, selectedYear, selectedDate);
-
-                //Shows a warning message if the saving account balance record update process has failed
-                //If the operation is successfull no message is shwon because this is secondary operation
-                if (savingAccountBalanceUpdateResult == -1) {
-                    MessageBox.Show("Unable to update the saving account balance record.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-
-        }  
-
-        private void cancelButton_Click(object sender, EventArgs e) {
-            this.Visible = false;
         }
+
 
         private void resetButton_Click(object sender, EventArgs e) {
-            clearFields(inputFields);
+            //incomeTypeComboBox.SelectedIndex = -1;
+            clearActiveControls(activeControls);
+        }
+
+        private void createTextBoxes() {
+            itemNameTextBox = new TextBox();
+            itemNameTextBox.Width = 200;
+            itemNameTextBox.Margin = new Padding(0, 0, 0, 0);
+
+            itemValueTextBox = new TextBox();
+            itemValueTextBox.Width = 200;
+            itemValueTextBox.Margin = new Padding(0, 0, 0, 0);
+
+            interestRateTextBox = new TextBox();
+            interestRateTextBox.Width = 200;
+            interestRateTextBox.Margin = new Padding(0, 0, 0, 0);
+
+            //Input field for the transaction ID.It is currently used only for inserting the saving aaccount interest but it can be used in the future for other items that require the insertion of this data
+            transactionIDTextBox = new TextBox();
+            transactionIDTextBox.Width = 200;
+            transactionIDTextBox.Margin = new Padding(0, 0, 0, 0);
+            transactionIDTextBox.MaxLength = 50;//sets the maxiumum number of characters that can be introduced, in order to match the database field constraints
+        }
+
+        private void createComboBoxes() {
+            DataProvider dataProvider = new DataProvider();
+            incomeTypeComboBox = new ComboBox();           
+            dataProvider.fillComboBox(incomeTypeComboBox, ComboBoxType.INCOME_TYPE_COMBOBOX, userID);
+            incomeTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            incomeTypeComboBox.Margin = new Padding(0, 0, 0, 0);       
+
+
+            expenseTypeComboBox = new ComboBox();
+            dataProvider.fillComboBox(expenseTypeComboBox, ComboBoxType.EXPENSE_TYPE_COMBOBOX, userID);
+            expenseTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            expenseTypeComboBox.Margin = new Padding(0, 0, 0, 0);
+
+            creditorNameComboBox = new ComboBox();
+            dataProvider.fillComboBox(creditorNameComboBox, ComboBoxType.CREDITOR_COMBOBOX, userID);
+            creditorNameComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            creditorNameComboBox.Margin = new Padding(0, 0, 0, 0);
+
+            debtorNameComboBox = new ComboBox();
+            dataProvider.fillComboBox(debtorNameComboBox, ComboBoxType.DEBTOR_COMBOBOX, userID);
+            debtorNameComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            debtorNameComboBox.Margin = new Padding(0, 0, 0, 0);
+
+            savingAccountComboBox = new ComboBox();
+            dataProvider.fillComboBox(savingAccountComboBox, ComboBoxType.SAVING_ACCOUNT_COMBOBOX, userID);
+            savingAccountComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            savingAccountComboBox.Margin = new Padding(0, 0, 0, 0);
+
+            interestTypeComboBox = new ComboBox();
+            dataProvider.fillComboBox(interestTypeComboBox, ComboBoxType.INTEREST_TYPE_COMBOBOX, userID);
+            interestTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            interestTypeComboBox.Margin = new Padding(0, 0, 0, 0);
+            
+            paymentTypeComboBox = new ComboBox();
+            dataProvider.fillComboBox(paymentTypeComboBox, ComboBoxType.PAYMENT_TYPE_COMBOBOX, userID);
+            paymentTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            paymentTypeComboBox.Margin = new Padding(0, 0, 0, 0);
+
         }
 
 
-        //UTIL METHODS
-        private void fillBudgetItemElements(ComboBox cBox, String[] inputElements) {
+        private void clearComboBoxes() {
+            incomeTypeComboBox.SelectedIndex = -1;
+            expenseTypeComboBox.SelectedIndex = -1;
+        }
 
-            foreach (String element in inputElements) {
-                cBox.Items.Add(element);
+        private void createLabels() {
+            itemDatePickerLabel = new Label();
+            itemDatePickerLabel.Text = "Date";
+           
+            itemNameLabel = new Label();
+            itemNameLabel.Text = "Name";
+            itemNameLabel.Margin = new Padding(0, 10, 0, 0);
+
+            itemValueLabel = new Label();
+            itemValueLabel.Text = "Value";
+            itemValueLabel.Margin = new Padding(0, 10, 0, 0);       
+
+            incomeTypeLabel = new Label();
+            incomeTypeLabel.Text = "Income type";
+            incomeTypeLabel.Margin = new Padding(0, 10, 0, 0);
+            
+            incomeSourceLabel = new Label();
+            incomeSourceLabel.Text = "Income source";
+            incomeSourceLabel.Margin = new Padding(0, 10, 0, 0);
+
+            expenseTypeLabel = new Label();
+            expenseTypeLabel.Text = "Expense type";
+            expenseTypeLabel.Margin = new Padding(0, 10, 0, 0);
+
+            creditorNameLabel = new Label();
+            creditorNameLabel.Text = "Creditor name";
+            creditorNameLabel.Margin = new Padding(0, 10, 0, 0);
+
+            receivableCreationDateLabel = new Label();
+            receivableCreationDateLabel.Text = "Creation date";
+            receivableCreationDateLabel.Margin = new Padding(0, 10, 0, 0);
+
+            receivableDueDateLabel = new Label();
+            receivableDueDateLabel.Text = "Due date";
+            receivableDueDateLabel.Margin = new Padding(0, 10, 0, 0);
+
+            debtorSelectionLabel = new Label();
+            debtorSelectionLabel.Text = "Select debtor";
+            debtorSelectionLabel.Margin = new Padding(0, 10, 0, 0);
+            
+            savingAccountLabel = new Label();
+            savingAccountLabel.Text = "Saving account";
+            savingAccountLabel.Margin = new Padding(0, 10, 0, 0);
+
+            interestTypeLabel = new Label();
+            interestTypeLabel.Text = "Interest type";
+            interestTypeLabel.Margin = new Padding(0, 10, 0, 0);
+
+            paymentTypeLabel = new Label();
+            paymentTypeLabel.Text = "Payment type";
+            paymentTypeLabel.Margin = new Padding(0, 10, 0, 0);
+
+            interestRateLabel = new Label();
+            interestRateLabel.Text = "Interest rate";
+            interestRateLabel.Margin = new Padding(0, 10, 0, 0);
+
+            transactionIDLabel = new Label();
+            transactionIDLabel.Text = "Transaction ID";
+            transactionIDLabel.Margin = new Padding(0, 10, 0, 0);
+
+        }
+
+        private void createRadioButtons() {
+            generalIncomesRadioButton = new RadioButton();
+            generalIncomesRadioButton.Text = "General incomes";
+            generalIncomesRadioButton.Name = "radioButtonGeneralIncomes";
+            generalIncomesRadioButton.Checked = true;
+
+            savingAccountRadioButton = new RadioButton();
+            savingAccountRadioButton.Text = "Saving account";
+            savingAccountRadioButton.Name = "radioButtonSavingAccount";
+        }
+
+        private void createDatePickers() {
+            datePicker = new DateTimePicker();
+            datePicker.Margin = new Padding(0, 0, 0, -0);
+
+            receivableDueDatePicker = new DateTimePicker();
+            receivableDueDatePicker.Margin = new Padding(0, 0, 0, 0);
+        }
+
+        private void createContainer() {
+            container = new FlowLayoutPanel();
+            container.FlowDirection = FlowDirection.TopDown;
+            container.Margin = new Padding(20, 20, 20, 20);
+            container.Dock = DockStyle.Fill;
+
+        }
+
+        private void addGeneralPurposeControls() {           
+            container.Controls.Add(itemDatePickerLabel);
+            container.Controls.Add(datePicker);
+            container.Controls.Add(itemNameLabel);
+            container.Controls.Add(itemNameTextBox);
+            container.Controls.Add(itemValueLabel);
+            container.Controls.Add(itemValueTextBox);
+        }
+
+        private void addControlsToContainer(Panel targetContainer, List<Control> controlsList) {
+            Guard.notNull(targetContainer, "Controls container");
+            Guard.notNull(controlsList, "Controls list");
+
+            if (!controlsList.Any()) {
+                return;
+            }
+           
+            foreach (Control currentControl in controlsList) {
+                targetContainer.Controls.Add(currentControl);
             }
         }
 
-        private void setComponentVisibility(Control[] components, Boolean isVisible) {
-            foreach (Control currentComponent in components) {
-                currentComponent.Visible = isVisible;
-            }
 
+        private void populateActiveControlsList(ComboBox comboBox) {
+            Guard.notNull(comboBox, "item selection combo box");
+
+            int selectedIndex = comboBox.SelectedIndex;
+
+            switch (selectedIndex) {
+                //Selected item -> incomes
+                case 0:
+                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true), new InsertionFormField(incomeTypeComboBox, true)};
+                    break;
+
+                //Selected item -> expenses   
+                case 1:
+                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true), new InsertionFormField(expenseTypeComboBox,true),
+                        new InsertionFormField(generalIncomesRadioButton, true), new InsertionFormField(savingAccountRadioButton, true)};
+                    break;
+
+                //Selected item -> debts
+                case 2:
+                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true), new InsertionFormField(creditorNameComboBox, true)};
+                    break;
+
+                //Selected item -> receivables
+                case 3:
+                    activeControls = new ArrayList() { new InsertionFormField(datePicker,true), new InsertionFormField(receivableDueDatePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true),
+                        new InsertionFormField(debtorNameComboBox, true), new InsertionFormField(generalIncomesRadioButton, true), new InsertionFormField(savingAccountRadioButton, true)};
+                    break;
+
+                //Selected item -> savings
+                case 4:
+                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true)};
+                    break;
+
+                //Selected item -> creditors or debtors(intentional fall through since the layout is identical)
+                case 5:
+                case 6:
+                    activeControls = new ArrayList() { new InsertionFormField(itemNameTextBox, true)};
+                    break;
+
+                //Selected item-> saving account interest
+                case 7:
+                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(savingAccountComboBox, true), new InsertionFormField(interestTypeComboBox, true),
+                        new InsertionFormField(paymentTypeComboBox, true), new InsertionFormField(interestRateTextBox, true), new InsertionFormField(itemValueTextBox, true), new InsertionFormField(transactionIDLabel, true), new InsertionFormField(transactionIDTextBox, false) };
+                    break;              
+
+                default:
+                    return;
+
+            }
         }
 
-        private void toggleInputFormFieldsState(Control[] fields, bool enabled) {
-            foreach (Control field in fields) {
-                field.Enabled = enabled;
-            }
+        private bool hasDataOnActiveFields(ArrayList activeControls) {
 
-        }
+            //foreach (Control control in activeControls) {
+            //    if ("".Equals(control.Text)) {
+            //        return false;
+            //    }
+            //}
 
-        private void clearFields(Control[] fields) {
-            hasClearedFields = true;
-            foreach (Control field in fields) {
-                if (field.GetType() == typeof(ComboBox)) {
-                    ((ComboBox)field).SelectedIndex = -1;
-                }
-
-                field.Text = "";
-
-            }
-        }
-
-        private bool hasDataOnActiveFields(Control[] fields) {
-            if (hasClearedFields) {
-                hasClearedFields = false;
-                return false;
-            }
-
-            foreach (Control field in fields) {
-                if (field.Enabled == true && "".Equals(field.Text)) {
+            //return true;
+            //Checks if the current control contains value and if it is required (in this case it will return false, meaning that the respective required field is not populated)
+            foreach (InsertionFormField currentItem in activeControls) {
+                if ("".Equals(currentItem.FormField.Text) && currentItem.IsRequired) {
                     return false;
                 }
             }
@@ -445,360 +568,76 @@ namespace BudgetManager {
             return true;
         }
 
-        private void fillComboBox(ComboBox comboBox, DataTable dataTable) {
+        private void clearActiveControls(ArrayList activeControls) {
+            Guard.notNull(activeControls, "The active controls list cannot be null");
 
-            for (int i = 0; i < dataTable.Rows.Count; i++) {
-                String currentElement = (String)dataTable.Rows[i].ItemArray[0];
-                comboBox.Items.Add(currentElement);
-            }
-
-        }
-
-        private void fillCreditorsComboBox() {
-            MySqlCommand fillCreditorsCommand = new MySqlCommand(sqlStatementSelectCreditors);
-            fillCreditorsCommand.Parameters.AddWithValue("@paramUserID", userID);
-
-            DataTable dTableCreditors = DBConnectionManager.getData(fillCreditorsCommand);
-
-            creditorNameComboBox.DataSource = dTableCreditors;
-            creditorNameComboBox.DisplayMember = "creditorName";
-        }
-
-        private int getID(String sqlStatement, String typeName) {
-            MySqlCommand getTypeIDCommand = new MySqlCommand(sqlStatement);
-            getTypeIDCommand.Parameters.AddWithValue("@paramTypeName", typeName);
-
-            DataTable typeIDTable = DBConnectionManager.getData(getTypeIDCommand);
-
-            if (typeIDTable != null && typeIDTable.Rows.Count == 1) {
-                int typeID = Convert.ToInt32(typeIDTable.Rows[0].ItemArray[0]);
-                return typeID;
-            }
-
-
-            return -1;
-        }
-
-        private int insertSelectedItem(int selectedItemIndex) {
-            int executionResult = -1;
-            QueryData paramContainer = null;
-            DataInsertionContext dataInsertionContext = new DataInsertionContext();
-            switch (selectedItemIndex) {
-                //Income insertion
-                case 0:
-                    //Creates the object that contains the necessary values for the execution of the SQL query
-                    paramContainer = configureParamContainer(BudgetItemType.INCOME);
-                    //Null check for this object
-                    Guard.notNull(paramContainer, "income parameter container");
-
-                    //Creates the actual data insertion strategy
-                    DataInsertionStrategy incomeInsertionStrategy = new IncomeInsertionStrategy();
-                    //Sets the strategy of the data insertion context to the previously created strategy
-                    dataInsertionContext.setStrategy(incomeInsertionStrategy);
-
-                    //Executes the strategy by calling the invoke() method of the context and passing it the paramContainer object
-                    executionResult = dataInsertionContext.invoke(paramContainer);
-
-                    break;
-
-                //Expense insertion
-                //CHANGE TO ALLOW THE CORRECT SELECTION OF EXPENSE INSERTION STATEMENT
-                case 1:                   
-                    //GENERAL_EXPENSE type is used since there is an intentional fall through the cases inside the configuration method so that both types are treated identically(they need the same data)
-                    paramContainer = configureParamContainer(BudgetItemType.GENERAL_EXPENSE);
-                    Guard.notNull(paramContainer, "expense parameter container");
-
-                    DataInsertionStrategy expenseInsertionStrategy = new ExpenseInsertionStrategy();
-                    dataInsertionContext.setStrategy(expenseInsertionStrategy);
-
-                    executionResult = dataInsertionContext.invoke(paramContainer);                                                  
-                    break;
-
-                //Debt insertion
-                case 2:
-                    paramContainer = configureParamContainer(BudgetItemType.DEBT);
-                    Guard.notNull(paramContainer, "debt parameter container");
-
-                    DataInsertionStrategy debtInsertionStrategy = new DebtInsertionStrategy();
-                    dataInsertionContext.setStrategy(debtInsertionStrategy);
-
-                    executionResult = dataInsertionContext.invoke(paramContainer);                                    
-                    break;
-
-                //Saving insertion
-                case 3:
-                    paramContainer = configureParamContainer(BudgetItemType.SAVING);
-                    Guard.notNull(paramContainer, "saving parameter container");
-
-                    SavingInsertionStrategy savingInsertionStrategy = new SavingInsertionStrategy();
-                    dataInsertionContext.setStrategy(savingInsertionStrategy);
-
-                    executionResult = dataInsertionContext.invoke(paramContainer);      
-                    break;
-
-                //New creditor insertion
-                case 4:
-                    paramContainer = configureParamContainer(BudgetItemType.CREDITOR);
-                    Guard.notNull(paramContainer, "creditor parameter container");
-
-                    DataInsertionStrategy creditorInsertionStrategy = new CreditorInsertionStrategy();
-                    dataInsertionContext.setStrategy(creditorInsertionStrategy);
-
-                    executionResult = dataInsertionContext.invoke(paramContainer);
-                    break;
-
-                //New debtor insertion
-                case 5:
-                    paramContainer = configureParamContainer(BudgetItemType.DEBTOR);
-                    Guard.notNull(paramContainer, "debtor parameter container");
-
-                    DataInsertionStrategy debtorInsertionStrategy = new DebtorInsertionStrategy();
-                    dataInsertionContext.setStrategy(debtorInsertionStrategy);
-
-                    executionResult = dataInsertionContext.invoke(paramContainer);
-                    break;
-                
-                default:                
-                    break;
-            }
-
-            return executionResult;
-        }
-
-        //private int insertIncome() {
-        //    //Getting the necessary data
-        //    String incomeName = nameTextBox.Text;
-        //    int incomeTypeID = getID(sqlStatementSelectIncomeTypeID, incomeTypeComboBox.Text);//Ia ca argumente fraza SQL si denumirea tipului de venit selectat
-        //    int incomeValue = Convert.ToInt32(valueTextBox.Text);
-        //    String incomeDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd"); //Obtinere data sub forma de String
-
-        //    //Creating command for income insertion
-        //    MySqlCommand incomeInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatementInsertIncome, userID, incomeName, incomeTypeID, incomeValue, incomeDate);
-        //    //Getting the execution command result
-        //    int executionResult = DBConnectionManager.insertData(incomeInsertionCommand);
-
-        //    return executionResult;
-        //}
-
-
-        //private int insertExpense(String sqlStatement) {
-        //    //Getting the necessary data
-        //    String expenseName = nameTextBox.Text;
-        //    int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
-        //    int expenseValue = Convert.ToInt32(valueTextBox.Text);
-        //    String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Getting date as String
-
-        //    //Creating command for expense insertion
-        //    MySqlCommand expenseInsertionCommand = SQLCommandBuilder.getInsertCommandForMultipleTypeItem(sqlStatement, userID, expenseName, expenseTypeID, expenseValue, expenseDate);
-        //    //Getting the execution command result
-        //    int executionResult = DBConnectionManager.insertData(expenseInsertionCommand);
-
-        //    return executionResult;
-        //}
-
-        //private int insertDebt() {
-        //    //Getting the necessary data
-        //    String debtName = nameTextBox.Text;
-        //    int debtValue = Convert.ToInt32(valueTextBox.Text);
-        //    int creditorID = getID(sqlStatementSelectCreditorID, creditorNameComboBox.Text);
-        //    String debtDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
-
-        //    //Creating command for debt insertion
-        //    MySqlCommand debtInsertionCommand = SQLCommandBuilder.getDebtInsertionCommand(sqlStatementInsertDebt, userID, debtName, debtValue, creditorID, debtDate);
-        //    int executionResult = DBConnectionManager.insertData(debtInsertionCommand);
-
-        //    return executionResult;
-        //}
-
-        //private int insertSaving() {
-        //    //Getting the necessary data
-        //    String savingName = nameTextBox.Text;
-        //    int savingValue = Convert.ToInt32(valueTextBox.Text);
-        //    String savingDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
-
-        //    //Creating command for saving insertion
-        //    MySqlCommand savingInsertionCommand = SQLCommandBuilder.getSavingInsertionCommand(sqlStatementInsertSaving, userID, savingName, savingValue, savingDate);
-        //    int executionResult = DBConnectionManager.insertData(savingInsertionCommand);
-
-        //    return executionResult;
-        //}
-
-        //private int insertCreditor() {
-        //    int executionResult = -1;
-        //    //Checks if the entered creditor name exists in the database
-        //    MySqlCommand creditorSelectionCommand = new MySqlCommand(sqlStatementCheckCreditorExistence);
-        //    creditorSelectionCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
-        //    if (entryIsPresent(creditorSelectionCommand, nameTextBox.Text)) {
-        //        DialogResult userChoice = MessageBox.Show("The provided creditor name already exists. Do you want to add it to your creditors list?", "Data insertion", MessageBoxButtons.YesNoCancel);
-        //        if (userChoice == DialogResult.Yes) {
-        //            //Checks if the creditor is already present in the current user creditors' list
-        //            MySqlCommand creditorPresenceInListCommand = new MySqlCommand(sqlStatementCheckCreditorExistenceInUserList);
-        //            creditorPresenceInListCommand.Parameters.AddWithValue("@paramUserID", userID);
-        //            creditorPresenceInListCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));//Looks for the id of the creditor whose name was inserted
-        //            if (isPresentInUserCreditorList(creditorPresenceInListCommand)) {
-        //                MessageBox.Show("The provided creditor is already present in your creditor list and cannot be assigned again! Please enter a different creditor", "Data insertion");
-        //                return -1;
-        //            } else {
-        //                //If the creditor aleady exists but is assigned to the current user a new entry will be created in the users_creditors table of the database
-        //                MySqlCommand creditorIDInsertCommandForExistingEntry = new MySqlCommand(sqlStatementInsertCreditorID);
-        //                creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramUserID", userID);
-        //                creditorIDInsertCommandForExistingEntry.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
-        //                executionResult = DBConnectionManager.insertData(creditorIDInsertCommandForExistingEntry);
-
-        //            }
-
-        //        } else {
-        //            //If the user option is 'No' we return from the method
-        //            return -1;
-        //        }
-        //    } else {
-        //        //Inserting a new creditor in the creditors table of the database
-        //        MySqlCommand creditorInsertCommand = new MySqlCommand(sqlStatementInsertCreditor);
-        //        creditorInsertCommand.Parameters.AddWithValue("@paramCreditorName", nameTextBox.Text);
-        //        executionResult = DBConnectionManager.insertData(creditorInsertCommand);
-
-        //        //Inserting the ID of the newly created creditor in he users_creditors table of the database
-        //        MySqlCommand creditorIDInsertCommand = new MySqlCommand(sqlStatementInsertCreditorID);
-        //        creditorIDInsertCommand.Parameters.AddWithValue("@paramUserID", userID);
-         //       creditorIDInsertCommand.Parameters.AddWithValue("@paramCreditorID", getID(sqlStatementSelectCreditorID, nameTextBox.Text));
-        //        executionResult = DBConnectionManager.insertData(creditorIDInsertCommand);
-        //    }
-
-        //    return executionResult;
-        //}
-
-
-
-        //private bool entryIsPresent(MySqlCommand command, String entryName) {
-        //    //Executes the data retrieval command using the name of the specified creditor        
-        //    DataTable entryDataTable = DBConnectionManager.getData(command);
-
-        //    if (entryDataTable != null) {
-        //        if (entryDataTable.Rows.Count > 0) {
-        //            for (int i = 0; i < entryDataTable.Rows.Count; i++) {
-        //                //Checks if the name of the creditor that was obtained after the execution of the command is the same as the one that the users tries to insert(case insensitive string comparison)
-        //                if (entryName.Equals(entryDataTable.Rows[i].ItemArray[0].ToString(), StringComparison.InvariantCultureIgnoreCase)) {
-        //                    return true;
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    return false;
-
-        //}
-
-        //private bool isPresentInUserCreditorList(MySqlCommand command) {
-        //    DataTable creditorListPresenceTable = DBConnectionManager.getData(command);
-
-        //    if (creditorListPresenceTable != null && creditorListPresenceTable.Rows.Count > 0) {
-        //        return true;
-        //    }
-
-        //    return false;
-        //}
-
-        private bool hasEnoughMoney(IncomeSource incomeSource, int valueToInsert, QueryData paramContainer) {
-            if (incomeSource == IncomeSource.GENERAL_INCOMES) {
-                //Getting the total value for each budget element        
-                int totalIncomes = getTotalValueForSelectedElement(BudgetItemType.INCOME, sqlStatementSingleMonthIncomes, paramContainer);
-                //int totalExpenses = getTotalValueForSelectedElement(BudgetItemType.EXPENSE, sqlStatementSingleMonthExpenses, paramContainer);
-                int totalExpenses = getTotalValueForSelectedElement(BudgetItemType.GENERAL_EXPENSE, sqlStatementSingleMonthExpenses, paramContainer);
-                int totalDebts = getTotalValueForSelectedElement(BudgetItemType.DEBT, sqlStatementSingleMonthDebts, paramContainer);
-                int totalSavings = getTotalValueForSelectedElement(BudgetItemType.SAVING, sqlStatementSingleMonthSavings, paramContainer);
-
-                //Calculating the amount left to spend
-                int amountLeft = getAvailableAmount(totalIncomes, totalExpenses, totalDebts, totalSavings);
-
-                if (valueToInsert <= amountLeft) {
-                    return true;
-                }
-
-            } else if (incomeSource == IncomeSource.SAVING_ACCOUNT) {
-                //Getting the current balance of the saving acount
-                int currentBalance = getSavingAccountCurrentBalance(sqlStatementGetSavingAccountBalance, paramContainer);
-           
-                if (valueToInsert <= currentBalance) {
-                    return true;
+            //Takes each control and checks its type
+            //If it is of the specified type it casts it to that type before invoking the specific method needed to clear it
+            foreach (InsertionFormField currentItem in activeControls) {
+                Control control = currentItem.FormField;//gets the control object from the InsertionFormField object
+                if (control is TextBox) {
+                    ((TextBox)control).Text = "";
+                } else if (control is ComboBox) {
+                    //Setting SelectedIndex to -1 when any item other than the first one is selected does not work properly
+                    ((ComboBox)control).SelectedIndex = -1;
+                    ((ComboBox)control).SelectedIndex = -1;
+                } else if (control is DateTimePicker) {
+                    ((DateTimePicker)control).Value = DateTime.Now;
+                } else if (control is RadioButton) {
+                    //Sets the "General incomes" radio button as the default selection
+                    RadioButton radioButton = (RadioButton)control;
+                    if ("radioButtonGeneralIncomes".Equals(radioButton.Name)) {
+                        radioButton.Checked = true;
+                    }
                 }
             }
-
-            return false;
         }
 
-        //Method for calculating the amount left to spend
-        private int getAvailableAmount(int totalIncomes, int totalExpenses, int totalDebts, int totalSavings) {
+        //Checks if the start date is before the end date (for receivables only!)
+        private bool isChronological(DateTime startDate, DateTime endDate) {
 
-            return totalIncomes - (totalExpenses + totalDebts + totalSavings);
-
+            return startDate <= endDate;
         }
 
-        //Method that gets the total value of the selected element for the specified month
-        private int getTotalValueForSelectedElement(BudgetItemType itemType, String sqlStatement, QueryData paramContainer) {
-            int totalValue = 0;
+        private void setAddEntryButtonState(ArrayList activeControls) {
+            Guard.notNull(activeControls, "Active controls list cannot be null");
 
-            //Getting the correct SQL comand for the selected element
-            MySqlCommand command = getCommand(itemType, sqlStatement, paramContainer);
-
-            if (command == null) {
-                return -1;
+            if (hasDataOnActiveFields(activeControls)) {
+                addEntryButton.Enabled = true;
+            } else {
+                addEntryButton.Enabled = false;
             }
-
-            //Getting the data based on the previously created command
-            DataTable resultDataTable = DBConnectionManager.getData(command);
-
-            //Checking if the DataTable contains data and if so converting the value to int
-            if (resultDataTable != null && resultDataTable.Rows.Count == 1) {
-                Object result = resultDataTable.Rows[0].ItemArray[0];
-                totalValue = result != DBNull.Value ? Convert.ToInt32(result) : 0;
-
-                return totalValue;
-            }
-
-            return -1;
-
         }
 
-        //Method for retrieving the total saving amount
-        private int getSavingAccountCurrentBalance(String sqlStatement, QueryData paramContainer) {
-            //Setting the default value for current balance.If data cannot be retrieved for any reason then 0 will be returned since it is not be allowed for the saving account to have negative balance
-            int currentBalance = 0;
-           
-            MySqlCommand getCurrentBalanceCommand = SQLCommandBuilder.getRecordSumValueCommand(sqlStatementGetSavingAccountBalance, paramContainer);
-            //getCurrentBalanceCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
-            //getCurrentBalanceCommand.Parameters.AddWithValue("@paramYear", paramContainer.Year);
 
-            DataTable resultDataTable = DBConnectionManager.getData(getCurrentBalanceCommand);
+        //Method for retrieving the user selected income source
+        private IncomeSource getIncomeSource() {
+            //Setting the default value for the income source
+            IncomeSource incomeSource = IncomeSource.UNDEFINED;
 
-            if (resultDataTable != null && resultDataTable.Rows.Count == 1) {
-                Object result = resultDataTable.Rows[0].ItemArray[0];
-                currentBalance = result != DBNull.Value ? Convert.ToInt32(result) : 0;
-
-                return currentBalance;
+            if (generalIncomesRadioButton.Checked == true) {
+                incomeSource = IncomeSource.GENERAL_INCOMES;//Income source representing the active/passive incomes
+            } else if (savingAccountRadioButton.Checked == true) {
+                incomeSource = IncomeSource.SAVING_ACCOUNT;//Income source representing the savings that the user currently owns
             }
 
-            return currentBalance;
+            return incomeSource;
         }
 
-        //Method that returns the correct SQL command according to the type of selected item 
-        private MySqlCommand getCommand(BudgetItemType itemType, String sqlStatement, QueryData paramContainer) {
-            switch (itemType) {
-                case BudgetItemType.INCOME:
-                    return SQLCommandBuilder.getSingleMonthCommand(sqlStatement, paramContainer);
-
-                //CHANGE!!!(from EXPENSE TO GENERAL_EXPENSE)
-                case BudgetItemType.GENERAL_EXPENSE:
-                    return SQLCommandBuilder.getSingleMonthCommand(sqlStatement, paramContainer);
-
-                case BudgetItemType.DEBT:
-                    return SQLCommandBuilder.getSingleMonthCommand(sqlStatement, paramContainer);
-
-                case BudgetItemType.SAVING:
-                    return SQLCommandBuilder.getSingleMonthCommand(sqlStatement, paramContainer);
-
-                default:
-                    return null;
+        private int checkReceivableDates() {
+            int checkResult = -1;
+            DateTime startDate = datePicker.Value;
+            DateTime endDate = receivableDueDatePicker.Value;
+            if (!isChronological(startDate, endDate)) {
+                MessageBox.Show("The creation date and due date of the receivable must be in chronological order or at least equal!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                //Resets the values of the date time pickers for the receivable item if the user tries to insert incorrect values for creation date/due date
+                datePicker.Value = DateTime.Now;
+                receivableDueDatePicker.Value = DateTime.Now;                
+            } else {
+                checkResult = 0;
             }
+
+            return checkResult;
         }
 
         //Method for retrieving the user selected budget item type 
@@ -821,60 +660,111 @@ namespace BudgetManager {
             }
         }
 
-        //Method for retrieving the user selected income source
-        private IncomeSource getIncomeSource() {
-            //Setting the default value for the income source
-            IncomeSource incomeSource = IncomeSource.UNDEFINED;
-            
-            if (generalIncomesRadioButton.Checked == true) {
-                incomeSource = IncomeSource.GENERAL_INCOMES;//Income source representing the active/passive incomes
-            } else if (savingAccountRadioButton.Checked == true) {
-                incomeSource = IncomeSource.SAVING_ACCOUNT;//Income source representing the savings that the user currently owns
-            }
-
-            return incomeSource;
-        }
-
-        //Method for updating the records in the saving account balance table and creating records in the saving account expense table when needed(secondary task)  
-        private int updateSavingAccountBalanceTable(int userID, String recordName, int recordValue, int month, int year, DateTime date) {
+        private int insertSelectedItem(int selectedItemIndex) {
             int executionResult = -1;
+            QueryData paramContainer = null;
+            IDataInsertionDTO dataInsertionDTO = null;
 
-            //Object that manages the update of the tables that are part of the saving account system
-            SavingAccountBalanceManager balanceManager = new SavingAccountBalanceManager(userID, month, year, date);
+            DataInsertionContext dataInsertionContext = new DataInsertionContext();
+            switch (selectedItemIndex) {
+                //Income insertion
+                case 0:
+                    //Creates the object that contains the necessary values for the execution of the SQL query
+                    paramContainer = configureParamContainer(BudgetItemType.INCOME);
+                    //Null check for this object
+                    Guard.notNull(paramContainer, "income parameter container");
 
-            //Checks if the user wants to insert a general expense and the selected income source is the saving account
-            //CHANGE(FROM EXPENSE TO GENERAL EXPENSE)
-            if (getSelectedType(budgetItemComboBox) == BudgetItemType.GENERAL_EXPENSE && getIncomeSource() == IncomeSource.SAVING_ACCOUNT) {
-                if (balanceManager.hasBalanceRecord()) {
-                    //Subtracts the value of the inserted expense from the existing record value and updates it accordingly
-                    int currentRecordValue = balanceManager.getRecordValue();
+                    //Creates the actual data insertion strategy
+                    DataInsertionStrategy incomeInsertionStrategy = new IncomeInsertionStrategy();
+                    //Sets the strategy of the data insertion context to the previously created strategy
+                    dataInsertionContext.setStrategy(incomeInsertionStrategy);
 
-                    if (currentRecordValue != -1) {
-                        int finalRecordValue = currentRecordValue - recordValue;
-                        executionResult = balanceManager.updateBalanceRecord(finalRecordValue);
-                    }
-                    
-                } else {
-                    //If there is no balance record created and the user tries to insert an expense having the saving account selected as the income source, first the expense will be inserted into the saving account expense table
-                    //If the insertion is successfull then the balance record table will be updated with the newly inserted value                  
-                    if (balanceManager.createSavingAccountExpenseRecord(recordName, recordValue, getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text)) != -1) {
-                        //Creates a new balance record with a negative value since an expense is inserted into the DB 
-                        executionResult = balanceManager.createBalanceRecord(-recordValue);
-                    }               
-                }
-            } else if (getSelectedType(budgetItemComboBox) == BudgetItemType.SAVING) {
-                if (balanceManager.hasBalanceRecord()) {
-                    //If a record balance is already present then its value is updated by adding the new value to the previous record value
-                    int currentRecordValue = balanceManager.getRecordValue();
+                    //Executes the strategy by calling the invoke() method of the context and passing it the paramContainer object
+                    executionResult = dataInsertionContext.invoke(paramContainer);                                 
+                    break;
 
-                    if (currentRecordValue != -1) {
-                        int finalRecordValue = currentRecordValue + recordValue;
-                        executionResult = balanceManager.updateBalanceRecord(finalRecordValue);
-                    }                  
-                } else {
-                    //If a record balance doesn't exist then it is created using the record value provided by the user
-                    executionResult = balanceManager.createBalanceRecord(recordValue);
-                }               
+                //Expense insertion
+                //CHANGE TO ALLOW THE CORRECT SELECTION OF EXPENSE INSERTION STATEMENT
+                case 1:
+                    //GENERAL_EXPENSE type is used since there is an intentional fall through the cases inside the configuration method so that both types are treated identically(they need the same data)
+                    paramContainer = configureParamContainer(BudgetItemType.GENERAL_EXPENSE);
+                    Guard.notNull(paramContainer, "expense parameter container");
+
+                    DataInsertionStrategy expenseInsertionStrategy = new ExpenseInsertionStrategy();
+                    dataInsertionContext.setStrategy(expenseInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);              
+                    break;
+
+                //Debt insertion
+                case 2:
+                    paramContainer = configureParamContainer(BudgetItemType.DEBT);
+                    Guard.notNull(paramContainer, "debt parameter container");
+
+                    DataInsertionStrategy debtInsertionStrategy = new DebtInsertionStrategy();
+                    dataInsertionContext.setStrategy(debtInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);               
+                    break;
+
+                //Receivable insertion
+                case 3:
+                    paramContainer = configureParamContainer(BudgetItemType.RECEIVABLE);
+                    Guard.notNull(paramContainer, "receivable parameter container");
+
+                    ReceivableInsertionStrategy receivableInsertionStrategy = new ReceivableInsertionStrategy();
+                    dataInsertionContext.setStrategy(receivableInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);
+                    break;
+
+                //Saving insertion
+                case 4:
+                    paramContainer = configureParamContainer(BudgetItemType.SAVING);
+                    Guard.notNull(paramContainer, "saving parameter container");
+
+                    SavingInsertionStrategy savingInsertionStrategy = new SavingInsertionStrategy();
+                    dataInsertionContext.setStrategy(savingInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);
+                    break;
+
+                //New creditor insertion
+                case 5:
+                    paramContainer = configureParamContainer(BudgetItemType.CREDITOR);
+                    Guard.notNull(paramContainer, "creditor parameter container");
+
+                    DataInsertionStrategy creditorInsertionStrategy = new CreditorInsertionStrategy();
+                    dataInsertionContext.setStrategy(creditorInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);                
+                    break;
+
+                //New debtor insertion
+                case 6:
+                    paramContainer = configureParamContainer(BudgetItemType.DEBTOR);
+                    Guard.notNull(paramContainer, "debtor parameter container");
+
+                    DataInsertionStrategy debtorInsertionStrategy = new DebtorInsertionStrategy();
+                    dataInsertionContext.setStrategy(debtorInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(paramContainer);
+                    break;
+
+                //Saving account interest insertion
+                case 7:
+                    dataInsertionDTO = configureDataInsertionDTO(BudgetItemType.SAVING_ACCOUNT_INTEREST);
+                    Guard.notNull(dataInsertionDTO, "saving account interest DTO");
+
+                    DataInsertionStrategy accountInterestInsertionStrategy = new AccountInterestInsertionStrategy();
+                    dataInsertionContext.setStrategy(accountInterestInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(dataInsertionDTO);                   
+                    break;
+                
+
+                default:
+                    break;
             }
 
             return executionResult;
@@ -887,10 +777,10 @@ namespace BudgetManager {
             switch (selectedItemType) {
                 //Income insertion object configuration
                 case BudgetItemType.INCOME:
-                    String incomeName = nameTextBox.Text;
+                    String incomeName = itemNameTextBox.Text;
                     String incomeTypeName = incomeTypeComboBox.Text;
-                    int incomeValue = Convert.ToInt32(valueTextBox.Text);
-                    String incomeDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+                    int incomeValue = Convert.ToInt32(itemValueTextBox.Text);
+                    String incomeDate = datePicker.Value.ToString("yyyy-MM-dd");
 
                     paramContainer = new QueryData.Builder(userID)
                         .addItemName(incomeName)
@@ -903,31 +793,31 @@ namespace BudgetManager {
                 //Expense insertion object configuration
                 //Intentional fall-through the cases because both types need the same data
                 case BudgetItemType.SAVING_ACCOUNT_EXPENSE:
-                case BudgetItemType.GENERAL_EXPENSE:                    
-                    String expenseName = nameTextBox.Text;
+                case BudgetItemType.GENERAL_EXPENSE:
+                    String expenseName = itemNameTextBox.Text;
                     //int expenseTypeID = getID(sqlStatementSelectExpenseTypeID, expenseTypeComboBox.Text);
                     String expenseTypeName = expenseTypeComboBox.Text;
-                    int expenseValue = Convert.ToInt32(valueTextBox.Text);
-                    String expenseDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");//Getting date as String
+                    int expenseValue = Convert.ToInt32(itemValueTextBox.Text);
+                    String expenseDate = datePicker.Value.ToString("yyyy-MM-dd");//Getting date as String
                     IncomeSource incomeSource = getIncomeSource();
 
                     paramContainer = new QueryData.Builder(userID)
 
                         .addItemName(expenseName)
                         .addItemValue(expenseValue)
-                        .addTypeName(expenseTypeName)                      
+                        .addTypeName(expenseTypeName)
                         .addItemCreationDate(expenseDate)
                         .addIncomeSource(incomeSource)
                         .build();
-                 break;
+                    break;
 
                 //Debt insertion object configuration
                 case BudgetItemType.DEBT:
                     //Getting the necessary data
-                    String debtName = nameTextBox.Text;
-                    int debtValue = Convert.ToInt32(valueTextBox.Text);
+                    String debtName = itemNameTextBox.Text;
+                    int debtValue = Convert.ToInt32(itemValueTextBox.Text);
                     String creditorName = creditorNameComboBox.Text;
-                    String debtDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+                    String debtDate = datePicker.Value.ToString("yyyy-MM-dd");
 
                     paramContainer = new QueryData.Builder(userID)
                         .addItemName(debtName)
@@ -937,12 +827,33 @@ namespace BudgetManager {
                         .build();
                     break;
 
+                //Receivable insertion object configuration
+                case BudgetItemType.RECEIVABLE:
+                    String receivableName = itemNameTextBox.Text;
+                    int receivableValue = Convert.ToInt32(itemValueTextBox.Text);
+                    int totalPaidAmount = 0;//the total paid amount is set to 0 since this is a new record and there were no money paid yet
+                    String debtorName = debtorNameComboBox.Text;
+                    String receivableStartDate = datePicker.Value.ToString("yyy-MM-dd");
+                    String receivableEndDate = receivableDueDatePicker.Value.ToString("yyy-MM-dd");
+                    IncomeSource receivableIncomeSource = getIncomeSource();
+
+                    paramContainer = new QueryData.Builder(userID)
+                        .addItemName(receivableName)
+                        .addItemValue(receivableValue)
+                        .addDebtorName(debtorName)
+                        .addStartDate(receivableStartDate)
+                        .addEndDate(receivableEndDate)
+                        .addIncomeSource(receivableIncomeSource)
+                        .addPaidAmount(totalPaidAmount)
+                        .build();
+                    break;
+
                 //Saving insertion object configuration
                 case BudgetItemType.SAVING:
                     //Getting the necessary data
-                    String savingName = nameTextBox.Text;
-                    int savingValue = Convert.ToInt32(valueTextBox.Text);
-                    String savingDate = newEntryDateTimePicker.Value.ToString("yyyy-MM-dd");
+                    String savingName = itemNameTextBox.Text;
+                    int savingValue = Convert.ToInt32(itemValueTextBox.Text);
+                    String savingDate = datePicker.Value.ToString("yyyy-MM-dd");
 
                     paramContainer = new QueryData.Builder(userID)
                         .addItemName(savingName)
@@ -953,7 +864,7 @@ namespace BudgetManager {
 
                 //Creditor insertion object configuration
                 case BudgetItemType.CREDITOR:
-                    String insertedCreditorName = nameTextBox.Text;
+                    String insertedCreditorName = itemNameTextBox.Text;
 
                     paramContainer = new QueryData.Builder(userID)
                         .addCreditorName(insertedCreditorName)
@@ -962,7 +873,7 @@ namespace BudgetManager {
 
                 //Debtor insertion object configuration
                 case BudgetItemType.DEBTOR:
-                    String insertedDebtorName = nameTextBox.Text;
+                    String insertedDebtorName = itemNameTextBox.Text;
 
                     paramContainer = new QueryData.Builder(userID)
                         .addDebtorName(insertedDebtorName)
@@ -973,14 +884,151 @@ namespace BudgetManager {
                     break;
             }
 
-            return paramContainer;
+            /* NOTE!
+            The parameter container is not used for saving account interest insertion since the necessary data is transfered to the DB using a DTO(see below) */
+
+                    return paramContainer;
         }
 
-        private void InsertDataForm_Load(object sender, EventArgs e) {
+        //Method for testing a future refactoring(using DTO classes instead of QueryData class)
+        private IDataInsertionDTO configureDataInsertionDTO(BudgetItemType selectedItemType) {
+            IDataInsertionDTO dataInsertionDTO = null;
 
+            switch(selectedItemType) {
+
+                case BudgetItemType.SAVING_ACCOUNT_INTEREST:
+                    String interestCreationDate = datePicker.Value.ToString("yyyy-MM-dd");
+                    String interestName = itemNameTextBox.Text;
+                    String accountName = savingAccountComboBox.Text;
+                    String interestType = interestTypeComboBox.Text;
+                    String paymentType = paymentTypeComboBox.Text;
+                    String transactionID = !transactionIDTextBox.Text.Equals("") ? transactionIDTextBox.Text : null; //If the transaction ID field remains empty then a null value will be inserted in the database
+                    double interestRate = Convert.ToDouble(interestRateTextBox.Text);
+                    double interestValue = Convert.ToDouble(itemValueTextBox.Text);
+
+                    dataInsertionDTO = new SavingAccountInterestDTO(interestCreationDate, interestName, accountName, interestType, paymentType, interestRate, interestValue, transactionID, userID);              
+                    break;
+            }
+
+            return dataInsertionDTO;
         }
 
 
+        private int performDataChecks() {
+            int allChecksExecutionResult = -1;
+            int generalCheckExecutionResult = -1;
+            int budgetPlanCheckExecutionResult = -1;
+            //int dataInsertionExecutionResult = -1;
+
+            int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
+            String selectedItemName = itemTypeSelectionComboBox.Text;
+
+            QueryData paramContainerGeneralCheck = null;
+            QueryData paramContainerBPCheck = null;
+            DataInsertionCheckerContext dataInsertionCheckContext = null;
+            GeneralInsertionCheckStrategy generalCheckStrategy = null;
+            int valueToInsert = 0;
+
+            //Check if it can be improved
+            if (!selectedItemName.Equals("Debtor") && !selectedItemName.Equals("Creditor") && !selectedItemName.Equals("Income")) {
+                //Checks if the user has enough money left to insert the selected item value
+                valueToInsert = Convert.ToInt32(itemValueTextBox.Text);
+                int selectedMonth = datePicker.Value.Month;
+                int selectedYear = datePicker.Value.Year;
+                IncomeSource incomeSource = getIncomeSource();
+                //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
+                //Query data parameter object for general checks
+                paramContainerGeneralCheck = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addIncomeSource(incomeSource).build(); //CHANGE
+                                                                                                                                                                //Query data parameter object for budget plan checks
+                paramContainerBPCheck = new QueryData.Builder(userID).addItemCreationDate(datePicker.Value.ToString("yyyy-MM-dd")).addBudgetItemType(getSelectedType(itemTypeSelectionComboBox)).build();
+
+                dataInsertionCheckContext = new DataInsertionCheckerContext();
+                generalCheckStrategy = new GeneralInsertionCheckStrategy();
+
+            }
+            switch (selectedIndex) {
+                //Income
+                case 0:
+                    allChecksExecutionResult = 0;
+                    break;
+                //Expense
+                case 1:
+                //Debt                                 
+                case 2:
+
+                //Saving
+                case 4:                   
+                    dataInsertionCheckContext.setStrategy(generalCheckStrategy);
+
+                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
+
+                    BudgetPlanCheckStrategy budgetPlanCheckStrategy = new BudgetPlanCheckStrategy();
+                    dataInsertionCheckContext.setStrategy(budgetPlanCheckStrategy);
+
+                    budgetPlanCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerBPCheck, selectedItemName, valueToInsert);
+
+                    //If the general check fails(not enough money) then the general check execution result will rmain -1 (no data can be inserted)
+                    //Else, if the general check is passed and the budget plan check returns -1 (fail because there might not be a budget plan in place) the data can be inserted
+                    //Otherwise the allChecksExecutionResult keeps its initial value(-1) and no data will be inserted(for example if a warning message is shown during budget plan checks due to the inserted value being higher than the value allowed by the budget plan item limit) 
+                    if (generalCheckExecutionResult == -1) {
+                        break;
+                    } else if (generalCheckExecutionResult == 0 && budgetPlanCheckExecutionResult == -1) {
+                        allChecksExecutionResult = 0;
+                    }
+
+                    break;
+                //Receivables  
+                case 3:
+                    //Checks if the start and end dates for the receivable are in chronological order
+                    if (checkReceivableDates() == -1) {
+                        break;
+                    }
+                    dataInsertionCheckContext.setStrategy(generalCheckStrategy);
+                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
+
+                    if (generalCheckExecutionResult == -1) {
+                        break;
+                    } else {
+                        allChecksExecutionResult = 0;
+                    }
+
+                    break;
+                //Creditor
+                case 5:
+                    allChecksExecutionResult = 0;
+                    break;
+
+                //Debtor
+                case 6:
+                    allChecksExecutionResult = 0;
+                    break;
+                
+                //Saving account interest
+                case 7:
+                    allChecksExecutionResult = 0;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return allChecksExecutionResult;
+        }
+
+
+
+        //Method for retrieving the description of an enum value
+        public static String getEnumDescriptionAttribute(Enum value) {
+            FieldInfo field = value.GetType().GetField(value.ToString());
+
+            DescriptionAttribute attribute = (DescriptionAttribute) Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute));
+
+            return attribute == null ? value.ToString() : attribute.Description;
+        }
+
+        private void cancelButton_Click(object sender, EventArgs e) {
+
+        }
     }
- }
+}
 
