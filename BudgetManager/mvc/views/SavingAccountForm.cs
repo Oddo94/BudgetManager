@@ -1,6 +1,7 @@
 ﻿using BudgetManager.mvc.controllers;
 using BudgetManager.mvc.models;
 using BudgetManager.utils;
+using BudgetManager.utils.enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

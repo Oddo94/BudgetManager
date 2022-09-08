@@ -54,8 +54,6 @@ D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Deb
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.non_mvc.BudgetPlanManagementCalculator.resources
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.non_mvc.ExternalAccountsInsertionForm.resources
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.non_mvc.ExternalAccountTransfersForm.resources
-D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.InsertDataForm.resources
-D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.non_mvc.InsertDataForm2.resources
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.LoginForm.resources
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.RegisterForm.resources
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.UpdateUserDataForm.resources
@@ -65,3 +63,4 @@ D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Deb
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.exe
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.pdb
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csprojResolveAssemblyReference.cache
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.non_mvc.InsertDataForm.resources
