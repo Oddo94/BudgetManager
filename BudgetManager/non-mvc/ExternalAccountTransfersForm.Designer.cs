@@ -217,7 +217,7 @@
             // 
             this.invalidExchangeRateFormatLabel.AutoSize = true;
             this.invalidExchangeRateFormatLabel.ForeColor = System.Drawing.Color.Red;
-            this.invalidExchangeRateFormatLabel.Location = new System.Drawing.Point(255, 297);
+            this.invalidExchangeRateFormatLabel.Location = new System.Drawing.Point(318, 327);
             this.invalidExchangeRateFormatLabel.Name = "invalidExchangeRateFormatLabel";
             this.invalidExchangeRateFormatLabel.Size = new System.Drawing.Size(0, 13);
             this.invalidExchangeRateFormatLabel.TabIndex = 18;
