@@ -1021,7 +1021,7 @@ namespace BudgetManager {
 
         private void insertDataToolStripMenuItem_Click(object sender, EventArgs e) {
             //The ShowDialog() method is used in order to prevent the usage of the background window while the selected one is open(it also prevents the opening of multiple instances of the same window)
-            new InsertDataForm2(userID).ShowDialog();
+            new InsertDataForm(userID).ShowDialog();
         }
 
         private void createExternalAccountToolStripMenuItem_Click(object sender, EventArgs e) {

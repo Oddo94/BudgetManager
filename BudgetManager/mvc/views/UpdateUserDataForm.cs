@@ -1,4 +1,5 @@
 ﻿using BudgetManager.utils;
+using BudgetManager.utils.enums;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
