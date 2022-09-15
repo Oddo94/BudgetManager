@@ -42,7 +42,8 @@ namespace BudgetManager {
         private String itemIdentificationNumber;
         private String creditorName;
         private String debtorName;
-        private String additionalData;    
+        private String additionalData;
+        private String genericID;   
         private IncomeSource incomeSource;
         private BudgetItemType budgetItemType;
 
@@ -262,6 +263,12 @@ namespace BudgetManager {
             }
         }
 
+        public String GenericID {
+            get {
+                return this.genericID;
+            }
+        }
+
         public IncomeSource IncomeSource {
             get {
                 return this.incomeSource;
@@ -310,6 +317,7 @@ namespace BudgetManager {
             private String creditorName;
             private String debtorName;
             private String additionalData;
+            private String genericID;
             private IncomeSource incomeSource;
             private BudgetItemType budgetItemType;
 
@@ -525,6 +533,12 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addGenericID(String genericID) {
+                this.genericID = genericID;
+
+                return this;
+            }
+
             public Builder addIncomeSource(IncomeSource incomeSource) {
                 this.incomeSource = incomeSource;
 
@@ -574,6 +588,7 @@ namespace BudgetManager {
                     creditorName = this.creditorName,
                     debtorName = this.debtorName,
                     additionalData = this.additionalData,
+                    genericID = this.genericID,
                     incomeSource = this.incomeSource,
                     budgetItemType = this.budgetItemType
                 };

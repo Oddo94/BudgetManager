@@ -26,8 +26,8 @@ namespace BudgetManager.non_mvc {
                                                          INNER JOIN currencies ccy ON sa.currency_ID = ccy.currencyID 
                                                          WHERE sa.user_ID = @paramID";
         private String sqlStatementGetAccountID = @"SELECT accountID FROM saving_accounts WHERE user_ID = @paramID AND accountName = @paramRecordName";
-        private string sqlStatementInsertTransfer = @"INSERT INTO saving_accounts_transfers(senderAccountID, receivingAccountID, transferName, sentValue, receivedValue, exchangeRate, observations, transferDate) 
-                                                    VALUES(@paramSenderAccountId, @paramReceivingAccountId, @paramTransferName, @paramSentValue, @paramReceivedValue, @paramExchangeRate, @paramObservations, @paramTransferDate)";
+        private string sqlStatementInsertTransfer = @"INSERT INTO saving_accounts_transfers(senderAccountID, receivingAccountID, transferName, sentValue, receivedValue, exchangeRate, transactionID, observations, transferDate) 
+                                                    VALUES(@paramSenderAccountId, @paramReceivingAccountId, @paramTransferName, @paramSentValue, @paramReceivedValue, @paramExchangeRate, @paramTransactionID, @paramObservations, @paramTransferDate)";
 
         //Command was added at class level so that it can be reused by other methods (it is initialized once the comboboxes are populated)     
         private MySqlCommand userAccountsDataRetrievalCommand;
@@ -38,7 +38,7 @@ namespace BudgetManager.non_mvc {
 
         public ExternalAccountTransfersForm(int userID) {
             InitializeComponent();
-            activeControls = new List<Control>() { transferNameTextBox, sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox, transferDateTimePicker, transferObservationsRichTextBox };
+            activeControls = new List<Control>() { transferNameTextBox, sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox, transferDateTimePicker, transactionIDTextBox, transferObservationsRichTextBox };
             this.userID = userID;
 
             populateControls(userID);
@@ -296,6 +296,7 @@ namespace BudgetManager.non_mvc {
             int receivedValue = (int)(sentValue * exchangeRate);
             String transferDate = transferDateTimePicker.Value.ToString("yyyy-MM-dd");
             String transferObservations = transferObservationsRichTextBox.Text;
+            String transactionID = !transactionIDTextBox.Text.Equals("") ? transactionIDTextBox.Text : null;
 
             QueryData paramContainer = new QueryData.Builder(userID)
                 .addSourceAccountID(sourceAccountId)
@@ -306,6 +307,7 @@ namespace BudgetManager.non_mvc {
                 .addExchangeRate(exchangeRate)
                 .addAdditionalData(transferObservations)
                 .addItemCreationDate(transferDate)
+                .addGenericID(transactionID)
                 .build();
 
             return paramContainer;
@@ -341,8 +343,9 @@ namespace BudgetManager.non_mvc {
             String amountTransferredData = String.Format("{0, -10}: {1} {2}\n", "Amount transferred", paramContainer.SentValue, sourceAccountCurrency);
             String amountReceivedData = String.Format("{0, -10}: {1} {2}\n", "Amount received", paramContainer.ReceivedValue, destinationAccountCurrency);
             String exchangeRateData = String.Format("{0, -10}: {1, -10}\n", "Exchange rate", paramContainer.ExchangeRate);
+            String transactionIDData = String.Format("{0, -10}: {1, 10}\n", "Transfer ID", paramContainer.GenericID);
             String transferDateData = String.Format("{0, -10}: {1, -10}\n", "Transfer date", paramContainer.ItemCreationDate);
-            String transferObservationsData = String.Format("{0, -10}: {1, 10}\n\n", "Transfer observations", paramContainer.AdditionalData);
+            String transferObservationsData = String.Format("{0, -10}: {1, 10}\n\n", "Transfer observations", paramContainer.AdditionalData);         
             String hintData = String.Format("{0, -10}", "Press Ctrl + C to copy the transfer details information.");
 
             List<String> dataList = new List<String>();
@@ -354,6 +357,7 @@ namespace BudgetManager.non_mvc {
             dataList.Add(amountTransferredData);
             dataList.Add(amountReceivedData);
             dataList.Add(exchangeRateData);
+            dataList.Add(transactionIDData);
             dataList.Add(transferDateData);
             dataList.Add(transferObservationsData);
             dataList.Add(hintData);
@@ -397,7 +401,6 @@ namespace BudgetManager.non_mvc {
 
             return retrievedCurrency;
         }
-
     }
 }
 
