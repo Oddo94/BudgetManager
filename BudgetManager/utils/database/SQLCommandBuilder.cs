@@ -304,6 +304,7 @@ namespace BudgetManager {
             transferInsertionCommand.Parameters.AddWithValue("@paramSentValue", paramContainer.SentValue);
             transferInsertionCommand.Parameters.AddWithValue("@paramReceivedValue", paramContainer.ReceivedValue);
             transferInsertionCommand.Parameters.AddWithValue("@paramExchangeRate", paramContainer.ExchangeRate);
+            transferInsertionCommand.Parameters.AddWithValue("@paramTransactionID", paramContainer.GenericID);
             transferInsertionCommand.Parameters.AddWithValue("@paramObservations", paramContainer.AdditionalData);
             transferInsertionCommand.Parameters.AddWithValue("@paramTransferDate", paramContainer.ItemCreationDate);
 
