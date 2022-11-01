@@ -20,6 +20,7 @@ namespace BudgetManager {
         private String sqlStatementGetDataForPasswordReset = @"SELECT userID, username, email FROM users WHERE username = @paramUserName";
         private int minimumPasswordLength;
         private bool isSuccessfullyAuthenticated;
+        private bool hasRequestedApplicationExit;
 
         public LoginForm() {
             InitializeComponent();
@@ -65,6 +66,8 @@ namespace BudgetManager {
                 //this.Close();
                 DialogResult = DialogResult.OK;
                 isSuccessfullyAuthenticated = true;
+
+                Application.Run(new UserDashboard(userID, userName));
 
             } else {             
                 MessageBox.Show("Invalid username and/or password! Please try again", "Login",MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -244,9 +247,12 @@ namespace BudgetManager {
         private void LoginForm_FormClosing(object sender, FormClosingEventArgs e) {
             if (!isSuccessfullyAuthenticated) {
                 DialogResult userOption = MessageBox.Show("Are you sure that you want to exit?", "Login form", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
+               
                 if (userOption == DialogResult.No) {
                     e.Cancel = true;
+                } else {
+                   // hasRequestedApplicationExit = true;
+                    Environment.Exit(0);
                 }
             }
         }
