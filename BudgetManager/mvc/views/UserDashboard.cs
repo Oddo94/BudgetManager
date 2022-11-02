@@ -1004,10 +1004,7 @@ namespace BudgetManager {
                 //new LoginForm().Visible = true;
                 hasRestartedApplication = true;
                 Application.Restart();
-
-
             }
-
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e) {

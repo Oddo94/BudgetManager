@@ -20,7 +20,6 @@ namespace BudgetManager {
         private String sqlStatementGetDataForPasswordReset = @"SELECT userID, username, email FROM users WHERE username = @paramUserName";
         private int minimumPasswordLength;
         private bool isSuccessfullyAuthenticated;
-        private bool hasRequestedApplicationExit;
 
         public LoginForm() {
             InitializeComponent();
@@ -57,7 +56,7 @@ namespace BudgetManager {
                 //Extracts the user ID
                 userID = getUserID(authenticationData);
                 userName = inputUserName;
-                //this.Visible = false;
+                this.Visible = false;
 
                 ////Sends the user ID to the UserDashboard class constructor in order to use it later for extracting data from the database
                 //UserDashboard userDashboard = new UserDashboard(userID, userName);
@@ -67,7 +66,7 @@ namespace BudgetManager {
                 DialogResult = DialogResult.OK;
                 isSuccessfullyAuthenticated = true;
 
-                Application.Run(new UserDashboard(userID, userName));
+                new UserDashboard(userID, userName).Visible = true;
 
             } else {             
                 MessageBox.Show("Invalid username and/or password! Please try again", "Login",MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -251,7 +250,6 @@ namespace BudgetManager {
                 if (userOption == DialogResult.No) {
                     e.Cancel = true;
                 } else {
-                   // hasRequestedApplicationExit = true;
                     Environment.Exit(0);
                 }
             }
