@@ -27,6 +27,7 @@ namespace BudgetManager {
         private IControl controller = new MainController();
         private IModel model = new BudgetSummaryModel();
         private DataGridViewManager gridViewManager;
+        //private LoginForm loginForm;
 
         //The list that contains the DateTimePicker objects that will be deactivated when there's no conection to the database
         private DateTimePicker[] datePickers = new DateTimePicker[] { };
@@ -38,6 +39,7 @@ namespace BudgetManager {
         public UserDashboard(int userID, String userName) {
             InitializeComponent();
             this.userID = userID;
+            //this.loginForm = loginForm;
             datePickers = new DateTimePicker[] { dateTimePickerStartBS, dateTimePickerEndBS, dateTimePickerStartIncomes, dateTimePickerEndIncomes, dateTimePickerMonthlyIncomes, dateTimePickerStartExpenses, dateTimePickerEndExpenses, dateTimePickerMonthlyExpenses,
                        dateTimePickerStartDebts, dateTimePickerEndDebts, dateTimePickerMonthlyDebts, dateTimePickerStartSavings, dateTimePickerEndSavings, dateTimePickerMonthlySavings};
             this.Text = String.Format("Budget Manager-{0}'s dashboard", userName);
@@ -176,6 +178,7 @@ namespace BudgetManager {
         }
 
         private void UserDashboard_FormClosing(object sender, FormClosingEventArgs e) {
+            //The exit message is displayed only if the application hasn't been restarted (that takes place when the user selects the logout option from the toolstrip menu)
             if (!hasRestartedApplication) {
                 if (userAgreedToExit) {
                     return;
@@ -188,6 +191,7 @@ namespace BudgetManager {
                     //hasRequestedExitFromToolStripOption = true;
                     Application.Exit();
                 } else {
+                    //Cancels the form closing event if the user selects the "No" option
                     e.Cancel = true;
                 }
             }

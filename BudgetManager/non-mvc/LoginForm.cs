@@ -15,11 +15,13 @@ namespace BudgetManager {
     public partial class LoginForm : Form {
         public static int userID;
         public static String userName;
+        public static bool isOpeningTheUserRegistrationForm;
 
         private String sqlStatementGetAuthenticationData = @"SELECT userID, username, salt, password FROM users WHERE username = @paramUserName";
         private String sqlStatementGetDataForPasswordReset = @"SELECT userID, username, email FROM users WHERE username = @paramUserName";
         private int minimumPasswordLength;
         private bool isSuccessfullyAuthenticated;
+
 
         public LoginForm() {
             InitializeComponent();
@@ -56,16 +58,17 @@ namespace BudgetManager {
                 //Extracts the user ID
                 userID = getUserID(authenticationData);
                 userName = inputUserName;
-                this.Visible = false;
+                //this.Visible = false;
+                this.Hide();
 
                 ////Sends the user ID to the UserDashboard class constructor in order to use it later for extracting data from the database
                 //UserDashboard userDashboard = new UserDashboard(userID, userName);
                 //userDashboard.Visible = true;
 
-                //this.Close();
-                DialogResult = DialogResult.OK;
+                DialogResult = DialogResult.OK;                
                 isSuccessfullyAuthenticated = true;
 
+                //Sends the current form instance as an argument to the UserDashboard class so that it can later be used to show the login form on n 
                 new UserDashboard(userID, userName).Visible = true;
 
             } else {             
@@ -80,10 +83,12 @@ namespace BudgetManager {
             }
 
             //Hides the login form        
-            this.Visible = false;
-           
-            ///Shows the register form
-            new RegisterForm().Visible = true;
+            //this.Visible = false;
+            this.Hide();
+            isOpeningTheUserRegistrationForm = true;
+
+            ///Shows the register form and sends the current instance as an argument to the constructor (so the reference can later be used to show the login form when closing the register form)
+            new RegisterForm(this).Visible = true;
         }
 
         private void resetPasswordButton_Click(object sender, EventArgs e) {         
@@ -244,7 +249,7 @@ namespace BudgetManager {
         }
 
         private void LoginForm_FormClosing(object sender, FormClosingEventArgs e) {
-            if (!isSuccessfullyAuthenticated) {
+            if (!isSuccessfullyAuthenticated && !isOpeningTheUserRegistrationForm) {
                 DialogResult userOption = MessageBox.Show("Are you sure that you want to exit?", "Login form", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                
                 if (userOption == DialogResult.No) {
