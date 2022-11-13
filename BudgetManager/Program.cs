@@ -14,18 +14,24 @@ namespace BudgetManager {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            LoginForm loginForm = new LoginForm();
-     
-            if(loginForm.ShowDialog() == DialogResult.OK) {
-                int userID = LoginForm.userID;
-                String userName = LoginForm.userName;
+            //LoginForm loginForm = new LoginForm();
 
-                Application.Run(new UserDashboard(userID, userName));
-            } else {
-                //MessageBox.Show("Invalid username and/or password! Please try again", "Login", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //if (loginForm.ShowDialog() == DialogResult.OK) {
+            //    int userID = LoginForm.userID;
+            //    String userName = LoginForm.userName;
 
-            //Application.Run(new LoginForm());
+            //    Application.Run(new UserDashboard(userID, userName));
+
+            //    //!LoginForm.isOpeningTheUserRegistrationForm
+            //} else {
+            //    //MessageBox.Show("Invalid username and/or password! Please try again", "Login", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    if(LoginForm.isOpeningTheUserRegistrationForm) {
+            //        new RegisterForm().Show();
+            //    }
+            //    //Application.Run(new LoginForm());
+            //}
+
+            Application.Run(new LoginForm());
         }
     }
 }
