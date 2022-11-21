@@ -72,7 +72,7 @@ namespace BudgetManager {
             }
 
             if (!isValidPassword(password)) {
-                MessageBox.Show("Invalid password! Your password must contain:\n1.Lowercase and uppercase letters (a-zA-z) \n2.Digits (0-9) \n3.Special characters (@#$%<>?)", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Invalid password! Your password must contain:\n1.Lowercase and uppercase letters (a-zA-z) \n2.Digits (0-9) \n3.Special characters (@#$%<>?)\n4.No whitespaces", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -83,15 +83,15 @@ namespace BudgetManager {
             }
 
             if (userExists(getUser(sqlStatementCheckUserExistence, userName))) {
-                MessageBox.Show("The selected username already exists! Please try again", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show("Invalid username! Please choose a different one and try again.", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
 
             ConfirmationSender emailSender = new ConfirmationSender();
 
             string emailSubject = "New user creation";
-            string emailBody = "A user creation request was made for an account that will associated to this email address.\nPlease enter the following code to finish user creation process and confirm your email: {0} \nIf you have not made such a request please ignore this email and delete it.";
-            string onSuccessMessage = "An email containing the confirmation code for the new user creation was sent to the specified email address";
+            string emailBody = "A user creation request was made for an account that will be associated to this email address.\nPlease enter the following code to finish the user creation process and confirm your email: {0} \nIf you haven't made such a request please ignore this email and delete it.";
+            string onSuccessMessage = "An email containing the confirmation code for the new user creation was sent to the specified email address.";
             string parentWindowName = "Register";
             
             string generatedConfirmationCode = emailSender.generateConfirmationCode();
@@ -173,17 +173,35 @@ namespace BudgetManager {
 
         private bool isValidPassword(String password) {
             //Checks if the password contains uppercase letters, lowercase letters and digits
-            Regex firstRegexPattern = new Regex("^(?=.*[a - z])(?=.*[A - Z])(?=.*[\\d]).+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            //Regex firstRegexPattern = new Regex("^(?=.*[a - z])(?=.*[A - Z])(?=.*[\\d]).+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             //Checks if the password contains special characters
-            Regex secondRegexPattern = new Regex(".*[!@#\\$%^&*()_\\+\\-\\=\\[\\[{};'\\:\"\\|,.\\/<>\\?`~]+.*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            //Regex secondRegexPattern = new Regex(".*[!@#\\$%^&*()_\\+\\-\\=\\[\\[{};'\\:\"\\|,.\\/<>\\?`~]+.*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 
-            MatchCollection match1 = firstRegexPattern.Matches(password);
-            MatchCollection match2 = secondRegexPattern.Matches(password);
+            //MatchCollection match1 = firstRegexPattern.Matches(password);
+            //MatchCollection match2 = secondRegexPattern.Matches(password);
 
 
-            if (firstRegexPattern.IsMatch(password) && secondRegexPattern.IsMatch(password)) {
-                return true;
+            //if (firstRegexPattern.IsMatch(password) && secondRegexPattern.IsMatch(password)) {
+            //    return true;
+            //}
+
+            Regex nonWhitespaceCheckingRegex = new Regex("^[\\S]+$", RegexOptions.Compiled);
+            Regex lowercaseCheckRegex = new Regex("[a-z]+", RegexOptions.Compiled);
+            Regex uppercaseCheckRegex = new Regex("[A-Z]+", RegexOptions.Compiled);
+            Regex digitsCheckRegex = new Regex("[0-9]+", RegexOptions.Compiled);
+            Regex specialCharacterRegex = new Regex("[^\\w]+");
+
+
+            bool hasPassedGeneralChecks = lowercaseCheckRegex.IsMatch(password) && uppercaseCheckRegex.IsMatch(password) && digitsCheckRegex.IsMatch(password);
+            bool hasPassedSpecialCheck = specialCharacterRegex.IsMatch(password);
+
+
+
+            if (nonWhitespaceCheckingRegex.IsMatch(password)) {
+                if (hasPassedGeneralChecks && hasPassedSpecialCheck) {
+                    return true;
+                }
             }
 
             return false;
