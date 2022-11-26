@@ -192,10 +192,11 @@ namespace BudgetManager.non_mvc {
             String selectedItemName = itemTypeSelectionComboBox.Text;
             String specialItem = "Saving account interest";
 
+            String inputValue = itemValueTextBox.Text;
+
             //Special check to verify if the saving account interest value can be parsed as a double(to allow for a greater precision when calculating the account balance)
             //The values of the other items will still be treated as integers
-            if (specialItem.Equals(selectedItemName)) {
-                String inputValue = itemValueTextBox.Text;
+            if (specialItem.Equals(selectedItemName)) {               
                 double result;
                 bool isValid = Double.TryParse(inputValue, NumberStyles.AllowDecimalPoint, new NumberFormatInfo { NumberDecimalSeparator = "." }, out result);
 
@@ -203,12 +204,20 @@ namespace BudgetManager.non_mvc {
                     itemValueTextBox.Clear();
                 }
             } else {
-                Regex numberRegex = new Regex("\\b[0-9]+\\b", RegexOptions.Compiled);
-                Regex specialCharacterRegex = new Regex("[^\\w\\d\\s]", RegexOptions.Compiled);
+                //Regex numberRegex = new Regex("\\b[0-9]+\\b", RegexOptions.Compiled);
+                //Regex specialCharacterRegex = new Regex("[^\\w\\d\\s]", RegexOptions.Compiled);
 
-                String value = itemValueTextBox.Text;
-                if (!numberRegex.IsMatch(value) || specialCharacterRegex.IsMatch(value)) {
-                    //itemValueTextBox.Text = "";
+                //String value = itemValueTextBox.Text;
+                //if (!numberRegex.IsMatch(value) || specialCharacterRegex.IsMatch(value)) {
+                //    //itemValueTextBox.Text = "";
+                //    itemValueTextBox.Clear();
+                //}
+
+                //Regex that matches any non-digit character
+                Regex forbiddenCharacters = new Regex("[^0-9]+", RegexOptions.Compiled);
+            
+                //If any such character is found the textbox will be cleared as the value field can contain only numbers
+                if(forbiddenCharacters.IsMatch(inputValue)) {
                     itemValueTextBox.Clear();
                 }
             }
@@ -1027,7 +1036,7 @@ namespace BudgetManager.non_mvc {
         }
 
         private void cancelButton_Click(object sender, EventArgs e) {
-
+            this.Dispose();
         }
     }
 }
