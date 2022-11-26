@@ -25,11 +25,13 @@ namespace BudgetManager {
                                                                         (SELECT bankID FROM banks WHERE bankName = @paramBankName), 
                                                                         (SELECT currencyID FROM currencies WHERE currencyName = @paramCurrencyName)
                                                                         ,@paramCreationDate)";
+        private LoginForm loginForm;
 
-        public RegisterForm() {
+        public RegisterForm(LoginForm loginForm) {
             InitializeComponent();
             textBoxes = new TextBox[] { userNameTextBox, passwordTextBox, emailTextBox };
             minimumPasswordLength = 10;
+            this.loginForm = loginForm;
         }
 
         private void userNameTextBox_TextChanged(object sender, EventArgs e) {
@@ -70,7 +72,7 @@ namespace BudgetManager {
             }
 
             if (!isValidPassword(password)) {
-                MessageBox.Show("Invalid password! Your password must contain:\n1.Lowercase and uppercase letters (a-zA-z) \n2.Digits (0-9) \n3.Special characters (@#$%<>?)", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Invalid password! Your password must contain:\n1.Lowercase and uppercase letters (a-zA-z) \n2.Digits (0-9) \n3.Special characters (@#$%<>?)\n4.No whitespaces", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -81,15 +83,15 @@ namespace BudgetManager {
             }
 
             if (userExists(getUser(sqlStatementCheckUserExistence, userName))) {
-                MessageBox.Show("The selected username already exists! Please try again", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show("Invalid username! Please choose a different one and try again.", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
 
             ConfirmationSender emailSender = new ConfirmationSender();
 
             string emailSubject = "New user creation";
-            string emailBody = "A user creation request was made for an account that will associated to this email address.\nPlease enter the following code to finish user creation process and confirm your email: {0} \nIf you have not made such a request please ignore this email and delete it.";
-            string onSuccessMessage = "An email containing the confirmation code for the new user creation was sent to the specified email address";
+            string emailBody = "A user creation request was made for an account that will be associated to this email address.\nPlease enter the following code to finish the user creation process and confirm your email: {0} \nIf you haven't made such a request please ignore this email and delete it.";
+            string onSuccessMessage = "An email containing the confirmation code for the new user creation was sent to the specified email address.";
             string parentWindowName = "Register";
             
             string generatedConfirmationCode = emailSender.generateConfirmationCode();
@@ -138,19 +140,19 @@ namespace BudgetManager {
 
 
         private void toggleButtonState(Button targetButton, TextBox[] textBoxes) {
-            //Regex care identifica existenta unuia sau mai multor spatii goale        
+            //Regex for checking if the textbox contains one/more empty spaces        
             Regex regex = new Regex("^\\s+");
             bool hasValidData = true;
 
             foreach (TextBox currentTextBox in textBoxes) {
-                //Se verifica daca exista date in campul curent respectiv daca acesta contine doar spatii
+                //Checks if the current field contains data or if it contains only empty spaces
                 if (currentTextBox.Text.Length == 0 || regex.IsMatch(currentTextBox.Text)) {
                     hasValidData = false;
                     break;
                 }
             }
 
-            //In functie de indeplinirea/neindeplinirea conditiilor se activeaza sau se dezactiveaza butonul furnizat ca argument
+            //Enables/disables the button received as argument based on the textbox content validation
             if (hasValidData) {
                 targetButton.Enabled = true;
             } else {
@@ -159,7 +161,7 @@ namespace BudgetManager {
         }
 
         private bool isValidUserName(String userName) {
-            //Regex ce verifica daca numele de utilizator contine doar litere mari,mici,cifre si underscore 
+            //Regex for checking if the username contains only lowercase letters, uppercase letters, digits and underscores
             Regex validationRegex = new Regex("^[a-zA-Z0-9_]{3,}$");
 
             if (validationRegex.IsMatch(userName)) {
@@ -170,50 +172,59 @@ namespace BudgetManager {
         }
 
         private bool isValidPassword(String password) {
-            //Verifica daca parola contine litere mari, litere mici si cifre
-            Regex firstRegexPattern = new Regex("^(?=.*[a - z])(?=.*[A - Z])(?=.*[\\d]).+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            //Verifca daca parola contine caractere speciale
-            Regex secondRegexPattern = new Regex(".*[!@#\\$%^&*()_\\+\\-\\=\\[\\[{};'\\:\"\\|,.\\/<>\\?`~]+.*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            //Checks if the password contains uppercase letters, lowercase letters and digits
+            //Regex firstRegexPattern = new Regex("^(?=.*[a - z])(?=.*[A - Z])(?=.*[\\d]).+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            //Checks if the password contains special characters
+            //Regex secondRegexPattern = new Regex(".*[!@#\\$%^&*()_\\+\\-\\=\\[\\[{};'\\:\"\\|,.\\/<>\\?`~]+.*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 
-            MatchCollection match1 = firstRegexPattern.Matches(password);
-            MatchCollection match2 = secondRegexPattern.Matches(password);
+            //MatchCollection match1 = firstRegexPattern.Matches(password);
+            //MatchCollection match2 = secondRegexPattern.Matches(password);
 
 
-            if (firstRegexPattern.IsMatch(password) && secondRegexPattern.IsMatch(password)) {
-                return true;
+            //if (firstRegexPattern.IsMatch(password) && secondRegexPattern.IsMatch(password)) {
+            //    return true;
+            //}
+
+            Regex nonWhitespaceCheckingRegex = new Regex("^[\\S]+$", RegexOptions.Compiled);
+            Regex lowercaseCheckRegex = new Regex("[a-z]+", RegexOptions.Compiled);
+            Regex uppercaseCheckRegex = new Regex("[A-Z]+", RegexOptions.Compiled);
+            Regex digitsCheckRegex = new Regex("[0-9]+", RegexOptions.Compiled);
+            Regex specialCharacterRegex = new Regex("[^\\w]+");
+
+
+            bool hasPassedGeneralChecks = lowercaseCheckRegex.IsMatch(password) && uppercaseCheckRegex.IsMatch(password) && digitsCheckRegex.IsMatch(password);
+            bool hasPassedSpecialCheck = specialCharacterRegex.IsMatch(password);
+
+
+
+            if (nonWhitespaceCheckingRegex.IsMatch(password)) {
+                if (hasPassedGeneralChecks && hasPassedSpecialCheck) {
+                    return true;
+                }
             }
 
             return false;
         }
 
         private Boolean isValidEmail(String inputEmailAddress) {
-            //Se creaza un obiect de tip MailAddress
             try {
                 MailAddress address = new MailAddress(inputEmailAddress);
 
-                //Se compara adresa de email a obiectului nou creat cu adresa furnizata si se returneaza valoarea booleana corespunzatoare
+                //Compares the email address of the newly created object with the provided email address and returns the corresponding boolean value            
                 return address.Address.Equals(inputEmailAddress);
 
-                //Se trateaza exceptia ridicata daca adresa este  reprezentata de un sir vid ""             
+              //Handles the exception generated when the email address is represented by an empty string            
             } catch (ArgumentException ex) {
                 Console.WriteLine(ex.Message);
                 return false;
-                //Se trateaza exceptia ridicata daca adresa nu are format valid
+
+            //Handles the exception generated when the email address has an invalid format
             } catch (FormatException ex) {
                 Console.WriteLine(ex.Message);
                 return false;
             }
         }
-
-        //private int getIdForNewlyRegisteredUser(String sqlStatement, String userName) {
-        //    if(sqlStatement == null || userName == null) {
-        //        return -1;
-        //    }
-
-        //    MySqlCommand getUserIdCommand = new MySqlCommand(sqlStatement);
-        //    getUserIdCommand
-        //}
 
         private int createDefaultSavingAccount(String sqlStatement, String userName) {
             if(userName == null) {
@@ -247,9 +258,9 @@ namespace BudgetManager {
             return -1; ;
         }
 
-        //Metoda de verificare a existentei utilizatorului
+        //Method that checks if the specified user exists
         private bool userExists(DataTable inputDataTable) {
-            //Se verifica daca obiectul de tip DataTable furnizat contine date
+            //Checks if the DataTable object contains data
             if (inputDataTable != null && inputDataTable.Rows.Count > 0) {
                 return true;
             }
@@ -257,7 +268,7 @@ namespace BudgetManager {
             return false;
         }
 
-        //Metoda ce executa comanda SQL de interogare a bazei de date cu privire la utilizatorul specificat
+        //Method which retrieves the specified user from the database
         private DataTable getUser(String sqlStatement, String userName) {
             MySqlCommand userExistenceCheckCommand = new MySqlCommand(sqlStatement);
             userExistenceCheckCommand.Parameters.AddWithValue("@paramUserName", userName);
@@ -273,8 +284,7 @@ namespace BudgetManager {
         }
 
         private void RegisterForm_FormClosed(object sender, FormClosedEventArgs e) {
-            new LoginForm().Visible = true;
+            loginForm.Show();
         }
-
     }    
 }
