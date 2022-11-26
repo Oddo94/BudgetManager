@@ -116,6 +116,7 @@
     <Compile Include="utils\data_insertion\BudgetPlanChecker.cs" />
     <Compile Include="utils\data_insertion\BudgetPlanCheckStrategy.cs" />
     <Compile Include="utils\app_authentication\ConfirmationSender.cs" />
+    <Compile Include="utils\enums\AccountType.cs" />
     <Compile Include="utils\enums\BudgetItemType.cs" />
     <Compile Include="utils\enums\IncomeSource.cs" />
     <Compile Include="utils\ui_controls\DataGridViewManager.cs" />
