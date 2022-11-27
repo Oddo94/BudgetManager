@@ -73,13 +73,13 @@ namespace BudgetManager.non_mvc {
         //Other variables
         private ArrayList activeControls;
 
-        ToolTip savingAccountToolTip;
+        ToolTip dataHighlighter;
 
         public InsertDataForm(int userID) {
             InitializeComponent();
             //The userID must be assigned the correct value BEFORE creating the components and populating the comboboxes otherwise they will be empty
             this.userID = userID;
-            savingAccountToolTip = new ToolTip();
+            dataHighlighter = new ToolTip();
 
             createLabels();
             createTextBoxes();
@@ -281,7 +281,7 @@ namespace BudgetManager.non_mvc {
             String itemName = savingAccountComboBox.Text;
             //ToolTip toolTip = new ToolTip();
 
-            savingAccountToolTip.SetToolTip(savingAccountComboBox, itemName);
+            dataHighlighter.SetToolTip(savingAccountComboBox, itemName);
         }
 
         private void interestTypeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -322,7 +322,7 @@ namespace BudgetManager.non_mvc {
             if (!specialItemName.Equals(selectedItemName)) {
                 allChecksExecutionResult = performDataChecks();
 
-                //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
+                //Checks the execution result returned by the insertion method (positive value means success while -1 means the failure of the operation)
                 if (allChecksExecutionResult != -1) {
                     dataInsertionExecutionResult = insertSelectedItem(selectedIndex);
                 }
@@ -330,7 +330,7 @@ namespace BudgetManager.non_mvc {
                 dataInsertionExecutionResult = insertSelectedItem(selectedIndex);//The saving account interest can be inserted directly without performing a precheck
             }   
 
-            //Checks the execution result returned by the insertion method(positive value means success while -1 means the failure of the operation)
+            //Checks the execution result returned by the insertion method (positive value means success while -1 means the failure of the operation)
             if (dataInsertionExecutionResult != -1) {
                 MessageBox.Show("Data inserted successfully!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 //Clears the active controls if the data insertion is successful
@@ -748,13 +748,13 @@ namespace BudgetManager.non_mvc {
 
                 //Receivable insertion
                 case 3:
-                    paramContainer = configureParamContainer(BudgetItemType.RECEIVABLE);
-                    Guard.notNull(paramContainer, "receivable parameter container");
+                    dataInsertionDTO = configureDataInsertionDTO(BudgetItemType.RECEIVABLE);
+                    Guard.notNull(dataInsertionDTO, "receivable DTO");
 
                     ReceivableInsertionStrategy receivableInsertionStrategy = new ReceivableInsertionStrategy();
                     dataInsertionContext.setStrategy(receivableInsertionStrategy);
 
-                    executionResult = dataInsertionContext.invoke(paramContainer);
+                    executionResult = dataInsertionContext.invoke(dataInsertionDTO);
                     break;
 
                 //Saving insertion
@@ -867,25 +867,25 @@ namespace BudgetManager.non_mvc {
                     break;
 
                 //Receivable insertion object configuration
-                case BudgetItemType.RECEIVABLE:
-                    String receivableName = itemNameTextBox.Text;
-                    int receivableValue = Convert.ToInt32(itemValueTextBox.Text);
-                    int totalPaidAmount = 0;//the total paid amount is set to 0 since this is a new record and there were no money paid yet
-                    String debtorName = debtorNameComboBox.Text;
-                    String receivableStartDate = datePicker.Value.ToString("yyy-MM-dd");
-                    String receivableEndDate = receivableDueDatePicker.Value.ToString("yyy-MM-dd");
-                    IncomeSource receivableIncomeSource = getIncomeSource();
+                //case BudgetItemType.RECEIVABLE:
+                //    String receivableName = itemNameTextBox.Text;
+                //    int receivableValue = Convert.ToInt32(itemValueTextBox.Text);
+                //    int totalPaidAmount = 0;//the total paid amount is set to 0 since this is a new record and there were no money paid yet
+                //    String debtorName = debtorNameComboBox.Text;
+                //    String receivableStartDate = datePicker.Value.ToString("yyy-MM-dd");
+                //    String receivableEndDate = receivableDueDatePicker.Value.ToString("yyy-MM-dd");
+                //    //IncomeSource receivableIncomeSource = getIncomeSource();
 
-                    paramContainer = new QueryData.Builder(userID)
-                        .addItemName(receivableName)
-                        .addItemValue(receivableValue)
-                        .addDebtorName(debtorName)
-                        .addStartDate(receivableStartDate)
-                        .addEndDate(receivableEndDate)
-                        .addIncomeSource(receivableIncomeSource)
-                        .addPaidAmount(totalPaidAmount)
-                        .build();
-                    break;
+                //    paramContainer = new QueryData.Builder(userID)
+                //        .addItemName(receivableName)
+                //        .addItemValue(receivableValue)
+                //        .addDebtorName(debtorName)
+                //        .addStartDate(receivableStartDate)
+                //        .addEndDate(receivableEndDate)
+                //        .addIncomeSource(receivableIncomeSource)
+                //        .addPaidAmount(totalPaidAmount)
+                //        .build();
+                //    break;
 
                 //Saving insertion object configuration
                 case BudgetItemType.SAVING:
@@ -947,6 +947,18 @@ namespace BudgetManager.non_mvc {
 
                     dataInsertionDTO = new SavingAccountInterestDTO(interestCreationDate, interestName, accountName, interestType, paymentType, interestRate, interestValue, transactionID, userID);              
                     break;
+
+                case BudgetItemType.RECEIVABLE:
+                    String receivableName = itemNameTextBox.Text;
+                    int receivableValue = Convert.ToInt32(itemValueTextBox.Text);
+                    int totalPaidAmount = 0;//the total paid amount is set to 0 since this is a new record and there were no money paid yet
+                    String debtorName = debtorNameComboBox.Text;
+                    String sourceAccountName = savingAccountComboBox.Text;
+                    String receivableCreationDate = datePicker.Value.ToString("yyyy-MM-dd");
+                    String receivableDueDate = receivableDueDatePicker.Value.ToString("yyyy-MM-dd");
+
+                    dataInsertionDTO = new ReceivableDTO(receivableName, receivableValue, debtorName, sourceAccountName, totalPaidAmount, receivableCreationDate, receivableDueDate, userID);               
+                    break;
             }
 
             return dataInsertionDTO;
@@ -974,7 +986,7 @@ namespace BudgetManager.non_mvc {
                 valueToInsert = Convert.ToInt32(itemValueTextBox.Text);
                 int selectedMonth = datePicker.Value.Month;
                 int selectedYear = datePicker.Value.Year;
-                IncomeSource incomeSource = getIncomeSource();
+                IncomeSource incomeSource = IncomeSource.SAVING_ACCOUNT; //The income source for the receivables can be ONLY the DEFAULT SAVING ACCOUNT
                 //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
                 //Query data parameter object for general checks
                 paramContainerGeneralCheck = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addIncomeSource(incomeSource).build(); //CHANGE
