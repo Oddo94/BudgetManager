@@ -1,11 +1,8 @@
 ﻿using BudgetManager.mvc.models.dto;
 using BudgetManager.utils;
+using BudgetManager.utils.enums;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BudgetManager {   
     //Utilty class used for creating SQL commands(single/multiple months)
@@ -266,6 +263,8 @@ namespace BudgetManager {
 
             ReceivableDTO receivableDTO = (ReceivableDTO) dataInsertionDTO;
 
+            ReceivableStatus receivableStatus = receivableDTO.ReceivableStatus; //The extension method getEnumDescription() works ONLY on instances of Enum type
+
             MySqlCommand insertReceivableCommand = new MySqlCommand(sqlStatement);
             insertReceivableCommand.Parameters.AddWithValue("@paramName", receivableDTO.Name);
             insertReceivableCommand.Parameters.AddWithValue("@paramValue", receivableDTO.Value);
@@ -273,6 +272,7 @@ namespace BudgetManager {
             insertReceivableCommand.Parameters.AddWithValue("@paramUserID", receivableDTO.UserID);
             insertReceivableCommand.Parameters.AddWithValue("@paramAccountName", receivableDTO.AccountName);
             insertReceivableCommand.Parameters.AddWithValue("@paramTotalPaidAmount", receivableDTO.TotalPaidAmount);
+            insertReceivableCommand.Parameters.AddWithValue("@paramStatusDescription", receivableStatus.getEnumDescription());
             insertReceivableCommand.Parameters.AddWithValue("@paramCreatedDate", receivableDTO.CreatedDate);
             insertReceivableCommand.Parameters.AddWithValue("@paramDueDate", receivableDTO.DueDate);
 

@@ -1,9 +1,5 @@
 ﻿using BudgetManager.utils.enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BudgetManager.mvc.models.dto {
     class ReceivableDTO : IDataInsertionDTO {
@@ -12,6 +8,7 @@ namespace BudgetManager.mvc.models.dto {
         private String debtorName;
         private String accountName;
         private int totalPaidAmount;
+        private ReceivableStatus status;
         private String createdDate;
         private String dueDate;
         private int userID;
@@ -20,12 +17,13 @@ namespace BudgetManager.mvc.models.dto {
 
         }
 
-        public ReceivableDTO(String name, int value, String debtorName, String accountName, int totalPaidAmount, String createdDate, String dueDate, int userID) {
+        public ReceivableDTO(String name, int value, String debtorName, String accountName, int totalPaidAmount, ReceivableStatus status, String createdDate, String dueDate, int userID) {
             this.name = name;
             this.value = value;
             this.debtorName = debtorName;
             this.accountName = accountName;
             this.totalPaidAmount = totalPaidAmount;
+            this.status = status;
             this.createdDate = createdDate;
             this.dueDate = dueDate;
             this.userID = userID;
@@ -78,6 +76,16 @@ namespace BudgetManager.mvc.models.dto {
 
             set {
                 this.totalPaidAmount = value;
+            }
+        }
+
+        public ReceivableStatus ReceivableStatus {
+            get {
+                return this.status;
+            }
+
+            set {
+                this.status = value;
             }
         }
 

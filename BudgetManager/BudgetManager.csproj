@@ -119,7 +119,9 @@
     <Compile Include="utils\app_authentication\ConfirmationSender.cs" />
     <Compile Include="utils\enums\AccountType.cs" />
     <Compile Include="utils\enums\BudgetItemType.cs" />
+    <Compile Include="utils\enums\EnumExtensions.cs" />
     <Compile Include="utils\enums\IncomeSource.cs" />
+    <Compile Include="utils\enums\ReceivableStatus.cs" />
     <Compile Include="utils\ui_controls\DataGridViewManager.cs" />
     <Compile Include="utils\data_insertion\DataInsertionCheckerContext.cs" />
     <Compile Include="utils\data_insertion\DataInsertionCheckStrategy.cs" />

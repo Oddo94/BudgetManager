@@ -6,15 +6,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Printing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static BudgetManager.utils.DataProvider;
 
@@ -866,27 +862,6 @@ namespace BudgetManager.non_mvc {
                         .build();
                     break;
 
-                //Receivable insertion object configuration
-                //case BudgetItemType.RECEIVABLE:
-                //    String receivableName = itemNameTextBox.Text;
-                //    int receivableValue = Convert.ToInt32(itemValueTextBox.Text);
-                //    int totalPaidAmount = 0;//the total paid amount is set to 0 since this is a new record and there were no money paid yet
-                //    String debtorName = debtorNameComboBox.Text;
-                //    String receivableStartDate = datePicker.Value.ToString("yyy-MM-dd");
-                //    String receivableEndDate = receivableDueDatePicker.Value.ToString("yyy-MM-dd");
-                //    //IncomeSource receivableIncomeSource = getIncomeSource();
-
-                //    paramContainer = new QueryData.Builder(userID)
-                //        .addItemName(receivableName)
-                //        .addItemValue(receivableValue)
-                //        .addDebtorName(debtorName)
-                //        .addStartDate(receivableStartDate)
-                //        .addEndDate(receivableEndDate)
-                //        .addIncomeSource(receivableIncomeSource)
-                //        .addPaidAmount(totalPaidAmount)
-                //        .build();
-                //    break;
-
                 //Saving insertion object configuration
                 case BudgetItemType.SAVING:
                     //Getting the necessary data
@@ -954,10 +929,11 @@ namespace BudgetManager.non_mvc {
                     int totalPaidAmount = 0;//the total paid amount is set to 0 since this is a new record and there were no money paid yet
                     String debtorName = debtorNameComboBox.Text;
                     String sourceAccountName = savingAccountComboBox.Text;
+                    ReceivableStatus receivableStatus = ReceivableStatus.NEW; //Each receivable starts with the status NEW
                     String receivableCreationDate = datePicker.Value.ToString("yyyy-MM-dd");
                     String receivableDueDate = receivableDueDatePicker.Value.ToString("yyyy-MM-dd");
 
-                    dataInsertionDTO = new ReceivableDTO(receivableName, receivableValue, debtorName, sourceAccountName, totalPaidAmount, receivableCreationDate, receivableDueDate, userID);               
+                    dataInsertionDTO = new ReceivableDTO(receivableName, receivableValue, debtorName, sourceAccountName, totalPaidAmount, receivableStatus, receivableCreationDate, receivableDueDate, userID);               
                     break;
             }
 
