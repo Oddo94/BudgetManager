@@ -22,7 +22,9 @@ namespace BudgetManager.utils {
         private String sqlStatementGetSavingAccountBalance = @"SELECT SUM(value) FROM saving_accounts_balance sab
                                                                INNER JOIN saving_accounts sa on sab.account_ID = sa.accountID
                                                                INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
-                                                               WHERE sab.user_ID = @paramID AND sat.typeID = 1";
+                                                               WHERE sab.user_ID = @paramID 
+                                                               AND sat.typeName LIKE '%SYSTEM_DEFINED%'";
+                                                              //WHERE sab.user_ID = @paramID AND sat.typeID = 1"; Old condition(should be replaced with a more generic one that does not rely on the ID of the record for retrieving the correct account)
 
 
         public int performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert) {
