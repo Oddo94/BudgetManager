@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BudgetManager.utils.enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -122,8 +123,12 @@ namespace BudgetManager.mvc.models.dto {
             }
         }
 
-        public string getName() {
-            return this.interestName;
+        //public string getName() {
+        //    return this.interestName;
+        //}
+
+        public BudgetItemType getBudgetItemType() {
+            return BudgetItemType.SAVING_ACCOUNT_INTEREST;
         }
     }
 }
