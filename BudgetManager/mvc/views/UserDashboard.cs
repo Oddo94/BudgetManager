@@ -1075,6 +1075,10 @@ namespace BudgetManager {
         private void externalAccountTransfersToolStripMenuItem_Click(object sender, EventArgs e) {
             new ExternalAccountTransfersForm(userID).ShowDialog();
         }
+
+        private void updateReceivablesToolStripMenuItem_Click(object sender, EventArgs e) {
+            new ReceivableManagementForm(userID).ShowDialog();
+        }
     }
 }
 

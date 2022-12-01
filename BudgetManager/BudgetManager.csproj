@@ -66,6 +66,12 @@
     <Compile Include="mvc\views\BudgetPlanManagementForm.Designer.cs">
       <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="mvc\views\ReceivableManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="mvc\views\ReceivableManagementForm.Designer.cs">
+      <DependentUpon>ReceivableManagementForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="mvc\views\SavingAccountForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -177,6 +183,9 @@
     <Compile Include="utils\miscellaneous\ViewCalculator.cs" />
     <EmbeddedResource Include="mvc\views\BudgetPlanManagementForm.resx">
       <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="mvc\views\ReceivableManagementForm.resx">
+      <DependentUpon>ReceivableManagementForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="mvc\views\SavingAccountForm.resx">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
