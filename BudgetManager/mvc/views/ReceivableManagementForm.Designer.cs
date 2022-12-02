@@ -36,7 +36,11 @@
             this.monthRecordsRadioButton = new System.Windows.Forms.RadioButton();
             this.yearRecordsRadioButton = new System.Windows.Forms.RadioButton();
             this.receivableManagementDgv = new System.Windows.Forms.DataGridView();
+            this.receivablesManagementPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.saveReceivableChangesButton = new System.Windows.Forms.Button();
+            this.exitButton = new System.Windows.Forms.Button();
             this.updateReceivableCtxMenu.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.receivableManagementDgv)).BeginInit();
             this.SuspendLayout();
             // 
@@ -107,9 +111,10 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Location = new System.Drawing.Point(16, 476);
+            this.groupBox1.Controls.Add(this.receivablesManagementPanel);
+            this.groupBox1.Location = new System.Drawing.Point(16, 462);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(498, 173);
+            this.groupBox1.Size = new System.Drawing.Size(772, 358);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
@@ -149,11 +154,41 @@
             this.receivableManagementDgv.CellContextMenuStripNeeded += new System.Windows.Forms.DataGridViewCellContextMenuStripNeededEventHandler(this.receivableManagementDgv_CellContextMenuStripNeeded);
             this.receivableManagementDgv.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.receivableManagementDgv_CellMouseDown);
             // 
+            // receivablesManagementPanel
+            // 
+            this.receivablesManagementPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.receivablesManagementPanel.Location = new System.Drawing.Point(15, 19);
+            this.receivablesManagementPanel.Name = "receivablesManagementPanel";
+            this.receivablesManagementPanel.Size = new System.Drawing.Size(724, 315);
+            this.receivablesManagementPanel.TabIndex = 0;
+            this.receivablesManagementPanel.Visible = false;
+            // 
+            // saveReceivableChangesButton
+            // 
+            this.saveReceivableChangesButton.Enabled = false;
+            this.saveReceivableChangesButton.Location = new System.Drawing.Point(16, 844);
+            this.saveReceivableChangesButton.Name = "saveReceivableChangesButton";
+            this.saveReceivableChangesButton.Size = new System.Drawing.Size(99, 23);
+            this.saveReceivableChangesButton.TabIndex = 10;
+            this.saveReceivableChangesButton.Text = "Save changes";
+            this.saveReceivableChangesButton.UseVisualStyleBackColor = true;
+            // 
+            // exitButton
+            // 
+            this.exitButton.Location = new System.Drawing.Point(648, 844);
+            this.exitButton.Name = "exitButton";
+            this.exitButton.Size = new System.Drawing.Size(98, 23);
+            this.exitButton.TabIndex = 11;
+            this.exitButton.Text = "Exit";
+            this.exitButton.UseVisualStyleBackColor = true;
+            // 
             // ReceivableManagementForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(806, 661);
+            this.ClientSize = new System.Drawing.Size(833, 879);
+            this.Controls.Add(this.exitButton);
+            this.Controls.Add(this.saveReceivableChangesButton);
             this.Controls.Add(this.receivableManagementDgv);
             this.Controls.Add(this.yearRecordsRadioButton);
             this.Controls.Add(this.monthRecordsRadioButton);
@@ -166,6 +201,7 @@
             this.Name = "ReceivableManagementForm";
             this.Text = "Receivable management";
             this.updateReceivableCtxMenu.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.receivableManagementDgv)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -186,5 +222,8 @@
         private System.Windows.Forms.RadioButton monthRecordsRadioButton;
         private System.Windows.Forms.RadioButton yearRecordsRadioButton;
         private System.Windows.Forms.DataGridView receivableManagementDgv;
+        private System.Windows.Forms.FlowLayoutPanel receivablesManagementPanel;
+        private System.Windows.Forms.Button saveReceivableChangesButton;
+        private System.Windows.Forms.Button exitButton;
     }
 }
