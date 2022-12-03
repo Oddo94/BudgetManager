@@ -541,41 +541,41 @@ namespace BudgetManager.non_mvc {
             switch (selectedIndex) {
                 //Selected item -> incomes
                 case 0:
-                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true), new InsertionFormField(incomeTypeComboBox, true)};
+                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(incomeTypeComboBox, true)};
                     break;
 
                 //Selected item -> expenses   
                 case 1:
-                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true), new InsertionFormField(expenseTypeComboBox,true),
-                        new InsertionFormField(generalIncomesRadioButton, true), new InsertionFormField(savingAccountRadioButton, true)};
+                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(expenseTypeComboBox,true),
+                        new FormFieldWrapper(generalIncomesRadioButton, true), new FormFieldWrapper(savingAccountRadioButton, true)};
                     break;
 
                 //Selected item -> debts
                 case 2:
-                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true), new InsertionFormField(creditorNameComboBox, true)};
+                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(creditorNameComboBox, true)};
                     break;
 
                 //Selected item -> receivables
                 case 3:
-                    activeControls = new ArrayList() { new InsertionFormField(datePicker,true), new InsertionFormField(receivableDueDatePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true),
-                        new InsertionFormField(debtorNameComboBox, true), new InsertionFormField(savingAccountComboBox, true)};
+                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker,true), new FormFieldWrapper(receivableDueDatePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true),
+                        new FormFieldWrapper(debtorNameComboBox, true), new FormFieldWrapper(savingAccountComboBox, true)};
                     break;
 
                 //Selected item -> savings
                 case 4:
-                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(itemValueTextBox, true)};
+                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true)};
                     break;
 
                 //Selected item -> creditors or debtors(intentional fall through since the layout is identical)
                 case 5:
                 case 6:
-                    activeControls = new ArrayList() { new InsertionFormField(itemNameTextBox, true)};
+                    activeControls = new ArrayList() { new FormFieldWrapper(itemNameTextBox, true)};
                     break;
 
                 //Selected item-> saving account interest
                 case 7:
-                    activeControls = new ArrayList() { new InsertionFormField(datePicker, true), new InsertionFormField(itemNameTextBox, true), new InsertionFormField(savingAccountComboBox, true), new InsertionFormField(interestTypeComboBox, true),
-                        new InsertionFormField(paymentTypeComboBox, true), new InsertionFormField(interestRateTextBox, true), new InsertionFormField(itemValueTextBox, true), new InsertionFormField(transactionIDLabel, true), new InsertionFormField(transactionIDTextBox, false) };
+                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(savingAccountComboBox, true), new FormFieldWrapper(interestTypeComboBox, true),
+                        new FormFieldWrapper(paymentTypeComboBox, true), new FormFieldWrapper(interestRateTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(transactionIDLabel, true), new FormFieldWrapper(transactionIDTextBox, false) };
                     break;              
 
                 default:
@@ -594,7 +594,7 @@ namespace BudgetManager.non_mvc {
 
             //return true;
             //Checks if the current control contains value and if it is required (in this case it will return false, meaning that the respective required field is not populated)
-            foreach (InsertionFormField currentItem in activeControls) {
+            foreach (FormFieldWrapper currentItem in activeControls) {
                 if ("".Equals(currentItem.FormField.Text) && currentItem.IsRequired) {
                     return false;
                 }
@@ -608,8 +608,8 @@ namespace BudgetManager.non_mvc {
 
             //Takes each control and checks its type
             //If it is of the specified type it casts it to that type before invoking the specific method needed to clear it
-            foreach (InsertionFormField currentItem in activeControls) {
-                Control control = currentItem.FormField;//gets the control object from the InsertionFormField object
+            foreach (FormFieldWrapper currentItem in activeControls) {
+                Control control = currentItem.FormField;//gets the control object from the FormFieldWrapper object
                 if (control is TextBox) {
                     ((TextBox)control).Text = "";
                 } else if (control is ComboBox) {

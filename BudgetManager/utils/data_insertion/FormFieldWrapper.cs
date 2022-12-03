@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BudgetManager.utils.data_insertion {
-    class InsertionFormField {
+    class FormFieldWrapper {
         private Control formField;
         private bool isRequired;
 
-        public InsertionFormField(Control formField, bool isRequired) {
+        public FormFieldWrapper(Control formField, bool isRequired) {
             this.formField = formField;
             this.isRequired = isRequired;
         }

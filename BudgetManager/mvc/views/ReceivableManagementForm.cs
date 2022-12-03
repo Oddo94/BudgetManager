@@ -1,4 +1,8 @@
-﻿using System;
+﻿using BudgetManager.utils;
+using BudgetManager.utils.data_insertion;
+using BudgetManager.utils.enums;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,8 +17,11 @@ namespace BudgetManager.mvc.views {
         private int rowIndexOnRightClick;
         private int columnIndexOnRightClick;
 
-        private TextBox receivableNameTextBox;
-        private TextBox receivableValueTextBox;
+        //General components
+        private TextBox itemNameTextBox;
+        private TextBox itemValueTextBox;
+
+        //Receivable update components
         private ComboBox receivableDebtorComboBox;
         private DateTimePicker receivableCreatedDatePicker;
         private DateTimePicker receivableDueDatePicker;
@@ -25,14 +32,27 @@ namespace BudgetManager.mvc.views {
         private Label receivableCreatedDateLabel;
         private Label receivableDueDateLabel;
 
+        //Partial payment insertion components
+        private DateTimePicker partialPaymentDatePicker;
+        private Button insertPartialPaymentButton;
+        private Label partialPaymentNameLabel;
+        private Label partialPaymentValueLabel;
+        private Label partialPaymentDateLabel;
+
+
+
+
+
+        private ArrayList activeControls;
+
         public ReceivableManagementForm(int userID) {
             InitializeComponent();
-            fillDataGridView();           
+            fillDataGridView();
             createTextBoxes();
             createComboBoxes();
             createDateTimePickers();
             createButtons();
-            createLabels();         
+            createLabels();
         }
 
         private void fillDataGridView() {
@@ -78,26 +98,28 @@ namespace BudgetManager.mvc.views {
             String clickedItem = e.ClickedItem.Name;
             String messageBoxTitle = "Receivables management";
             String template = "You clicked the {0} item at row index {1} and cell index {2}.";
-            String message = null;           
+            String message = null;
 
             switch (clickedItem) {
                 case "markAsPaidItem":
                     message = String.Format(template, "'Mark as paid'", rowIndexOnRightClick, columnIndexOnRightClick);
                     MessageBox.Show(message, messageBoxTitle);
-                    receivablesManagementPanel.Visible = false;
+                    //receivablesManagementPanel.Visible = false;
                     break;
 
-                case "partialPaymentItem":              
+                case "partialPaymentItem":
                     message = String.Format(template, "'Partial payment'", rowIndexOnRightClick, columnIndexOnRightClick);
                     MessageBox.Show(message, messageBoxTitle);
-                    receivablesManagementPanel.Visible = false;
+                    //receivablesManagementPanel.Visible = false;
+                    setupLayout(UIContainerLayout.INSERT_LAYOUT);
                     break;
 
                 case "updateDetailsItem":
                     message = String.Format(template, "'Update payment'", rowIndexOnRightClick, columnIndexOnRightClick);
                     MessageBox.Show(message, messageBoxTitle);
-                    addControlsToMainPanel();
-                    receivablesManagementPanel.Visible = true;
+                    //addControlsToMainPanel();
+                    //receivablesManagementPanel.Visible = true;
+                    setupLayout(UIContainerLayout.UPDATE_LAYOUT);
                     break;
 
                 default:
@@ -115,22 +137,77 @@ namespace BudgetManager.mvc.views {
             }
         }
 
+        private void setComponentsLayout() {
+
+        }
+
+        //CONTROLS LAYOUT SETUP SECTION
+        private void setupLayout(UIContainerLayout selectedOperationLayout) {
+            //Clears the panel from the existing controls
+            receivablesManagementPanel.Controls.Clear();
+
+            if (activeControls != null) {
+                //Clears the content of active controls
+                UserControlsManager.clearActiveControls(activeControls);
+            }
+           
+            List<Control> currentLayoutControlsList = null;
+            //Creates the list of necessary components for the current operation(UPDATE/INSERT)
+            switch (selectedOperationLayout) {
+                case UIContainerLayout.UPDATE_LAYOUT:
+                    currentLayoutControlsList = new List<Control> { receivableNameLabel, itemNameTextBox, receivableValueLabel, itemValueTextBox, receivableDebtorCbxLabel, receivableDebtorComboBox,
+                    receivableCreatedDateLabel, receivableCreatedDatePicker, receivableDueDateLabel, receivableDueDatePicker, updateDgvRecordButton };
+                    groupBox1.Text = "Update receivable";
+                    break;
+
+                case UIContainerLayout.INSERT_LAYOUT:
+                    currentLayoutControlsList = new List<Control> { partialPaymentNameLabel, itemNameTextBox, partialPaymentValueLabel, itemValueTextBox, partialPaymentDateLabel, partialPaymentDatePicker, insertPartialPaymentButton };
+                    groupBox1.Text = "Add partial payment";
+                    break;
+
+                default:
+                    break;
+            }
+
+            //Adds the components to the selected container
+            UserControlsManager.addControlsToContainer(receivablesManagementPanel, currentLayoutControlsList);
+            //Populates the active controls list based on the components needed for the current operation(UPDATE/INSERT)
+            populateActiveControlsList(selectedOperationLayout);
+        }
+
+
+        private void populateActiveControlsList(UIContainerLayout selectedOperationLayout) {
+            switch (selectedOperationLayout) {
+                case UIContainerLayout.UPDATE_LAYOUT:
+                    activeControls = new ArrayList() { new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(receivableDebtorComboBox, true), new FormFieldWrapper(receivableCreatedDatePicker, true), new FormFieldWrapper(receivableDueDatePicker, true), new FormFieldWrapper(updateDgvRecordButton, false) };
+                    break;
+
+                case UIContainerLayout.INSERT_LAYOUT:
+                    activeControls = new ArrayList() { new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(partialPaymentDatePicker, true), new FormFieldWrapper(insertPartialPaymentButton, false) };
+                    break;
+
+                default:
+                    break;
+            }
+
+        }
+
         //COMPONENTS CREATION SECTION
         private void createTextBoxes() {
-            receivableNameTextBox = new TextBox();
-            receivableNameTextBox.Width = 200;
-            receivableNameTextBox.Margin = new Padding(0, 0, 0, 0);
+            itemNameTextBox = new TextBox();
+            itemNameTextBox.Width = 200;
+            itemNameTextBox.Margin = new Padding(0, 0, 0, 0);
 
-            receivableValueTextBox = new TextBox();
-            receivableValueTextBox.Width = 200;
-            receivableValueTextBox.Margin = new Padding(0, 0, 0, 0);
+            itemValueTextBox = new TextBox();
+            itemValueTextBox.Width = 200;
+            itemValueTextBox.Margin = new Padding(0, 0, 0, 0);
         }
 
         private void createComboBoxes() {
             receivableDebtorComboBox = new ComboBox();
             receivableDebtorComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             receivableDebtorComboBox.Margin = new Padding(0, 0, 0, 0);
-     
+
         }
 
         private void createDateTimePickers() {
@@ -138,7 +215,10 @@ namespace BudgetManager.mvc.views {
             receivableCreatedDatePicker.Margin = new Padding(0, 0, 0, 0);
 
             receivableDueDatePicker = new DateTimePicker();
-            receivableDueDatePicker.Margin = new Padding(0, 0, 0, 0);         
+            receivableDueDatePicker.Margin = new Padding(0, 0, 0, 0);
+
+            partialPaymentDatePicker = new DateTimePicker();
+            partialPaymentDatePicker.Margin = new Padding(0, 0, 0, 0);
         }
 
         private void createButtons() {
@@ -147,6 +227,13 @@ namespace BudgetManager.mvc.views {
             updateDgvRecordButton.Margin = new Padding(0, 20, 0, 0);
             updateDgvRecordButton.Text = "Update record";
             updateDgvRecordButton.Enabled = false;
+
+            insertPartialPaymentButton = new Button();
+            insertPartialPaymentButton.Size = new Size(105, 23);
+            insertPartialPaymentButton.Margin = new Padding(0, 20, 0, 0);
+            insertPartialPaymentButton.Text = "Add payment";
+            insertPartialPaymentButton.Enabled = false;
+
         }
 
         private void createLabels() {
@@ -170,25 +257,37 @@ namespace BudgetManager.mvc.views {
             receivableDueDateLabel.Text = "Due date";
             receivableDueDateLabel.Margin = new Padding(0, 10, 0, 0);
 
+            partialPaymentNameLabel = new Label();
+            partialPaymentNameLabel.Text = "Payment name";
+            partialPaymentNameLabel.Margin = new Padding(0, 10, 0, 0);
+
+            partialPaymentValueLabel = new Label();
+            partialPaymentValueLabel.Text = "Payment value";
+            partialPaymentValueLabel.Margin = new Padding(0, 10, 0, 0);
+
+            partialPaymentDateLabel = new Label();
+            partialPaymentDateLabel.Text = "Payment date";
+            partialPaymentDateLabel.Margin = new Padding(0, 10, 0, 0);
+
         }
 
-        private void addControlsToMainPanel() {
-            receivablesManagementPanel.Controls.Add(receivableNameLabel);
-            receivablesManagementPanel.Controls.Add(receivableNameTextBox);
+        //private void addControlsToMainPanel() {
+        //    receivablesManagementPanel.Controls.Add(receivableNameLabel);
+        //    receivablesManagementPanel.Controls.Add(itemNameTextBox);
 
-            receivablesManagementPanel.Controls.Add(receivableValueLabel);
-            receivablesManagementPanel.Controls.Add(receivableValueTextBox);
+        //    receivablesManagementPanel.Controls.Add(receivableValueLabel);
+        //    receivablesManagementPanel.Controls.Add(itemValueTextBox);
 
-            receivablesManagementPanel.Controls.Add(receivableDebtorCbxLabel);
-            receivablesManagementPanel.Controls.Add(receivableDebtorComboBox);
+        //    receivablesManagementPanel.Controls.Add(receivableDebtorCbxLabel);
+        //    receivablesManagementPanel.Controls.Add(receivableDebtorComboBox);
 
-            receivablesManagementPanel.Controls.Add(receivableCreatedDateLabel);
-            receivablesManagementPanel.Controls.Add(receivableCreatedDatePicker);
+        //    receivablesManagementPanel.Controls.Add(receivableCreatedDateLabel);
+        //    receivablesManagementPanel.Controls.Add(receivableCreatedDatePicker);
 
-            receivablesManagementPanel.Controls.Add(receivableDueDateLabel);
-            receivablesManagementPanel.Controls.Add(receivableDueDatePicker);
+        //    receivablesManagementPanel.Controls.Add(receivableDueDateLabel);
+        //    receivablesManagementPanel.Controls.Add(receivableDueDatePicker);
 
-            receivablesManagementPanel.Controls.Add(updateDgvRecordButton);
-        }
+        //    receivablesManagementPanel.Controls.Add(updateDgvRecordButton);
+        //}
     }
 }

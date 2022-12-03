@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using BudgetManager.utils.data_insertion;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -123,6 +124,42 @@ namespace BudgetManager.utils {
             }
 
             return outputMap;
+        }
+
+        public static void addControlsToContainer(Panel targetContainer, List<Control> controlsList) {
+            Guard.notNull(targetContainer, "Controls container");
+            Guard.notNull(controlsList, "Controls list");
+
+            if (!controlsList.Any()) {
+                return;
+            }
+
+            foreach (Control currentControl in controlsList) {
+                targetContainer.Controls.Add(currentControl);
+            }
+        }
+
+
+        public static void clearActiveControls(ArrayList activeControls) {
+            Guard.notNull(activeControls, "The active controls list cannot be null");
+
+            //Takes each control and checks its type
+            //If it is of the specified type it casts it to that type before invoking the specific method needed to clear it
+            foreach (FormFieldWrapper currentItem in activeControls) {
+                Control control = currentItem.FormField;//gets the control object from the FormFieldWrapper object
+                if (control is TextBox) {
+                    ((TextBox) control).Text = "";
+                } else if (control is ComboBox) {
+                    //Setting SelectedIndex to -1 when any item other than the first one is selected does not work properly
+                    ((ComboBox) control).SelectedIndex = -1;
+                    ((ComboBox) control).SelectedIndex = -1;
+                } else if (control is DateTimePicker) {
+                    ((DateTimePicker) control).Value = DateTime.Now;
+                } else if (control is RadioButton) {
+                   //Generic reset behavior-sets the radio button 'Checked' property to false
+                   ((RadioButton) control).Checked = false;
+                }
+            }
         }
 
         private static DataTable retrieveData(MySqlCommand dataRetrievalCommand) {
