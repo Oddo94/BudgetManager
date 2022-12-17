@@ -266,6 +266,51 @@ namespace BudgetManager {
 
         }
 
+        public static List<MySqlParameter> callDatabaseStoredProcedure(String procedureName, List<MySqlParameter> inputParameters, List<MySqlParameter> outputParameters) {
+            if (procedureName == null) {
+                throw new ArgumentNullException(procedureName, "The name of the stored procedure cannot be null!");
+            }
+
+            if (inputParameters == null) {
+                throw new ArgumentNullException("input parameter list", "The input parameter list cannot be null!");
+            }
+
+            if (outputParameters == null) {
+                throw new ArgumentNullException("output parameter list", "The output parameter list cannot be null!");
+            }
+
+            MySqlConnection conn = getConnection(BUDGET_MANAGER_CONN_STRING);
+
+            try {
+                MySqlCommand procedureCallingCommand = new MySqlCommand(procedureName, conn);
+                procedureCallingCommand.CommandType = System.Data.CommandType.StoredProcedure;
+
+                //Adds the input parameters to the command object
+                foreach (MySqlParameter param in inputParameters) {
+                    param.Direction = System.Data.ParameterDirection.Input;
+                    procedureCallingCommand.Parameters.Add(param);
+                }
+
+                //Sets the type for each output parameter and adds it to the command object
+                foreach (MySqlParameter param in outputParameters) {
+                    param.Direction = System.Data.ParameterDirection.Output;
+                    procedureCallingCommand.Parameters.Add(param);
+                }
+
+                conn.Open();
+
+                procedureCallingCommand.ExecuteNonQuery();
+
+            } catch (MySqlException ex) {
+                throw;
+            } finally {
+                conn.Close();
+            }
+
+            return outputParameters;
+
+        }
+
         //Method for checking that the connection with the DB is up and running
         public static bool hasConnection() {
             //A new connection is created 

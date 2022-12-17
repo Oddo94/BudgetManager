@@ -129,6 +129,7 @@
     <Compile Include="utils\enums\IncomeSource.cs" />
     <Compile Include="utils\enums\ReceivableStatus.cs" />
     <Compile Include="utils\enums\UIContainerLayout.cs" />
+    <Compile Include="utils\exceptions\NoDataFoundException.cs" />
     <Compile Include="utils\ui_controls\DataGridViewManager.cs" />
     <Compile Include="utils\data_insertion\DataInsertionCheckerContext.cs" />
     <Compile Include="utils\data_insertion\DataInsertionCheckStrategy.cs" />
