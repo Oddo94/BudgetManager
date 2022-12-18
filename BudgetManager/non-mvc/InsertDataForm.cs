@@ -585,14 +585,6 @@ namespace BudgetManager.non_mvc {
         }
 
         private bool hasDataOnActiveFields(ArrayList activeControls) {
-
-            //foreach (Control control in activeControls) {
-            //    if ("".Equals(control.Text)) {
-            //        return false;
-            //    }
-            //}
-
-            //return true;
             //Checks if the current control contains value and if it is required (in this case it will return false, meaning that the respective required field is not populated)
             foreach (FormFieldWrapper currentItem in activeControls) {
                 if ("".Equals(currentItem.FormField.Text) && currentItem.IsRequired) {
@@ -649,14 +641,6 @@ namespace BudgetManager.non_mvc {
         private IncomeSource getIncomeSource(BudgetItemType budgetItemType) {
             //Setting the default value for the income source
             IncomeSource incomeSource = IncomeSource.UNDEFINED;
-
-            //if (generalIncomesRadioButton.Checked == true) {
-            //    incomeSource = IncomeSource.GENERAL_INCOMES;//Income source representing the active/passive incomes
-            //} else if (savingAccountRadioButton.Checked == true) {
-            //    incomeSource = IncomeSource.SAVING_ACCOUNT;//Income source representing the savings that the user currently owns
-            //}
-
-            //return incomeSource;
           
             switch (budgetItemType) {
                 case BudgetItemType.GENERAL_EXPENSE:
@@ -1006,19 +990,10 @@ namespace BudgetManager.non_mvc {
                 int selectedYear = datePicker.Value.Year;
 
                 /*The general rule is that the default income source for expenses, debts and savings are the general incomes
-                However, receivables and saving account expenses(which are a subcategory of expenses) will have the saving account as their income data source*/
+                However, receivables and saving account expenses (which are a subcategory of expenses) will have the saving account as their income data source*/
                 BudgetItemType selectedItemType = getSelectedType(itemTypeSelectionComboBox);
                 IncomeSource incomeSource = getIncomeSource(selectedItemType);
 
-                //if ("Receivable".Equals(selectedItemName)) {
-                //    incomeSource = IncomeSource.SAVING_ACCOUNT;//The only income source currently available for receivables
-                //} else if("Expense".Equals(selectedItemName)) {
-                //    incomeSource = getIncomeSource();//For expenses the income source will be determined by the selected radio button(General incomes/Saving account), otherwise the checks will be incorrect
-                //} else {
-                //    incomeSource = IncomeSource.GENERAL_INCOMES;//For all the other cases the GENERAL INCOMES will be used as income source
-                //}
-
-                //QueryData paramContainer = new QueryData(userID, selectedMonth, selectedYear);
                 //Query data parameter object for general checks
                 paramContainerGeneralCheck = new QueryData.Builder(userID).addMonth(selectedMonth).addYear(selectedYear).addIncomeSource(incomeSource).build(); //CHANGE
                                                                                                                                                                 //Query data parameter object for budget plan checks

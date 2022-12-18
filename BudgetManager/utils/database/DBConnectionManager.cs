@@ -266,6 +266,7 @@ namespace BudgetManager {
 
         }
 
+        //General purpose method used for calling stored procedures from the database
         public static List<MySqlParameter> callDatabaseStoredProcedure(String procedureName, List<MySqlParameter> inputParameters, List<MySqlParameter> outputParameters) {
             if (procedureName == null) {
                 throw new ArgumentNullException(procedureName, "The name of the stored procedure cannot be null!");
@@ -299,6 +300,7 @@ namespace BudgetManager {
 
                 conn.Open();
 
+                //Once the procedure is executed the output parameters are populated with values and the list containing them will be returned from the method
                 procedureCallingCommand.ExecuteNonQuery();
 
             } catch (MySqlException ex) {
@@ -306,6 +308,7 @@ namespace BudgetManager {
             } finally {
                 conn.Close();
             }
+
 
             return outputParameters;
 

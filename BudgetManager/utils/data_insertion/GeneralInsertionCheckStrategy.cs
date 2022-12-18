@@ -18,6 +18,7 @@ namespace BudgetManager.utils {
         private String sqlStatementSingleMonthDebts = @"SELECT SUM(value) from debts WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
         private String sqlStatementSingleMonthSavings = @"SELECT SUM(value) from savings WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear)";
 
+        //DEPRECATED
         //SQL query to get the saving account current balance value in order to allow further checks when the user selects the saving account as the income source for the inserted expense
         //Currently the check is made to allow the balance retrieval only for the default saving account(typeName = SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT)
         private String sqlStatementGetSavingAccountBalance = @"SELECT SUM(value) FROM saving_accounts_balance sab
@@ -25,17 +26,13 @@ namespace BudgetManager.utils {
                                                                INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
                                                                WHERE sab.user_ID = @paramID 
                                                                AND sat.typeName LIKE '%SYSTEM_DEFINED%'";
-        //WHERE sab.user_ID = @paramID AND sat.typeID = 1"; Old condition(should be replaced with a more generic one that does not rely on the ID of the record for retrieving the correct account)
+
+        //SQL query used for retrieving the account ID for which the balance check is performed
         private String sqlStatementGetAccountID = @"SELECT accountID FROM saving_accounts WHERE accountName LIKE CONCAT('%', @paramRecordName,'%') AND user_ID = @paramID";
 
         public int performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert) {
             /****SAVING ACCOUNT SOURCE****/
-            if (paramContainer.IncomeSource == IncomeSource.SAVING_ACCOUNT) {
-                //if (!hasEnoughMoney(IncomeSource.SAVING_ACCOUNT, valueToInsert, paramContainer)) {
-                //    MessageBox.Show("The inserted value is higher than the money left in the saving account! You cannot exceed the currently available balance of the saving account.", "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-
-                //    return -1;
-                //}
+            if (paramContainer.IncomeSource == IncomeSource.SAVING_ACCOUNT) {         
                 try {
                     if (!hasEnoughMoney(IncomeSource.SAVING_ACCOUNT, valueToInsert, paramContainer)) {
                         MessageBox.Show("The inserted value is higher than the money left in the saving account! You cannot exceed the currently available balance of the saving account.", "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
@@ -48,8 +45,6 @@ namespace BudgetManager.utils {
                     MessageBox.Show(ex.Message, "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
                     return -1;
                 }
-
-                //executionResult = insertSelectedItem(selectedItemIndex);
 
             } else if (paramContainer.IncomeSource == IncomeSource.GENERAL_INCOMES) {
                 /****GENERAL INCOMES SOURCE****/
@@ -119,29 +114,7 @@ namespace BudgetManager.utils {
 
         }
 
-        ////Method for retrieving the total saving amount
-        //private int getSavingAccountCurrentBalance(String sqlStatement, QueryData paramContainer) {
-        //    //Setting the default value for current balance.If data cannot be retrieved for any reason then 0 will be returned since it is not be allowed for the saving account to have negative balance
-        //    int currentBalance = 0;
-
-        //    MySqlCommand getCurrentBalanceCommand = SQLCommandBuilder.getRecordSumValueCommand(sqlStatementGetSavingAccountBalance, paramContainer);
-        //    //getCurrentBalanceCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
-        //    //getCurrentBalanceCommand.Parameters.AddWithValue("@paramYear", paramContainer.Year);
-
-        //    DataTable resultDataTable = DBConnectionManager.getData(getCurrentBalanceCommand);
-
-        //    if (resultDataTable != null && resultDataTable.Rows.Count == 1) {
-        //        Object result = resultDataTable.Rows[0].ItemArray[0];
-        //        currentBalance = result != DBNull.Value ? Convert.ToInt32(result) : 0;
-
-        //        return currentBalance;
-        //    }
-
-        //    return currentBalance;
-        //}
-
-
-        //Method for retrieving the total saving amount
+        //Method for retrieving the balance of the saving account which is used as the income source
         private double getSavingAccountCurrentBalance(String sqlStatement, QueryData paramContainer) {
             //Setting the default value for current balance.If data cannot be retrieved for any reason then 0 will be returned since it is not be allowed for the saving account to have negative balance
             double currentBalance = 0;
@@ -151,6 +124,7 @@ namespace BudgetManager.utils {
                 String accountName = "SYSTEM_DEFINED";//The name of the default account(it uses only 'SYSTEM_DEFINED' as this is the defining element from its name and it's evaluated in a LIKE clause)
                 QueryData paramContainerAccountRetrieval = new QueryData.Builder(paramContainer.UserID).addItemName(accountName).build();
 
+                //Retrieves the account ID
                 MySqlCommand accountIDRetrievalCommand = SQLCommandBuilder.getRecordIDCommand(sqlStatementGetAccountID, paramContainerAccountRetrieval);
                 accountIDDataTable = DBConnectionManager.getData(accountIDRetrievalCommand);
 
@@ -161,14 +135,13 @@ namespace BudgetManager.utils {
                     throw new NoDataFoundException("Unable to retrieve the ID of the saving account whose balance needs to be checked!");
                 }
 
-                //accountID = result != DBNull.Value ? Convert.ToInt32(result) : 0;
-
                 accountID = Convert.ToInt32(result);
 
             } else {
                 throw new NoDataFoundException("Unable to retrieve the ID of the saving account whose balance needs to be checked!");
             }
 
+            //Prepares the inout and output parameters for calling the store procedure that will retrieve the account balance
             MySqlParameter accountIDParam = new MySqlParameter("p_account_ID", accountID);
             MySqlParameter accountBalanceParam = new MySqlParameter("p_account_balance", MySqlDbType.Double);
 
@@ -187,8 +160,6 @@ namespace BudgetManager.utils {
                 if(accountBalanceParam == null) {
                     throw new NoDataFoundException("Unable to retrieve the balance of the saving account which needs to be checked!");
                 }
-
-                //currentBalance = accountBalanceParam != null ? Convert.ToDouble(accountBalanceParam.Value) : 0;
 
                 currentBalance = Convert.ToDouble(accountBalanceParam.Value);
 
