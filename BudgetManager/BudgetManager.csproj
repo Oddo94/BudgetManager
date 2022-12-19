@@ -57,6 +57,7 @@
     <Compile Include="mvc\models\BudgetPlanManagementModel.cs" />
     <Compile Include="mvc\models\BudgetSummaryModel.cs" />
     <Compile Include="mvc\models\dto\IDataInsertionDTO.cs" />
+    <Compile Include="mvc\models\dto\ReceivableDTO.cs" />
     <Compile Include="mvc\models\dto\SavingAccountInterestDTO.cs" />
     <Compile Include="mvc\models\SavingAccountModel.cs" />
     <Compile Include="mvc\views\BudgetPlanManagementForm.cs">
@@ -64,6 +65,12 @@
     </Compile>
     <Compile Include="mvc\views\BudgetPlanManagementForm.Designer.cs">
       <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="mvc\views\ReceivableManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="mvc\views\ReceivableManagementForm.Designer.cs">
+      <DependentUpon>ReceivableManagementForm.cs</DependentUpon>
     </Compile>
     <Compile Include="mvc\views\SavingAccountForm.cs">
       <SubType>Form</SubType>
@@ -111,13 +118,18 @@
     </Compile>
     <Compile Include="utils\data_insertion\ReceivableInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\SavingInsertionStrategy.cs" />
-    <Compile Include="utils\data_insertion\InsertionFormField.cs" />
+    <Compile Include="utils\data_insertion\FormFieldWrapper.cs" />
     <Compile Include="utils\data_insertion\TransferCheckStrategy.cs" />
     <Compile Include="utils\data_insertion\BudgetPlanChecker.cs" />
     <Compile Include="utils\data_insertion\BudgetPlanCheckStrategy.cs" />
     <Compile Include="utils\app_authentication\ConfirmationSender.cs" />
+    <Compile Include="utils\enums\AccountType.cs" />
     <Compile Include="utils\enums\BudgetItemType.cs" />
+    <Compile Include="utils\enums\EnumExtensions.cs" />
     <Compile Include="utils\enums\IncomeSource.cs" />
+    <Compile Include="utils\enums\ReceivableStatus.cs" />
+    <Compile Include="utils\enums\UIContainerLayout.cs" />
+    <Compile Include="utils\exceptions\NoDataFoundException.cs" />
     <Compile Include="utils\ui_controls\DataGridViewManager.cs" />
     <Compile Include="utils\data_insertion\DataInsertionCheckerContext.cs" />
     <Compile Include="utils\data_insertion\DataInsertionCheckStrategy.cs" />
@@ -173,6 +185,9 @@
     <Compile Include="utils\miscellaneous\ViewCalculator.cs" />
     <EmbeddedResource Include="mvc\views\BudgetPlanManagementForm.resx">
       <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="mvc\views\ReceivableManagementForm.resx">
+      <DependentUpon>ReceivableManagementForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="mvc\views\SavingAccountForm.resx">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
