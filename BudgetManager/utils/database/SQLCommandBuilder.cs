@@ -1,11 +1,8 @@
 ﻿using BudgetManager.mvc.models.dto;
 using BudgetManager.utils;
+using BudgetManager.utils.enums;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BudgetManager {   
     //Utilty class used for creating SQL commands(single/multiple months)
@@ -260,17 +257,24 @@ namespace BudgetManager {
         }
 
         //Method used for creating the receivable insertion command
-        public static MySqlCommand getReceivableInsertionCommand(String sqlStatement, QueryData paramContainer) {
-            Guard.notNull(paramContainer, "parameter container");
+        public static MySqlCommand getReceivableInsertionCommand(String sqlStatement, IDataInsertionDTO dataInsertionDTO) {
+            Guard.notNull(sqlStatement, "receivable insertion SQL statement");
+            Guard.notNull(dataInsertionDTO, "receivable DTO");
+
+            ReceivableDTO receivableDTO = (ReceivableDTO) dataInsertionDTO;
+
+            ReceivableStatus receivableStatus = receivableDTO.ReceivableStatus; //The extension method getEnumDescription() works ONLY on instances of Enum type
 
             MySqlCommand insertReceivableCommand = new MySqlCommand(sqlStatement);
-            insertReceivableCommand.Parameters.AddWithValue("@paramItemName", paramContainer.ItemName);
-            insertReceivableCommand.Parameters.AddWithValue("@paramItemValue", paramContainer.ItemValue);
-            insertReceivableCommand.Parameters.AddWithValue("@paramDebtorID", paramContainer.DebtorID);
-            insertReceivableCommand.Parameters.AddWithValue("@paramUserID", paramContainer.UserID);
-            insertReceivableCommand.Parameters.AddWithValue("@paramPaidAmount", paramContainer.PaidAmount);
-            insertReceivableCommand.Parameters.AddWithValue("@paramStartDate", paramContainer.StartDate);
-            insertReceivableCommand.Parameters.AddWithValue("@paramEndDate", paramContainer.EndDate);
+            insertReceivableCommand.Parameters.AddWithValue("@paramName", receivableDTO.Name);
+            insertReceivableCommand.Parameters.AddWithValue("@paramValue", receivableDTO.Value);
+            insertReceivableCommand.Parameters.AddWithValue("@paramDebtorName", receivableDTO.DebtorName);
+            insertReceivableCommand.Parameters.AddWithValue("@paramUserID", receivableDTO.UserID);
+            insertReceivableCommand.Parameters.AddWithValue("@paramAccountName", receivableDTO.AccountName);
+            insertReceivableCommand.Parameters.AddWithValue("@paramTotalPaidAmount", receivableDTO.TotalPaidAmount);
+            insertReceivableCommand.Parameters.AddWithValue("@paramStatusDescription", receivableStatus.getEnumDescription());
+            insertReceivableCommand.Parameters.AddWithValue("@paramCreatedDate", receivableDTO.CreatedDate);
+            insertReceivableCommand.Parameters.AddWithValue("@paramDueDate", receivableDTO.DueDate);
 
             return insertReceivableCommand;
         }
