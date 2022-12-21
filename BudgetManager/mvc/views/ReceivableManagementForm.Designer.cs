@@ -156,6 +156,7 @@
             this.receivableManagementDgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.receivableManagementDgv.Location = new System.Drawing.Point(15, 232);
             this.receivableManagementDgv.Name = "receivableManagementDgv";
+            this.receivableManagementDgv.ReadOnly = true;
             this.receivableManagementDgv.Size = new System.Drawing.Size(773, 219);
             this.receivableManagementDgv.TabIndex = 9;
             this.receivableManagementDgv.CellContextMenuStripNeeded += new System.Windows.Forms.DataGridViewCellContextMenuStripNeededEventHandler(this.receivableManagementDgv_CellContextMenuStripNeeded);
