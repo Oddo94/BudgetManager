@@ -9,6 +9,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -40,15 +41,17 @@ namespace BudgetManager.mvc.views {
         private Label partialPaymentValueLabel;
         private Label partialPaymentDateLabel;
 
-
-
-
-
-        private ArrayList activeControls;
+        //ArrayList containing the controls currently used in the data insertion/update form
+        private List<FormFieldWrapper> activeControls;
+        private UserControlsManager controlsManager;
+        //Variable used for keeping track of the current data insertion form layout
+        private UIContainerLayout currentLayout;
 
         public ReceivableManagementForm(int userID) {
             InitializeComponent();
             this.userID = userID;
+            controlsManager = new UserControlsManager();
+            currentLayout = UIContainerLayout.UNDEFINED;
 
             fillDataGridView();        
             createTextBoxes();
@@ -122,6 +125,7 @@ namespace BudgetManager.mvc.views {
                     //MessageBox.Show(message, messageBoxTitle);
                     //receivablesManagementPanel.Visible = false;
                     setupLayout(UIContainerLayout.INSERT_LAYOUT);
+                    insertPartialPaymentButton.Enabled = false;
                     break;
 
                 case "updateDetailsItem":
@@ -129,13 +133,15 @@ namespace BudgetManager.mvc.views {
                     //MessageBox.Show(message, messageBoxTitle);
                     //addControlsToMainPanel();
                     //receivablesManagementPanel.Visible = true;
-                    setupLayout(UIContainerLayout.UPDATE_LAYOUT);
+                    setupLayout(UIContainerLayout.UPDATE_LAYOUT);     
                     ArrayList currentRowData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
                     try {
                         populateFormFields(currentRowData);
                     } catch(FormatException ex) {
                         Console.WriteLine(ex.Message);
                         MessageBox.Show("Invalid date format for the receivable due/created date! Unable to populate the update data form.", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    } finally {
+                        updateDgvRecordButton.Enabled = false;
                     }
                     
                     break;
@@ -154,6 +160,86 @@ namespace BudgetManager.mvc.views {
                 columnIndexOnRightClick = e.ColumnIndex;
             }
         }
+
+        private void updateDgvRecordButton_Click(object sender, EventArgs e) {
+            DateTime createdDate = receivableCreatedDatePicker.Value;
+            DateTime dueDate = receivableDueDatePicker.Value;
+
+            if(createdDate > dueDate || dueDate < createdDate) {
+                MessageBox.Show("Invalid date selection! The receivable creation date must precede the due date!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+        }
+
+        private void ReceivableManagementForm_Load(object sender, EventArgs e) {
+            itemNameTextBox.TextChanged += new EventHandler(itemNameTextBox_TextChanged);
+            itemValueTextBox.TextChanged += new EventHandler(itemValueTextBox_TextChanged);
+            receivableDebtorComboBox.TextChanged += new EventHandler(receivableDebtorComboBox_TextChanged);
+            receivableCreatedDatePicker.TextChanged += new EventHandler(receivableCreatedDatePicker_TextChanged);
+            receivableDueDatePicker.TextChanged += new EventHandler(receivableDueDatePicker_TextChanged);
+            updateDgvRecordButton.Click += new EventHandler(updateDgvRecordButton_Click);
+
+        }
+
+        private void exitButton_Click(object sender, EventArgs e) {
+            this.Dispose();
+        }
+
+        private void itemNameTextBox_TextChanged(object sender, EventArgs e) {
+            Button currentlyActiveButton = null;
+            
+            //Sets the correct button as the currently active one based on the layout.This will ensure that the right button is enabled/disabled when form field data is present/missing
+            if(currentLayout == UIContainerLayout.INSERT_LAYOUT) {
+                currentlyActiveButton = insertPartialPaymentButton;
+            } else if(currentLayout == UIContainerLayout.UPDATE_LAYOUT) {
+                currentlyActiveButton = updateDgvRecordButton;
+            } 
+            //Enables/or disables the update receivable button based on the presence/absence of data on the required form fields
+            UserControlsManager.setButtonState(currentlyActiveButton, activeControls);
+        }
+
+        private void itemValueTextBox_TextChanged(object sender, EventArgs e) {
+            Regex forbiddenCharacters = new Regex("[^0-9]+", RegexOptions.Compiled);
+
+            //Checks if the value text box contains non-digit characters and in that case it clears its content
+            if (forbiddenCharacters.IsMatch(itemValueTextBox.Text)) {
+                itemValueTextBox.Text = "";
+            }
+
+            Button currentlyActiveButton = null;
+
+            //Sets the correct button as the currently active one based on the layout.This will ensure that the right button is enabled/disabled when form field data is present/missing
+            if (currentLayout == UIContainerLayout.INSERT_LAYOUT) {
+                currentlyActiveButton = insertPartialPaymentButton;
+            } else if (currentLayout == UIContainerLayout.UPDATE_LAYOUT) {
+                currentlyActiveButton = updateDgvRecordButton;
+            }
+
+            //Enables/or disables the update receivable button based on the presence/absence of data on the required form fields
+            UserControlsManager.setButtonState(currentlyActiveButton, activeControls);  
+        }
+
+        private void receivableDebtorComboBox_TextChanged(object sender, EventArgs e) {
+            UserControlsManager.setButtonState(updateDgvRecordButton, activeControls);
+        }
+
+        private void receivableCreatedDatePicker_TextChanged(object sender, EventArgs e) {
+            UserControlsManager.setButtonState(updateDgvRecordButton, activeControls);
+        }
+
+        private void receivableDueDatePicker_TextChanged(object sender, EventArgs e) {
+            UserControlsManager.setButtonState(updateDgvRecordButton, activeControls);
+        }
+
+        //private void itemValueTextBox_TextChanged(object sender, EventArgs e) {
+        //    Regex forbiddenCharacters = new Regex("[^0-9]+", RegexOptions.Compiled);
+
+        //    //Checks if the value text box contains non-digit characters and in that case it clears its content
+        //    if(forbiddenCharacters.IsMatch(itemValueTextBox.Text)) {
+        //        itemValueTextBox.Text = "";
+        //    }
+        //}
+
 
         private void setComponentsLayout() {
 
@@ -197,11 +283,13 @@ namespace BudgetManager.mvc.views {
         private void populateActiveControlsList(UIContainerLayout selectedOperationLayout) {
             switch (selectedOperationLayout) {
                 case UIContainerLayout.UPDATE_LAYOUT:
-                    activeControls = new ArrayList() { new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(receivableDebtorComboBox, true), new FormFieldWrapper(receivableCreatedDatePicker, true), new FormFieldWrapper(receivableDueDatePicker, true), new FormFieldWrapper(updateDgvRecordButton, false) };
+                    activeControls = new List<FormFieldWrapper>() { new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(receivableDebtorComboBox, true), new FormFieldWrapper(receivableCreatedDatePicker, true), new FormFieldWrapper(receivableDueDatePicker, true), new FormFieldWrapper(updateDgvRecordButton, false) };
+                    currentLayout = UIContainerLayout.UPDATE_LAYOUT;//Sets the current layout so that the form field data validation will be performed correctly(e.g: enabling/disabling the correct button in case of missing form field data)
                     break;
 
                 case UIContainerLayout.INSERT_LAYOUT:
-                    activeControls = new ArrayList() { new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(partialPaymentDatePicker, true), new FormFieldWrapper(insertPartialPaymentButton, false) };
+                    activeControls = new List<FormFieldWrapper>() { new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(partialPaymentDatePicker, true), new FormFieldWrapper(insertPartialPaymentButton, false) };
+                    currentLayout = UIContainerLayout.INSERT_LAYOUT;
                     break;
 
                 default:
@@ -244,13 +332,15 @@ namespace BudgetManager.mvc.views {
             updateDgvRecordButton.Size = new Size(99, 23);
             updateDgvRecordButton.Margin = new Padding(0, 20, 0, 0);
             updateDgvRecordButton.Text = "Update record";
-            updateDgvRecordButton.Enabled = false;
+            updateDgvRecordButton.Name = "updateDgvRecordButton";
+            //updateDgvRecordButton.Enabled = false;
 
             insertPartialPaymentButton = new Button();
             insertPartialPaymentButton.Size = new Size(105, 23);
             insertPartialPaymentButton.Margin = new Padding(0, 20, 0, 0);
             insertPartialPaymentButton.Text = "Add payment";
-            insertPartialPaymentButton.Enabled = false;
+            insertPartialPaymentButton.Name = "insertPartialPaymentButton";
+            //insertPartialPaymentButton.Enabled = false;
 
         }
 

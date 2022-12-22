@@ -180,6 +180,7 @@
             this.exitButton.TabIndex = 11;
             this.exitButton.Text = "Exit";
             this.exitButton.UseVisualStyleBackColor = true;
+            this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
             // 
             // ReceivableManagementForm
             // 
@@ -199,6 +200,7 @@
             this.MaximizeBox = false;
             this.Name = "ReceivableManagementForm";
             this.Text = "Receivable management";
+            this.Load += new System.EventHandler(this.ReceivableManagementForm_Load);
             this.updateReceivableCtxMenu.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.receivableManagementDgv)).EndInit();
