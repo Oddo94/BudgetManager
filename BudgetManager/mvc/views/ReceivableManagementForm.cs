@@ -169,6 +169,37 @@ namespace BudgetManager.mvc.views {
                 MessageBox.Show("Invalid date selection! The receivable creation date must precede the due date!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            int nameColumnIndex = 1;
+            int valueColumnIndex = 2;
+            int debtorColumnIndex = 3;
+            int createdDateColumnIndex = 6;
+            int dueDateColumnIndex = 7;
+
+            String receivableName = itemNameTextBox.Text;
+            String receivableValue = itemValueTextBox.Text;
+            String receivableDebtorName = receivableDebtorComboBox.Text;
+            String receivableCreatedDate = receivableCreatedDatePicker.Value.ToString("yyyy-MM-dd");
+            String receivableDueDate = receivableDueDatePicker.Value.ToString("yyyy-MM-dd");
+
+            Dictionary<int, String> cellIndexValueDictionary = new Dictionary<int, string>();
+            cellIndexValueDictionary.Add(nameColumnIndex, receivableName);
+            cellIndexValueDictionary.Add(valueColumnIndex, receivableValue);
+            cellIndexValueDictionary.Add(debtorColumnIndex, receivableDebtorName);
+            cellIndexValueDictionary.Add(createdDateColumnIndex, receivableCreatedDate);
+            cellIndexValueDictionary.Add(dueDateColumnIndex, receivableDueDate);
+
+            try {
+                DataTable receivableDgvDataSource = (DataTable)receivableManagementDgv.DataSource;
+                UserControlsManager.updateDataTable(receivableDgvDataSource, rowIndexOnRightClick, cellIndexValueDictionary);
+
+            } catch(Exception ex) {
+                string errorMessage = string.Format("Unable to update the specified row! Reason: {0}", ex.Message);
+                MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } finally {
+                rowIndexOnRightClick = -1;
+            }
+
         }
 
         private void ReceivableManagementForm_Load(object sender, EventArgs e) {
