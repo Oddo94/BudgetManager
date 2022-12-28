@@ -39,6 +39,8 @@
             this.receivableManagementDgv = new System.Windows.Forms.DataGridView();
             this.saveReceivableChangesButton = new System.Windows.Forms.Button();
             this.exitButton = new System.Windows.Forms.Button();
+            this.pendingChangesLabel = new System.Windows.Forms.Label();
+            this.discardChangesButton = new System.Windows.Forms.Button();
             this.updateReceivableCtxMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.receivableManagementDgv)).BeginInit();
@@ -112,7 +114,7 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.receivablesManagementPanel);
-            this.groupBox1.Location = new System.Drawing.Point(16, 468);
+            this.groupBox1.Location = new System.Drawing.Point(16, 491);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(772, 347);
             this.groupBox1.TabIndex = 5;
@@ -165,16 +167,17 @@
             // saveReceivableChangesButton
             // 
             this.saveReceivableChangesButton.Enabled = false;
-            this.saveReceivableChangesButton.Location = new System.Drawing.Point(16, 844);
+            this.saveReceivableChangesButton.Location = new System.Drawing.Point(16, 860);
             this.saveReceivableChangesButton.Name = "saveReceivableChangesButton";
             this.saveReceivableChangesButton.Size = new System.Drawing.Size(99, 23);
             this.saveReceivableChangesButton.TabIndex = 10;
             this.saveReceivableChangesButton.Text = "Save changes";
             this.saveReceivableChangesButton.UseVisualStyleBackColor = true;
+            this.saveReceivableChangesButton.Click += new System.EventHandler(this.saveReceivableChangesButton_Click);
             // 
             // exitButton
             // 
-            this.exitButton.Location = new System.Drawing.Point(648, 844);
+            this.exitButton.Location = new System.Drawing.Point(690, 860);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(98, 23);
             this.exitButton.TabIndex = 11;
@@ -182,11 +185,36 @@
             this.exitButton.UseVisualStyleBackColor = true;
             this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
             // 
+            // pendingChangesLabel
+            // 
+            this.pendingChangesLabel.AutoSize = true;
+            this.pendingChangesLabel.BackColor = System.Drawing.SystemColors.Control;
+            this.pendingChangesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pendingChangesLabel.ForeColor = System.Drawing.Color.DeepSkyBlue;
+            this.pendingChangesLabel.Location = new System.Drawing.Point(16, 472);
+            this.pendingChangesLabel.Name = "pendingChangesLabel";
+            this.pendingChangesLabel.Size = new System.Drawing.Size(0, 13);
+            this.pendingChangesLabel.TabIndex = 12;
+            this.pendingChangesLabel.Visible = false;
+            // 
+            // discardChangesButton
+            // 
+            this.discardChangesButton.Enabled = false;
+            this.discardChangesButton.Location = new System.Drawing.Point(342, 860);
+            this.discardChangesButton.Name = "discardChangesButton";
+            this.discardChangesButton.Size = new System.Drawing.Size(104, 23);
+            this.discardChangesButton.TabIndex = 13;
+            this.discardChangesButton.Text = "Discard changes";
+            this.discardChangesButton.UseVisualStyleBackColor = true;
+            this.discardChangesButton.Click += new System.EventHandler(this.discardChangesButton_Click);
+            // 
             // ReceivableManagementForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(833, 879);
+            this.ClientSize = new System.Drawing.Size(840, 895);
+            this.Controls.Add(this.discardChangesButton);
+            this.Controls.Add(this.pendingChangesLabel);
             this.Controls.Add(this.exitButton);
             this.Controls.Add(this.saveReceivableChangesButton);
             this.Controls.Add(this.receivableManagementDgv);
@@ -226,5 +254,7 @@
         private System.Windows.Forms.FlowLayoutPanel receivablesManagementPanel;
         private System.Windows.Forms.Button saveReceivableChangesButton;
         private System.Windows.Forms.Button exitButton;
+        private System.Windows.Forms.Label pendingChangesLabel;
+        private System.Windows.Forms.Button discardChangesButton;
     }
 }

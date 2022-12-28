@@ -18,6 +18,7 @@ namespace BudgetManager.mvc.views {
         private int userID;
         private int rowIndexOnRightClick;
         private int columnIndexOnRightClick;
+        private int totalPendingChanges;
 
         //General components
         private TextBox itemNameTextBox;
@@ -79,6 +80,8 @@ namespace BudgetManager.mvc.views {
             sourceDataTable.Rows.Add(3, "Receivable May 2022", 100, "Adam", 0, 1, "2022-05-30", "2022-12-30");
             sourceDataTable.Rows.Add(4, "Receivable September 2022", 1000, "Mike", 300, 1, "2022-09-30", "2022-12-30");
 
+            sourceDataTable.AcceptChanges();
+
             receivableManagementDgv.DataSource = sourceDataTable;
 
             DataTable newDataTable = sourceDataTable.Clone();//Will be used to get a copy of the original DataTable onto which the changes will be performed by the user
@@ -94,9 +97,16 @@ namespace BudgetManager.mvc.views {
             e.Column.SortMode = DataGridViewColumnSortMode.NotSortable;
         }
 
-        private void receivableManagementDgv_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e) {
-            e.ContextMenuStrip = updateReceivableCtxMenu;
-            updateReceivableCtxMenu.Visible = true;
+        private void receivableManagementDgv_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e) {          
+            int lowerBound = 0;
+            int upperBound = receivableManagementDgv.Rows.Count - 2;
+
+            //Displays the uodate recivable context menu only if the user clicked on a row that contains data
+            if(rowIndexOnRightClick >= lowerBound && rowIndexOnRightClick <= upperBound) {
+                e.ContextMenuStrip = updateReceivableCtxMenu;
+                updateReceivableCtxMenu.Visible = true;
+            }
+            
         }
 
         private void monthRecordsRadioButton_CheckedChanged(object sender, EventArgs e) {
@@ -128,21 +138,21 @@ namespace BudgetManager.mvc.views {
                     insertPartialPaymentButton.Enabled = false;
                     break;
 
-                case "updateDetailsItem":
-                    message = String.Format(template, "'Update payment'", rowIndexOnRightClick, columnIndexOnRightClick);
-                    //MessageBox.Show(message, messageBoxTitle);
-                    //addControlsToMainPanel();
-                    //receivablesManagementPanel.Visible = true;
-                    setupLayout(UIContainerLayout.UPDATE_LAYOUT);     
-                    ArrayList currentRowData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
-                    try {
-                        populateFormFields(currentRowData);
-                    } catch(FormatException ex) {
-                        Console.WriteLine(ex.Message);
-                        MessageBox.Show("Invalid date format for the receivable due/created date! Unable to populate the update data form.", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    } finally {
-                        updateDgvRecordButton.Enabled = false;
-                    }
+                case "updateDetailsItem":              
+                        message = String.Format(template, "'Update payment'", rowIndexOnRightClick, columnIndexOnRightClick);
+                        //MessageBox.Show(message, messageBoxTitle);
+                        //addControlsToMainPanel();
+                        //receivablesManagementPanel.Visible = true;
+                        setupLayout(UIContainerLayout.UPDATE_LAYOUT);
+                        ArrayList currentRowData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
+                        try {
+                            populateFormFields(currentRowData);
+                        } catch (FormatException ex) {
+                            Console.WriteLine(ex.Message);
+                            MessageBox.Show("Invalid date format for the receivable due/created date! Unable to populate the update data form.", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        } finally {
+                            updateDgvRecordButton.Enabled = false;
+                        }               
                     
                     break;
 
@@ -193,13 +203,49 @@ namespace BudgetManager.mvc.views {
                 DataTable receivableDgvDataSource = (DataTable)receivableManagementDgv.DataSource;
                 UserControlsManager.updateDataTable(receivableDgvDataSource, rowIndexOnRightClick, cellIndexValueDictionary);
 
+                //Updates the number of pending changes and sets the corresponding message to the label that informs the user about them
+                totalPendingChanges++;
+                pendingChangesLabel.Text = String.Format("You have {0} pending {1}", totalPendingChanges, totalPendingChanges == 1 ? "change": "changes");
+                pendingChangesLabel.Visible = true;
+
             } catch(Exception ex) {
                 string errorMessage = string.Format("Unable to update the specified row! Reason: {0}", ex.Message);
                 MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } finally {
                 rowIndexOnRightClick = -1;
+                updateDgvRecordButton.Enabled = false;
+                
             }
 
+            UserControlsManager.clearActiveControls(activeControls);
+            saveReceivableChangesButton.Enabled = true;
+            discardChangesButton.Enabled = true;
+
+        }
+
+        private void saveReceivableChangesButton_Click(object sender, EventArgs e) {
+            totalPendingChanges = 0;
+            pendingChangesLabel.Visible = false;
+            saveReceivableChangesButton.Enabled = false;
+            discardChangesButton.Enabled = false;
+        }
+
+        private void discardChangesButton_Click(object sender, EventArgs e) {
+            DialogResult userOption = MessageBox.Show("Are you sure that you want to discard all the existing changes?", "Receivable management", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (userOption == DialogResult.Yes) {
+                DataTable receivableDgvDataSource = (DataTable)receivableManagementDgv.DataSource;
+                receivableDgvDataSource.RejectChanges();
+
+                totalPendingChanges = 0;
+                saveReceivableChangesButton.Enabled = false;
+                discardChangesButton.Enabled = false;
+                pendingChangesLabel.Visible = false;
+            }
+        }
+
+        private void exitButton_Click(object sender, EventArgs e) {
+            this.Dispose();
         }
 
         private void ReceivableManagementForm_Load(object sender, EventArgs e) {
@@ -212,10 +258,6 @@ namespace BudgetManager.mvc.views {
 
         }
 
-        private void exitButton_Click(object sender, EventArgs e) {
-            this.Dispose();
-        }
-
         private void itemNameTextBox_TextChanged(object sender, EventArgs e) {
             Button currentlyActiveButton = null;
             
@@ -224,9 +266,11 @@ namespace BudgetManager.mvc.views {
                 currentlyActiveButton = insertPartialPaymentButton;
             } else if(currentLayout == UIContainerLayout.UPDATE_LAYOUT) {
                 currentlyActiveButton = updateDgvRecordButton;
-            } 
+            }
             //Enables/or disables the update receivable button based on the presence/absence of data on the required form fields
-            UserControlsManager.setButtonState(currentlyActiveButton, activeControls);
+            if (rowIndexOnRightClick != -1) {
+                UserControlsManager.setButtonState(currentlyActiveButton, activeControls);
+            }
         }
 
         private void itemValueTextBox_TextChanged(object sender, EventArgs e) {
@@ -247,19 +291,27 @@ namespace BudgetManager.mvc.views {
             }
 
             //Enables/or disables the update receivable button based on the presence/absence of data on the required form fields
-            UserControlsManager.setButtonState(currentlyActiveButton, activeControls);  
+            if (rowIndexOnRightClick != -1) {
+                UserControlsManager.setButtonState(currentlyActiveButton, activeControls);
+            }  
         }
 
         private void receivableDebtorComboBox_TextChanged(object sender, EventArgs e) {
-            UserControlsManager.setButtonState(updateDgvRecordButton, activeControls);
+            if (rowIndexOnRightClick != -1) {
+                UserControlsManager.setButtonState(updateDgvRecordButton, activeControls);
+            }
         }
 
         private void receivableCreatedDatePicker_TextChanged(object sender, EventArgs e) {
-            UserControlsManager.setButtonState(updateDgvRecordButton, activeControls);
+            if (rowIndexOnRightClick != -1) {
+                UserControlsManager.setButtonState(updateDgvRecordButton, activeControls);
+            }
         }
 
         private void receivableDueDatePicker_TextChanged(object sender, EventArgs e) {
-            UserControlsManager.setButtonState(updateDgvRecordButton, activeControls);
+            if (rowIndexOnRightClick != -1) {
+                UserControlsManager.setButtonState(updateDgvRecordButton, activeControls);
+            }
         }
 
         //private void itemValueTextBox_TextChanged(object sender, EventArgs e) {
