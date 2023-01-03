@@ -20,7 +20,7 @@ namespace BudgetManager.non_mvc {
             throw new NotImplementedException();
         }
 
-        //The new method used for receivables insertion (uses the new ReceivableDTO object for transfering the query data)
+        //The new method used for receivables insertion (uses the new ReceivableDTO object for transferring the query data)
         public int execute(IDataInsertionDTO dataInsertionDTO) {
             Guard.notNull(dataInsertionDTO, "receivable DTO");
             int executionResult = -1;

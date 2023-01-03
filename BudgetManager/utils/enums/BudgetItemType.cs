@@ -25,6 +25,8 @@ namespace BudgetManager.utils.enums {
         DEBTOR,
         [Description("saving account interest")]
         SAVING_ACCOUNT_INTEREST,
+        [Description("partial payment")]
+        PARTIAL_PAYMENT,
         UNDEFINED
     }
 }

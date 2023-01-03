@@ -57,6 +57,7 @@
     <Compile Include="mvc\models\BudgetPlanManagementModel.cs" />
     <Compile Include="mvc\models\BudgetSummaryModel.cs" />
     <Compile Include="mvc\models\dto\IDataInsertionDTO.cs" />
+    <Compile Include="mvc\models\dto\PartialPaymentDTO.cs" />
     <Compile Include="mvc\models\dto\ReceivableDTO.cs" />
     <Compile Include="mvc\models\dto\SavingAccountInterestDTO.cs" />
     <Compile Include="mvc\models\SavingAccountModel.cs" />
@@ -116,6 +117,8 @@
     <Compile Include="non-mvc\InsertDataForm.Designer.cs">
       <DependentUpon>InsertDataForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="utils\data_insertion\PartialPaymentInsertionCheckStrategy.cs" />
+    <Compile Include="utils\data_insertion\PartialPaymentInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\ReceivableInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\SavingInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\FormFieldWrapper.cs" />

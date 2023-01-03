@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BudgetManager.mvc.models.dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,6 @@ namespace BudgetManager.utils {
     interface DataInsertionCheckStrategy {
 
         int performCheck(QueryData inputData, String selectedItemName, int valueToInsert);
+        int performCheck();
     }
 }

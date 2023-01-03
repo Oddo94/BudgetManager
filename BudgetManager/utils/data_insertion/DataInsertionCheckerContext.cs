@@ -24,6 +24,12 @@ namespace BudgetManager.utils {
 
             return executionResult;
         }
+
+        //Method aadded to provide moreflexibility when using the invoker
+        //The necessary data for performing the checks will be encapsualted in the strategy objects hence there will be no need to pass it all the way through the invoker
+        public int invoke() {
+            return dataCheckStrategy.performCheck();
+        }
        
     }
 }

@@ -1,4 +1,5 @@
-﻿using BudgetManager.utils;
+﻿using BudgetManager.mvc.models.dto;
+using BudgetManager.utils;
 using BudgetManager.utils.data_insertion;
 using BudgetManager.utils.enums;
 using System;
@@ -76,13 +77,16 @@ namespace BudgetManager.mvc.views {
             sourceDataTable.Columns.Add("Due date");
 
             sourceDataTable.Rows.Add(1, "Receivable January 2022", 100, "Jim", 0, 1, "2022-01-30", "2022-12-30");
-            sourceDataTable.Rows.Add(2, "Receivable April 2022", 500, "John", 0, 1, "2022-04-30", "2022-12-30");
-            sourceDataTable.Rows.Add(3, "Receivable May 2022", 100, "Adam", 0, 1, "2022-05-30", "2022-12-30");
-            sourceDataTable.Rows.Add(4, "Receivable September 2022", 1000, "Mike", 300, 1, "2022-09-30", "2022-12-30");
+            sourceDataTable.Rows.Add(2, "Receivable April 2022", 500, "John", 0, 2, "2022-04-30", "2022-12-30");
+            sourceDataTable.Rows.Add(3, "Receivable May 2022", 100, "Adam", 0, 3, "2022-05-30", "2022-12-30");
+            sourceDataTable.Rows.Add(4, "Receivable September 2022", 1000, "Mike", 300, 4, "2022-09-30", "2022-12-30");
+
+            //receivableManagementDgv.DefaultCellStyle.ForeColor = Color.Green;           
 
             sourceDataTable.AcceptChanges();
 
             receivableManagementDgv.DataSource = sourceDataTable;
+
 
             DataTable newDataTable = sourceDataTable.Clone();//Will be used to get a copy of the original DataTable onto which the changes will be performed by the user
         }
@@ -101,7 +105,7 @@ namespace BudgetManager.mvc.views {
             int lowerBound = 0;
             int upperBound = receivableManagementDgv.Rows.Count - 2;
 
-            //Displays the uodate recivable context menu only if the user clicked on a row that contains data
+            //Displays the update recivable context menu only if the user clicked on a row that contains data
             if(rowIndexOnRightClick >= lowerBound && rowIndexOnRightClick <= upperBound) {
                 e.ContextMenuStrip = updateReceivableCtxMenu;
                 updateReceivableCtxMenu.Visible = true;
@@ -171,6 +175,35 @@ namespace BudgetManager.mvc.views {
             }
         }
 
+        private void receivableManagementDgv_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e) {
+            DataTable sourceDataTable = (DataTable)receivableManagementDgv.DataSource;
+
+            for (int i = 0; i < sourceDataTable.Rows.Count; i++) {
+                int currentStatus = Convert.ToInt32(sourceDataTable.Rows[i].ItemArray[5].ToString());
+                Color statusColor = new Color();
+
+                switch (currentStatus) {
+                    case 1:
+                        statusColor = Color.GreenYellow;
+                        break;
+
+                    case 2:
+                        statusColor = Color.Orange;
+                        break;
+
+                    case 3:
+                        statusColor = Color.Blue;
+                        break;
+
+                    case 4:
+                        statusColor = Color.Red;
+                        break;
+                }
+
+                receivableManagementDgv.Rows[i].DefaultCellStyle.BackColor = statusColor;
+            }
+        }
+
         private void updateDgvRecordButton_Click(object sender, EventArgs e) {
             DateTime createdDate = receivableCreatedDatePicker.Value;
             DateTime dueDate = receivableDueDatePicker.Value;
@@ -223,6 +256,28 @@ namespace BudgetManager.mvc.views {
 
         }
 
+        public void insertPartialPaymentButton_Click(object sender, EventArgs e) {
+            ArrayList selectedReceivableData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
+            int selectedReceivableID = Convert.ToInt32(selectedReceivableData[0]);
+            String paymentName = itemNameTextBox.Text;
+            int paymentValue = Convert.ToInt32(itemValueTextBox.Text);
+            String paymentDate = partialPaymentDatePicker.Value.ToString("yyyy-MM-dd");
+
+            PartialPaymentDTO partialPaymentDTO = new PartialPaymentDTO(selectedReceivableID, paymentName, paymentValue, paymentDate);
+
+            DataInsertionCheckStrategy partialPaymentCheckStrategy = new PartialPaymentInsertionCheckStrategy(partialPaymentDTO);
+            DataInsertionCheckerContext dataCheckContext = new DataInsertionCheckerContext();
+            dataCheckContext.setStrategy(partialPaymentCheckStrategy);
+
+            int checkResult = dataCheckContext.invoke();
+
+            if(checkResult == -1) {
+                MessageBox.Show("The partial payment value is higher than the amount left to be paid for the currently selected receivable!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+
+        }
+
         private void saveReceivableChangesButton_Click(object sender, EventArgs e) {
             totalPendingChanges = 0;
             pendingChangesLabel.Visible = false;
@@ -255,6 +310,7 @@ namespace BudgetManager.mvc.views {
             receivableCreatedDatePicker.TextChanged += new EventHandler(receivableCreatedDatePicker_TextChanged);
             receivableDueDatePicker.TextChanged += new EventHandler(receivableDueDatePicker_TextChanged);
             updateDgvRecordButton.Click += new EventHandler(updateDgvRecordButton_Click);
+            insertPartialPaymentButton.Click += new EventHandler(insertPartialPaymentButton_Click);
 
         }
 
@@ -274,10 +330,11 @@ namespace BudgetManager.mvc.views {
         }
 
         private void itemValueTextBox_TextChanged(object sender, EventArgs e) {
-            Regex forbiddenCharacters = new Regex("[^0-9]+", RegexOptions.Compiled);
+            //Regex forbiddenCharacters = new Regex("[^0-9]+", RegexOptions.Compiled);
+            Regex allowedCharacters = new Regex("^[1-9][0-9]*$", RegexOptions.Compiled);
 
             //Checks if the value text box contains non-digit characters and in that case it clears its content
-            if (forbiddenCharacters.IsMatch(itemValueTextBox.Text)) {
+            if (!allowedCharacters.IsMatch(itemValueTextBox.Text)) {
                 itemValueTextBox.Text = "";
             }
 
@@ -471,13 +528,14 @@ namespace BudgetManager.mvc.views {
                 return new ArrayList();
             }
 
+            String receivableID = targetDataGridView.Rows[selectedRowIndex].Cells[0].Value.ToString();
             String receivableName = targetDataGridView.Rows[selectedRowIndex].Cells[1].Value.ToString();
             String receivableValue = targetDataGridView.Rows[selectedRowIndex].Cells[2].Value.ToString();
             String receivableDebtorName = targetDataGridView.Rows[selectedRowIndex].Cells[3].Value.ToString();
             String createdDate = targetDataGridView.Rows[selectedRowIndex].Cells[6].Value.ToString();
             String dueDate = targetDataGridView.Rows[selectedRowIndex].Cells[7].Value.ToString();
 
-            ArrayList selectedRowData = new ArrayList() { receivableName, receivableValue, receivableDebtorName, createdDate, dueDate };
+            ArrayList selectedRowData = new ArrayList() { receivableID, receivableName, receivableValue, receivableDebtorName, createdDate, dueDate };
 
             return selectedRowData;
         }
