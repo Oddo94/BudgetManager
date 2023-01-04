@@ -1,4 +1,5 @@
 ﻿using BudgetManager.mvc.models.dto;
+using BudgetManager.non_mvc;
 using BudgetManager.utils;
 using BudgetManager.utils.data_insertion;
 using BudgetManager.utils.enums;
@@ -76,10 +77,10 @@ namespace BudgetManager.mvc.views {
             sourceDataTable.Columns.Add("Created date");
             sourceDataTable.Columns.Add("Due date");
 
-            sourceDataTable.Rows.Add(1, "Receivable January 2022", 100, "Jim", 0, 1, "2022-01-30", "2022-12-30");
-            sourceDataTable.Rows.Add(2, "Receivable April 2022", 500, "John", 0, 2, "2022-04-30", "2022-12-30");
-            sourceDataTable.Rows.Add(3, "Receivable May 2022", 100, "Adam", 0, 3, "2022-05-30", "2022-12-30");
-            sourceDataTable.Rows.Add(4, "Receivable September 2022", 1000, "Mike", 300, 4, "2022-09-30", "2022-12-30");
+            sourceDataTable.Rows.Add(1, "Receivable 1", 700, "Jim", 0, 1, "2022-01-30", "2022-12-30");
+            sourceDataTable.Rows.Add(2, "Receivable 2", 300, "John", 0, 2, "2022-04-30", "2022-12-30");
+            sourceDataTable.Rows.Add(3, "Receivable 3", 500, "Adam", 0, 3, "2022-05-30", "2022-12-30");
+            sourceDataTable.Rows.Add(4, "Trigger test", 1000, "Mike", 300, 4, "2022-09-30", "2022-12-30");
 
             //receivableManagementDgv.DefaultCellStyle.ForeColor = Color.Green;           
 
@@ -259,6 +260,8 @@ namespace BudgetManager.mvc.views {
         public void insertPartialPaymentButton_Click(object sender, EventArgs e) {
             ArrayList selectedReceivableData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
             int selectedReceivableID = Convert.ToInt32(selectedReceivableData[0]);
+            String selectedReceivableName = Convert.ToString(selectedReceivableData[1]);
+            int selectedReceivableValue = Convert.ToInt32(selectedReceivableData[2]);
             String paymentName = itemNameTextBox.Text;
             int paymentValue = Convert.ToInt32(itemValueTextBox.Text);
             String paymentDate = partialPaymentDatePicker.Value.ToString("yyyy-MM-dd");
@@ -271,8 +274,36 @@ namespace BudgetManager.mvc.views {
 
             int checkResult = dataCheckContext.invoke();
 
+            String userPrompt = String.Format("Are you sure that you want to insert a partial payment of {0} for the receivable '{1}'", paymentValue, selectedReceivableName);
+            DialogResult userOption = MessageBox.Show(userPrompt, "Receivables management", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if(userOption == DialogResult.No) {
+                return;
+            }
+
+            if (paymentValue >= selectedReceivableValue) {
+                MessageBox.Show("The partial payment value must be lower than the receivable value!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+
+            }
+
             if(checkResult == -1) {
                 MessageBox.Show("The partial payment value is higher than the amount left to be paid for the currently selected receivable!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DataInsertionStrategy partialPaymentInsertionStrategy = new PartialPaymentInsertionStrategy();
+            DataInsertionContext dataInsertionContext = new DataInsertionContext();
+            dataInsertionContext.setStrategy(partialPaymentInsertionStrategy);
+
+            int executionResult = dataInsertionContext.invoke(partialPaymentDTO);
+
+            if(executionResult != -1) {
+                String successMessage = String.Format("The partial payment for receivable '{0}' was successfully inserted!", selectedReceivableName);
+                MessageBox.Show(successMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } else {
+                String errorMessage = String.Format("Unable to insert the partial payment for the receivable '{0}'!", selectedReceivableName);
+                MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
 

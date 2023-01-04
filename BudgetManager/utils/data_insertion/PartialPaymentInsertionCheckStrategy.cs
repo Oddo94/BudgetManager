@@ -9,7 +9,7 @@ using System.Data;
 
 namespace BudgetManager.utils.data_insertion {
     class PartialPaymentInsertionCheckStrategy : DataInsertionCheckStrategy {
-        private String sqlStatementCheckAmountLeftToInsert = @"SELECT (rcs.totalPaidAmount - SUM(pps.paymentValue)) 
+        private String sqlStatementCheckAmountLeftToInsert = @"SELECT (rcs.value - COALESCE(SUM(pps.paymentValue),0)) 
                                                                FROM partial_payments pps
                                                                INNER JOIN receivables rcs on pps.receivable_ID = rcs.receivableID
                                                                WHERE rcs.receivableID = @paramReceivableID";
