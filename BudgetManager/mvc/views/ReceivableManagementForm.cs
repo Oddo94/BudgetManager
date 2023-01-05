@@ -77,10 +77,10 @@ namespace BudgetManager.mvc.views {
             sourceDataTable.Columns.Add("Created date");
             sourceDataTable.Columns.Add("Due date");
 
-            sourceDataTable.Rows.Add(1, "Receivable 1", 700, "Jim", 0, 1, "2022-01-30", "2022-12-30");
-            sourceDataTable.Rows.Add(2, "Receivable 2", 300, "John", 0, 2, "2022-04-30", "2022-12-30");
-            sourceDataTable.Rows.Add(3, "Receivable 3", 500, "Adam", 0, 3, "2022-05-30", "2022-12-30");
-            sourceDataTable.Rows.Add(4, "Trigger test", 1000, "Mike", 300, 4, "2022-09-30", "2022-12-30");
+            sourceDataTable.Rows.Add(1, "Receivable 1", 700, "Jim", 0, "New", "2022-01-30", "2022-12-30");
+            sourceDataTable.Rows.Add(2, "Receivable 2", 300, "John", 0, "Partially paid", "2022-04-30", "2022-12-30");
+            sourceDataTable.Rows.Add(3, "Receivable 3", 500, "Adam", 0, "Paid", "2022-05-30", "2022-12-30");
+            sourceDataTable.Rows.Add(4, "Trigger test", 1000, "Mike", 300, "Overdue", "2022-09-30", "2022-12-30");
 
             //receivableManagementDgv.DefaultCellStyle.ForeColor = Color.Green;           
 
@@ -108,8 +108,15 @@ namespace BudgetManager.mvc.views {
 
             //Displays the update recivable context menu only if the user clicked on a row that contains data
             if(rowIndexOnRightClick >= lowerBound && rowIndexOnRightClick <= upperBound) {
-                e.ContextMenuStrip = updateReceivableCtxMenu;
-                updateReceivableCtxMenu.Visible = true;
+                ArrayList selectedReceivableData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
+                String receivableStatus = selectedReceivableData[4].ToString();
+
+                //Displays the context menu on right click only if the receivable has one of the following status: 'New', 'Partially paid'
+                if("New".Equals(receivableStatus) || "Partially paid".Equals(receivableStatus)) {
+                    e.ContextMenuStrip = updateReceivableCtxMenu;
+                    updateReceivableCtxMenu.Visible = true;
+                }
+               
             }
             
         }
@@ -180,23 +187,23 @@ namespace BudgetManager.mvc.views {
             DataTable sourceDataTable = (DataTable)receivableManagementDgv.DataSource;
 
             for (int i = 0; i < sourceDataTable.Rows.Count; i++) {
-                int currentStatus = Convert.ToInt32(sourceDataTable.Rows[i].ItemArray[5].ToString());
+                String currentStatus = Convert.ToString(sourceDataTable.Rows[i].ItemArray[5].ToString());
                 Color statusColor = new Color();
 
                 switch (currentStatus) {
-                    case 1:
+                    case "New":
                         statusColor = Color.GreenYellow;
                         break;
 
-                    case 2:
+                    case "Partially paid":
                         statusColor = Color.Orange;
                         break;
 
-                    case 3:
+                    case "Paid":
                         statusColor = Color.Blue;
                         break;
 
-                    case 4:
+                    case "Overdue":
                         statusColor = Color.Red;
                         break;
                 }
@@ -296,15 +303,20 @@ namespace BudgetManager.mvc.views {
             DataInsertionContext dataInsertionContext = new DataInsertionContext();
             dataInsertionContext.setStrategy(partialPaymentInsertionStrategy);
 
-            int executionResult = dataInsertionContext.invoke(partialPaymentDTO);
+            int executionResult = dataInsertionContext.invoke(partialPaymentDTO);//Returns the number of affected rows by the insert query execution
 
-            if(executionResult != -1) {
+            if(executionResult > 0) {
                 String successMessage = String.Format("The partial payment for receivable '{0}' was successfully inserted!", selectedReceivableName);
                 MessageBox.Show(successMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //Clears the controls and disables the buttonused for inserting the partial payment
+                UserControlsManager.clearActiveControls(activeControls);
+                insertPartialPaymentButton.Enabled = false;
             } else {
                 String errorMessage = String.Format("Unable to insert the partial payment for the receivable '{0}'!", selectedReceivableName);
                 MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+      
 
 
         }
@@ -563,10 +575,11 @@ namespace BudgetManager.mvc.views {
             String receivableName = targetDataGridView.Rows[selectedRowIndex].Cells[1].Value.ToString();
             String receivableValue = targetDataGridView.Rows[selectedRowIndex].Cells[2].Value.ToString();
             String receivableDebtorName = targetDataGridView.Rows[selectedRowIndex].Cells[3].Value.ToString();
+            String receivableStatus = targetDataGridView.Rows[selectedRowIndex].Cells[5].Value.ToString();
             String createdDate = targetDataGridView.Rows[selectedRowIndex].Cells[6].Value.ToString();
             String dueDate = targetDataGridView.Rows[selectedRowIndex].Cells[7].Value.ToString();
 
-            ArrayList selectedRowData = new ArrayList() { receivableID, receivableName, receivableValue, receivableDebtorName, createdDate, dueDate };
+            ArrayList selectedRowData = new ArrayList() { receivableID, receivableName, receivableValue, receivableDebtorName, receivableStatus, createdDate, dueDate };
 
             return selectedRowData;
         }
