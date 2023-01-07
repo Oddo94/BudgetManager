@@ -3,6 +3,7 @@ using BudgetManager.non_mvc;
 using BudgetManager.utils;
 using BudgetManager.utils.data_insertion;
 using BudgetManager.utils.enums;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -79,7 +80,7 @@ namespace BudgetManager.mvc.views {
 
             sourceDataTable.Rows.Add(1, "Receivable 1", 700, "Jim", 0, "New", "2022-01-30", "2022-12-30");
             sourceDataTable.Rows.Add(2, "Receivable 2", 300, "John", 0, "Partially paid", "2022-04-30", "2022-12-30");
-            sourceDataTable.Rows.Add(3, "Receivable 3", 500, "Adam", 0, "Paid", "2022-05-30", "2022-12-30");
+            sourceDataTable.Rows.Add(3, "Receivable 3", 500, "Adam", 500, "Paid", "2022-05-30", "2022-12-30");
             sourceDataTable.Rows.Add(4, "Trigger test", 1000, "Mike", 300, "Overdue", "2022-09-30", "2022-12-30");
 
             //receivableManagementDgv.DefaultCellStyle.ForeColor = Color.Green;           
@@ -200,7 +201,7 @@ namespace BudgetManager.mvc.views {
                         break;
 
                     case "Paid":
-                        statusColor = Color.Blue;
+                        statusColor = Color.Aquamarine;
                         break;
 
                     case "Overdue":
@@ -303,9 +304,9 @@ namespace BudgetManager.mvc.views {
             DataInsertionContext dataInsertionContext = new DataInsertionContext();
             dataInsertionContext.setStrategy(partialPaymentInsertionStrategy);
 
-            int executionResult = dataInsertionContext.invoke(partialPaymentDTO);//Returns the number of affected rows by the insert query execution
+            int insertExecutionResult = dataInsertionContext.invoke(partialPaymentDTO);//Returns the number of affected rows by the insert query execution
 
-            if(executionResult > 0) {
+            if(insertExecutionResult > 0) {
                 String successMessage = String.Format("The partial payment for receivable '{0}' was successfully inserted!", selectedReceivableName);
                 MessageBox.Show(successMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 //Clears the controls and disables the buttonused for inserting the partial payment
@@ -316,9 +317,14 @@ namespace BudgetManager.mvc.views {
                 MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+            //Calls the procedure that updates the receivable status after the partial payment is inserted
+            int statusUpdateExecutionResult = updateReceivableStatus(selectedReceivableID);
+
+            if(statusUpdateExecutionResult == -1) {
+                MessageBox.Show("Error while trying to update the receivable status!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
       
-
-
         }
 
         private void saveReceivableChangesButton_Click(object sender, EventArgs e) {
@@ -413,16 +419,6 @@ namespace BudgetManager.mvc.views {
                 UserControlsManager.setButtonState(updateDgvRecordButton, activeControls);
             }
         }
-
-        //private void itemValueTextBox_TextChanged(object sender, EventArgs e) {
-        //    Regex forbiddenCharacters = new Regex("[^0-9]+", RegexOptions.Compiled);
-
-        //    //Checks if the value text box contains non-digit characters and in that case it clears its content
-        //    if(forbiddenCharacters.IsMatch(itemValueTextBox.Text)) {
-        //        itemValueTextBox.Text = "";
-        //    }
-        //}
-
 
         private void setComponentsLayout() {
 
@@ -562,6 +558,8 @@ namespace BudgetManager.mvc.views {
 
         }
 
+        //UTILITY METHODS
+
         //Method that retreves data from the selected row when the user selects the "Update data" option
         private ArrayList retrieveDataFromSelectedRow(int selectedRowIndex, DataGridView targetDataGridView) {
             Guard.notNull(targetDataGridView, "receivable management grid view", "Unable to retrieve data from a null object.");
@@ -612,6 +610,28 @@ namespace BudgetManager.mvc.views {
                 throw new FormatException(String.Format("Invalid format for date string: {0}", illegalFormatString));
             }
 
+        }
+
+        private int updateReceivableStatus(int receivableID) {
+            String procedureName = "set_receivable_status";
+
+            //Creates the input parameter
+            MySqlParameter receivableIDParam = new MySqlParameter("p_receivable_ID", receivableID);
+
+            //Creates the lists that will contain the input and output parameters. In this case the output parameters list is empty because the called procedure doesn't have output parameter/s
+            List<MySqlParameter> inputParamsList = new List<MySqlParameter>() { receivableIDParam };
+            List<MySqlParameter> outputParamsList = new List<MySqlParameter>();
+
+            try {
+
+                DBConnectionManager.callDatabaseStoredProcedure(procedureName, inputParamsList, outputParamsList);
+
+            } catch(MySqlException ex) {
+                Console.WriteLine(String.Format("Error while trying to update the receivable status.Reason: {0}", ex.Message));
+                return -1;
+            }
+
+            return 0;
         }
     }
 }
