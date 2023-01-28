@@ -61,16 +61,16 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Location = new System.Drawing.Point(33, 101);
+            this.groupBox1.Location = new System.Drawing.Point(33, 109);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(488, 450);
+            this.groupBox1.Size = new System.Drawing.Size(632, 471);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             // 
             // addEntryButton
             // 
             this.addEntryButton.Enabled = false;
-            this.addEntryButton.Location = new System.Drawing.Point(33, 570);
+            this.addEntryButton.Location = new System.Drawing.Point(33, 609);
             this.addEntryButton.Name = "addEntryButton";
             this.addEntryButton.Size = new System.Drawing.Size(75, 23);
             this.addEntryButton.TabIndex = 3;
@@ -80,7 +80,7 @@
             // 
             // resetButton
             // 
-            this.resetButton.Location = new System.Drawing.Point(241, 570);
+            this.resetButton.Location = new System.Drawing.Point(314, 609);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(75, 23);
             this.resetButton.TabIndex = 4;
@@ -90,7 +90,7 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(446, 570);
+            this.cancelButton.Location = new System.Drawing.Point(574, 609);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 5;
@@ -98,12 +98,12 @@
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
-            // InsertDataForm2
+            // InsertDataForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(598, 623);
+            this.ClientSize = new System.Drawing.Size(677, 650);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.resetButton);
             this.Controls.Add(this.addEntryButton);
@@ -111,7 +111,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.itemTypeSelectionComboBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Name = "InsertDataForm2";
+            this.Name = "InsertDataForm";
             this.Text = "Data insertion form";
             this.Load += new System.EventHandler(this.InsertDataForm2_Load);
             this.ResumeLayout(false);

@@ -65,6 +65,7 @@ namespace BudgetManager.non_mvc {
         private Label paymentTypeLabel;
         private Label interestRateLabel;
         private Label transactionIDLabel;
+        private Button netInterestCalculatorButton;
 
         //Other variables
         private ArrayList activeControls;
@@ -183,8 +184,26 @@ namespace BudgetManager.non_mvc {
                     accountType = getAccountTypeForDataFiltering();//retrieves the account type by which the data will be filtered before populating the combobox
                     dataProvider.fillSavingAccountsComboBox(savingAccountComboBox, accountType, userID);
 
+                    /*Net interest calculator button changes*/
+                    FlowLayoutPanel interestValueInputPanel = new FlowLayoutPanel();
+                    interestValueInputPanel.Size = new Size(400, 25);
+                    interestValueInputPanel.Dock = DockStyle.None;
+                    interestValueInputPanel.FlowDirection = FlowDirection.LeftToRight;
+                    //interestValueInputPanel.Margin = new Padding(20, 20, 20, 20);                    
+
+                    netInterestCalculatorButton = new Button();
+                    netInterestCalculatorButton.Text = "Calculate net interest";
+                    netInterestCalculatorButton.Size = new Size(130, 20);
+                    netInterestCalculatorButton.Anchor = AnchorStyles.Top;
+                    netInterestCalculatorButton.Anchor = AnchorStyles.Left;
+                    netInterestCalculatorButton.Margin = new Padding(3, 3, 3, 3);
+
+                    interestValueInputPanel.Controls.Add(itemValueTextBox);
+                    interestValueInputPanel.Controls.Add(netInterestCalculatorButton);
+                   
+
                     List<Control> controlsListSavingAccountInterest = new List<Control> { itemDatePickerLabel, datePicker, itemNameLabel, itemNameTextBox, savingAccountLabel, savingAccountComboBox, interestTypeLabel, interestTypeComboBox,
-                        paymentTypeLabel, paymentTypeComboBox, interestRateLabel, interestRateTextBox, itemValueLabel, itemValueTextBox, transactionIDLabel, transactionIDTextBox};
+                        paymentTypeLabel, paymentTypeComboBox, interestRateLabel, interestRateTextBox, itemValueLabel, interestValueInputPanel, transactionIDLabel, transactionIDTextBox};
                     addControlsToContainer(container, controlsListSavingAccountInterest);
                     populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
@@ -350,7 +369,7 @@ namespace BudgetManager.non_mvc {
 
             itemValueTextBox = new TextBox();
             itemValueTextBox.Width = 200;
-            itemValueTextBox.Margin = new Padding(0, 0, 0, 0);
+            itemValueTextBox.Margin = new Padding(0, 3, 0, 0);
 
             interestRateTextBox = new TextBox();
             interestRateTextBox.Width = 200;
@@ -411,8 +430,6 @@ namespace BudgetManager.non_mvc {
             paymentTypeComboBox.Margin = new Padding(0, 0, 0, 0);
 
             accountComboBox = new ComboBox();
-
-
         }
 
 
