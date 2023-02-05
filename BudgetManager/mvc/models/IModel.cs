@@ -8,14 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BudgetManager {
-    //Enum pt tipul de fraza SQL executat(o singura luna/mai multe luni)
+    //Enum used to determine the type of SQL query that is about to be executed
     public enum QueryType {
         SINGLE_MONTH,
+        //SINGLE_DAY,//option for queries that retrieve data for a specified date
         MULTIPLE_MONTHS,
+       //MULTIPLE_DAYS_OR_MONTHS,//option for queries that retrieve data for multiple days of the same month or for multiple months
         MONTHLY_TOTALS,
         FULL_YEAR,//option used for the model that also updates data
         BUDGET_PLAN_INFO,//option added for the queries that retrieve data for the currently selected budget plan
         TOTAL_VALUE,//option for queries retrieving data for all the timeframe up to the current month
+        DATE_INTERVAL,//option for queries that retrieve data between two specified dates
         UNDEFINED  //option added as default value to return when the conditinos for the other options are not met     
     }
 

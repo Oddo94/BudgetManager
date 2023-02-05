@@ -1,4 +1,6 @@
-﻿using BudgetManager.mvc.models.dto;
+﻿using BudgetManager.mvc.controllers;
+using BudgetManager.mvc.models;
+using BudgetManager.mvc.models.dto;
 using BudgetManager.non_mvc;
 using BudgetManager.utils;
 using BudgetManager.utils.data_insertion;
@@ -10,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -17,7 +20,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BudgetManager.mvc.views {
-    public partial class ReceivableManagementForm : Form {
+    public partial class ReceivableManagementForm : Form, IView {
         private int userID;
         private int rowIndexOnRightClick;
         private int columnIndexOnRightClick;
@@ -51,6 +54,11 @@ namespace BudgetManager.mvc.views {
         //Variable used for keeping track of the current data insertion form layout
         private UIContainerLayout currentLayout;
 
+        private IUpdaterModel model;
+        private IUpdaterControl controller;
+
+        private ArrayList dateTimeColumnIndexes = new ArrayList();
+
         public ReceivableManagementForm(int userID) {
             InitializeComponent();
             this.userID = userID;
@@ -64,6 +72,10 @@ namespace BudgetManager.mvc.views {
             createButtons();
             createLabels();
             fillComboBoxes();
+
+            model = new ReceivableManagementModel();
+            controller = new ReceivableManagementController();
+            wireUp(controller, model);
         }
 
         private void fillDataGridView() {
@@ -100,20 +112,20 @@ namespace BudgetManager.mvc.views {
         }
 
         private void receivableManagementDgv_ColumnAdded(object sender, DataGridViewColumnEventArgs e) {
-            e.Column.SortMode = DataGridViewColumnSortMode.NotSortable;
+            e.Column.SortMode = DataGridViewColumnSortMode.NotSortable;     
         }
 
         private void receivableManagementDgv_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e) {          
             int lowerBound = 0;
             int upperBound = receivableManagementDgv.Rows.Count - 2;
 
-            //Displays the update recivable context menu only if the user clicked on a row that contains data
+            //Displays the update receivable context menu only if the user clicked on a row that contains data
             if(rowIndexOnRightClick >= lowerBound && rowIndexOnRightClick <= upperBound) {
                 ArrayList selectedReceivableData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
                 String receivableStatus = selectedReceivableData[4].ToString();
 
-                //Displays the context menu on right click only if the receivable has one of the following status: 'New', 'Partially paid'
-                if("New".Equals(receivableStatus) || "Partially paid".Equals(receivableStatus)) {
+                //Displays the context menu on right click only if the receivable has one of the following status: 'New', 'Partially paid', 'Overdue'
+                if(!"Paid".Equals(receivableStatus)) {
                     e.ContextMenuStrip = updateReceivableCtxMenu;
                     updateReceivableCtxMenu.Visible = true;
                 }
@@ -123,11 +135,38 @@ namespace BudgetManager.mvc.views {
         }
 
         private void monthRecordsRadioButton_CheckedChanged(object sender, EventArgs e) {
-            receivableManagemenDatePicker.CustomFormat = "MM/yyyy";
+            //receivableManagemenStartDatePicker.CustomFormat = "MM/yyyy";
         }
 
         private void yearRecordsRadioButton_CheckedChanged(object sender, EventArgs e) {
-            receivableManagemenDatePicker.CustomFormat = "yyyy";
+            //receivableManagemenStartDatePicker.CustomFormat = "yyyy";
+        }
+
+        private void displayReceivablesButton_Click(object sender, EventArgs e) {
+            DateTime startDate = receivableManagemenStartDatePicker.Value;
+            DateTime endDate = receivableManagementEndDatePicker.Value;
+
+            //Checks that the search interval is correct
+            if(!isValidSearchInterval(startDate, endDate)) {
+                return;
+            }
+
+            String searchIntervalStartDate = startDate.ToString("yyyy-MM-dd");
+            String searchIntervalEndDate = endDate.ToString("yyyy-MM-dd");
+
+                QueryData paramContainer = new QueryData.Builder(userID)
+                .addStartDate(searchIntervalStartDate)
+                .addEndDate(searchIntervalEndDate)
+                .build();
+
+            sendDataToController(paramContainer);
+
+            DataTable retrievedData = (DataTable)receivableManagementDgv.DataSource;
+            //Checks if the search has returned any results
+            if (!hasFoundData(retrievedData)) {
+                MessageBox.Show("No receivables found for the specified time interval!", "Receivables management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
         }
 
         private void updateReceivableCtxMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
@@ -558,6 +597,34 @@ namespace BudgetManager.mvc.views {
 
         }
 
+        private void wireUp(IUpdaterControl paramController, IUpdaterModel paramModel) {
+            if (model != null) {
+                model.removeObserver(this);
+            }
+
+            this.model = paramModel;
+            this.controller = paramController;
+
+            controller.setView(this);
+            controller.setModel(model);
+
+            model.addObserver(this);
+        }
+
+        public void updateView(IModel model) {
+            receivableManagementDgv.DataSource = model.DataSources[0];
+            //Sets the format for the date columns
+            setFormatForDateTimeColumns(receivableManagementDgv, "dd-MM-yyyy");
+        }
+
+        public void disableControls() {
+            displayReceivablesButton.Enabled = false;
+        }
+
+        public void enableControls() {
+            displayReceivablesButton.Enabled = true;
+        }
+
         //UTILITY METHODS
 
         //Method that retreves data from the selected row when the user selects the "Update data" option
@@ -599,16 +666,24 @@ namespace BudgetManager.mvc.views {
             DateTime createdDate;
             DateTime dueDate;
 
-            bool canParseCreatedDate = DateTime.TryParse(dataSource[3].ToString(), out createdDate);
-            bool canParseDueDate = DateTime.TryParse(dataSource[4].ToString(), out dueDate);
 
-            if (canParseCreatedDate && canParseDueDate) {
-                receivableCreatedDatePicker.Value = createdDate;
-                receivableDueDatePicker.Value = dueDate;
-            } else {
-                String illegalFormatString = canParseCreatedDate == false ? dataSource[3].ToString() : dataSource[4].ToString();
-                throw new FormatException(String.Format("Invalid format for date string: {0}", illegalFormatString));
-            }
+            //bool canParseCreatedDate = DateTime.TryParse(dataSource[3].ToString(), out createdDate);
+            //bool canParseDueDate = DateTime.TryParse(dataSource[4].ToString(), out dueDate);
+
+            //FORMAT CHANGE
+            bool canParseCreatedDate = DateTime.TryParseExact(dataSource[3].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"), DateTimeStyles.AssumeLocal, out createdDate);
+            bool canParseDueDate = DateTime.TryParseExact(dataSource[4].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"), DateTimeStyles.AssumeLocal, out dueDate);
+
+            //if (canParseCreatedDate && canParseDueDate) {
+            //    receivableCreatedDatePicker.Value = createdDate;
+            //    receivableDueDatePicker.Value = dueDate;
+            //} else {
+            //    String illegalFormatString = canParseCreatedDate == false ? dataSource[3].ToString() : dataSource[4].ToString();
+            //    throw new FormatException(String.Format("Invalid format for date string: {0}", illegalFormatString));
+            //}
+
+            receivableCreatedDatePicker.Value = DateTime.ParseExact(dataSource[3].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"));
+            receivableDueDatePicker.Value = DateTime.ParseExact(dataSource[4].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"));
 
         }
 
@@ -632,6 +707,70 @@ namespace BudgetManager.mvc.views {
             }
 
             return 0;
+        }
+
+        private void sendDataToController(QueryData paramContainer) {
+            controller.requestData(QueryType.DATE_INTERVAL, paramContainer);
+        }
+
+        private bool isValidSearchInterval(DateTime startDate, DateTime endDate) {
+            String message = "Invalid date selection!{0}";
+            String reason = "";
+
+            if (startDate.Date > endDate.Date) {
+                reason = "The start date cannot be after the end date.";
+                message = String.Format(message, reason);
+            } else if(endDate.Date < startDate.Date) {
+                reason = "The end date cannot be before the start date.";
+                message = String.Format(message, reason);
+            }
+
+            //Show the warning message only if the reason is not empty(which means that one of the situations checked by the previous if clause is applicable)
+            if(!"".Equals(reason)) {
+                MessageBox.Show(message, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
+        }
+
+        //Checks if the retrieved data table contains data
+        private bool hasFoundData(DataTable dataTable) {
+            if(dataTable == null) {
+                return false;
+            }
+
+            return dataTable.Rows.Count > 0;
+        }
+
+        private void setFormatForDateTimeColumns(DataGridView dataGridView, String customFormat) {
+            if(dataGridView == null) {
+                return;
+            }
+
+            try {
+                String formattedDate = DateTime.Now.ToString(customFormat);
+            } catch(FormatException ex) {
+                Console.WriteLine("The specified format is invalid! It cannot be applied to the DataGridView column.");
+                return;
+            }
+
+            foreach(DataGridViewColumn currentColumn in dataGridView.Columns) {
+                if(currentColumn.ValueType == typeof(DateTime)) {
+                    currentColumn.DefaultCellStyle.Format = customFormat;
+                }
+            }
+           
+        }
+        private void receivableManagementDgv_DataSourceChanged(object sender, EventArgs e) {
+          
+        }
+
+        private void receivableManagementDgv_ColumnStateChanged(object sender, DataGridViewColumnStateChangedEventArgs e) {         
+            //If the current column contains a datetime value then it will be formatted to "dd-MM-yyyy" format
+            //if (e.Column.ValueType == typeof(DateTime)) {
+            //    dateTimeColumnIndexes.Add(e.Column.Index);
+            //}
         }
     }
 }

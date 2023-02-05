@@ -24,7 +24,7 @@
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
-            this.receivableManagemenDatePicker = new System.Windows.Forms.DateTimePicker();
+            this.receivableManagemenStartDatePicker = new System.Windows.Forms.DateTimePicker();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.updateReceivableCtxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -34,41 +34,41 @@
             this.displayReceivablesButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.receivablesManagementPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.monthRecordsRadioButton = new System.Windows.Forms.RadioButton();
-            this.yearRecordsRadioButton = new System.Windows.Forms.RadioButton();
             this.receivableManagementDgv = new System.Windows.Forms.DataGridView();
             this.saveReceivableChangesButton = new System.Windows.Forms.Button();
             this.exitButton = new System.Windows.Forms.Button();
             this.pendingChangesLabel = new System.Windows.Forms.Label();
             this.discardChangesButton = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.receivableManagementEndDatePicker = new System.Windows.Forms.DateTimePicker();
+            this.label4 = new System.Windows.Forms.Label();
             this.updateReceivableCtxMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.receivableManagementDgv)).BeginInit();
             this.SuspendLayout();
             // 
-            // receivableManagemenDatePicker
+            // receivableManagemenStartDatePicker
             // 
-            this.receivableManagemenDatePicker.CustomFormat = "MM/yyyy";
-            this.receivableManagemenDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.receivableManagemenDatePicker.Location = new System.Drawing.Point(16, 112);
-            this.receivableManagemenDatePicker.Name = "receivableManagemenDatePicker";
-            this.receivableManagemenDatePicker.ShowUpDown = true;
-            this.receivableManagemenDatePicker.Size = new System.Drawing.Size(112, 20);
-            this.receivableManagemenDatePicker.TabIndex = 0;
+            this.receivableManagemenStartDatePicker.CustomFormat = "dd-MM-yyyy";
+            this.receivableManagemenStartDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.receivableManagemenStartDatePicker.Location = new System.Drawing.Point(15, 106);
+            this.receivableManagemenStartDatePicker.Name = "receivableManagemenStartDatePicker";
+            this.receivableManagemenStartDatePicker.Size = new System.Drawing.Size(118, 20);
+            this.receivableManagemenStartDatePicker.TabIndex = 0;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 20);
+            this.label1.Location = new System.Drawing.Point(12, 36);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(133, 13);
+            this.label1.Size = new System.Drawing.Size(160, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Please select the timespan";
+            this.label1.Text = "Please select the search interval";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 202);
+            this.label2.Location = new System.Drawing.Point(13, 216);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(136, 13);
             this.label2.TabIndex = 2;
@@ -104,12 +104,13 @@
             // 
             // displayReceivablesButton
             // 
-            this.displayReceivablesButton.Location = new System.Drawing.Point(16, 153);
+            this.displayReceivablesButton.Location = new System.Drawing.Point(16, 155);
             this.displayReceivablesButton.Name = "displayReceivablesButton";
             this.displayReceivablesButton.Size = new System.Drawing.Size(117, 28);
             this.displayReceivablesButton.TabIndex = 4;
             this.displayReceivablesButton.Text = "Display receivables";
             this.displayReceivablesButton.UseVisualStyleBackColor = true;
+            this.displayReceivablesButton.Click += new System.EventHandler(this.displayReceivablesButton_Click);
             // 
             // groupBox1
             // 
@@ -128,42 +129,20 @@
             this.receivablesManagementPanel.Size = new System.Drawing.Size(738, 313);
             this.receivablesManagementPanel.TabIndex = 0;
             // 
-            // monthRecordsRadioButton
-            // 
-            this.monthRecordsRadioButton.AutoSize = true;
-            this.monthRecordsRadioButton.Checked = true;
-            this.monthRecordsRadioButton.Location = new System.Drawing.Point(15, 47);
-            this.monthRecordsRadioButton.Name = "monthRecordsRadioButton";
-            this.monthRecordsRadioButton.Size = new System.Drawing.Size(55, 17);
-            this.monthRecordsRadioButton.TabIndex = 7;
-            this.monthRecordsRadioButton.TabStop = true;
-            this.monthRecordsRadioButton.Text = "Month";
-            this.monthRecordsRadioButton.UseVisualStyleBackColor = true;
-            this.monthRecordsRadioButton.CheckedChanged += new System.EventHandler(this.monthRecordsRadioButton_CheckedChanged);
-            // 
-            // yearRecordsRadioButton
-            // 
-            this.yearRecordsRadioButton.AutoSize = true;
-            this.yearRecordsRadioButton.Location = new System.Drawing.Point(16, 70);
-            this.yearRecordsRadioButton.Name = "yearRecordsRadioButton";
-            this.yearRecordsRadioButton.Size = new System.Drawing.Size(47, 17);
-            this.yearRecordsRadioButton.TabIndex = 8;
-            this.yearRecordsRadioButton.Text = "Year";
-            this.yearRecordsRadioButton.UseVisualStyleBackColor = true;
-            this.yearRecordsRadioButton.CheckedChanged += new System.EventHandler(this.yearRecordsRadioButton_CheckedChanged);
-            // 
             // receivableManagementDgv
             // 
             this.receivableManagementDgv.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.receivableManagementDgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.receivableManagementDgv.Location = new System.Drawing.Point(15, 232);
+            this.receivableManagementDgv.Location = new System.Drawing.Point(15, 250);
             this.receivableManagementDgv.Name = "receivableManagementDgv";
             this.receivableManagementDgv.ReadOnly = true;
             this.receivableManagementDgv.Size = new System.Drawing.Size(773, 219);
             this.receivableManagementDgv.TabIndex = 9;
+            this.receivableManagementDgv.DataSourceChanged += new System.EventHandler(this.receivableManagementDgv_DataSourceChanged);
             this.receivableManagementDgv.CellContextMenuStripNeeded += new System.Windows.Forms.DataGridViewCellContextMenuStripNeededEventHandler(this.receivableManagementDgv_CellContextMenuStripNeeded);
             this.receivableManagementDgv.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.receivableManagementDgv_CellFormatting);
             this.receivableManagementDgv.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.receivableManagementDgv_CellMouseDown);
+            this.receivableManagementDgv.ColumnStateChanged += new System.Windows.Forms.DataGridViewColumnStateChangedEventHandler(this.receivableManagementDgv_ColumnStateChanged);
             // 
             // saveReceivableChangesButton
             // 
@@ -209,23 +188,52 @@
             this.discardChangesButton.UseVisualStyleBackColor = true;
             this.discardChangesButton.Click += new System.EventHandler(this.discardChangesButton_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(13, 73);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(53, 13);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Start date";
+            // 
+            // receivableManagementEndDatePicker
+            // 
+            this.receivableManagementEndDatePicker.CustomFormat = "dd-MM-yyyy";
+            this.receivableManagementEndDatePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.receivableManagementEndDatePicker.ImeMode = System.Windows.Forms.ImeMode.Disable;
+            this.receivableManagementEndDatePicker.Location = new System.Drawing.Point(328, 106);
+            this.receivableManagementEndDatePicker.Name = "receivableManagementEndDatePicker";
+            this.receivableManagementEndDatePicker.Size = new System.Drawing.Size(118, 20);
+            this.receivableManagementEndDatePicker.TabIndex = 15;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(325, 73);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(50, 13);
+            this.label4.TabIndex = 16;
+            this.label4.Text = "End date";
+            // 
             // ReceivableManagementForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(840, 895);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.receivableManagementEndDatePicker);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.discardChangesButton);
             this.Controls.Add(this.pendingChangesLabel);
             this.Controls.Add(this.exitButton);
             this.Controls.Add(this.saveReceivableChangesButton);
             this.Controls.Add(this.receivableManagementDgv);
-            this.Controls.Add(this.yearRecordsRadioButton);
-            this.Controls.Add(this.monthRecordsRadioButton);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.displayReceivablesButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.receivableManagemenDatePicker);
+            this.Controls.Add(this.receivableManagemenStartDatePicker);
             this.MaximizeBox = false;
             this.Name = "ReceivableManagementForm";
             this.Text = "Receivable management";
@@ -240,7 +248,7 @@
 
         #endregion
 
-        private System.Windows.Forms.DateTimePicker receivableManagemenDatePicker;
+        private System.Windows.Forms.DateTimePicker receivableManagemenStartDatePicker;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button displayReceivablesButton;
@@ -249,13 +257,14 @@
         private System.Windows.Forms.ToolStripMenuItem markAsPaidItem;
         private System.Windows.Forms.ToolStripMenuItem partialPaymentItem;
         private System.Windows.Forms.ToolStripMenuItem updateDetailsItem;
-        private System.Windows.Forms.RadioButton monthRecordsRadioButton;
-        private System.Windows.Forms.RadioButton yearRecordsRadioButton;
         private System.Windows.Forms.DataGridView receivableManagementDgv;
         private System.Windows.Forms.FlowLayoutPanel receivablesManagementPanel;
         private System.Windows.Forms.Button saveReceivableChangesButton;
         private System.Windows.Forms.Button exitButton;
         private System.Windows.Forms.Label pendingChangesLabel;
         private System.Windows.Forms.Button discardChangesButton;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.DateTimePicker receivableManagementEndDatePicker;
+        private System.Windows.Forms.Label label4;
     }
 }
