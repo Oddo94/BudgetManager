@@ -33,6 +33,10 @@ namespace BudgetManager.utils {
                     radioButton.Checked = false;
                 } else if (control is RichTextBox) {
                     ((RichTextBox)control).Text = "";
+                } else if(control is NumericUpDown) {
+                    NumericUpDown numericUpDown = ((NumericUpDown)control);
+                    //Resets the numeric up down controls to its minium specified value 
+                    numericUpDown.Value = numericUpDown.Minimum;
                 }
             }
         }
