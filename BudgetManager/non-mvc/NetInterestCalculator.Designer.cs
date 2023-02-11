@@ -105,7 +105,7 @@
             // calculateInterestButton
             // 
             this.calculateInterestButton.Enabled = false;
-            this.calculateInterestButton.Location = new System.Drawing.Point(25, 260);
+            this.calculateInterestButton.Location = new System.Drawing.Point(28, 279);
             this.calculateInterestButton.Name = "calculateInterestButton";
             this.calculateInterestButton.Size = new System.Drawing.Size(75, 23);
             this.calculateInterestButton.TabIndex = 7;
@@ -115,7 +115,7 @@
             // 
             // resetFieldsButton
             // 
-            this.resetFieldsButton.Location = new System.Drawing.Point(80, 303);
+            this.resetFieldsButton.Location = new System.Drawing.Point(80, 328);
             this.resetFieldsButton.Name = "resetFieldsButton";
             this.resetFieldsButton.Size = new System.Drawing.Size(75, 23);
             this.resetFieldsButton.TabIndex = 8;
@@ -126,7 +126,7 @@
             // copyToFieldButton
             // 
             this.copyToFieldButton.Enabled = false;
-            this.copyToFieldButton.Location = new System.Drawing.Point(150, 260);
+            this.copyToFieldButton.Location = new System.Drawing.Point(142, 279);
             this.copyToFieldButton.Name = "copyToFieldButton";
             this.copyToFieldButton.Size = new System.Drawing.Size(75, 23);
             this.copyToFieldButton.TabIndex = 9;
@@ -137,7 +137,7 @@
             // copyToClipboardButton
             // 
             this.copyToClipboardButton.Enabled = false;
-            this.copyToClipboardButton.Location = new System.Drawing.Point(259, 260);
+            this.copyToClipboardButton.Location = new System.Drawing.Point(257, 279);
             this.copyToClipboardButton.Name = "copyToClipboardButton";
             this.copyToClipboardButton.Size = new System.Drawing.Size(97, 23);
             this.copyToClipboardButton.TabIndex = 10;
@@ -147,7 +147,8 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(205, 303);
+            this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cancelButton.Location = new System.Drawing.Point(205, 328);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 11;
@@ -177,7 +178,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(368, 338);
+            this.CancelButton = this.cancelButton;
+            this.ClientSize = new System.Drawing.Size(375, 386);
             this.Controls.Add(this.netInterestTextBox);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.cancelButton);
@@ -191,6 +193,8 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "NetInterestCalculator";
             this.Text = "Net interest calculator";
             ((System.ComponentModel.ISupportInitialize)(this.taxPercentageNumericUpDown)).EndInit();
