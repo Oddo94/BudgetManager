@@ -65,6 +65,8 @@ namespace BudgetManager.non_mvc {
         private Label paymentTypeLabel;
         private Label interestRateLabel;
         private Label transactionIDLabel;
+        private Button netInterestCalculatorButton;
+        private FlowLayoutPanel interestValueInputPanel;
 
         //Other variables
         private ArrayList activeControls;
@@ -81,8 +83,9 @@ namespace BudgetManager.non_mvc {
             createTextBoxes();
             createComboBoxes();
             createRadioButtons();
+            createButtons();
             createDatePickers();
-            createContainer();
+            createContainers();
 
             groupBox1.Controls.Add(container);
 
@@ -103,7 +106,8 @@ namespace BudgetManager.non_mvc {
             savingAccountComboBox.MouseHover += new EventHandler(savingAccountComboBox_MouseHover);
             interestTypeComboBox.SelectedIndexChanged += new EventHandler(interestTypeComboBox_SelectedIndexChanged);
             paymentTypeComboBox.SelectedIndexChanged += new EventHandler(paymentTypeComboBox_SelectedIndexChanged);
-            interestRateTextBox.TextChanged += new EventHandler(interestRateTextBox_TextChanged);       
+            interestRateTextBox.TextChanged += new EventHandler(interestRateTextBox_TextChanged);
+            netInterestCalculatorButton.Click += new EventHandler(netInterestCalculatorButton_Click);       
         }
 
         private void itemTypeSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -183,8 +187,26 @@ namespace BudgetManager.non_mvc {
                     accountType = getAccountTypeForDataFiltering();//retrieves the account type by which the data will be filtered before populating the combobox
                     dataProvider.fillSavingAccountsComboBox(savingAccountComboBox, accountType, userID);
 
+                    /*Net interest calculator button changes*/
+                    //FlowLayoutPanel interestValueInputPanel = new FlowLayoutPanel();
+                    //interestValueInputPanel.Size = new Size(400, 25);
+                    //interestValueInputPanel.Dock = DockStyle.None;
+                    //interestValueInputPanel.FlowDirection = FlowDirection.LeftToRight;
+                    ////interestValueInputPanel.Margin = new Padding(20, 20, 20, 20);                    
+
+                    //netInterestCalculatorButton = new Button();
+                    //netInterestCalculatorButton.Text = "Calculate net interest";
+                    //netInterestCalculatorButton.Size = new Size(130, 20);
+                    //netInterestCalculatorButton.Anchor = AnchorStyles.Top;
+                    //netInterestCalculatorButton.Anchor = AnchorStyles.Left;
+                    //netInterestCalculatorButton.Margin = new Padding(3, 3, 3, 3);
+
+                    interestValueInputPanel.Controls.Add(itemValueTextBox);
+                    interestValueInputPanel.Controls.Add(netInterestCalculatorButton);
+                   
+
                     List<Control> controlsListSavingAccountInterest = new List<Control> { itemDatePickerLabel, datePicker, itemNameLabel, itemNameTextBox, savingAccountLabel, savingAccountComboBox, interestTypeLabel, interestTypeComboBox,
-                        paymentTypeLabel, paymentTypeComboBox, interestRateLabel, interestRateTextBox, itemValueLabel, itemValueTextBox, transactionIDLabel, transactionIDTextBox};
+                        paymentTypeLabel, paymentTypeComboBox, interestRateLabel, interestRateTextBox, itemValueLabel, interestValueInputPanel, transactionIDLabel, transactionIDTextBox};
                     addControlsToContainer(container, controlsListSavingAccountInterest);
                     populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
@@ -343,6 +365,10 @@ namespace BudgetManager.non_mvc {
             clearActiveControls(activeControls);
         }
 
+        private void netInterestCalculatorButton_Click(object sender, EventArgs e) {
+            new NetInterestCalculator(itemValueTextBox).ShowDialog(this);
+        }
+
         private void createTextBoxes() {
             itemNameTextBox = new TextBox();
             itemNameTextBox.Width = 200;
@@ -350,7 +376,7 @@ namespace BudgetManager.non_mvc {
 
             itemValueTextBox = new TextBox();
             itemValueTextBox.Width = 200;
-            itemValueTextBox.Margin = new Padding(0, 0, 0, 0);
+            itemValueTextBox.Margin = new Padding(0, 3, 0, 0);
 
             interestRateTextBox = new TextBox();
             interestRateTextBox.Width = 200;
@@ -411,8 +437,6 @@ namespace BudgetManager.non_mvc {
             paymentTypeComboBox.Margin = new Padding(0, 0, 0, 0);
 
             accountComboBox = new ComboBox();
-
-
         }
 
 
@@ -502,12 +526,29 @@ namespace BudgetManager.non_mvc {
             receivableDueDatePicker.Margin = new Padding(0, 0, 0, 0);
         }
 
-        private void createContainer() {
+        private void createContainers() {
+            //The main panel that holds all the components and is placed inside the groupbox
             container = new FlowLayoutPanel();
             container.FlowDirection = FlowDirection.TopDown;
             container.Margin = new Padding(20, 20, 20, 20);
             container.Dock = DockStyle.Fill;
 
+            //The panel that contains the item value text box and the net interest calculator button(only when the saving account interest insertion layout is selected)
+            interestValueInputPanel = new FlowLayoutPanel();
+            interestValueInputPanel.Size = new Size(400, 25);
+            interestValueInputPanel.Dock = DockStyle.None;
+            interestValueInputPanel.FlowDirection = FlowDirection.LeftToRight;
+
+        }
+
+        private void createButtons() {
+            //The button that is used to access the net iterest calculator window
+            netInterestCalculatorButton = new Button();
+            netInterestCalculatorButton.Text = "Calculate net interest";
+            netInterestCalculatorButton.Size = new Size(130, 20);
+            netInterestCalculatorButton.Anchor = AnchorStyles.Top;
+            netInterestCalculatorButton.Anchor = AnchorStyles.Left;
+            netInterestCalculatorButton.Margin = new Padding(3, 3, 3, 3);
         }
 
         private void addGeneralPurposeControls() {           

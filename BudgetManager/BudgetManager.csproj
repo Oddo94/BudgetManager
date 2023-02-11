@@ -57,6 +57,7 @@
     <Compile Include="mvc\models\BudgetPlanManagementModel.cs" />
     <Compile Include="mvc\models\BudgetSummaryModel.cs" />
     <Compile Include="mvc\models\dto\IDataInsertionDTO.cs" />
+    <Compile Include="mvc\models\dto\PartialPaymentDTO.cs" />
     <Compile Include="mvc\models\dto\ReceivableDTO.cs" />
     <Compile Include="mvc\models\dto\SavingAccountInterestDTO.cs" />
     <Compile Include="mvc\models\SavingAccountModel.cs" />
@@ -66,11 +67,23 @@
     <Compile Include="mvc\views\BudgetPlanManagementForm.Designer.cs">
       <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="mvc\views\ReceivableManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="mvc\views\ReceivableManagementForm.Designer.cs">
+      <DependentUpon>ReceivableManagementForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="mvc\views\SavingAccountForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="mvc\views\SavingAccountForm.Designer.cs">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="non-mvc\NetInterestCalculator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="non-mvc\NetInterestCalculator.Designer.cs">
+      <DependentUpon>NetInterestCalculator.cs</DependentUpon>
     </Compile>
     <Compile Include="utils\data_insertion\AccountInterestInsertionStrategy.cs" />
     <Compile Include="non-mvc\BudgetPlanCreator.cs">
@@ -110,6 +123,8 @@
     <Compile Include="non-mvc\InsertDataForm.Designer.cs">
       <DependentUpon>InsertDataForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="utils\data_insertion\PartialPaymentInsertionCheckStrategy.cs" />
+    <Compile Include="utils\data_insertion\PartialPaymentInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\ReceivableInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\SavingInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\FormFieldWrapper.cs" />
@@ -180,6 +195,9 @@
     <EmbeddedResource Include="mvc\views\BudgetPlanManagementForm.resx">
       <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="mvc\views\ReceivableManagementForm.resx">
+      <DependentUpon>ReceivableManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="mvc\views\SavingAccountForm.resx">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -200,6 +218,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="non-mvc\NetInterestCalculator.resx">
+      <DependentUpon>NetInterestCalculator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\RegisterForm.resx">
       <DependentUpon>RegisterForm.cs</DependentUpon>
