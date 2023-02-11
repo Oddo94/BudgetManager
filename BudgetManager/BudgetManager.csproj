@@ -57,7 +57,6 @@
     <Compile Include="mvc\models\BudgetPlanManagementModel.cs" />
     <Compile Include="mvc\models\BudgetSummaryModel.cs" />
     <Compile Include="mvc\models\dto\IDataInsertionDTO.cs" />
-    <Compile Include="mvc\models\dto\PartialPaymentDTO.cs" />
     <Compile Include="mvc\models\dto\ReceivableDTO.cs" />
     <Compile Include="mvc\models\dto\SavingAccountInterestDTO.cs" />
     <Compile Include="mvc\models\SavingAccountModel.cs" />
@@ -66,12 +65,6 @@
     </Compile>
     <Compile Include="mvc\views\BudgetPlanManagementForm.Designer.cs">
       <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="mvc\views\ReceivableManagementForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="mvc\views\ReceivableManagementForm.Designer.cs">
-      <DependentUpon>ReceivableManagementForm.cs</DependentUpon>
     </Compile>
     <Compile Include="mvc\views\SavingAccountForm.cs">
       <SubType>Form</SubType>
@@ -123,8 +116,6 @@
     <Compile Include="non-mvc\InsertDataForm.Designer.cs">
       <DependentUpon>InsertDataForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="utils\data_insertion\PartialPaymentInsertionCheckStrategy.cs" />
-    <Compile Include="utils\data_insertion\PartialPaymentInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\ReceivableInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\SavingInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\FormFieldWrapper.cs" />
@@ -194,9 +185,6 @@
     <Compile Include="utils\miscellaneous\ViewCalculator.cs" />
     <EmbeddedResource Include="mvc\views\BudgetPlanManagementForm.resx">
       <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="mvc\views\ReceivableManagementForm.resx">
-      <DependentUpon>ReceivableManagementForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="mvc\views\SavingAccountForm.resx">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
