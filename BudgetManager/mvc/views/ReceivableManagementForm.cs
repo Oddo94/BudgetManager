@@ -65,7 +65,7 @@ namespace BudgetManager.mvc.views {
             controlsManager = new UserControlsManager();
             currentLayout = UIContainerLayout.UNDEFINED;
 
-            fillDataGridView();        
+            //fillDataGridView();        
             createTextBoxes();
             createComboBoxes();
             createDateTimePickers();
@@ -121,13 +121,19 @@ namespace BudgetManager.mvc.views {
 
             //Displays the update receivable context menu only if the user clicked on a row that contains data
             if(rowIndexOnRightClick >= lowerBound && rowIndexOnRightClick <= upperBound) {
-                ArrayList selectedReceivableData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
-                String receivableStatus = selectedReceivableData[4].ToString();
+                DataGridViewRow selectedReceivableData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
+                String receivableStatus = selectedReceivableData.Cells[5].Value.ToString();
 
                 //Displays the context menu on right click only if the receivable has one of the following status: 'New', 'Partially paid', 'Overdue'
                 if(!"Paid".Equals(receivableStatus)) {
+                    //Sets the context menu to be displayed
                     e.ContextMenuStrip = updateReceivableCtxMenu;
+                    //Makes the context menu visible
                     updateReceivableCtxMenu.Visible = true;
+
+                    //Clears the previous row selection(if any) and selects the row on which the right click was performed
+                    receivableManagementDgv.ClearSelection();
+                    receivableManagementDgv.Rows[rowIndexOnRightClick].Selected = true;
                 }
                
             }
@@ -196,7 +202,7 @@ namespace BudgetManager.mvc.views {
                         //addControlsToMainPanel();
                         //receivablesManagementPanel.Visible = true;
                         setupLayout(UIContainerLayout.UPDATE_LAYOUT);
-                        ArrayList currentRowData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
+                    DataGridViewRow currentRowData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
                         try {
                             populateFormFields(currentRowData);
                         } catch (FormatException ex) {
@@ -262,16 +268,16 @@ namespace BudgetManager.mvc.views {
             }
 
             int nameColumnIndex = 1;
-            int valueColumnIndex = 2;
-            int debtorColumnIndex = 3;
+            int debtorColumnIndex = 2;
+            int valueColumnIndex = 4;         
             int createdDateColumnIndex = 6;
             int dueDateColumnIndex = 7;
 
             String receivableName = itemNameTextBox.Text;
             String receivableValue = itemValueTextBox.Text;
             String receivableDebtorName = receivableDebtorComboBox.Text;
-            String receivableCreatedDate = receivableCreatedDatePicker.Value.ToString("yyyy-MM-dd");
-            String receivableDueDate = receivableDueDatePicker.Value.ToString("yyyy-MM-dd");
+            String receivableCreatedDate = receivableCreatedDatePicker.Value.ToString("dd-MM-yyyy");
+            String receivableDueDate = receivableDueDatePicker.Value.ToString("dd-MM-yyyy");
 
             Dictionary<int, String> cellIndexValueDictionary = new Dictionary<int, string>();
             cellIndexValueDictionary.Add(nameColumnIndex, receivableName);
@@ -305,10 +311,10 @@ namespace BudgetManager.mvc.views {
         }
 
         public void insertPartialPaymentButton_Click(object sender, EventArgs e) {
-            ArrayList selectedReceivableData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
-            int selectedReceivableID = Convert.ToInt32(selectedReceivableData[0]);
-            String selectedReceivableName = Convert.ToString(selectedReceivableData[1]);
-            int selectedReceivableValue = Convert.ToInt32(selectedReceivableData[2]);
+            DataGridViewRow selectedReceivableData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
+            int selectedReceivableID = Convert.ToInt32(selectedReceivableData.Cells[0].Value);
+            String selectedReceivableName = Convert.ToString(selectedReceivableData.Cells[1].Value);
+            int selectedReceivableValue = Convert.ToInt32(selectedReceivableData.Cells[2].Value);
             String paymentName = itemNameTextBox.Text;
             int paymentValue = Convert.ToInt32(itemValueTextBox.Text);
             String paymentDate = partialPaymentDatePicker.Value.ToString("yyyy-MM-dd");
@@ -536,9 +542,13 @@ namespace BudgetManager.mvc.views {
 
         private void createDateTimePickers() {
             receivableCreatedDatePicker = new DateTimePicker();
+            receivableCreatedDatePicker.Format = DateTimePickerFormat.Custom;
+            receivableCreatedDatePicker.CustomFormat = "dd-MM-yyyy";
             receivableCreatedDatePicker.Margin = new Padding(0, 0, 0, 0);
 
             receivableDueDatePicker = new DateTimePicker();
+            receivableDueDatePicker.Format = DateTimePickerFormat.Custom;
+            receivableDueDatePicker.CustomFormat = "dd-MM-yyyy";
             receivableDueDatePicker.Margin = new Padding(0, 0, 0, 0);
 
             partialPaymentDatePicker = new DateTimePicker();
@@ -628,51 +638,52 @@ namespace BudgetManager.mvc.views {
         //UTILITY METHODS
 
         //Method that retreves data from the selected row when the user selects the "Update data" option
-        private ArrayList retrieveDataFromSelectedRow(int selectedRowIndex, DataGridView targetDataGridView) {
+        private DataGridViewRow retrieveDataFromSelectedRow(int selectedRowIndex, DataGridView targetDataGridView) {
             Guard.notNull(targetDataGridView, "receivable management grid view", "Unable to retrieve data from a null object.");
 
             //Checks that the row index is within bounds
             if (selectedRowIndex < 0 || selectedRowIndex > targetDataGridView.Rows.Count) {
-                return new ArrayList();
-            }
+                return new DataGridViewRow();
+            }        
 
-            String receivableID = targetDataGridView.Rows[selectedRowIndex].Cells[0].Value.ToString();
-            String receivableName = targetDataGridView.Rows[selectedRowIndex].Cells[1].Value.ToString();
-            String receivableValue = targetDataGridView.Rows[selectedRowIndex].Cells[2].Value.ToString();
-            String receivableDebtorName = targetDataGridView.Rows[selectedRowIndex].Cells[3].Value.ToString();
-            String receivableStatus = targetDataGridView.Rows[selectedRowIndex].Cells[5].Value.ToString();
-            String createdDate = targetDataGridView.Rows[selectedRowIndex].Cells[6].Value.ToString();
-            String dueDate = targetDataGridView.Rows[selectedRowIndex].Cells[7].Value.ToString();
+            //String receivableID = targetDataGridView.Rows[selectedRowIndex].Cells[0].Value.ToString();
+            //String receivableName = targetDataGridView.Rows[selectedRowIndex].Cells[1].Value.ToString();
+            //String receivableValue = targetDataGridView.Rows[selectedRowIndex].Cells[2].Value.ToString();
+            //String receivableDebtorName = targetDataGridView.Rows[selectedRowIndex].Cells[3].Value.ToString();
+            //String receivableStatus = targetDataGridView.Rows[selectedRowIndex].Cells[5].Value.ToString();
+            //String createdDate = targetDataGridView.Rows[selectedRowIndex].Cells[6].Value.ToString();
+            //String dueDate = targetDataGridView.Rows[selectedRowIndex].Cells[7].Value.ToString();
 
-            ArrayList selectedRowData = new ArrayList() { receivableID, receivableName, receivableValue, receivableDebtorName, receivableStatus, createdDate, dueDate };
+            //ArrayList selectedRowData = new ArrayList() { receivableID, receivableName, receivableValue, receivableDebtorName, receivableStatus, createdDate, dueDate };
 
-            return selectedRowData;
+            return receivableManagementDgv.Rows[selectedRowIndex];
         }
 
         //Method that populates the update data form fields with the data from the currently selected row when the user selects the "Update data" option
-        private void populateFormFields(ArrayList dataSource) {
-            Guard.notNull(dataSource, "form fields data source", "Unable to populate the form fields because the data source is null!");
+        private void populateFormFields(DataGridViewRow selectedDgvRow) {
+            Guard.notNull(selectedDgvRow, "form fields data source", "Unable to populate the form fields because the data source is null!");
 
             int requiredElements = 5;
 
-            if (dataSource.Count < requiredElements) {
+            if (selectedDgvRow.Cells.Count < requiredElements) {
                 return;
             }
 
-            itemNameTextBox.Text = dataSource[0].ToString();
-            itemValueTextBox.Text = dataSource[1].ToString();
-            receivableDebtorComboBox.Text = dataSource[2].ToString();
+            itemNameTextBox.Text = selectedDgvRow.Cells[1].Value.ToString();
+            receivableDebtorComboBox.Text = selectedDgvRow.Cells[2].Value.ToString();
+            itemValueTextBox.Text = selectedDgvRow.Cells[4].Value.ToString();
+            
 
             DateTime createdDate;
             DateTime dueDate;
 
 
-            //bool canParseCreatedDate = DateTime.TryParse(dataSource[3].ToString(), out createdDate);
-            //bool canParseDueDate = DateTime.TryParse(dataSource[4].ToString(), out dueDate);
+            bool canParseCreatedDate = DateTime.TryParse(selectedDgvRow.Cells[6].ToString(), out createdDate);
+            bool canParseDueDate = DateTime.TryParse(selectedDgvRow.Cells[7].ToString(), out dueDate);
 
-            //FORMAT CHANGE
-            bool canParseCreatedDate = DateTime.TryParseExact(dataSource[3].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"), DateTimeStyles.AssumeLocal, out createdDate);
-            bool canParseDueDate = DateTime.TryParseExact(dataSource[4].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"), DateTimeStyles.AssumeLocal, out dueDate);
+            ////FORMAT CHANGE
+            //bool canParseCreatedDate = DateTime.TryParseExact(selectedDgvRow.Cells[6].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"), DateTimeStyles.AssumeLocal, out createdDate);
+            //bool canParseDueDate = DateTime.TryParseExact(selectedDgvRow.Cells[7].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"), DateTimeStyles.AssumeLocal, out dueDate);
 
             //if (canParseCreatedDate && canParseDueDate) {
             //    receivableCreatedDatePicker.Value = createdDate;
@@ -682,10 +693,76 @@ namespace BudgetManager.mvc.views {
             //    throw new FormatException(String.Format("Invalid format for date string: {0}", illegalFormatString));
             //}
 
-            receivableCreatedDatePicker.Value = DateTime.ParseExact(dataSource[3].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"));
-            receivableDueDatePicker.Value = DateTime.ParseExact(dataSource[4].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"));
+            //OLD
+            //receivableCreatedDatePicker.Value = DateTime.ParseExact(selectedDgvRow.Cells[6].Value.ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"));
+            //receivableDueDatePicker.Value = DateTime.ParseExact(selectedDgvRow.Cells[7].Value.ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"));
 
+            //NEW
+            receivableCreatedDatePicker.Value = (DateTime) selectedDgvRow.Cells[6].Value;
+            receivableDueDatePicker.Value = (DateTime)selectedDgvRow.Cells[7].Value;
         }
+
+        ////Method that retreves data from the selected row when the user selects the "Update data" option
+        //private ArrayList retrieveDataFromSelectedRow(int selectedRowIndex, DataGridView targetDataGridView) {
+        //    Guard.notNull(targetDataGridView, "receivable management grid view", "Unable to retrieve data from a null object.");
+
+        //    //Checks that the row index is within bounds
+        //    if (selectedRowIndex < 0 || selectedRowIndex > targetDataGridView.Rows.Count) {
+        //        return new ArrayList();
+        //    }
+
+        //    receivableManagementDgv.Rows[selectedRowIndex];
+
+        //    String receivableID = targetDataGridView.Rows[selectedRowIndex].Cells[0].Value.ToString();
+        //    String receivableName = targetDataGridView.Rows[selectedRowIndex].Cells[1].Value.ToString();
+        //    String receivableValue = targetDataGridView.Rows[selectedRowIndex].Cells[2].Value.ToString();
+        //    String receivableDebtorName = targetDataGridView.Rows[selectedRowIndex].Cells[3].Value.ToString();
+        //    String receivableStatus = targetDataGridView.Rows[selectedRowIndex].Cells[5].Value.ToString();
+        //    String createdDate = targetDataGridView.Rows[selectedRowIndex].Cells[6].Value.ToString();
+        //    String dueDate = targetDataGridView.Rows[selectedRowIndex].Cells[7].Value.ToString();
+
+        //    ArrayList selectedRowData = new ArrayList() { receivableID, receivableName, receivableValue, receivableDebtorName, receivableStatus, createdDate, dueDate };
+
+        //    return selectedRowData;
+        //}
+
+        ////Method that populates the update data form fields with the data from the currently selected row when the user selects the "Update data" option
+        //private void populateFormFields(ArrayList dataSource) {
+        //    Guard.notNull(dataSource, "form fields data source", "Unable to populate the form fields because the data source is null!");
+
+        //    int requiredElements = 5;
+
+        //    if (dataSource.Count < requiredElements) {
+        //        return;
+        //    }
+
+        //    itemNameTextBox.Text = dataSource[1].ToString();
+        //    itemValueTextBox.Text = dataSource[3].ToString();
+        //    receivableDebtorComboBox.Text = dataSource[2].ToString();
+
+        //    DateTime createdDate;
+        //    DateTime dueDate;
+
+
+        //    //bool canParseCreatedDate = DateTime.TryParse(dataSource[3].ToString(), out createdDate);
+        //    //bool canParseDueDate = DateTime.TryParse(dataSource[4].ToString(), out dueDate);
+
+        //    //FORMAT CHANGE
+        //    bool canParseCreatedDate = DateTime.TryParseExact(dataSource[5].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"), DateTimeStyles.AssumeLocal, out createdDate);
+        //    bool canParseDueDate = DateTime.TryParseExact(dataSource[6].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"), DateTimeStyles.AssumeLocal, out dueDate);
+
+        //    //if (canParseCreatedDate && canParseDueDate) {
+        //    //    receivableCreatedDatePicker.Value = createdDate;
+        //    //    receivableDueDatePicker.Value = dueDate;
+        //    //} else {
+        //    //    String illegalFormatString = canParseCreatedDate == false ? dataSource[3].ToString() : dataSource[4].ToString();
+        //    //    throw new FormatException(String.Format("Invalid format for date string: {0}", illegalFormatString));
+        //    //}
+
+        //    receivableCreatedDatePicker.Value = DateTime.ParseExact(dataSource[5].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"));
+        //    receivableDueDatePicker.Value = DateTime.ParseExact(dataSource[6].ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"));
+
+        //}
 
         private int updateReceivableStatus(int receivableID) {
             String procedureName = "set_receivable_status";
