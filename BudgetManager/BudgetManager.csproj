@@ -81,6 +81,12 @@
     <Compile Include="mvc\views\SavingAccountForm.Designer.cs">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="non-mvc\NetInterestCalculator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="non-mvc\NetInterestCalculator.Designer.cs">
+      <DependentUpon>NetInterestCalculator.cs</DependentUpon>
+    </Compile>
     <Compile Include="utils\data_insertion\AccountInterestInsertionStrategy.cs" />
     <Compile Include="non-mvc\BudgetPlanCreator.cs">
       <SubType>Form</SubType>
@@ -214,6 +220,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="non-mvc\NetInterestCalculator.resx">
+      <DependentUpon>NetInterestCalculator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\RegisterForm.resx">
       <DependentUpon>RegisterForm.cs</DependentUpon>
