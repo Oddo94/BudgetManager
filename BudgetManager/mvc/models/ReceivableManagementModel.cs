@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using BudgetManager.utils;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,6 +44,14 @@ namespace BudgetManager.mvc.models {
 	                                                        YEAR(rcs.createdDate),
 	                                                        MONTH(rcs.createdDate);";
 
+        String sqlStatementReceivableUpdate = @"UPDATE receivables
+                                                SET name = @receivableName,
+                                                    debtor_ID = (SELECT debtorID FROM debtors WHERE debtorName = @debtorName),
+                                                    value = @receivableValue,
+                                                    createdDate = @createdDate,
+                                                    dueDate = @dueDate
+                                                    WHERE receivableID = @receivableID;";
+
 
         public DataTable[] DataSources {
             get {
@@ -69,7 +78,47 @@ namespace BudgetManager.mvc.models {
         }
 
         public int updateData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
-            throw new NotImplementedException();
+            Guard.notNull(sourceDataTable, "update source data table");
+            int executionResult = -1;
+            DataTable updatedReceivablesDT = sourceDataTable.GetChanges();
+
+            try {
+                using (
+                MySqlConnection conn = DBConnectionManager.getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING)) { 
+                //Original data retrieval command
+                MySqlCommand receivableRetrievalCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementReceivableRetrieval, paramContainer);
+
+                MySqlCommand updateReceivablesCommand = new MySqlCommand(sqlStatementReceivableUpdate);
+                updateReceivablesCommand.Parameters.Add("@receivableName", MySqlDbType.VarChar, 50, "Receivable name");
+                updateReceivablesCommand.Parameters.Add("@debtorName", MySqlDbType.VarChar, 30, "Debtor name");
+                updateReceivablesCommand.Parameters.Add("@receivableValue", MySqlDbType.Int32, 20, "Receivable value");
+                updateReceivablesCommand.Parameters.Add("@createdDate", MySqlDbType.Date, 10, "Creation date");
+                updateReceivablesCommand.Parameters.Add("@dueDate", MySqlDbType.Date, 10, "Due date");
+                updateReceivablesCommand.Connection = conn;
+
+
+                receivableRetrievalCommand.Connection = conn;
+
+                MySqlDataAdapter dataAdapter = new MySqlDataAdapter(receivableRetrievalCommand);
+                dataAdapter.UpdateCommand = updateReceivablesCommand;
+
+
+                MySqlParameter receivableID = dataAdapter.UpdateCommand.Parameters.Add("@receivableID", MySqlDbType.Int32, 20, "Receivable ID");
+                receivableID.SourceColumn = "Receivable ID";
+                receivableID.SourceVersion = DataRowVersion.Original;
+
+                executionResult = dataAdapter.Update(updatedReceivablesDT);
+            }
+
+            } catch(Exception ex) {
+                Console.WriteLine(String.Format("Error while updating the data.Reason:{0}", ex.Message));
+            }
+
+            if (executionResult != 0) {
+                return executionResult;
+            }
+
+            return -1;
         }
 
         public int deleteData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {

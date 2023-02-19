@@ -9,14 +9,9 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BudgetManager.mvc.views {
@@ -276,8 +271,8 @@ namespace BudgetManager.mvc.views {
             String receivableName = itemNameTextBox.Text;
             String receivableValue = itemValueTextBox.Text;
             String receivableDebtorName = receivableDebtorComboBox.Text;
-            String receivableCreatedDate = receivableCreatedDatePicker.Value.ToString("dd-MM-yyyy");
-            String receivableDueDate = receivableDueDatePicker.Value.ToString("dd-MM-yyyy");
+            String receivableCreatedDate = receivableCreatedDatePicker.Value.ToString("yyyy-MM-dd");
+            String receivableDueDate = receivableDueDatePicker.Value.ToString("yyyy-MM-dd");
 
             Dictionary<int, String> cellIndexValueDictionary = new Dictionary<int, string>();
             cellIndexValueDictionary.Add(nameColumnIndex, receivableName);
@@ -377,6 +372,22 @@ namespace BudgetManager.mvc.views {
             pendingChangesLabel.Visible = false;
             saveReceivableChangesButton.Enabled = false;
             discardChangesButton.Enabled = false;
+
+            //ONLY FOR TEST
+            DateTime startDate = receivableManagemenStartDatePicker.Value;
+            DateTime endDate = receivableManagementEndDatePicker.Value;
+
+            String searchIntervalStartDate = startDate.ToString("yyyy-MM-dd");
+            String searchIntervalEndDate = endDate.ToString("yyyy-MM-dd");
+
+            QueryData paramContainer = new QueryData.Builder(userID)
+              .addStartDate(searchIntervalStartDate)
+              .addEndDate(searchIntervalEndDate)
+              .build();
+
+            int executionResult = model.updateData(QueryType.UNDEFINED, paramContainer, (DataTable)receivableManagementDgv.DataSource);
+
+            Console.WriteLine("UPDATE RESULT: " + executionResult);    
         }
 
         private void discardChangesButton_Click(object sender, EventArgs e) {
