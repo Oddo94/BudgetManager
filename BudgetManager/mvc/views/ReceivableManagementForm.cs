@@ -152,17 +152,20 @@ namespace BudgetManager.mvc.views {
                 return;
             }
 
-            String searchIntervalStartDate = startDate.ToString("yyyy-MM-dd");
-            String searchIntervalEndDate = endDate.ToString("yyyy-MM-dd");
+            //String searchIntervalStartDate = startDate.ToString("yyyy-MM-dd");
+            //String searchIntervalEndDate = endDate.ToString("yyyy-MM-dd");
 
-                QueryData paramContainer = new QueryData.Builder(userID)
-                .addStartDate(searchIntervalStartDate)
-                .addEndDate(searchIntervalEndDate)
-                .build();
+            //    QueryData paramContainer = new QueryData.Builder(userID)
+            //    .addStartDate(searchIntervalStartDate)
+            //    .addEndDate(searchIntervalEndDate)
+            //    .build();
 
-            sendDataToController(paramContainer);
+            QueryData paramContainer = configureParamContainer();
 
-            DataTable retrievedData = (DataTable)receivableManagementDgv.DataSource;
+            //sendDataToController(paramContainer);
+            controller.requestData(QueryType.DATE_INTERVAL, paramContainer);
+
+            DataTable retrievedData = (DataTable) receivableManagementDgv.DataSource;
             //Checks if the search has returned any results
             if (!hasFoundData(retrievedData)) {
                 MessageBox.Show("No receivables found for the specified time interval!", "Receivables management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -368,26 +371,51 @@ namespace BudgetManager.mvc.views {
         }
 
         private void saveReceivableChangesButton_Click(object sender, EventArgs e) {
-            totalPendingChanges = 0;
-            pendingChangesLabel.Visible = false;
-            saveReceivableChangesButton.Enabled = false;
-            discardChangesButton.Enabled = false;
-
             //ONLY FOR TEST
-            DateTime startDate = receivableManagemenStartDatePicker.Value;
-            DateTime endDate = receivableManagementEndDatePicker.Value;
+            //DateTime startDate = receivableManagemenStartDatePicker.Value;
+            //DateTime endDate = receivableManagementEndDatePicker.Value;
 
-            String searchIntervalStartDate = startDate.ToString("yyyy-MM-dd");
-            String searchIntervalEndDate = endDate.ToString("yyyy-MM-dd");
+            //String searchIntervalStartDate = startDate.ToString("yyyy-MM-dd");
+            //String searchIntervalEndDate = endDate.ToString("yyyy-MM-dd");
 
-            QueryData paramContainer = new QueryData.Builder(userID)
-              .addStartDate(searchIntervalStartDate)
-              .addEndDate(searchIntervalEndDate)
-              .build();
+            //QueryData paramContainer = new QueryData.Builder(userID)
+            //  .addStartDate(searchIntervalStartDate)
+            //  .addEndDate(searchIntervalEndDate)
+            //  .build();
+            String messageTemplate = "Are you sure that you want to update the selected receivable{0}?";
+            String confirmationMessage = totalPendingChanges == 1 ? String.Format(messageTemplate, "") : String.Format(messageTemplate, "s");
 
-            int executionResult = model.updateData(QueryType.UNDEFINED, paramContainer, (DataTable)receivableManagementDgv.DataSource);
+            DialogResult userOption = MessageBox.Show(confirmationMessage, "Receivables management", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            Console.WriteLine("UPDATE RESULT: " + executionResult);    
+            if(userOption == DialogResult.No) {
+                return;
+            }
+
+            int executionResult = -1;
+            try {
+                DataTable receivableManagementDT = (DataTable)receivableManagementDgv.DataSource;
+                QueryData paramContainer = configureParamContainer();
+                executionResult = controller.requestUpdate(QueryType.DATE_INTERVAL, paramContainer, receivableManagementDT);
+
+            } catch(MySqlException ex) {
+                MessageBox.Show("Unable to update the specified receivable/s! An error occured when trying to perform the operation.", "Receivables management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            //int executionResult = model.updateData(QueryType.UNDEFINED, paramContainer, (DataTable)receivableManagementDgv.DataSource);
+
+            if (executionResult != -1) {
+                String successMessage = totalPendingChanges == 1 ? "The selected receivable was successfully updated!" : "The selected receivable/s were successfully updated!";
+                MessageBox.Show(successMessage, "Receivables management", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                //The variables that track the changes are reset only if the update is successful, otherwise the user should have the chance to retry the saving of those changes
+                totalPendingChanges = 0;
+                pendingChangesLabel.Visible = false;
+                saveReceivableChangesButton.Enabled = false;
+                discardChangesButton.Enabled = false;
+            } else {
+                String errorMessage = totalPendingChanges == 1 ? "Unable to update the selected receivable!" : "Unable to update the selected receivables!";
+                MessageBox.Show(errorMessage, "Receivables management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void discardChangesButton_Click(object sender, EventArgs e) {
@@ -797,7 +825,22 @@ namespace BudgetManager.mvc.views {
             return 0;
         }
 
-        private void sendDataToController(QueryData paramContainer) {
+        //Method that manages the sending of data to the controller object based on the specified CRUD operation 
+        private void sendDataToController(CRUDOperation dataOperation, QueryData paramContainer) {
+            //switch(dataOperation) {
+            //    case CRUDOperation.READ:
+            //        controller.requestData(QueryType.DATE_INTERVAL, paramContainer);
+            //        break;
+
+            //    case CRUDOperation.UPDATE:
+            //        //Retrieves the data table which will be used for update
+            //        DataTable receivablesManagementDT = (DataTable) receivableManagementDgv.DataSource;
+            //        controller.requestUpdate(QueryType.DATE_INTERVAL, paramContainer, receivablesManagementDT);
+            //        break;
+
+            //    default:
+            //        break;
+            //}
             controller.requestData(QueryType.DATE_INTERVAL, paramContainer);
         }
 
@@ -850,6 +893,21 @@ namespace BudgetManager.mvc.views {
             }
            
         }
+
+        private QueryData configureParamContainer() {
+            String searchIntervalStartDate = receivableManagemenStartDatePicker.Value.ToString("yyyy-MM-dd");
+            String searchIntervalEndDate = receivableManagementEndDatePicker.Value.ToString("yyyy-MM-dd");
+
+            QueryData paramContainer = new QueryData.Builder(userID)
+            .addStartDate(searchIntervalStartDate)
+            .addEndDate(searchIntervalEndDate)
+            .build();
+
+            return paramContainer;
+        }
+
+
+
         private void receivableManagementDgv_DataSourceChanged(object sender, EventArgs e) {
           
         }

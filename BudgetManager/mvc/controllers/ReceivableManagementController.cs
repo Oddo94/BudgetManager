@@ -40,7 +40,9 @@ namespace BudgetManager.mvc.controllers {
         }
 
         public int requestUpdate(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
-            throw new NotImplementedException();
+            int executionResult = model.updateData(option, paramContainer, sourceDataTable);
+
+            return executionResult;
         }
 
         public void setModel(IModel model) {

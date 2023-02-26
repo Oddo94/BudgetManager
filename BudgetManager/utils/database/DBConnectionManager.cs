@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using BudgetManager.utils;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -213,6 +214,62 @@ namespace BudgetManager {
                 conn.Close();
             }
 
+            return executionResult;
+        }
+
+        /*This method is used to update the database with the changes performed on a data source(DataTable) which contains results
+        retrieved using JOIN statements. In this case the normal auto-generation of UPDATE statements does not work so a custom update statement must be provided.
+        The method parameters have the following meanings:
+        -dataRetrievalCommand-represents the initial SELECT command(with JOINS) that was used to retrieve the data
+        -manualUpdateCommand-represents the manual update statement which will be used to update the DB with the changed values(for each row)
+        -primaryKey-represents the column of the DataTable object from which the primary key of each updated row will be retrieved in order to be used for performing the UPDATE statement
+        -sourceDataTable-represents the DataTable object which contains the changes which need to be performed on the database*/
+        public static int updateData(MySqlCommand dataRetrievalCommand, MySqlCommand manualUpdateCommand, MySqlParameter primaryKey, DataTable sourceDataTable) {
+            //Input parameter checks
+            Guard.notNull(dataRetrievalCommand, "Data retrieval command", "The command object used to retrieve the data cannot not be null!");
+            Guard.notNull(manualUpdateCommand, "Manual update command", "The command object used to update the data cannot be null!");
+            Guard.notNull(primaryKey, "Primary key parameter", "The parameter object containing the primary key of the row cannot be null!");
+            Guard.notNull(sourceDataTable, "Source data table", "The data table object containing the changes cannot be null!");
+
+            int executionResult = -1;
+            MySqlTransaction tx = null;
+            try {
+                using (MySqlConnection conn = getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING)) {
+                    conn.Open();
+
+                    //Sets the connection of the data retrieval command and creates a data adapter based on it
+                    dataRetrievalCommand.Connection = conn;
+                    MySqlDataAdapter dataAdapter = new MySqlDataAdapter(dataRetrievalCommand);
+
+                    //Starts the database transaction
+                    tx = conn.BeginTransaction();
+
+                    //Sets the connection of the update command and sets is as the UPDATE command of the data adapter object
+                    manualUpdateCommand.Connection = conn;
+                    manualUpdateCommand.Transaction = tx;
+                    dataAdapter.UpdateCommand = manualUpdateCommand;
+
+                    //Adds the primary key parameter 
+                    dataAdapter.UpdateCommand.Parameters.Add(primaryKey);
+                  
+                    //Executes the update
+                    executionResult = dataAdapter.Update(sourceDataTable);
+
+                    //Commits the changes to the database
+                    tx.Commit();
+                }
+
+            } catch(MySqlException ex) {
+                //Reverts the changes in case of exception
+                tx.Rollback();
+
+                /*Throwing the exception using "throw ex" will erase the stack trace so in order to preserve it only "throw" will be used
+                The caught exception is rethrown so the it can better be handled in the code which called the method(for showing a more appropriate error message)*/
+                Console.WriteLine(String.Format("Error message: {0}\nStack trace: {1}", ex.Message, ex.StackTrace));
+                throw;
+            }
+
+            //If the execution is successful the method returns the number of rows affected by the UPDATE command otherwise it return -1 which indicates the failure of the operation 
             return executionResult;
         }
 

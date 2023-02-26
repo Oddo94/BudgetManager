@@ -80,46 +80,75 @@ namespace BudgetManager.mvc.models {
         public int updateData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
             Guard.notNull(sourceDataTable, "update source data table");
             int executionResult = -1;
+
+            //Retrieves the changes performed to the surce data table
             DataTable updatedReceivablesDT = sourceDataTable.GetChanges();
 
-            try {
-                using (
-                MySqlConnection conn = DBConnectionManager.getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING)) { 
-                //Original data retrieval command
-                MySqlCommand receivableRetrievalCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementReceivableRetrieval, paramContainer);
+            //Re-creates the command used to populate the source data table when data was requestd from the DB
+            MySqlCommand receivableRetrievalCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementReceivableRetrieval, paramContainer);
 
-                MySqlCommand updateReceivablesCommand = new MySqlCommand(sqlStatementReceivableUpdate);
-                updateReceivablesCommand.Parameters.Add("@receivableName", MySqlDbType.VarChar, 50, "Receivable name");
-                updateReceivablesCommand.Parameters.Add("@debtorName", MySqlDbType.VarChar, 30, "Debtor name");
-                updateReceivablesCommand.Parameters.Add("@receivableValue", MySqlDbType.Int32, 20, "Receivable value");
-                updateReceivablesCommand.Parameters.Add("@createdDate", MySqlDbType.Date, 10, "Creation date");
-                updateReceivablesCommand.Parameters.Add("@dueDate", MySqlDbType.Date, 10, "Due date");
-                updateReceivablesCommand.Connection = conn;
+            //Creates the command that will be used to update the data
+            MySqlCommand updateReceivablesCommand = new MySqlCommand(sqlStatementReceivableUpdate);
+            updateReceivablesCommand.Parameters.Add("@receivableName", MySqlDbType.VarChar, 50, "Receivable name");
+            updateReceivablesCommand.Parameters.Add("@debtorName", MySqlDbType.VarChar, 30, "Debtor name");
+            updateReceivablesCommand.Parameters.Add("@receivableValue", MySqlDbType.Int32, 20, "Receivable value");
+            updateReceivablesCommand.Parameters.Add("@createdDate", MySqlDbType.Date, 10, "Creation date");
+            updateReceivablesCommand.Parameters.Add("@dueDate", MySqlDbType.Date, 10, "Due date");
 
+            //Sets the parameter which contains the primary key for each updated row
+            MySqlParameter receivableIDParameter = new MySqlParameter("@receivableID", MySqlDbType.Int32, 20, "Receivable ID");
+            receivableIDParameter.SourceColumn = "Receivable ID";
+            receivableIDParameter.SourceVersion = DataRowVersion.Original;
 
-                receivableRetrievalCommand.Connection = conn;
-
-                MySqlDataAdapter dataAdapter = new MySqlDataAdapter(receivableRetrievalCommand);
-                dataAdapter.UpdateCommand = updateReceivablesCommand;
+            executionResult = DBConnectionManager.updateData(receivableRetrievalCommand, updateReceivablesCommand, receivableIDParameter, updatedReceivablesDT);
 
 
-                MySqlParameter receivableID = dataAdapter.UpdateCommand.Parameters.Add("@receivableID", MySqlDbType.Int32, 20, "Receivable ID");
-                receivableID.SourceColumn = "Receivable ID";
-                receivableID.SourceVersion = DataRowVersion.Original;
-
-                executionResult = dataAdapter.Update(updatedReceivablesDT);
-            }
-
-            } catch(Exception ex) {
-                Console.WriteLine(String.Format("Error while updating the data.Reason:{0}", ex.Message));
-            }
-
-            if (executionResult != 0) {
-                return executionResult;
-            }
-
-            return -1;
+            return executionResult;
         }
+
+        //public int updateData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
+        //    Guard.notNull(sourceDataTable, "update source data table");
+        //    int executionResult = -1;
+        //    DataTable updatedReceivablesDT = sourceDataTable.GetChanges();
+
+        //    try {
+        //        using (
+        //        MySqlConnection conn = DBConnectionManager.getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING)) { 
+        //        //Original data retrieval command
+        //        MySqlCommand receivableRetrievalCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementReceivableRetrieval, paramContainer);
+
+        //        MySqlCommand updateReceivablesCommand = new MySqlCommand(sqlStatementReceivableUpdate);
+        //        updateReceivablesCommand.Parameters.Add("@receivableName", MySqlDbType.VarChar, 50, "Receivable name");
+        //        updateReceivablesCommand.Parameters.Add("@debtorName", MySqlDbType.VarChar, 30, "Debtor name");
+        //        updateReceivablesCommand.Parameters.Add("@receivableValue", MySqlDbType.Int32, 20, "Receivable value");
+        //        updateReceivablesCommand.Parameters.Add("@createdDate", MySqlDbType.Date, 10, "Creation date");
+        //        updateReceivablesCommand.Parameters.Add("@dueDate", MySqlDbType.Date, 10, "Due date");
+        //        updateReceivablesCommand.Connection = conn;
+
+
+        //        receivableRetrievalCommand.Connection = conn;
+
+        //        MySqlDataAdapter dataAdapter = new MySqlDataAdapter(receivableRetrievalCommand);
+        //        dataAdapter.UpdateCommand = updateReceivablesCommand;
+
+
+        //        MySqlParameter receivableID = dataAdapter.UpdateCommand.Parameters.Add("@receivableID", MySqlDbType.Int32, 20, "Receivable ID");
+        //        receivableID.SourceColumn = "Receivable ID";
+        //        receivableID.SourceVersion = DataRowVersion.Original;
+
+        //        executionResult = dataAdapter.Update(updatedReceivablesDT);
+        //    }
+
+        //    } catch(Exception ex) {
+        //        Console.WriteLine(String.Format("Error while updating the data.Reason:{0}", ex.Message));
+        //    }
+
+        //    if (executionResult != 0) {
+        //        return executionResult;
+        //    }
+
+        //    return -1;
+        //}
 
         public int deleteData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
             throw new NotImplementedException();
