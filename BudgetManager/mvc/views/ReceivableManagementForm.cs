@@ -107,20 +107,20 @@ namespace BudgetManager.mvc.views {
         }
 
         private void receivableManagementDgv_ColumnAdded(object sender, DataGridViewColumnEventArgs e) {
-            e.Column.SortMode = DataGridViewColumnSortMode.NotSortable;     
+            e.Column.SortMode = DataGridViewColumnSortMode.NotSortable;
         }
 
-        private void receivableManagementDgv_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e) {          
+        private void receivableManagementDgv_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e) {
             int lowerBound = 0;
             int upperBound = receivableManagementDgv.Rows.Count - 2;
 
             //Displays the update receivable context menu only if the user clicked on a row that contains data
-            if(rowIndexOnRightClick >= lowerBound && rowIndexOnRightClick <= upperBound) {
+            if (rowIndexOnRightClick >= lowerBound && rowIndexOnRightClick <= upperBound) {
                 DataGridViewRow selectedReceivableData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
                 String receivableStatus = selectedReceivableData.Cells[5].Value.ToString();
 
                 //Displays the context menu on right click only if the receivable has one of the following status: 'New', 'Partially paid', 'Overdue'
-                if(!"Paid".Equals(receivableStatus)) {
+                if (!"Paid".Equals(receivableStatus)) {
                     //Sets the context menu to be displayed
                     e.ContextMenuStrip = updateReceivableCtxMenu;
                     //Makes the context menu visible
@@ -130,9 +130,9 @@ namespace BudgetManager.mvc.views {
                     receivableManagementDgv.ClearSelection();
                     receivableManagementDgv.Rows[rowIndexOnRightClick].Selected = true;
                 }
-               
+
             }
-            
+
         }
 
         private void monthRecordsRadioButton_CheckedChanged(object sender, EventArgs e) {
@@ -148,7 +148,7 @@ namespace BudgetManager.mvc.views {
             DateTime endDate = receivableManagementEndDatePicker.Value;
 
             //Checks that the search interval is correct
-            if(!isValidSearchInterval(startDate, endDate)) {
+            if (!isValidSearchInterval(startDate, endDate)) {
                 return;
             }
 
@@ -165,7 +165,7 @@ namespace BudgetManager.mvc.views {
             //sendDataToController(paramContainer);
             controller.requestData(QueryType.DATE_INTERVAL, paramContainer);
 
-            DataTable retrievedData = (DataTable) receivableManagementDgv.DataSource;
+            DataTable retrievedData = (DataTable)receivableManagementDgv.DataSource;
             //Checks if the search has returned any results
             if (!hasFoundData(retrievedData)) {
                 MessageBox.Show("No receivables found for the specified time interval!", "Receivables management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -194,22 +194,23 @@ namespace BudgetManager.mvc.views {
                     insertPartialPaymentButton.Enabled = false;
                     break;
 
-                case "updateDetailsItem":              
-                        message = String.Format(template, "'Update payment'", rowIndexOnRightClick, columnIndexOnRightClick);
-                        //MessageBox.Show(message, messageBoxTitle);
-                        //addControlsToMainPanel();
-                        //receivablesManagementPanel.Visible = true;
-                        setupLayout(UIContainerLayout.UPDATE_LAYOUT);
+                case "updateDetailsItem":
+                    message = String.Format(template, "'Update payment'", rowIndexOnRightClick, columnIndexOnRightClick);
+                    //MessageBox.Show(message, messageBoxTitle);
+                    //addControlsToMainPanel();
+                    //receivablesManagementPanel.Visible = true;
+                    setupLayout(UIContainerLayout.UPDATE_LAYOUT);
                     DataGridViewRow currentRowData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
-                        try {
-                            populateFormFields(currentRowData);
-                        } catch (FormatException ex) {
-                            Console.WriteLine(ex.Message);
-                            MessageBox.Show("Invalid date format for the receivable due/created date! Unable to populate the update data form.", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        } finally {
-                            updateDgvRecordButton.Enabled = false;
-                        }               
-                    
+                    try {
+                        populateFormFields(currentRowData);
+                        updateDgvRecordButton.Enabled = false;
+                    } catch (FormatException ex) {
+                        Console.WriteLine(ex.Message);
+                        MessageBox.Show("Invalid date format for the receivable due/created date! Unable to populate the update data form.", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    } finally {
+                        //updateDgvRecordButton.Enabled = false;
+                    }
+
                     break;
 
                 default:
@@ -260,14 +261,9 @@ namespace BudgetManager.mvc.views {
             DateTime createdDate = receivableCreatedDatePicker.Value;
             DateTime dueDate = receivableDueDatePicker.Value;
 
-            if(createdDate > dueDate || dueDate < createdDate) {
-                MessageBox.Show("Invalid date selection! The receivable creation date must precede the due date!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
             int nameColumnIndex = 1;
             int debtorColumnIndex = 2;
-            int valueColumnIndex = 4;         
+            int valueColumnIndex = 4;
             int createdDateColumnIndex = 6;
             int dueDateColumnIndex = 7;
 
@@ -284,22 +280,38 @@ namespace BudgetManager.mvc.views {
             cellIndexValueDictionary.Add(createdDateColumnIndex, receivableCreatedDate);
             cellIndexValueDictionary.Add(dueDateColumnIndex, receivableDueDate);
 
+            //Checks if the user has sperformed any changes on the data submitted for update
+            DataGridViewRow currentSelectedRow = receivableManagementDgv.Rows[rowIndexOnRightClick];           
+            if (!hasPerformedChanges(currentSelectedRow, cellIndexValueDictionary)) {
+                String noChangesInfoMessage = "Cannot update the selected receivable because there were no changes performed on the submitted data! Please change the value of at least one of the form fields and try again.";
+                MessageBox.Show(noChangesInfoMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
+
+            //Checks if the created date and due date of the receivable are in chronological order
+            if (createdDate > dueDate || dueDate < createdDate) {
+                MessageBox.Show("Invalid date selection! The receivable creation date must precede the due date!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
+
             try {
                 DataTable receivableDgvDataSource = (DataTable)receivableManagementDgv.DataSource;
                 UserControlsManager.updateDataTable(receivableDgvDataSource, rowIndexOnRightClick, cellIndexValueDictionary);
 
                 //Updates the number of pending changes and sets the corresponding message to the label that informs the user about them
                 totalPendingChanges++;
-                pendingChangesLabel.Text = String.Format("You have {0} pending {1}", totalPendingChanges, totalPendingChanges == 1 ? "change": "changes");
+                pendingChangesLabel.Text = String.Format("You have {0} pending {1}", totalPendingChanges, totalPendingChanges == 1 ? "change" : "changes");
                 pendingChangesLabel.Visible = true;
 
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 string errorMessage = string.Format("Unable to update the specified row! Reason: {0}", ex.Message);
                 MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } finally {
                 rowIndexOnRightClick = -1;
                 updateDgvRecordButton.Enabled = false;
-                
+
             }
 
             UserControlsManager.clearActiveControls(activeControls);
@@ -328,7 +340,7 @@ namespace BudgetManager.mvc.views {
             String userPrompt = String.Format("Are you sure that you want to insert a partial payment of {0} for the receivable '{1}'", paymentValue, selectedReceivableName);
             DialogResult userOption = MessageBox.Show(userPrompt, "Receivables management", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if(userOption == DialogResult.No) {
+            if (userOption == DialogResult.No) {
                 return;
             }
 
@@ -338,7 +350,7 @@ namespace BudgetManager.mvc.views {
 
             }
 
-            if(checkResult == -1) {
+            if (checkResult == -1) {
                 MessageBox.Show("The partial payment value is higher than the amount left to be paid for the currently selected receivable!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -349,7 +361,7 @@ namespace BudgetManager.mvc.views {
 
             int insertExecutionResult = dataInsertionContext.invoke(partialPaymentDTO);//Returns the number of affected rows by the insert query execution
 
-            if(insertExecutionResult > 0) {
+            if (insertExecutionResult > 0) {
                 String successMessage = String.Format("The partial payment for receivable '{0}' was successfully inserted!", selectedReceivableName);
                 MessageBox.Show(successMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 //Clears the controls and disables the buttonused for inserting the partial payment
@@ -363,11 +375,11 @@ namespace BudgetManager.mvc.views {
             //Calls the procedure that updates the receivable status after the partial payment is inserted
             int statusUpdateExecutionResult = updateReceivableStatus(selectedReceivableID);
 
-            if(statusUpdateExecutionResult == -1) {
+            if (statusUpdateExecutionResult == -1) {
                 MessageBox.Show("Error while trying to update the receivable status!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-      
+
         }
 
         private void saveReceivableChangesButton_Click(object sender, EventArgs e) {
@@ -387,7 +399,7 @@ namespace BudgetManager.mvc.views {
 
             DialogResult userOption = MessageBox.Show(confirmationMessage, "Receivables management", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if(userOption == DialogResult.No) {
+            if (userOption == DialogResult.No) {
                 return;
             }
 
@@ -397,7 +409,7 @@ namespace BudgetManager.mvc.views {
                 QueryData paramContainer = configureParamContainer();
                 executionResult = controller.requestUpdate(QueryType.DATE_INTERVAL, paramContainer, receivableManagementDT);
 
-            } catch(MySqlException ex) {
+            } catch (MySqlException ex) {
                 MessageBox.Show("Unable to update the specified receivable/s! An error occured when trying to perform the operation.", "Receivables management", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -449,11 +461,11 @@ namespace BudgetManager.mvc.views {
 
         private void itemNameTextBox_TextChanged(object sender, EventArgs e) {
             Button currentlyActiveButton = null;
-            
+
             //Sets the correct button as the currently active one based on the layout.This will ensure that the right button is enabled/disabled when form field data is present/missing
-            if(currentLayout == UIContainerLayout.INSERT_LAYOUT) {
+            if (currentLayout == UIContainerLayout.INSERT_LAYOUT) {
                 currentlyActiveButton = insertPartialPaymentButton;
-            } else if(currentLayout == UIContainerLayout.UPDATE_LAYOUT) {
+            } else if (currentLayout == UIContainerLayout.UPDATE_LAYOUT) {
                 currentlyActiveButton = updateDgvRecordButton;
             }
             //Enables/or disables the update receivable button based on the presence/absence of data on the required form fields
@@ -483,7 +495,7 @@ namespace BudgetManager.mvc.views {
             //Enables/or disables the update receivable button based on the presence/absence of data on the required form fields
             if (rowIndexOnRightClick != -1) {
                 UserControlsManager.setButtonState(currentlyActiveButton, activeControls);
-            }  
+            }
         }
 
         private void receivableDebtorComboBox_TextChanged(object sender, EventArgs e) {
@@ -683,7 +695,7 @@ namespace BudgetManager.mvc.views {
             //Checks that the row index is within bounds
             if (selectedRowIndex < 0 || selectedRowIndex > targetDataGridView.Rows.Count) {
                 return new DataGridViewRow();
-            }        
+            }
 
             //String receivableID = targetDataGridView.Rows[selectedRowIndex].Cells[0].Value.ToString();
             //String receivableName = targetDataGridView.Rows[selectedRowIndex].Cells[1].Value.ToString();
@@ -711,7 +723,7 @@ namespace BudgetManager.mvc.views {
             itemNameTextBox.Text = selectedDgvRow.Cells[1].Value.ToString();
             receivableDebtorComboBox.Text = selectedDgvRow.Cells[2].Value.ToString();
             itemValueTextBox.Text = selectedDgvRow.Cells[4].Value.ToString();
-            
+
 
             DateTime createdDate;
             DateTime dueDate;
@@ -737,7 +749,7 @@ namespace BudgetManager.mvc.views {
             //receivableDueDatePicker.Value = DateTime.ParseExact(selectedDgvRow.Cells[7].Value.ToString(), "dd-MM-yyyy", new CultureInfo("fr-FR"));
 
             //NEW
-            receivableCreatedDatePicker.Value = (DateTime) selectedDgvRow.Cells[6].Value;
+            receivableCreatedDatePicker.Value = (DateTime)selectedDgvRow.Cells[6].Value;
             receivableDueDatePicker.Value = (DateTime)selectedDgvRow.Cells[7].Value;
         }
 
@@ -817,7 +829,7 @@ namespace BudgetManager.mvc.views {
 
                 DBConnectionManager.callDatabaseStoredProcedure(procedureName, inputParamsList, outputParamsList);
 
-            } catch(MySqlException ex) {
+            } catch (MySqlException ex) {
                 Console.WriteLine(String.Format("Error while trying to update the receivable status.Reason: {0}", ex.Message));
                 return -1;
             }
@@ -851,13 +863,13 @@ namespace BudgetManager.mvc.views {
             if (startDate.Date > endDate.Date) {
                 reason = "The start date cannot be after the end date.";
                 message = String.Format(message, reason);
-            } else if(endDate.Date < startDate.Date) {
+            } else if (endDate.Date < startDate.Date) {
                 reason = "The end date cannot be before the start date.";
                 message = String.Format(message, reason);
             }
 
             //Show the warning message only if the reason is not empty(which means that one of the situations checked by the previous if clause is applicable)
-            if(!"".Equals(reason)) {
+            if (!"".Equals(reason)) {
                 MessageBox.Show(message, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
@@ -867,7 +879,7 @@ namespace BudgetManager.mvc.views {
 
         //Checks if the retrieved data table contains data
         private bool hasFoundData(DataTable dataTable) {
-            if(dataTable == null) {
+            if (dataTable == null) {
                 return false;
             }
 
@@ -875,23 +887,23 @@ namespace BudgetManager.mvc.views {
         }
 
         private void setFormatForDateTimeColumns(DataGridView dataGridView, String customFormat) {
-            if(dataGridView == null) {
+            if (dataGridView == null) {
                 return;
             }
 
             try {
                 String formattedDate = DateTime.Now.ToString(customFormat);
-            } catch(FormatException ex) {
+            } catch (FormatException ex) {
                 Console.WriteLine("The specified format is invalid! It cannot be applied to the DataGridView column.");
                 return;
             }
 
-            foreach(DataGridViewColumn currentColumn in dataGridView.Columns) {
-                if(currentColumn.ValueType == typeof(DateTime)) {
+            foreach (DataGridViewColumn currentColumn in dataGridView.Columns) {
+                if (currentColumn.ValueType == typeof(DateTime)) {
                     currentColumn.DefaultCellStyle.Format = customFormat;
                 }
             }
-           
+
         }
 
         private QueryData configureParamContainer() {
@@ -906,13 +918,46 @@ namespace BudgetManager.mvc.views {
             return paramContainer;
         }
 
+        //Method used for checking if the user has modified any of the values from the update receivable form
+        private bool hasPerformedChanges(DataGridViewRow originalReceivableData, Dictionary<int, String> fieldDataDictionary) {
+            foreach (DataGridViewCell currentCell in originalReceivableData.Cells) {
+                int currentCellIndex = currentCell.ColumnIndex;
+
+                if (fieldDataDictionary.ContainsKey(currentCellIndex)) {
+                    String fieldValue = fieldDataDictionary[currentCellIndex];
+                    String cellValue = currentCell.Value.ToString();
+                   
+                    //This if statement is added in order to compare the date values as objects and not as strings because they are in different formats(cell value format-> dd-MM-yyyy; field value format-> yyyy-MM-dd)
+                    if (currentCell.Value.GetType() == typeof(DateTime)) {
+                        DateTime cellDate;
+                        DateTime fieldDate;
+
+                        //Date parsing precheck
+                        bool canParseCellContent = DateTime.TryParse(cellValue, out cellDate);
+                        bool canParseFieldContent = DateTime.TryParse(fieldValue, out fieldDate);
+
+                        //Checks if the date values can be parsed an if they are different
+                        if ((canParseCellContent && canParseFieldContent) && cellDate.CompareTo(fieldDate) != 0) {
+                            return true;
+                        }
+                    } else {
+                        //If at least one value is changed then the method will return true as changes have been performed on the data
+                        if (!fieldValue.Equals(currentCell.Value.ToString())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
 
 
         private void receivableManagementDgv_DataSourceChanged(object sender, EventArgs e) {
-          
+
         }
 
-        private void receivableManagementDgv_ColumnStateChanged(object sender, DataGridViewColumnStateChangedEventArgs e) {         
+        private void receivableManagementDgv_ColumnStateChanged(object sender, DataGridViewColumnStateChangedEventArgs e) {
             //If the current column contains a datetime value then it will be formatted to "dd-MM-yyyy" format
             //if (e.Column.ValueType == typeof(DateTime)) {
             //    dateTimeColumnIndexes.Add(e.Column.Index);
