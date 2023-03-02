@@ -431,16 +431,18 @@ namespace BudgetManager.mvc.views {
         }
 
         private void discardChangesButton_Click(object sender, EventArgs e) {
-            DialogResult userOption = MessageBox.Show("Are you sure that you want to discard all the existing changes?", "Receivable management", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult userOption = MessageBox.Show("Please select the changes that you want to discard", "Receivable management", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
 
-            if (userOption == DialogResult.Yes) {
+            if (userOption == DialogResult.OK) {
                 DataTable receivableDgvDataSource = (DataTable)receivableManagementDgv.DataSource;
-                receivableDgvDataSource.RejectChanges();
+                //receivableDgvDataSource.RejectChanges();
 
-                totalPendingChanges = 0;
-                saveReceivableChangesButton.Enabled = false;
-                discardChangesButton.Enabled = false;
-                pendingChangesLabel.Visible = false;
+                //totalPendingChanges = 0;
+                //saveReceivableChangesButton.Enabled = false;
+                //discardChangesButton.Enabled = false;
+                //pendingChangesLabel.Visible = false;
+
+                new DiscardReceivableChangeForm(receivableDgvDataSource).ShowDialog();
             }
         }
 
@@ -954,7 +956,9 @@ namespace BudgetManager.mvc.views {
 
 
         private void receivableManagementDgv_DataSourceChanged(object sender, EventArgs e) {
-
+            //DataColumn discardChangeColumn = new DataColumn("Discard change", typeof(bool));
+            //discardChangeColumn.DefaultValue = false;
+            //((DataTable)receivableManagementDgv.DataSource).GetChanges().Columns.Add(discardChangeColumn);
         }
 
         private void receivableManagementDgv_ColumnStateChanged(object sender, DataGridViewColumnStateChangedEventArgs e) {
