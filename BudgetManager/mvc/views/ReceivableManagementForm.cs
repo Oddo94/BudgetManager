@@ -314,6 +314,10 @@ namespace BudgetManager.mvc.views {
 
             }
 
+            //Message for informing the user about the receivable update
+            String updateConfirmationMessage = String.Format("The receivable '{0}' was successfully updated in the table. Click the 'Save changes' button if you want to permanently save the changes.", receivableName);
+            MessageBox.Show(updateConfirmationMessage, "Receivable management", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+
             UserControlsManager.clearActiveControls(activeControls);
             saveReceivableChangesButton.Enabled = true;
             discardChangesButton.Enabled = true;
