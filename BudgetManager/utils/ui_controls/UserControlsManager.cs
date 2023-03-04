@@ -270,6 +270,29 @@ namespace BudgetManager.utils {
 
         }
 
+        //Method used to selectively/completely discard changes from a data table object
+        public static void discardDataTableChanges(DataTable sourceDataTable, List<int> primaryKeyList, int primaryKeyColumnIndex, bool discardAllChanges = false) {
+            //Parameters check
+            Guard.notNull(sourceDataTable, "The source data table containing the changes to be discarded cannot be null!");
+            Guard.notNull(primaryKeyList, "The primary key list cannot be null!");
+            Guard.inRange(sourceDataTable, primaryKeyColumnIndex);
+
+            if (discardAllChanges) {
+                sourceDataTable.RejectChanges();
+                return;
+            }
+
+            foreach(DataRow currentRow in sourceDataTable.Rows) {
+                String[] currentRowValues = Array.ConvertAll(currentRow.ItemArray, x => x != DBNull.Value ? Convert.ToString(x) : "");
+                int currentPrimaryKey = Convert.ToInt32(currentRowValues[primaryKeyColumnIndex]);
+
+                if(primaryKeyList.Contains(currentPrimaryKey)) {
+                    currentRow.RejectChanges();
+                }              
+            }
+
+        }
+
         private static DataTable retrieveData(MySqlCommand dataRetrievalCommand) {
             Guard.notNull(dataRetrievalCommand, "SQL command");
          

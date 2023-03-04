@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Windows.Forms;
 
 namespace BudgetManager.utils {
@@ -35,6 +36,15 @@ namespace BudgetManager.utils {
                 throw new ArgumentOutOfRangeException($"Row index {rowIndex} out of the allowed range 0-{maxRowIndex}");
             } else if (columnIndex < 0 || columnIndex >= gridView.Columns.Count) {
                 throw new ArgumentOutOfRangeException($"Column index {columnIndex} out of allowed range 0-{maxColumnIndex}");
+            }
+        }
+
+        public static void inRange(DataTable dataTable, int columnIndex) {
+            int minColumnIndex = 0;
+            int maxColumnIndex = dataTable.Columns.Count - 1;
+
+            if (columnIndex < minColumnIndex || columnIndex > maxColumnIndex) {
+                throw new ArgumentOutOfRangeException($"Column index {columnIndex} is out of allowed range 0-{maxColumnIndex}");
             }
         }
     }

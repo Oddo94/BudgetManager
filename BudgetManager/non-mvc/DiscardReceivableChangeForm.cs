@@ -1,5 +1,7 @@
-﻿using BudgetManager.utils;
+﻿using BudgetManager.mvc.views;
+using BudgetManager.utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,17 +14,21 @@ using System.Windows.Forms;
 namespace BudgetManager.non_mvc {
     public partial class DiscardReceivableChangeForm : Form {
         private DataTable receivableManagementDT;
+        private ReceivableManagementForm receivableManagementForm;
         private String pendingChangesInfoMessage;
         private CheckBox headerCheckBox;
+        private int primaryKeyColumnIndex;
+        private int currentPendingChanges;       
 
-        public DiscardReceivableChangeForm(DataTable receivableManagementDT) {          
+        public DiscardReceivableChangeForm(DataTable receivableManagementDT, ReceivableManagementForm receivableManagementForm) {          
             InitializeComponent();
             this.receivableManagementDT = receivableManagementDT;
             this.pendingChangesInfoMessage = "You have {0} pending change{1}";
             this.headerCheckBox = new CheckBox();
             this.headerCheckBox.CheckStateChanged += new EventHandler(headerCheckBox_CheckStateChanged);
-
-
+            this.primaryKeyColumnIndex = 0;
+            this.receivableManagementForm = receivableManagementForm;
+            
             setupDiscardChangesDisplay(receivableManagementDT);
         }
 
@@ -71,11 +77,14 @@ namespace BudgetManager.non_mvc {
         }
 
         private void backButton_Click(object sender, EventArgs e) {
-            Console.WriteLine("BEFORE REMOVING CHANGES: " + receivableManagementDT.GetChanges().Rows.Count + " changes");
+            //Console.WriteLine("BEFORE REMOVING CHANGES: " + receivableManagementDT.GetChanges().Rows.Count + " changes");
 
-            receivableManagementDT.Rows[1].RejectChanges();
+            //receivableManagementDT.Rows[1].RejectChanges();
 
-            Console.WriteLine("AFTER REMOVING CHANGES: " + receivableManagementDT.GetChanges().Rows.Count + " changes");
+            //Console.WriteLine("AFTER REMOVING CHANGES: " + receivableManagementDT.GetChanges().Rows.Count + " changes");
+            receivableManagementForm.updateFormAfterDiscardingChanges();
+            this.Dispose();
+            return;
         }
 
         private void cancelButton_Click(object sender, EventArgs e) {
@@ -98,6 +107,73 @@ namespace BudgetManager.non_mvc {
                 DataGridViewCheckBoxCell checkBoxCell = (DataGridViewCheckBoxCell)currentRow.Cells[checkBoxColumnIndex];
                 checkBoxCell.Value = state;
             }
+        }
+
+        private void discardChangesButton_Click(object sender, EventArgs e) {
+            int selectedChangesToDiscard = getSelectedChangesToDiscard();
+            String confirmationMessage = String.Format("Are you sure that you want to discard the selected change{0}?", selectedChangesToDiscard > 1 ? "s" : "");
+
+            DialogResult userOption = MessageBox.Show(confirmationMessage, "Discard receivable changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if(userOption == DialogResult.No) {
+                return;
+            }
+
+            List<int> primaryKeyList = getPrimaryKeysForDiscardedChanges();
+
+            UserControlsManager.discardDataTableChanges(receivableManagementDT, primaryKeyList, primaryKeyColumnIndex);
+
+            DataTable newPendingChangesTable = receivableManagementDT.GetChanges();
+
+            if(newPendingChangesTable == null) {
+                MessageBox.Show("All changes have been discarded! You will be redirected to the receivable management window.", "Discard receivable changes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                this.Dispose();
+                receivableManagementForm.updateFormAfterDiscardingChanges();
+                return;
+            }
+
+            currentPendingChanges = newPendingChangesTable.Rows.Count;
+            Console.WriteLine("Current pending changes: " + currentPendingChanges);
+
+            receivableChangesToDiscardDgv.DataSource = newPendingChangesTable;
+
+            pendingChangesInfoLabel.Text = String.Format(pendingChangesInfoMessage, currentPendingChanges, currentPendingChanges > 1 ? "s" : "");
+        }
+
+
+        private List<int> getPrimaryKeysForDiscardedChanges() {
+            List<int> primaryKeyList = new List<int>();
+
+            foreach (DataGridViewRow currentRow in receivableChangesToDiscardDgv.Rows) {
+                bool isChecked = Convert.ToBoolean(currentRow.Cells[0].EditedFormattedValue);
+
+                //Console.WriteLine(String.Format("Current row index {0} -> Current value: {1}", currentRow.Index, isChecked));             
+                if (isChecked) {
+                    int rowIndex = currentRow.Index;
+                    int receivableID = Convert.ToInt32(currentRow.Cells[1].Value.ToString());
+                    primaryKeyList.Add(receivableID);
+                }
+            }
+
+            //foreach (int id in idsToDiscard) {
+            //    Console.WriteLine("Receivable id to discard: {0}", id);
+            //}
+
+            return primaryKeyList;
+        }
+
+        private int getSelectedChangesToDiscard() {
+            int selectedChangesToDiscard = 0;
+            foreach(DataGridViewRow currentRow in receivableChangesToDiscardDgv.Rows) {
+                bool isChecked = Convert.ToBoolean(currentRow.Cells[0].EditedFormattedValue);
+
+                if(isChecked) {
+                    selectedChangesToDiscard++;
+                }
+            }
+
+            return selectedChangesToDiscard;
         }
     }
 }

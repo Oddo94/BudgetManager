@@ -70,6 +70,7 @@
             this.discardChangesButton.TabIndex = 3;
             this.discardChangesButton.Text = "Discard changes";
             this.discardChangesButton.UseVisualStyleBackColor = true;
+            this.discardChangesButton.Click += new System.EventHandler(this.discardChangesButton_Click);
             // 
             // backButton
             // 

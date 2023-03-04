@@ -20,6 +20,7 @@ namespace BudgetManager.mvc.views {
         private int rowIndexOnRightClick;
         private int columnIndexOnRightClick;
         private int totalPendingChanges;
+        private String pendingChangesMessage;
 
         //General components
         private TextBox itemNameTextBox;
@@ -57,6 +58,7 @@ namespace BudgetManager.mvc.views {
         public ReceivableManagementForm(int userID) {
             InitializeComponent();
             this.userID = userID;
+            this.pendingChangesMessage = "You have {0} pending change{1}";
             controlsManager = new UserControlsManager();
             currentLayout = UIContainerLayout.UNDEFINED;
 
@@ -281,7 +283,7 @@ namespace BudgetManager.mvc.views {
             cellIndexValueDictionary.Add(dueDateColumnIndex, receivableDueDate);
 
             //Checks if the user has sperformed any changes on the data submitted for update
-            DataGridViewRow currentSelectedRow = receivableManagementDgv.Rows[rowIndexOnRightClick];           
+            DataGridViewRow currentSelectedRow = receivableManagementDgv.Rows[rowIndexOnRightClick];
             if (!hasPerformedChanges(currentSelectedRow, cellIndexValueDictionary)) {
                 String noChangesInfoMessage = "Cannot update the selected receivable because there were no changes performed on the submitted data! Please change the value of at least one of the form fields and try again.";
                 MessageBox.Show(noChangesInfoMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Stop);
@@ -302,7 +304,7 @@ namespace BudgetManager.mvc.views {
 
                 //Updates the number of pending changes and sets the corresponding message to the label that informs the user about them
                 totalPendingChanges++;
-                pendingChangesLabel.Text = String.Format("You have {0} pending {1}", totalPendingChanges, totalPendingChanges == 1 ? "change" : "changes");
+                pendingChangesLabel.Text = String.Format(pendingChangesMessage, totalPendingChanges, totalPendingChanges > 1 ? "s" : "");
                 pendingChangesLabel.Visible = true;
 
             } catch (Exception ex) {
@@ -446,7 +448,7 @@ namespace BudgetManager.mvc.views {
                 //discardChangesButton.Enabled = false;
                 //pendingChangesLabel.Visible = false;
 
-                new DiscardReceivableChangeForm(receivableDgvDataSource).ShowDialog();
+                new DiscardReceivableChangeForm(receivableDgvDataSource, this).ShowDialog();
             }
         }
 
@@ -932,7 +934,7 @@ namespace BudgetManager.mvc.views {
                 if (fieldDataDictionary.ContainsKey(currentCellIndex)) {
                     String fieldValue = fieldDataDictionary[currentCellIndex];
                     String cellValue = currentCell.Value.ToString();
-                   
+
                     //This if statement is added in order to compare the date values as objects and not as strings because they are in different formats(cell value format-> dd-MM-yyyy; field value format-> yyyy-MM-dd)
                     if (currentCell.Value.GetType() == typeof(DateTime)) {
                         DateTime cellDate;
@@ -958,6 +960,22 @@ namespace BudgetManager.mvc.views {
             return false;
         }
 
+        public void updateFormAfterDiscardingChanges() {
+            DataTable receivableManagementDT = (DataTable)receivableManagementDgv.DataSource;
+            DataTable pendingChangesDT = receivableManagementDT.GetChanges();
+
+            if (pendingChangesDT == null) {
+                totalPendingChanges = 0;
+                pendingChangesLabel.Text = "";
+            } else {
+                totalPendingChanges = pendingChangesDT.Rows.Count;
+                pendingChangesLabel.Text = String.Format(pendingChangesMessage, totalPendingChanges, totalPendingChanges > 1 ? "s" : "");
+            }
+
+            discardChangesButton.Enabled = false;
+
+
+        }
 
         private void receivableManagementDgv_DataSourceChanged(object sender, EventArgs e) {
             //DataColumn discardChangeColumn = new DataColumn("Discard change", typeof(bool));
