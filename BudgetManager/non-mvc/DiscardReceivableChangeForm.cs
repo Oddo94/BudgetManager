@@ -13,29 +13,39 @@ using System.Windows.Forms;
 
 namespace BudgetManager.non_mvc {
     public partial class DiscardReceivableChangeForm : Form {
-        private DataTable receivableManagementDT;
+        private DataTable originalReceivableManagementDT;
+        private DataTable copyReceivableManagementDT;
         private ReceivableManagementForm receivableManagementForm;
         private String pendingChangesInfoMessage;
         private CheckBox headerCheckBox;
         private int primaryKeyColumnIndex;
-        private int currentPendingChanges;       
+        private int currentPendingChanges;
+        private bool hasAlreadySelectedWindowClosing;
 
-        public DiscardReceivableChangeForm(DataTable receivableManagementDT, ReceivableManagementForm receivableManagementForm) {          
+        public DiscardReceivableChangeForm(DataTable originalReceivableManagementDT, ReceivableManagementForm receivableManagementForm) {
             InitializeComponent();
-            this.receivableManagementDT = receivableManagementDT;
+            //Sets the original receivable DataTable
+            this.originalReceivableManagementDT = originalReceivableManagementDT;
+            /*Sets the copy of the original receivable DataTable
+             All the changes will be performed on the copied object so that if the user wants to eliminate them he can do so by closing the window or selecting the cancel button
+             If the user wants to keep the cages then the copied object will be sent to the receivable management form and will be used for further updates in the database*/
+            this.copyReceivableManagementDT = originalReceivableManagementDT.Copy();
             this.pendingChangesInfoMessage = "You have {0} pending change{1}";
             this.headerCheckBox = new CheckBox();
             this.headerCheckBox.CheckStateChanged += new EventHandler(headerCheckBox_CheckStateChanged);
             this.primaryKeyColumnIndex = 0;
             this.receivableManagementForm = receivableManagementForm;
-            
-            setupDiscardChangesDisplay(receivableManagementDT);
+
+            setupDiscardChangesDisplay(copyReceivableManagementDT);
+
         }
 
-        private void setupDiscardChangesDisplay(DataTable receivableManagementDT) {
-            Guard.notNull(receivableManagementDT, "The data table containing the changes performed on the receivables cannot be null!");
 
-            DataTable changesToDiscardDT = receivableManagementDT.GetChanges();
+
+        private void setupDiscardChangesDisplay(DataTable copyReceivableManagementDT) {
+            Guard.notNull(copyReceivableManagementDT, "The data table containing the changes performed on the receivables cannot be null!");
+
+            DataTable changesToDiscardDT = copyReceivableManagementDT.GetChanges();
 
             //Populates the DataGridView object with data from the DB
             receivableChangesToDiscardDgv.DataSource = changesToDiscardDT;
@@ -43,9 +53,9 @@ namespace BudgetManager.non_mvc {
             //Adding boolean column to DGV
             DataGridViewCheckBoxColumn discardChangeCheckBoxColumn = new DataGridViewCheckBoxColumn();
             discardChangeCheckBoxColumn.ValueType = typeof(bool);
-   
 
-           
+
+
             Point headerCellLocation = this.receivableChangesToDiscardDgv.GetCellDisplayRectangle(0, -1, true).Location;
             headerCheckBox.Location = new Point(headerCellLocation.X + 85, headerCellLocation.Y + 10);
             headerCheckBox.BackColor = Color.White;
@@ -53,47 +63,78 @@ namespace BudgetManager.non_mvc {
 
             receivableChangesToDiscardDgv.Controls.Add(headerCheckBox);
 
-            
+
 
             receivableChangesToDiscardDgv.Columns.Insert(0, discardChangeCheckBoxColumn);
 
             //receivableChangesToDiscardDgv.Columns[0].ReadOnly = false;
             foreach (DataGridViewColumn currentColumn in receivableChangesToDiscardDgv.Columns) {
                 int currentColumnIndex = currentColumn.Index;
-                if(currentColumnIndex == 0) {
+                if (currentColumnIndex == 0) {
                     currentColumn.ReadOnly = false;
                     continue;
                 }
 
                 currentColumn.ReadOnly = true;
             }
-            
+
 
             int currentPendingChanges = changesToDiscardDT.Rows.Count;
 
-            pendingChangesInfoLabel.Text = String.Format(pendingChangesInfoMessage, currentPendingChanges, currentPendingChanges > 1 ? "s": "");
+            pendingChangesInfoLabel.Text = String.Format(pendingChangesInfoMessage, currentPendingChanges, currentPendingChanges > 1 ? "s" : "");
 
-            
+
         }
 
         private void backButton_Click(object sender, EventArgs e) {
-            //Console.WriteLine("BEFORE REMOVING CHANGES: " + receivableManagementDT.GetChanges().Rows.Count + " changes");
+            //Send the DataTable object onto which the changes were performed to the ReceivableManagementForm so that it will be used for updating the data from the DB
+            receivableManagementForm.updateFormAfterDiscardingChanges(copyReceivableManagementDT);
+            
+            //Sets window closing flag so that the closing message is not showed incorrectly
+            hasAlreadySelectedWindowClosing = true;
 
-            //receivableManagementDT.Rows[1].RejectChanges();
-
-            //Console.WriteLine("AFTER REMOVING CHANGES: " + receivableManagementDT.GetChanges().Rows.Count + " changes");
-            receivableManagementForm.updateFormAfterDiscardingChanges();
-            this.Dispose();
-            return;
+            this.Dispose();        
         }
 
-        private void cancelButton_Click(object sender, EventArgs e) {
+        private void DiscardReceivableChangeForm_FormClosing(object sender, FormClosingEventArgs e) {
+            //Prevents the confirmation message from being shown incorrectly
+            if (hasAlreadySelectedWindowClosing) {
+                return;
+            }
+
+            DataTable changesToCancelDT = copyReceivableManagementDT.GetChanges();
+            int changesToCancel = 0;
+
+            //If the changesToCancelDT is null it means that the user hasn't discarded any change/s
+            if (changesToCancelDT == null) {
+                this.Dispose();
+                return;
+            }
+
+            //Retrieves the number of discarded changes
+            changesToCancel = changesToCancelDT.Rows.Count;
+            String suffix = changesToCancel > 1 ? "s" : "";
+
+            String cancelChangesMessage = String.Format("Are you sure that you want to cancel {0} discarded change{1}? Please use the 'Back' button if you want to discard the selected change{2} and return to the receivable management form.", changesToCancel, suffix, suffix);
+            DialogResult userOption = MessageBox.Show(cancelChangesMessage, "Discard receivable changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (userOption == DialogResult.No) {
+                //Cancels the closing event if this parameter is supplied from the calling code
+                e.Cancel = true;
+                hasAlreadySelectedWindowClosing = false;//Restores the window closing flag state
+
+                return;
+            }
+
+            //Sets flag so that the message displayed when the user selects the form closing button is shown only once
+            hasAlreadySelectedWindowClosing = true;
+
             this.Dispose();
         }
 
         private void headerCheckBox_CheckStateChanged(object sender, EventArgs e) {
 
-            if(headerCheckBox.Checked == true) {
+            if (headerCheckBox.Checked == true) {
                 setDiscardCheckBoxColumnState(receivableChangesToDiscardDgv, 0, true);
             } else {
                 setDiscardCheckBoxColumnState(receivableChangesToDiscardDgv, 0, false);
@@ -103,7 +144,7 @@ namespace BudgetManager.non_mvc {
         private void setDiscardCheckBoxColumnState(DataGridView inputDataGridView, int checkBoxColumnIndex, bool state) {
             Guard.notNull(inputDataGridView, "The DataGridView containing the checkbox column whose state needs to be changed cannot be null!");
 
-            foreach(DataGridViewRow currentRow in inputDataGridView.Rows) {
+            foreach (DataGridViewRow currentRow in inputDataGridView.Rows) {
                 DataGridViewCheckBoxCell checkBoxCell = (DataGridViewCheckBoxCell)currentRow.Cells[checkBoxColumnIndex];
                 checkBoxCell.Value = state;
             }
@@ -115,21 +156,22 @@ namespace BudgetManager.non_mvc {
 
             DialogResult userOption = MessageBox.Show(confirmationMessage, "Discard receivable changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if(userOption == DialogResult.No) {
+            if (userOption == DialogResult.No) {
                 return;
             }
 
             List<int> primaryKeyList = getPrimaryKeysForDiscardedChanges();
 
-            UserControlsManager.discardDataTableChanges(receivableManagementDT, primaryKeyList, primaryKeyColumnIndex);
+            UserControlsManager.discardDataTableChanges(copyReceivableManagementDT, primaryKeyList, primaryKeyColumnIndex);
 
-            DataTable newPendingChangesTable = receivableManagementDT.GetChanges();
+            DataTable newPendingChangesTable = copyReceivableManagementDT.GetChanges();
 
-            if(newPendingChangesTable == null) {
+            if (newPendingChangesTable == null) {
                 MessageBox.Show("All changes have been discarded! You will be redirected to the receivable management window.", "Discard receivable changes", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
+
                 this.Dispose();
-                receivableManagementForm.updateFormAfterDiscardingChanges();
+                //If all changes have been discarded then the object sent to ReceivableManagementForm will be the DataTable copy object onto which the changes were performed
+                receivableManagementForm.updateFormAfterDiscardingChanges(copyReceivableManagementDT);
                 return;
             }
 
@@ -156,19 +198,15 @@ namespace BudgetManager.non_mvc {
                 }
             }
 
-            //foreach (int id in idsToDiscard) {
-            //    Console.WriteLine("Receivable id to discard: {0}", id);
-            //}
-
             return primaryKeyList;
         }
 
         private int getSelectedChangesToDiscard() {
             int selectedChangesToDiscard = 0;
-            foreach(DataGridViewRow currentRow in receivableChangesToDiscardDgv.Rows) {
+            foreach (DataGridViewRow currentRow in receivableChangesToDiscardDgv.Rows) {
                 bool isChecked = Convert.ToBoolean(currentRow.Cells[0].EditedFormattedValue);
 
-                if(isChecked) {
+                if (isChecked) {
                     selectedChangesToDiscard++;
                 }
             }

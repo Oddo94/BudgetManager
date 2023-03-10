@@ -138,11 +138,9 @@
             this.receivableManagementDgv.ReadOnly = true;
             this.receivableManagementDgv.Size = new System.Drawing.Size(773, 219);
             this.receivableManagementDgv.TabIndex = 9;
-            this.receivableManagementDgv.DataSourceChanged += new System.EventHandler(this.receivableManagementDgv_DataSourceChanged);
             this.receivableManagementDgv.CellContextMenuStripNeeded += new System.Windows.Forms.DataGridViewCellContextMenuStripNeededEventHandler(this.receivableManagementDgv_CellContextMenuStripNeeded);
             this.receivableManagementDgv.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.receivableManagementDgv_CellFormatting);
             this.receivableManagementDgv.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.receivableManagementDgv_CellMouseDown);
-            this.receivableManagementDgv.ColumnStateChanged += new System.Windows.Forms.DataGridViewColumnStateChangedEventHandler(this.receivableManagementDgv_ColumnStateChanged);
             // 
             // saveReceivableChangesButton
             // 

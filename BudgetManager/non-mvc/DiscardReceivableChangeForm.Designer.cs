@@ -28,7 +28,6 @@
             this.pendingChangesInfoLabel = new System.Windows.Forms.Label();
             this.discardChangesButton = new System.Windows.Forms.Button();
             this.backButton = new System.Windows.Forms.Button();
-            this.cancelButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.receivableChangesToDiscardDgv)).BeginInit();
             this.SuspendLayout();
             // 
@@ -64,7 +63,7 @@
             // 
             // discardChangesButton
             // 
-            this.discardChangesButton.Location = new System.Drawing.Point(146, 501);
+            this.discardChangesButton.Location = new System.Drawing.Point(166, 501);
             this.discardChangesButton.Name = "discardChangesButton";
             this.discardChangesButton.Size = new System.Drawing.Size(97, 23);
             this.discardChangesButton.TabIndex = 3;
@@ -74,7 +73,7 @@
             // 
             // backButton
             // 
-            this.backButton.Location = new System.Drawing.Point(374, 501);
+            this.backButton.Location = new System.Drawing.Point(568, 501);
             this.backButton.Name = "backButton";
             this.backButton.Size = new System.Drawing.Size(75, 23);
             this.backButton.TabIndex = 4;
@@ -82,24 +81,11 @@
             this.backButton.UseVisualStyleBackColor = true;
             this.backButton.Click += new System.EventHandler(this.backButton_Click);
             // 
-            // cancelButton
-            // 
-            this.cancelButton.AutoEllipsis = true;
-            this.cancelButton.Location = new System.Drawing.Point(590, 501);
-            this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(75, 23);
-            this.cancelButton.TabIndex = 5;
-            this.cancelButton.Text = "Cancel";
-            this.cancelButton.UseMnemonic = false;
-            this.cancelButton.UseVisualStyleBackColor = true;
-            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
-            // 
             // DiscardReceivableChangeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(843, 549);
-            this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.backButton);
             this.Controls.Add(this.discardChangesButton);
             this.Controls.Add(this.pendingChangesInfoLabel);
@@ -107,6 +93,7 @@
             this.Controls.Add(this.receivableChangesToDiscardDgv);
             this.Name = "DiscardReceivableChangeForm";
             this.Text = "Discard receivable changes";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DiscardReceivableChangeForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.receivableChangesToDiscardDgv)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -120,6 +107,5 @@
         private System.Windows.Forms.Label pendingChangesInfoLabel;
         private System.Windows.Forms.Button discardChangesButton;
         private System.Windows.Forms.Button backButton;
-        private System.Windows.Forms.Button cancelButton;
     }
 }
