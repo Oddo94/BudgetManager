@@ -169,7 +169,7 @@ namespace BudgetManager.mvc.views {
 
         private void updateReceivableCtxMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
             String clickedItem = e.ClickedItem.Name;
-            String messageBoxTitle = "Receivables management";
+            //String messageBoxTitle = "Receivables management";
             String template = "You clicked the {0} item at row index {1} and cell index {2}.";
             String message = null;
 
@@ -294,8 +294,12 @@ namespace BudgetManager.mvc.views {
                 DataTable receivableDgvDataSource = (DataTable)receivableManagementDgv.DataSource;
                 UserControlsManager.updateDataTable(receivableDgvDataSource, rowIndexOnRightClick, cellIndexValueDictionary);
 
+                //Message for informing the user about the receivable update
+                String updateConfirmationMessage = String.Format("The receivable '{0}' was successfully updated in the table. Click the 'Save changes' button if you want to permanently save the changes.", receivableName);
+                MessageBox.Show(updateConfirmationMessage, "Receivable management", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+
                 //Updates the number of pending changes and sets the corresponding message to the label that informs the user about them
-                totalPendingChanges++;
+                totalPendingChanges = receivableDgvDataSource.GetChanges().Rows.Count;
                 pendingChangesLabel.Text = String.Format(pendingChangesMessage, totalPendingChanges, totalPendingChanges > 1 ? "s" : "");
                 pendingChangesLabel.Visible = true;
 
@@ -307,10 +311,6 @@ namespace BudgetManager.mvc.views {
                 updateDgvRecordButton.Enabled = false;
 
             }
-
-            //Message for informing the user about the receivable update
-            String updateConfirmationMessage = String.Format("The receivable '{0}' was successfully updated in the table. Click the 'Save changes' button if you want to permanently save the changes.", receivableName);
-            MessageBox.Show(updateConfirmationMessage, "Receivable management", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
 
             UserControlsManager.clearActiveControls(activeControls);
             saveReceivableChangesButton.Enabled = true;

@@ -103,7 +103,7 @@ namespace BudgetManager.non_mvc {
             }
 
             DataTable changesToCancelDT = copyReceivableManagementDT.GetChanges();
-            int changesToCancel = 0;
+            
 
             //If the changesToCancelDT is null it means that the user hasn't discarded any change/s
             if (changesToCancelDT == null) {
@@ -111,24 +111,27 @@ namespace BudgetManager.non_mvc {
                 return;
             }
 
-            //Retrieves the number of discarded changes
-            changesToCancel = changesToCancelDT.Rows.Count;
-            String suffix = changesToCancel > 1 ? "s" : "";
+            //Calculates the number of discarded changes
+            int initialChangesToDiscard = originalReceivableManagementDT.GetChanges().Rows.Count;
+            int remainingChangesToDiscard = copyReceivableManagementDT.GetChanges().Rows.Count;
+            int totalChangesToCancel = initialChangesToDiscard - remainingChangesToDiscard;
 
-            String cancelChangesMessage = String.Format("Are you sure that you want to cancel {0} discarded change{1}? Please use the 'Back' button if you want to discard the selected change{2} and return to the receivable management form.", changesToCancel, suffix, suffix);
-            DialogResult userOption = MessageBox.Show(cancelChangesMessage, "Discard receivable changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (totalChangesToCancel > 0) {
+                String suffix = totalChangesToCancel > 1 ? "s" : "";
 
-            if (userOption == DialogResult.No) {
-                //Cancels the closing event if this parameter is supplied from the calling code
-                e.Cancel = true;
-                hasAlreadySelectedWindowClosing = false;//Restores the window closing flag state
+                String cancelChangesMessage = String.Format("Are you sure that you want to cancel {0} discarded change{1}? Please use the 'Back' button if you want to discard the selected change{2} and return to the receivable management form.", totalChangesToCancel, suffix, suffix);
+                DialogResult userOption = MessageBox.Show(cancelChangesMessage, "Discard receivable changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                return;
+                if (userOption == DialogResult.No) {
+                    //Cancels the closing event if this parameter is supplied from the calling code
+                    e.Cancel = true;
+                    hasAlreadySelectedWindowClosing = false;//Restores the window closing flag state
+                    return;
+                }
             }
 
             //Sets flag so that the message displayed when the user selects the form closing button is shown only once
             hasAlreadySelectedWindowClosing = true;
-
             this.Dispose();
         }
 
@@ -148,6 +151,9 @@ namespace BudgetManager.non_mvc {
                 DataGridViewCheckBoxCell checkBoxCell = (DataGridViewCheckBoxCell)currentRow.Cells[checkBoxColumnIndex];
                 checkBoxCell.Value = state;
             }
+
+            //Fixes issue with the currently selected checkbox cell not being checked when its underlying "Value" property was changed programatically
+            receivableChangesToDiscardDgv.RefreshEdit();
         }
 
         private void discardChangesButton_Click(object sender, EventArgs e) {

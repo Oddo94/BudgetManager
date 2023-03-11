@@ -35,11 +35,10 @@
             // 
             this.receivableChangesToDiscardDgv.AllowUserToAddRows = false;
             this.receivableChangesToDiscardDgv.AllowUserToDeleteRows = false;
-            this.receivableChangesToDiscardDgv.AllowUserToResizeColumns = false;
             this.receivableChangesToDiscardDgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.receivableChangesToDiscardDgv.Location = new System.Drawing.Point(27, 133);
             this.receivableChangesToDiscardDgv.Name = "receivableChangesToDiscardDgv";
-            this.receivableChangesToDiscardDgv.Size = new System.Drawing.Size(787, 285);
+            this.receivableChangesToDiscardDgv.Size = new System.Drawing.Size(949, 299);
             this.receivableChangesToDiscardDgv.TabIndex = 0;
             // 
             // label1
@@ -63,7 +62,7 @@
             // 
             // discardChangesButton
             // 
-            this.discardChangesButton.Location = new System.Drawing.Point(166, 501);
+            this.discardChangesButton.Location = new System.Drawing.Point(254, 501);
             this.discardChangesButton.Name = "discardChangesButton";
             this.discardChangesButton.Size = new System.Drawing.Size(97, 23);
             this.discardChangesButton.TabIndex = 3;
@@ -73,7 +72,7 @@
             // 
             // backButton
             // 
-            this.backButton.Location = new System.Drawing.Point(568, 501);
+            this.backButton.Location = new System.Drawing.Point(653, 501);
             this.backButton.Name = "backButton";
             this.backButton.Size = new System.Drawing.Size(75, 23);
             this.backButton.TabIndex = 4;
@@ -85,12 +84,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(843, 549);
+            this.ClientSize = new System.Drawing.Size(1002, 565);
             this.Controls.Add(this.backButton);
             this.Controls.Add(this.discardChangesButton);
             this.Controls.Add(this.pendingChangesInfoLabel);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.receivableChangesToDiscardDgv);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "DiscardReceivableChangeForm";
             this.Text = "Discard receivable changes";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DiscardReceivableChangeForm_FormClosing);
