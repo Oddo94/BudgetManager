@@ -199,6 +199,7 @@
     <Compile Include="utils\data_transfer\QueryData.cs" />
     <Compile Include="utils\data_insertion\SavingAccountBalanceManager.cs" />
     <Compile Include="utils\database\SQLCommandBuilder.cs" />
+    <Compile Include="utils\ui_controls\DataSourceManager.cs" />
     <Compile Include="utils\ui_controls\UserControlsManager.cs" />
     <Compile Include="utils\miscellaneous\ViewCalculator.cs" />
     <EmbeddedResource Include="mvc\views\BudgetPlanManagementForm.resx">

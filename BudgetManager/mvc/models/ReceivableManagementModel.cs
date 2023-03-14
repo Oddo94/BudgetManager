@@ -52,6 +52,8 @@ namespace BudgetManager.mvc.models {
                                                     dueDate = @dueDate
                                                     WHERE receivableID = @receivableID;";
 
+        String sqlStatementReceivableDelete = "DELETE FROM receivables WHERE receivableID = @receivableID;";
+
 
         public DataTable[] DataSources {
             get {
@@ -106,6 +108,27 @@ namespace BudgetManager.mvc.models {
             return executionResult;
         }
 
+        public int deleteData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
+            Guard.notNull(sourceDataTable, "update source data table");
+            int executionResult = -1;
+
+            DataTable deletedReceivableDT = sourceDataTable.GetChanges();
+
+            MySqlCommand dataRetrievalCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementReceivableRetrieval, paramContainer);
+
+            MySqlCommand deleteReceivableCommand = new MySqlCommand(sqlStatementReceivableDelete);
+            //deleteReceivableCommand.Parameters.Add("@receivableID", MySqlDbType.Int32, 20, "Receivable ID");
+
+            MySqlParameter receivableIDParameter = new MySqlParameter("@receivableID", MySqlDbType.Int32, 20, "Receivable ID");
+            receivableIDParameter.SourceColumn = "Receivable ID";
+            receivableIDParameter.SourceVersion = DataRowVersion.Original;
+
+
+            executionResult = DBConnectionManager.deleteData(dataRetrievalCommand, deleteReceivableCommand, receivableIDParameter, sourceDataTable);
+
+            return executionResult;
+        }
+
         //public int updateData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
         //    Guard.notNull(sourceDataTable, "update source data table");
         //    int executionResult = -1;
@@ -150,9 +173,7 @@ namespace BudgetManager.mvc.models {
         //    return -1;
         //}
 
-        public int deleteData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
-            throw new NotImplementedException();
-        }
+
 
         public bool hasDBConnection() {
             return DBConnectionManager.hasConnection();

@@ -36,7 +36,9 @@ namespace BudgetManager.mvc.controllers {
         }
 
         public int requestDelete(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
-            throw new NotImplementedException();
+            int executionResult = model.deleteData(option, paramContainer, sourceDataTable);
+
+            return executionResult;
         }
 
         public int requestUpdate(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {

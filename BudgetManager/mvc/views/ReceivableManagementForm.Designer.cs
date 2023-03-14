@@ -42,6 +42,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.receivableManagementEndDatePicker = new System.Windows.Forms.DateTimePicker();
             this.label4 = new System.Windows.Forms.Label();
+            this.deleteItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateReceivableCtxMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.receivableManagementDgv)).BeginInit();
@@ -77,11 +78,12 @@
             // updateReceivableCtxMenu
             // 
             this.updateReceivableCtxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.markAsPaidItem,
+            this.updateDetailsItem,
             this.partialPaymentItem,
-            this.updateDetailsItem});
+            this.markAsPaidItem,
+            this.deleteItem});
             this.updateReceivableCtxMenu.Name = "updateReceivableCtxMenu";
-            this.updateReceivableCtxMenu.Size = new System.Drawing.Size(183, 70);
+            this.updateReceivableCtxMenu.Size = new System.Drawing.Size(183, 114);
             this.updateReceivableCtxMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.updateReceivableCtxMenu_ItemClicked);
             // 
             // markAsPaidItem
@@ -214,6 +216,12 @@
             this.label4.TabIndex = 16;
             this.label4.Text = "End date";
             // 
+            // deleteItem
+            // 
+            this.deleteItem.Name = "deleteItem";
+            this.deleteItem.Size = new System.Drawing.Size(182, 22);
+            this.deleteItem.Text = "Delete";
+            // 
             // ReceivableManagementForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -264,5 +272,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.DateTimePicker receivableManagementEndDatePicker;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ToolStripMenuItem deleteItem;
     }
 }

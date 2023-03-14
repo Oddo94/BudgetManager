@@ -273,6 +273,52 @@ namespace BudgetManager {
             return executionResult;
         }
 
+        public static int deleteData(MySqlCommand dataRetrievalCommand, MySqlCommand manualDeletionCommand, MySqlParameter primaryKey, DataTable sourceDataTable) {
+            //Input parameter checks
+            Guard.notNull(dataRetrievalCommand, "Data retrieval command", "The command object used to retrieve the data cannot not be null!");
+            Guard.notNull(manualDeletionCommand, "Manual update command", "The command object used to delete the data cannot be null!");
+            Guard.notNull(primaryKey, "Primary key parameter", "The parameter object containing the primary key of the row cannot be null!");
+            Guard.notNull(sourceDataTable, "Source data table", "The data table object containing the changes cannot be null!");
+
+            int executionResult = -1;
+            MySqlTransaction tx = null;
+
+            try {
+                using (MySqlConnection conn = getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING)) {
+                    conn.Open();
+
+                    dataRetrievalCommand.Connection = conn;
+                    MySqlDataAdapter dataAdapter = getDataAdapter(dataRetrievalCommand);
+
+                    tx = conn.BeginTransaction();
+
+                    manualDeletionCommand.Connection = conn;
+                    manualDeletionCommand.Transaction = tx;
+                    dataAdapter.DeleteCommand = manualDeletionCommand;
+
+                    dataAdapter.DeleteCommand.Parameters.Add(primaryKey);
+
+                    executionResult = dataAdapter.Update(sourceDataTable);
+
+                    tx.Commit();
+
+                }
+            } catch(MySqlException ex) {
+                int errorCode = ex.Number;
+
+                /*Checks to see if the error is caused by th fac that the app is unbale to connect to the DB.
+                In that case there's no point in trying to rollback the transaction*/
+                if(errorCode != 1042) {
+                    tx.Rollback();
+                }
+              
+                Console.WriteLine(String.Format("Error message: {0}\nStack trace: {1}", ex.Message, ex.StackTrace));
+                throw;
+            }
+
+            return executionResult;
+        }
+
         public static int deleteData(MySqlCommand command, DataTable sourceDataTable) {
             MySqlConnection conn = getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
 

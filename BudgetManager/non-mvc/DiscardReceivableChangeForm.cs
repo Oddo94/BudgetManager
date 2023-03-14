@@ -1,5 +1,6 @@
 ﻿using BudgetManager.mvc.views;
 using BudgetManager.utils;
+using BudgetManager.utils.ui_controls;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -168,7 +169,7 @@ namespace BudgetManager.non_mvc {
 
             List<int> primaryKeyList = getPrimaryKeysForDiscardedChanges();
 
-            UserControlsManager.discardDataTableChanges(copyReceivableManagementDT, primaryKeyList, primaryKeyColumnIndex);
+            DataSourceManager.discardDataTableChanges(copyReceivableManagementDT, primaryKeyList, primaryKeyColumnIndex);
 
             DataTable newPendingChangesTable = copyReceivableManagementDT.GetChanges();
 

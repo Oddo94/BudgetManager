@@ -242,56 +242,6 @@ namespace BudgetManager.utils {
                 }
             }
         }
-        public static void updateDataTable(DataTable dataTable, int updatedRowIndex, Dictionary<int, String> cellIndexValueDictionary) {
-            //Parameters validation
-            Guard.notNull(dataTable, "updated data table", "The data table that needs to be updated cannot be null!");
-            Guard.notNull(cellIndexValueDictionary, "cell index-value dictionary", "The dictionary that contains the cell index-value mapping cannot be null!");
-           
-            if (updatedRowIndex < 0 || updatedRowIndex > dataTable.Rows.Count - 1) {
-                throw new IndexOutOfRangeException("The index of the row that needs to be updated is out of bounds!");
-            }
-
-            foreach (int currentCellIndex in cellIndexValueDictionary.Keys) {
-                int lowerBound = 0;
-                int upperBound = dataTable.Rows[updatedRowIndex].ItemArray.Length - 1;
-
-                if (currentCellIndex < lowerBound || currentCellIndex > upperBound) {
-                    throw new IndexOutOfRangeException("The index of the cell that needs to be updated is out of bounds!");
-                }
-            }
-
-           //Updates the specified row of the data table with the value from the dictionary containing the cell index-value mapping
-            foreach (KeyValuePair<int, String> currentEntry in cellIndexValueDictionary) {
-                int updatedCellIndex = currentEntry.Key;
-                String updatedCellValue = currentEntry.Value;
-
-                dataTable.Rows[updatedRowIndex].SetField(updatedCellIndex, updatedCellValue);
-            }
-
-        }
-
-        //Method used to selectively/completely discard changes from a data table object
-        public static void discardDataTableChanges(DataTable sourceDataTable, List<int> primaryKeyList, int primaryKeyColumnIndex, bool discardAllChanges = false) {
-            //Parameters check
-            Guard.notNull(sourceDataTable, "The source data table containing the changes to be discarded cannot be null!");
-            Guard.notNull(primaryKeyList, "The primary key list cannot be null!");
-            Guard.inRange(sourceDataTable, primaryKeyColumnIndex);
-
-            if (discardAllChanges) {
-                sourceDataTable.RejectChanges();
-                return;
-            }
-
-            foreach(DataRow currentRow in sourceDataTable.Rows) {
-                String[] currentRowValues = Array.ConvertAll(currentRow.ItemArray, x => x != DBNull.Value ? Convert.ToString(x) : "");
-                int currentPrimaryKey = Convert.ToInt32(currentRowValues[primaryKeyColumnIndex]);
-
-                if(primaryKeyList.Contains(currentPrimaryKey)) {
-                    currentRow.RejectChanges();
-                }              
-            }
-
-        }
 
         private static DataTable retrieveData(MySqlCommand dataRetrievalCommand) {
             Guard.notNull(dataRetrievalCommand, "SQL command");

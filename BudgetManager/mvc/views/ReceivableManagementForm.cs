@@ -5,6 +5,7 @@ using BudgetManager.non_mvc;
 using BudgetManager.utils;
 using BudgetManager.utils.data_insertion;
 using BudgetManager.utils.enums;
+using BudgetManager.utils.ui_controls;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
@@ -75,32 +76,16 @@ namespace BudgetManager.mvc.views {
             wireUp(controller, model);
         }
 
-        private void fillDataGridView() {
-            DataTable sourceDataTable = new DataTable();
+        //private void fillDataGridView() {
+        //    DataTable sourceDataTable = new DataTable();
+   
+        //    sourceDataTable.AcceptChanges();
 
-            //sourceDataTable.Columns.Add("Id");
-            //sourceDataTable.Columns.Add("Name");
-            //sourceDataTable.Columns.Add("Value");
-            //sourceDataTable.Columns.Add("Debtor");
-            //sourceDataTable.Columns.Add("Total paid amount");
-            //sourceDataTable.Columns.Add("Status");
-            //sourceDataTable.Columns.Add("Created date");
-            //sourceDataTable.Columns.Add("Due date");
-
-            //sourceDataTable.Rows.Add(1, "Receivable 1", 700, "Jim", 0, "New", "2022-01-30", "2022-12-30");
-            //sourceDataTable.Rows.Add(2, "Receivable 2", 300, "John", 0, "Partially paid", "2022-04-30", "2022-12-30");
-            //sourceDataTable.Rows.Add(3, "Receivable 3", 500, "Adam", 500, "Paid", "2022-05-30", "2022-12-30");
-            //sourceDataTable.Rows.Add(4, "Trigger test", 1000, "Mike", 300, "Overdue", "2022-09-30", "2022-12-30");
-
-            //receivableManagementDgv.DefaultCellStyle.ForeColor = Color.Green;           
-
-            sourceDataTable.AcceptChanges();
-
-            receivableManagementDgv.DataSource = sourceDataTable;
+        //    receivableManagementDgv.DataSource = sourceDataTable;
 
 
-            DataTable newDataTable = sourceDataTable.Clone();//Will be used to get a copy of the original DataTable onto which the changes will be performed by the user
-        }
+        //    DataTable newDataTable = sourceDataTable.Clone();//Will be used to get a copy of the original DataTable onto which the changes will be performed by the user
+        //}
 
         private void fillComboBoxes() {
             //Populates the debtor combo box as this will be needed for receivable update
@@ -207,6 +192,12 @@ namespace BudgetManager.mvc.views {
 
                     break;
 
+                case "deleteItem":
+                    int deletedRowIndex = rowIndexOnRightClick;
+                    DataTable dataSource = (DataTable) receivableManagementDgv.DataSource;
+                    deleteSelectedReceivable(deletedRowIndex, dataSource);
+                    break;
+
                 default:
                     break;
             }
@@ -226,6 +217,10 @@ namespace BudgetManager.mvc.views {
             DataTable sourceDataTable = (DataTable)receivableManagementDgv.DataSource;
 
             for (int i = 0; i < sourceDataTable.Rows.Count; i++) {
+                //This check will prevent DeletedRowInaccessibleException after deleting a row
+                if(sourceDataTable.Rows[i].RowState == DataRowState.Deleted) {
+                    continue;
+                }
                 String currentStatus = Convert.ToString(sourceDataTable.Rows[i].ItemArray[5].ToString());
                 Color statusColor = new Color();
 
@@ -274,7 +269,7 @@ namespace BudgetManager.mvc.views {
             cellIndexValueDictionary.Add(createdDateColumnIndex, receivableCreatedDate);
             cellIndexValueDictionary.Add(dueDateColumnIndex, receivableDueDate);
 
-            //Checks if the user has sperformed any changes on the data submitted for update
+            //Checks if the user has performed any changes on the data submitted for update
             DataGridViewRow currentSelectedRow = receivableManagementDgv.Rows[rowIndexOnRightClick];
             if (!hasPerformedChanges(currentSelectedRow, cellIndexValueDictionary)) {
                 String noChangesInfoMessage = "Cannot update the selected receivable because there were no changes performed on the submitted data! Please change the value of at least one of the form fields and try again.";
@@ -292,7 +287,7 @@ namespace BudgetManager.mvc.views {
 
             try {
                 DataTable receivableDgvDataSource = (DataTable)receivableManagementDgv.DataSource;
-                UserControlsManager.updateDataTable(receivableDgvDataSource, rowIndexOnRightClick, cellIndexValueDictionary);
+                DataSourceManager.updateDataTable(receivableDgvDataSource, rowIndexOnRightClick, cellIndexValueDictionary);
 
                 //Message for informing the user about the receivable update
                 String updateConfirmationMessage = String.Format("The receivable '{0}' was successfully updated in the table. Click the 'Save changes' button if you want to permanently save the changes.", receivableName);
@@ -403,7 +398,7 @@ namespace BudgetManager.mvc.views {
             //int executionResult = model.updateData(QueryType.UNDEFINED, paramContainer, (DataTable)receivableManagementDgv.DataSource);
 
             if (executionResult != -1) {
-                String successMessage = totalPendingChanges == 1 ? "The selected receivable was successfully updated!" : "The selected receivable/s were successfully updated!";
+                String successMessage = totalPendingChanges == 1 ? "The selected receivable was successfully updated!" : "The selected receivables were successfully updated!";
                 MessageBox.Show(successMessage, "Receivables management", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 //The variables that track the changes are reset only if the update is successful, otherwise the user should have the chance to retry the saving of those changes
@@ -859,6 +854,51 @@ namespace BudgetManager.mvc.views {
                 totalPendingChanges = pendingChangesDT.Rows.Count;
                 pendingChangesLabel.Text = String.Format(pendingChangesMessage, totalPendingChanges, totalPendingChanges > 1 ? "s" : "");
             }     
+        }
+
+        private void deleteSelectedReceivable(int deletedRowIndex, DataTable sourceDataTable) {
+            DataGridViewRow rowToDelete = retrieveDataFromSelectedRow(deletedRowIndex, receivableManagementDgv);
+            String receivableName = rowToDelete.Cells[1].Value.ToString();
+            String deleteConfirmationMessage = String.Format("Are you sure that you want to delete the receivable '{0}'? This will remove the receivable itself, all the associated partial payments(if any) and will rollback all the changes made to the source account balance.", receivableName);
+
+            DialogResult userOption = MessageBox.Show(deleteConfirmationMessage, "Receivable management", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if(userOption == DialogResult.No) {
+                return;
+            }
+
+            //DataTable currentDataSource = (DataTable)receivableManagementDgv.DataSource;
+            //DataTable receivableChangesDT = currentDataSource.GetChanges();
+
+            //if(receivableChangesDT != null) {
+            //    int 
+            //}
+
+            if(totalPendingChanges > 0) {
+                MessageBox.Show("You cannot delete receivables if you have pending updates! Please save/discard the updated and then try again!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+          
+            int executionResult = -1;
+            try {
+                DataSourceManager.deleteDataTableRow(deletedRowIndex, sourceDataTable);
+                QueryType option = QueryType.DATE_INTERVAL;
+                QueryData paramContainer = configureParamContainer();
+                executionResult = controller.requestDelete(option, paramContainer, sourceDataTable);
+
+            } catch (MySqlException ex) {
+                String deleteErrorMessage = String.Format("Unable to delete the receivable '{0}'! An error occured while trying to perform the operation.", receivableName);
+                MessageBox.Show(deleteErrorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if(executionResult != -1) {
+                String successMessage = String.Format("The receivable '{0}' was successfully deleted!", receivableName);
+                MessageBox.Show(successMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } else {
+                String errorMessage = String.Format("Unable to delete the receivable '{0}'", receivableName);
+                MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
