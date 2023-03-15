@@ -22,7 +22,8 @@ namespace BudgetManager.mvc.models {
 	                                                        rcs.value AS 'Receivable value',
 	                                                        rst.statusDescription AS 'Status',
 	                                                        rcs.createdDate AS 'Creation date',
-	                                                        rcs.dueDate AS 'Due date'
+	                                                        rcs.dueDate AS 'Due date',
+	                                                        rcs.payOffDate AS 'Pay off date'
                                                         FROM
 	                                                        receivables rcs
                                                         INNER JOIN debtors dbs ON
@@ -47,9 +48,12 @@ namespace BudgetManager.mvc.models {
         String sqlStatementReceivableUpdate = @"UPDATE receivables
                                                 SET name = @receivableName,
                                                     debtor_ID = (SELECT debtorID FROM debtors WHERE debtorName = @debtorName),
+                                                    totalPaidAmount = @totalPaidAmount,
                                                     value = @receivableValue,
+                                                    status_ID = (SELECT statusID FROM receivable_status WHERE statusDescription = @statusDescription),
                                                     createdDate = @createdDate,
-                                                    dueDate = @dueDate
+                                                    dueDate = @dueDate,
+                                                    payOffDate = @payOffDate
                                                     WHERE receivableID = @receivableID;";
 
         String sqlStatementReceivableDelete = "DELETE FROM receivables WHERE receivableID = @receivableID;";
@@ -93,9 +97,12 @@ namespace BudgetManager.mvc.models {
             MySqlCommand updateReceivablesCommand = new MySqlCommand(sqlStatementReceivableUpdate);
             updateReceivablesCommand.Parameters.Add("@receivableName", MySqlDbType.VarChar, 50, "Receivable name");
             updateReceivablesCommand.Parameters.Add("@debtorName", MySqlDbType.VarChar, 30, "Debtor name");
+            updateReceivablesCommand.Parameters.Add("@totalPaidAmount", MySqlDbType.Int32, 20, "Total paid amount");
             updateReceivablesCommand.Parameters.Add("@receivableValue", MySqlDbType.Int32, 20, "Receivable value");
+            updateReceivablesCommand.Parameters.Add("@statusDescription", MySqlDbType.VarChar, 50, "Status");
             updateReceivablesCommand.Parameters.Add("@createdDate", MySqlDbType.Date, 10, "Creation date");
             updateReceivablesCommand.Parameters.Add("@dueDate", MySqlDbType.Date, 10, "Due date");
+            updateReceivablesCommand.Parameters.Add("@payOffDate", MySqlDbType.Date, 10, "Pay off date");
 
             //Sets the parameter which contains the primary key for each updated row
             MySqlParameter receivableIDParameter = new MySqlParameter("@receivableID", MySqlDbType.Int32, 20, "Receivable ID");

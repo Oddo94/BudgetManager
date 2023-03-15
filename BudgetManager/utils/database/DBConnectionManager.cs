@@ -261,7 +261,15 @@ namespace BudgetManager {
 
             } catch(MySqlException ex) {
                 //Reverts the changes in case of exception
-                tx.Rollback();
+                //tx.Rollback();
+
+                int errorCode = ex.Number;
+
+                /*Checks to see if the error is caused by th fac that the app is unbale to connect to the DB.
+                In that case there's no point in trying to rollback the transaction*/
+                if (errorCode != 1042) {
+                    tx.Rollback();
+                }
 
                 /*Throwing the exception using "throw ex" will erase the stack trace so in order to preserve it only "throw" will be used
                 The caught exception is rethrown so the it can better be handled in the code which called the method(for showing a more appropriate error message)*/
