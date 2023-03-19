@@ -28,9 +28,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.updateReceivableCtxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.markAsPaidItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.partialPaymentItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateDetailsItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.partialPaymentItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.markAsPaidItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displayReceivablesButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.receivablesManagementPanel = new System.Windows.Forms.FlowLayoutPanel();
@@ -42,7 +43,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.receivableManagementEndDatePicker = new System.Windows.Forms.DateTimePicker();
             this.label4 = new System.Windows.Forms.Label();
-            this.deleteItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateReceivableCtxMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.receivableManagementDgv)).BeginInit();
@@ -83,14 +83,14 @@
             this.markAsPaidItem,
             this.deleteItem});
             this.updateReceivableCtxMenu.Name = "updateReceivableCtxMenu";
-            this.updateReceivableCtxMenu.Size = new System.Drawing.Size(183, 114);
+            this.updateReceivableCtxMenu.Size = new System.Drawing.Size(183, 92);
             this.updateReceivableCtxMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.updateReceivableCtxMenu_ItemClicked);
             // 
-            // markAsPaidItem
+            // updateDetailsItem
             // 
-            this.markAsPaidItem.Name = "markAsPaidItem";
-            this.markAsPaidItem.Size = new System.Drawing.Size(182, 22);
-            this.markAsPaidItem.Text = "Mark as paid";
+            this.updateDetailsItem.Name = "updateDetailsItem";
+            this.updateDetailsItem.Size = new System.Drawing.Size(182, 22);
+            this.updateDetailsItem.Text = "Update details";
             // 
             // partialPaymentItem
             // 
@@ -98,11 +98,17 @@
             this.partialPaymentItem.Size = new System.Drawing.Size(182, 22);
             this.partialPaymentItem.Text = "Add partial payment";
             // 
-            // updateDetailsItem
+            // markAsPaidItem
             // 
-            this.updateDetailsItem.Name = "updateDetailsItem";
-            this.updateDetailsItem.Size = new System.Drawing.Size(182, 22);
-            this.updateDetailsItem.Text = "Update details";
+            this.markAsPaidItem.Name = "markAsPaidItem";
+            this.markAsPaidItem.Size = new System.Drawing.Size(182, 22);
+            this.markAsPaidItem.Text = "Mark as paid";
+            // 
+            // deleteItem
+            // 
+            this.deleteItem.Name = "deleteItem";
+            this.deleteItem.Size = new System.Drawing.Size(182, 22);
+            this.deleteItem.Text = "Delete";
             // 
             // displayReceivablesButton
             // 
@@ -216,12 +222,6 @@
             this.label4.TabIndex = 16;
             this.label4.Text = "End date";
             // 
-            // deleteItem
-            // 
-            this.deleteItem.Name = "deleteItem";
-            this.deleteItem.Size = new System.Drawing.Size(182, 22);
-            this.deleteItem.Text = "Delete";
-            // 
             // ReceivableManagementForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -240,6 +240,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.receivableManagemenStartDatePicker);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.Name = "ReceivableManagementForm";
             this.Text = "Receivable management";

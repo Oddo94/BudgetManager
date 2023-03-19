@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -236,15 +237,17 @@ namespace BudgetManager.mvc.views {
             DateTime createdDate = receivableCreatedDatePicker.Value;
             DateTime dueDate = receivableDueDatePicker.Value;
 
-            int nameColumnIndex = 1;
+            int nameColumnIndex = 1;                     
             int debtorColumnIndex = 2;
+            int paidAmountColumnIndex = 3;
             int valueColumnIndex = 4;
+            int statusColumnIndex = 5;          
             int createdDateColumnIndex = 6;
             int dueDateColumnIndex = 7;
 
             String receivableName = itemNameTextBox.Text;
-            String receivableValue = itemValueTextBox.Text;
             String receivableDebtorName = receivableDebtorComboBox.Text;
+            String receivableValue = itemValueTextBox.Text;           
             String receivableCreatedDate = receivableCreatedDatePicker.Value.ToString("yyyy-MM-dd");
             String receivableDueDate = receivableDueDatePicker.Value.ToString("yyyy-MM-dd");
 
@@ -255,21 +258,13 @@ namespace BudgetManager.mvc.views {
             cellIndexValueDictionary.Add(createdDateColumnIndex, receivableCreatedDate);
             cellIndexValueDictionary.Add(dueDateColumnIndex, receivableDueDate);
 
-            //Checks if the user has performed any changes on the data submitted for update
-            DataGridViewRow currentSelectedRow = receivableManagementDgv.Rows[rowIndexOnRightClick];
-            if (!hasPerformedChanges(currentSelectedRow, cellIndexValueDictionary)) {
-                String noChangesInfoMessage = "Cannot update the selected receivable because there were no changes performed on the submitted data! Please change the value of at least one of the form fields and try again.";
-                MessageBox.Show(noChangesInfoMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            //Calls the update prechecks method. The column index parameters are necessary in order for this method to correctly extract the data from the cellIndexValueDictionary object
+            int updatePrechecksResult = performUpdatePrechecks(cellIndexValueDictionary, nameColumnIndex, paidAmountColumnIndex, valueColumnIndex, statusColumnIndex, createdDateColumnIndex, dueDateColumnIndex);
+
+            //When the method return -1 it means that the precheck has failed and when it returns 1 it means that the user selected 'No' when prompted to take a decision*/
+            if(updatePrechecksResult == -1 || updatePrechecksResult == 1) {
                 return;
             }
-
-
-            //Checks if the created date and due date of the receivable are in chronological order
-            if (createdDate > dueDate || dueDate < createdDate) {
-                MessageBox.Show("Invalid date selection! The receivable creation date must precede the due date!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return;
-            }
-
 
             try {
                 DataTable receivableDgvDataSource = (DataTable)receivableManagementDgv.DataSource;
@@ -377,6 +372,9 @@ namespace BudgetManager.mvc.views {
                 QueryData paramContainer = configureParamContainer();
                 executionResult = controller.requestUpdate(QueryType.DATE_INTERVAL, paramContainer, receivableManagementDT);
 
+                //Commits all the changes performed on the source data table so that after the changes are saved to the database the pending changes count is reset(calling the GetChanges() method on this data table will return 0)
+                receivableManagementDT.AcceptChanges();
+
             } catch (MySqlException ex) {
                 MessageBox.Show("Unable to update the specified receivable/s! An error occured when trying to perform the operation.", "Receivables management", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -392,9 +390,10 @@ namespace BudgetManager.mvc.views {
                 pendingChangesLabel.Visible = false;
                 saveReceivableChangesButton.Enabled = false;
                 discardChangesButton.Enabled = false;
+
             } else {
                 String errorMessage = totalPendingChanges == 1 ? "Unable to update the selected receivable!" : "Unable to update the selected receivables!";
-                MessageBox.Show(errorMessage, "Receivables management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -640,6 +639,12 @@ namespace BudgetManager.mvc.views {
             receivableManagementDgv.DataSource = model.DataSources[0];
             //Sets the format for the date columns
             setFormatForDateTimeColumns(receivableManagementDgv, "dd-MM-yyyy");
+            //Disables column sorting for data grid view columns
+            receivableManagementDgv
+                .Columns
+                .Cast<DataGridViewColumn>()
+                .ToList()
+                .ForEach(currentColumn => currentColumn.SortMode = DataGridViewColumnSortMode.NotSortable);
         }
 
         public void disableControls() {
@@ -812,6 +817,61 @@ namespace BudgetManager.mvc.views {
             }
 
             return false;
+        }
+
+        /*Method for performing the prechecks related to the receivable update
+         Returns:
+         -1 -> when the precheck fails
+          0 -> when the precheck is passed
+          1 -> when the user selects 'No" when prompted to take a decision */
+        private int performUpdatePrechecks(Dictionary<int, String> cellIndexValueDictionary, int receivableNameColumnIndex, int totalPaidAmountColumnIndex, int receivableValueColumnIndex, int receivableStatusColumnIndex,  int createdDateColumnIndex, int dueDateColumnIndex) {
+            String receivableName = cellIndexValueDictionary[receivableNameColumnIndex];
+
+            //Checks if the user has performed any changes on the data submitted for update
+            DataGridViewRow currentSelectedRow = receivableManagementDgv.Rows[rowIndexOnRightClick];
+            if (!hasPerformedChanges(currentSelectedRow, cellIndexValueDictionary)) {
+                String noChangesInfoMessage = "Cannot update the selected receivable because there were no changes performed on the submitted data! Please change the value of at least one of the form fields and try again.";
+                MessageBox.Show(noChangesInfoMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return -1;
+            }
+
+            DateTime createdDate = DateTime.Parse(cellIndexValueDictionary[createdDateColumnIndex]);
+            DateTime dueDate = DateTime.Parse(cellIndexValueDictionary[dueDateColumnIndex]);
+
+            //Checks if the created date and due date of the receivable are in chronological order
+            if (createdDate > dueDate) {
+                MessageBox.Show("Invalid date selection! The receivable creation date must precede the due date!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return - 1;
+            }
+
+            //Retrieves the value of the total paid amount column for the selected receivable 
+            String receivableValue = cellIndexValueDictionary[receivableValueColumnIndex];
+            int totalPaidAmount;
+            int receivableAmount;
+            bool canParseTotalPaidAmountValue = int.TryParse(currentSelectedRow.Cells[totalPaidAmountColumnIndex].Value.ToString(), out totalPaidAmount);
+            bool canParseReceivableValue = int.TryParse(receivableValue, out receivableAmount);
+
+            if (canParseTotalPaidAmountValue && canParseReceivableValue) {
+                //If the receivable value is equal to the total paid the amount the receivable is considered paid and its status will be set accordingly
+                if (receivableAmount == totalPaidAmount) {
+                    String automaticStatusUpdateMessage = String.Format("The receivable '{0}' was updated and its value is now equal to the total paid amount. As a result, the receivable status will automatically be changed to 'Paid'. Are you sure that you want to continue?", receivableName);
+                    DialogResult userOption = MessageBox.Show(automaticStatusUpdateMessage, "Receivable management", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (userOption == DialogResult.No) {
+                        return 1;
+                    }
+
+                    String newReceivableStatus = "Paid";
+                    cellIndexValueDictionary.Add(receivableStatusColumnIndex, newReceivableStatus);
+                }
+            } else {
+                //Handles the situation when any of the two values(receivable value or total paid amount) cannot be parsed
+                String valueParsingErrorMessage = String.Format("Unable to parse the receivable value/total paid amount value and perform all the required update prechecks! The receivable '{0}' cannot be currently updated!", receivableName);
+                MessageBox.Show(valueParsingErrorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return -1;
+            }
+
+            return 0;
         }
 
         public void updateFormAfterDiscardingChanges(DataTable dataTableWithDiscardedChanges) {
