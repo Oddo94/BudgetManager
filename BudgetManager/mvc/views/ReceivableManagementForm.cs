@@ -21,6 +21,7 @@ namespace BudgetManager.mvc.views {
         private int userID;
         private int rowIndexOnRightClick;
         private int columnIndexOnRightClick;
+        private String selectedReceivableID;
         private int totalPendingChanges;
         private String pendingChangesMessage;
 
@@ -63,6 +64,7 @@ namespace BudgetManager.mvc.views {
             this.pendingChangesMessage = "You have {0} pending change{1}";
             controlsManager = new UserControlsManager();
             currentLayout = UIContainerLayout.UNDEFINED;
+            selectedReceivableID = "";
 
             createTextBoxes();
             createComboBoxes();
@@ -169,6 +171,7 @@ namespace BudgetManager.mvc.views {
                     //receivablesManagementPanel.Visible = true;
                     setupLayout(UIContainerLayout.UPDATE_LAYOUT);
                     DataGridViewRow currentRowData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
+                    selectedReceivableID = currentRowData.Cells[0].Value.ToString();
                     try {
                         populateFormFields(currentRowData);
                         updateDgvRecordButton.Enabled = false;
@@ -195,8 +198,9 @@ namespace BudgetManager.mvc.views {
             MouseButtons pressedMouseBtn = e.Button;
 
             if (pressedMouseBtn == MouseButtons.Right) {
+                updateDgvRecordButton.Enabled = false;//CHANGE!!
                 rowIndexOnRightClick = e.RowIndex;
-                columnIndexOnRightClick = e.ColumnIndex;
+                columnIndexOnRightClick = e.ColumnIndex;                
             }
         }
 
@@ -268,7 +272,11 @@ namespace BudgetManager.mvc.views {
 
             try {
                 DataTable receivableDgvDataSource = (DataTable)receivableManagementDgv.DataSource;
-                DataSourceManager.updateDataTable(receivableDgvDataSource, rowIndexOnRightClick, cellIndexValueDictionary);
+                int receivableIDColumnIndex = 0;
+                int selectedReceivableRowIndex = DataSourceManager.getRowIndexBasedOnID(selectedReceivableID, receivableIDColumnIndex, receivableDgvDataSource);
+                //DataSourceManager.updateDataTable(receivableDgvDataSource, rowIndexOnRightClick, cellIndexValueDictionary);
+                DataSourceManager.updateDataTable(receivableDgvDataSource, selectedReceivableRowIndex, cellIndexValueDictionary);//CHANGE!!
+
 
                 //Message for informing the user about the receivable update
                 String updateConfirmationMessage = String.Format("The receivable '{0}' was successfully updated in the table. Click the 'Save changes' button if you want to permanently save the changes.", receivableName);
@@ -284,6 +292,7 @@ namespace BudgetManager.mvc.views {
                 MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } finally {
                 rowIndexOnRightClick = -1;
+                selectedReceivableID = "";//Resets the receivable ID regardless of the update result
                 updateDgvRecordButton.Enabled = false;
 
             }
@@ -298,7 +307,7 @@ namespace BudgetManager.mvc.views {
             DataGridViewRow selectedReceivableData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
             int selectedReceivableID = Convert.ToInt32(selectedReceivableData.Cells[0].Value);
             String selectedReceivableName = Convert.ToString(selectedReceivableData.Cells[1].Value);
-            int selectedReceivableValue = Convert.ToInt32(selectedReceivableData.Cells[2].Value);
+            int selectedReceivableValue = Convert.ToInt32(selectedReceivableData.Cells[4].Value);
             String paymentName = itemNameTextBox.Text;
             int paymentValue = Convert.ToInt32(itemValueTextBox.Text);
             String paymentDate = partialPaymentDatePicker.Value.ToString("yyyy-MM-dd");
@@ -311,7 +320,7 @@ namespace BudgetManager.mvc.views {
 
             int checkResult = dataCheckContext.invoke();
 
-            String userPrompt = String.Format("Are you sure that you want to insert a partial payment of {0} for the receivable '{1}'", paymentValue, selectedReceivableName);
+            String userPrompt = String.Format("Are you sure that you want to insert a partial payment of {0} for the receivable '{1}'?", paymentValue, selectedReceivableName);
             DialogResult userOption = MessageBox.Show(userPrompt, "Receivables management", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (userOption == DialogResult.No) {
