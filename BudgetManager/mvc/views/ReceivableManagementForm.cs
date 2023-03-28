@@ -145,9 +145,9 @@ namespace BudgetManager.mvc.views {
 
         private void updateReceivableCtxMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
             String clickedItem = e.ClickedItem.Name;
-            //String messageBoxTitle = "Receivables management";
             String template = "You clicked the {0} item at row index {1} and cell index {2}.";
             String message = null;
+            DataGridViewRow currentRowData = null;
             DataTable dataSource = (DataTable)receivableManagementDgv.DataSource;
 
             switch (clickedItem) {
@@ -158,19 +158,18 @@ namespace BudgetManager.mvc.views {
 
                 case "partialPaymentItem":
                     message = String.Format(template, "'Partial payment'", rowIndexOnRightClick, columnIndexOnRightClick);
-                    //MessageBox.Show(message, messageBoxTitle);
-                    //receivablesManagementPanel.Visible = false;
                     setupLayout(UIContainerLayout.INSERT_LAYOUT);
+                    //Receivable ID retrieval
+                    currentRowData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
+                    selectedReceivableID = currentRowData.Cells[0].Value.ToString();
                     insertPartialPaymentButton.Enabled = false;
                     break;
 
                 case "updateDetailsItem":
                     message = String.Format(template, "'Update payment'", rowIndexOnRightClick, columnIndexOnRightClick);
-                    //MessageBox.Show(message, messageBoxTitle);
-                    //addControlsToMainPanel();
-                    //receivablesManagementPanel.Visible = true;
                     setupLayout(UIContainerLayout.UPDATE_LAYOUT);
-                    DataGridViewRow currentRowData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
+                    //Receivable ID retrieval
+                    currentRowData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
                     selectedReceivableID = currentRowData.Cells[0].Value.ToString();
                     try {
                         populateFormFields(currentRowData);
@@ -202,6 +201,9 @@ namespace BudgetManager.mvc.views {
                 rowIndexOnRightClick = e.RowIndex;
                 columnIndexOnRightClick = e.ColumnIndex;                
             }
+
+            //ONLY FOR DEBUGGING PURPOSES!!
+            Console.WriteLine("CURRENTLY SELECTED RECEIVABLE ID: " + selectedReceivableID);
         }
 
         private void receivableManagementDgv_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e) {
@@ -271,12 +273,11 @@ namespace BudgetManager.mvc.views {
             }
 
             try {
+                //Retrieves the row index on which the update option was selected using the receivable ID (this way, no matter where the user clicks after selecting the update option, only the correct receivable will be updated)
                 DataTable receivableDgvDataSource = (DataTable)receivableManagementDgv.DataSource;
                 int receivableIDColumnIndex = 0;
                 int selectedReceivableRowIndex = DataSourceManager.getRowIndexBasedOnID(selectedReceivableID, receivableIDColumnIndex, receivableDgvDataSource);
-                //DataSourceManager.updateDataTable(receivableDgvDataSource, rowIndexOnRightClick, cellIndexValueDictionary);
-                DataSourceManager.updateDataTable(receivableDgvDataSource, selectedReceivableRowIndex, cellIndexValueDictionary);//CHANGE!!
-
+                DataSourceManager.updateDataTable(receivableDgvDataSource, selectedReceivableRowIndex, cellIndexValueDictionary);
 
                 //Message for informing the user about the receivable update
                 String updateConfirmationMessage = String.Format("The receivable '{0}' was successfully updated in the table. Click the 'Save changes' button if you want to permanently save the changes.", receivableName);
@@ -304,15 +305,21 @@ namespace BudgetManager.mvc.views {
         }
 
         public void insertPartialPaymentButton_Click(object sender, EventArgs e) {
-            DataGridViewRow selectedReceivableData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
-            int selectedReceivableID = Convert.ToInt32(selectedReceivableData.Cells[0].Value);
+            /*Retrieves the row index on which the partial payment option was selected using the receivable ID 
+            (this way, no matter where the user clicks after selecting the partial payment option, the partial payment will be inserted only for the correct receivable)*/
+            DataTable receivableDgvDataSource = (DataTable)receivableManagementDgv.DataSource;
+            int receivableIDColumnIndex = 0;
+            int selectedReceivableRowIndex = DataSourceManager.getRowIndexBasedOnID(selectedReceivableID, receivableIDColumnIndex, receivableDgvDataSource);
+            DataGridViewRow selectedReceivableData = retrieveDataFromSelectedRow(selectedReceivableRowIndex, receivableManagementDgv);
+
+            int parsedReceivableID = Convert.ToInt32(selectedReceivableID);
             String selectedReceivableName = Convert.ToString(selectedReceivableData.Cells[1].Value);
             int selectedReceivableValue = Convert.ToInt32(selectedReceivableData.Cells[4].Value);
             String paymentName = itemNameTextBox.Text;
             int paymentValue = Convert.ToInt32(itemValueTextBox.Text);
             String paymentDate = partialPaymentDatePicker.Value.ToString("yyyy-MM-dd");
 
-            PartialPaymentDTO partialPaymentDTO = new PartialPaymentDTO(selectedReceivableID, paymentName, paymentValue, paymentDate);
+            PartialPaymentDTO partialPaymentDTO = new PartialPaymentDTO(parsedReceivableID, paymentName, paymentValue, paymentDate);
 
             DataInsertionCheckStrategy partialPaymentCheckStrategy = new PartialPaymentInsertionCheckStrategy(partialPaymentDTO);
             DataInsertionCheckerContext dataCheckContext = new DataInsertionCheckerContext();
@@ -356,13 +363,14 @@ namespace BudgetManager.mvc.views {
             }
 
             //Calls the procedure that updates the receivable status after the partial payment is inserted
-            int statusUpdateExecutionResult = updateReceivableStatus(selectedReceivableID);
+            int statusUpdateExecutionResult = updateReceivableStatus(parsedReceivableID);
 
             if (statusUpdateExecutionResult == -1) {
                 MessageBox.Show("Error while trying to update the receivable status!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-
+            //Clears the value of the receivable ID whose row was selected regardless of the partial payment insertion outcome
+            selectedReceivableID = "";
         }
 
         private void saveReceivableChangesButton_Click(object sender, EventArgs e) {
