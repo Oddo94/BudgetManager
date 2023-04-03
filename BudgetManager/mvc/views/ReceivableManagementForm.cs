@@ -880,6 +880,11 @@ namespace BudgetManager.mvc.views {
 
                     String newReceivableStatus = "Paid";
                     cellIndexValueDictionary.Add(receivableStatusColumnIndex, newReceivableStatus);
+                } else if(receivableAmount < totalPaidAmount) {
+                    //The updated receivable value cannot be lower than that of the total paid amount value
+                    String invalidReceivableValueMessage = String.Format("You are not allowed to set a value which is lower than the total paid amount for the receivable '{0}'! Please correct the value and try again.", receivableName);
+                    MessageBox.Show(invalidReceivableValueMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return -1;
                 }
             } else {
                 //Handles the situation when any of the two values(receivable value or total paid amount) cannot be parsed
