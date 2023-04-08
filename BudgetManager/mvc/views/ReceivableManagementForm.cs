@@ -305,6 +305,12 @@ namespace BudgetManager.mvc.views {
         }
 
         public void insertPartialPaymentButton_Click(object sender, EventArgs e) {
+            //Checks if the user tries to insert a partial payment without selecting a receivable(e.g: by trying to add a partial payment right after another partial payment was inserted without re-selecting the receivable)
+            if ("".Equals(selectedReceivableID)) {
+                MessageBox.Show("Please select the receivable for which you want to insert the partial payment!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             /*Retrieves the row index on which the partial payment option was selected using the receivable ID 
             (this way, no matter where the user clicks after selecting the partial payment option, the partial payment will be inserted only for the correct receivable)*/
             DataTable receivableDgvDataSource = (DataTable)receivableManagementDgv.DataSource;
@@ -362,12 +368,14 @@ namespace BudgetManager.mvc.views {
                 MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            //Calls the procedure that updates the receivable status after the partial payment is inserted
-            int statusUpdateExecutionResult = updateReceivableStatus(parsedReceivableID);
+            /*CHANGE!!*/
+            //Calls the procedure that updates the receivable status after the partial payment is inserted-THIS IS WHERE THE STATUS IS UPDATED!!
+            //int statusUpdateExecutionResult = updateReceivableStatus(parsedReceivableID);
 
-            if (statusUpdateExecutionResult == -1) {
-                MessageBox.Show("Error while trying to update the receivable status!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //if (statusUpdateExecutionResult == -1) {
+            //    MessageBox.Show("Error while trying to update the receivable status!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
+            /*CHANGE!!*/
 
             //Clears the value of the receivable ID whose row was selected regardless of the partial payment insertion outcome
             selectedReceivableID = "";
@@ -431,7 +439,7 @@ namespace BudgetManager.mvc.views {
         private void ReceivableManagementForm_Load(object sender, EventArgs e) {
             itemNameTextBox.TextChanged += new EventHandler(itemNameTextBox_TextChanged);
             itemValueTextBox.TextChanged += new EventHandler(itemValueTextBox_TextChanged);
-            receivableDebtorComboBox.TextChanged += new EventHandler(receivableDebtorComboBox_TextChanged);
+            receivableDebtorComboBox.SelectedIndexChanged += new EventHandler(receivableDebtorComboBox_SelectedIndexChanged);
             receivableCreatedDatePicker.TextChanged += new EventHandler(receivableCreatedDatePicker_TextChanged);
             receivableDueDatePicker.TextChanged += new EventHandler(receivableDueDatePicker_TextChanged);
             updateDgvRecordButton.Click += new EventHandler(updateDgvRecordButton_Click);
@@ -478,7 +486,7 @@ namespace BudgetManager.mvc.views {
             }
         }
 
-        private void receivableDebtorComboBox_TextChanged(object sender, EventArgs e) {
+        private void receivableDebtorComboBox_SelectedIndexChanged(object sender, EventArgs e) {
             if (rowIndexOnRightClick != -1) {
                 UserControlsManager.setButtonState(updateDgvRecordButton, activeControls);
             }
