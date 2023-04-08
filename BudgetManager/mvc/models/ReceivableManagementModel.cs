@@ -38,9 +38,6 @@ namespace BudgetManager.mvc.models {
 	                                                        usr.userID = @paramID
                                                         AND
 	                                                        rcs.createdDate BETWEEN @paramStartDate AND @paramEndDate                                                           
-                                                        GROUP BY
-	                                                        dbs.debtorID,
-	                                                        rcs.createdDate
                                                         ORDER BY
 	                                                        YEAR(rcs.createdDate),
 	                                                        MONTH(rcs.createdDate);";
