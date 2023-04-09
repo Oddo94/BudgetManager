@@ -136,6 +136,13 @@ namespace BudgetManager.mvc.views {
             controller.requestData(QueryType.DATE_INTERVAL, paramContainer);
 
             DataTable retrievedData = (DataTable)receivableManagementDgv.DataSource;
+
+            /*Resets the total pending changes when the user selects the "Display receivables" button so that the user can't discard changes which are no longer present
+            (e.g: user performs a change, wants to see receivables and presses the display button and then tries to discard the change that was made in the first place(which is now gone because the data source was reset)*/
+            totalPendingChanges = 0;
+            pendingChangesLabel.Text = "";
+            discardChangesButton.Enabled = false;
+
             //Checks if the search has returned any results
             if (!hasFoundData(retrievedData)) {
                 MessageBox.Show("No receivables found for the specified time interval!", "Receivables management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -281,7 +288,7 @@ namespace BudgetManager.mvc.views {
 
                 //Message for informing the user about the receivable update
                 String updateConfirmationMessage = String.Format("The receivable '{0}' was successfully updated in the table. Click the 'Save changes' button if you want to permanently save the changes.", receivableName);
-                MessageBox.Show(updateConfirmationMessage, "Receivable management", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                MessageBox.Show(updateConfirmationMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 //Updates the number of pending changes and sets the corresponding message to the label that informs the user about them
                 totalPendingChanges = receivableDgvDataSource.GetChanges().Rows.Count;
