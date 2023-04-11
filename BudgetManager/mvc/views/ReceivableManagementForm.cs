@@ -370,6 +370,9 @@ namespace BudgetManager.mvc.views {
                 //Clears the controls and disables the buttonused for inserting the partial payment
                 UserControlsManager.clearActiveControls(activeControls);
                 insertPartialPaymentButton.Enabled = false;
+
+                //Automatic refresh of the receivable data after a successfull partial payment insertion
+                refreshReceivableManagementDgv();
             } else {
                 String errorMessage = String.Format("Unable to insert the partial payment for the receivable '{0}'!", selectedReceivableName);
                 MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1015,6 +1018,17 @@ namespace BudgetManager.mvc.views {
                 String errorMessage = String.Format("Unable to delete the receivable '{0}'!", receivableName);
                 MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        //Method used to refresh the data after the user performs an action on a receivable
+        private void refreshReceivableManagementDgv() {
+            DateTime startDate = receivableManagemenStartDatePicker.Value;
+            DateTime endDate = receivableManagementEndDatePicker.Value;
+
+            QueryData paramContainer = configureParamContainer();
+
+            //sendDataToController(paramContainer);
+            controller.requestData(QueryType.DATE_INTERVAL, paramContainer);
         }
     }
 }

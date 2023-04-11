@@ -715,13 +715,14 @@ namespace BudgetManager.non_mvc {
         private int checkReceivableDates() {
             int startDateCheckResult = -1;
             int chronologicalCheckResult = -1;
-            DateTime receivableStartDate = datePicker.Value;
-            DateTime receivableEndDate = receivableDueDatePicker.Value;
+            //Gets the start date and end date of the receivable(retrieves only the Date component of the DateTime object for correct comparison)
+            DateTime receivableStartDate = datePicker.Value.Date;
+            DateTime receivableEndDate = receivableDueDatePicker.Value.Date;
 
-            //Calculates the start and end date of the month
-            DateTime currentDate = DateTime.Now;
-            DateTime currentMonthStartDate = new DateTime(currentDate.Year, currentDate.Month, 1);
-            DateTime currentMonthEndDate = currentMonthStartDate.AddMonths(1).AddDays(-1);
+            //Calculates the start and end date of the month (retrieves only the Date component of the DateTime object for correct comparison)
+            DateTime currentDate = DateTime.Now.Date;
+            DateTime currentMonthStartDate = new DateTime(currentDate.Year, currentDate.Month, 1).Date;
+            DateTime currentMonthEndDate = currentMonthStartDate.AddMonths(1).AddDays(-1).Date;
             
             //Checks if the user tries to insert a receivable for the past or the future
             if(receivableStartDate < currentMonthStartDate || receivableEndDate > currentMonthEndDate) {
