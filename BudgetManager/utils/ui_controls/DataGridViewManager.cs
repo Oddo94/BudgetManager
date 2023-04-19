@@ -150,10 +150,8 @@ namespace BudgetManager.utils {
                 return null;
             }
 
-
             //Getting the selected row
             DataGridViewRow selectedRow = targetDataGridView.Rows[selectedRowIndex];
-
 
             //Gets the dates from the selected row as String objects(if the date cells are empty the null value is assigned)
             String startDateString = !"".Equals(selectedRow.Cells[startDateCellIndex].FormattedValue) ? selectedRow.Cells[startDateCellIndex].Value.ToString() : null;

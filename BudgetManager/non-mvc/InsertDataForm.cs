@@ -281,9 +281,7 @@ namespace BudgetManager.non_mvc {
             DateTime startDate = datePicker.Value;
             DateTime endDate = receivableDueDatePicker.Value;
 
-            //CHECK TO SEE IF THE BEHAVIOR IS CORRECT
             if (!isChronological(startDate, endDate)) {
-                //MessageBox.Show("The receivable creation date must be before the due date!");
                 addEntryButton.Enabled = false;
             } else {
                 addEntryButton.Enabled = true;
@@ -809,7 +807,6 @@ namespace BudgetManager.non_mvc {
                     break;
 
                 //Expense insertion
-                //CHANGE TO ALLOW THE CORRECT SELECTION OF EXPENSE INSERTION STATEMENT
                 case 1:
                     //GENERAL_EXPENSE type is used since there is an intentional fall through the cases inside the configuration method so that both types are treated identically(they need the same data)
                     paramContainer = configureParamContainer(BudgetItemType.GENERAL_EXPENSE);

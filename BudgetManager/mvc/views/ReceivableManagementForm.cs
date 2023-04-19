@@ -190,7 +190,7 @@ namespace BudgetManager.mvc.views {
 
                     break;
 
-                case "deleteItem":                  
+                case "deleteItem":
                     deleteSelectedReceivable(rowIndexOnRightClick, dataSource);
                     break;
 
@@ -206,7 +206,7 @@ namespace BudgetManager.mvc.views {
             if (pressedMouseBtn == MouseButtons.Right) {
                 updateDgvRecordButton.Enabled = false;//CHANGE!!
                 rowIndexOnRightClick = e.RowIndex;
-                columnIndexOnRightClick = e.ColumnIndex;                
+                columnIndexOnRightClick = e.ColumnIndex;
             }
 
             //ONLY FOR DEBUGGING PURPOSES!!
@@ -250,17 +250,17 @@ namespace BudgetManager.mvc.views {
             DateTime createdDate = receivableCreatedDatePicker.Value;
             DateTime dueDate = receivableDueDatePicker.Value;
 
-            int nameColumnIndex = 1;                     
+            int nameColumnIndex = 1;
             int debtorColumnIndex = 2;
             int paidAmountColumnIndex = 3;
             int valueColumnIndex = 4;
-            int statusColumnIndex = 5;          
+            int statusColumnIndex = 5;
             int createdDateColumnIndex = 6;
             int dueDateColumnIndex = 7;
 
             String receivableName = itemNameTextBox.Text;
             String receivableDebtorName = receivableDebtorComboBox.Text;
-            String receivableValue = itemValueTextBox.Text;           
+            String receivableValue = itemValueTextBox.Text;
             String receivableCreatedDate = receivableCreatedDatePicker.Value.ToString("yyyy-MM-dd");
             String receivableDueDate = receivableDueDatePicker.Value.ToString("yyyy-MM-dd");
 
@@ -275,7 +275,7 @@ namespace BudgetManager.mvc.views {
             int updatePrechecksResult = performUpdatePrechecks(cellIndexValueDictionary, nameColumnIndex, paidAmountColumnIndex, valueColumnIndex, statusColumnIndex, createdDateColumnIndex, dueDateColumnIndex);
 
             //When the method return -1 it means that the precheck has failed and when it returns 1 it means that the user selected 'No' when prompted to take a decision*/
-            if(updatePrechecksResult == -1 || updatePrechecksResult == 1) {
+            if (updatePrechecksResult == -1 || updatePrechecksResult == 1) {
                 return;
             }
 
@@ -378,15 +378,6 @@ namespace BudgetManager.mvc.views {
                 MessageBox.Show(errorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            /*CHANGE!!*/
-            //Calls the procedure that updates the receivable status after the partial payment is inserted-THIS IS WHERE THE STATUS IS UPDATED!!
-            //int statusUpdateExecutionResult = updateReceivableStatus(parsedReceivableID);
-
-            //if (statusUpdateExecutionResult == -1) {
-            //    MessageBox.Show("Error while trying to update the receivable status!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
-            /*CHANGE!!*/
-
             //Clears the value of the receivable ID whose row was selected regardless of the partial payment insertion outcome
             selectedReceivableID = "";
         }
@@ -414,7 +405,6 @@ namespace BudgetManager.mvc.views {
                 MessageBox.Show("Unable to update the specified receivable/s! An error occured when trying to perform the operation.", "Receivables management", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            //int executionResult = model.updateData(QueryType.UNDEFINED, paramContainer, (DataTable)receivableManagementDgv.DataSource);
 
             if (executionResult != -1) {
                 String successMessage = totalPendingChanges == 1 ? "The selected receivable was successfully updated!" : "The selected receivables were successfully updated!";
@@ -514,10 +504,6 @@ namespace BudgetManager.mvc.views {
             }
         }
 
-        private void setComponentsLayout() {
-
-        }
-
         //CONTROLS LAYOUT SETUP SECTION
         private void setupLayout(UIContainerLayout selectedOperationLayout) {
             //Clears the panel from the existing controls
@@ -610,15 +596,12 @@ namespace BudgetManager.mvc.views {
             updateDgvRecordButton.Margin = new Padding(0, 20, 0, 0);
             updateDgvRecordButton.Text = "Update record";
             updateDgvRecordButton.Name = "updateDgvRecordButton";
-            //updateDgvRecordButton.Enabled = false;
 
             insertPartialPaymentButton = new Button();
             insertPartialPaymentButton.Size = new Size(105, 23);
             insertPartialPaymentButton.Margin = new Padding(0, 20, 0, 0);
             insertPartialPaymentButton.Text = "Add payment";
             insertPartialPaymentButton.Name = "insertPartialPaymentButton";
-            //insertPartialPaymentButton.Enabled = false;
-
         }
 
         private void createLabels() {
@@ -653,7 +636,6 @@ namespace BudgetManager.mvc.views {
             partialPaymentDateLabel = new Label();
             partialPaymentDateLabel.Text = "Payment date";
             partialPaymentDateLabel.Margin = new Padding(0, 10, 0, 0);
-
         }
 
         private void wireUp(IUpdaterControl paramController, IUpdaterModel paramModel) {
@@ -691,7 +673,6 @@ namespace BudgetManager.mvc.views {
         }
 
         //UTILITY METHODS
-
         //Method that retreves data from the selected row when the user selects the "Update data" option
         private DataGridViewRow retrieveDataFromSelectedRow(int selectedRowIndex, DataGridView targetDataGridView) {
             Guard.notNull(targetDataGridView, "receivable management grid view", "Unable to retrieve data from a null object.");
@@ -726,7 +707,6 @@ namespace BudgetManager.mvc.views {
             bool canParseCreatedDate = DateTime.TryParse(selectedDgvRow.Cells[6].ToString(), out createdDate);
             bool canParseDueDate = DateTime.TryParse(selectedDgvRow.Cells[7].ToString(), out dueDate);
 
-            //NEW
             receivableCreatedDatePicker.Value = (DateTime)selectedDgvRow.Cells[6].Value;
             receivableDueDatePicker.Value = (DateTime)selectedDgvRow.Cells[7].Value;
         }
@@ -859,7 +839,7 @@ namespace BudgetManager.mvc.views {
          -1 -> when the precheck fails
           0 -> when the precheck is passed
           1 -> when the user selects 'No" when prompted to take a decision */
-        private int performUpdatePrechecks(Dictionary<int, String> cellIndexValueDictionary, int receivableNameColumnIndex, int totalPaidAmountColumnIndex, int receivableValueColumnIndex, int receivableStatusColumnIndex,  int createdDateColumnIndex, int dueDateColumnIndex) {
+        private int performUpdatePrechecks(Dictionary<int, String> cellIndexValueDictionary, int receivableNameColumnIndex, int totalPaidAmountColumnIndex, int receivableValueColumnIndex, int receivableStatusColumnIndex, int createdDateColumnIndex, int dueDateColumnIndex) {
             String receivableName = cellIndexValueDictionary[receivableNameColumnIndex];
 
             //Checks if the user has performed any changes on the data submitted for update
@@ -876,7 +856,7 @@ namespace BudgetManager.mvc.views {
             //Checks if the created date and due date of the receivable are in chronological order
             if (createdDate > dueDate) {
                 MessageBox.Show("Invalid date selection! The receivable creation date must precede the due date!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return - 1;
+                return -1;
             }
 
             //Retrieves the value of the total paid amount column for the selected receivable 
@@ -898,7 +878,7 @@ namespace BudgetManager.mvc.views {
 
                     String newReceivableStatus = "Paid";
                     cellIndexValueDictionary.Add(receivableStatusColumnIndex, newReceivableStatus);
-                } else if(receivableAmount < totalPaidAmount) {
+                } else if (receivableAmount < totalPaidAmount) {
                     //The updated receivable value cannot be lower than that of the total paid amount value
                     String invalidReceivableValueMessage = String.Format("You are not allowed to set a value which is lower than the total paid amount for the receivable '{0}'! Please correct the value and try again.", receivableName);
                     MessageBox.Show(invalidReceivableValueMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Stop);

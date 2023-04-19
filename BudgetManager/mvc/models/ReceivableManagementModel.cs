@@ -13,7 +13,7 @@ namespace BudgetManager.mvc.models {
         private ArrayList observerList = new ArrayList();
         private DataTable[] dataSources = new DataTable[10];
 
-        //SQL statement for selecting receivables created between two specfied dates
+        //SQL statement for selecting receivables created between two specified dates
         String sqlStatementReceivableRetrieval = @"SELECT
 	                                                        rcs.receivableID AS 'Receivable ID',
 	                                                        rcs.name AS 'Receivable name',
@@ -121,7 +121,6 @@ namespace BudgetManager.mvc.models {
             MySqlCommand dataRetrievalCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementReceivableRetrieval, paramContainer);
 
             MySqlCommand deleteReceivableCommand = new MySqlCommand(sqlStatementReceivableDelete);
-            //deleteReceivableCommand.Parameters.Add("@receivableID", MySqlDbType.Int32, 20, "Receivable ID");
 
             MySqlParameter receivableIDParameter = new MySqlParameter("@receivableID", MySqlDbType.Int32, 20, "Receivable ID");
             receivableIDParameter.SourceColumn = "Receivable ID";
@@ -132,52 +131,6 @@ namespace BudgetManager.mvc.models {
 
             return executionResult;
         }
-
-        //public int updateData(QueryType option, QueryData paramContainer, DataTable sourceDataTable) {
-        //    Guard.notNull(sourceDataTable, "update source data table");
-        //    int executionResult = -1;
-        //    DataTable updatedReceivablesDT = sourceDataTable.GetChanges();
-
-        //    try {
-        //        using (
-        //        MySqlConnection conn = DBConnectionManager.getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING)) { 
-        //        //Original data retrieval command
-        //        MySqlCommand receivableRetrievalCommand = SQLCommandBuilder.getMultipleMonthsCommand(sqlStatementReceivableRetrieval, paramContainer);
-
-        //        MySqlCommand updateReceivablesCommand = new MySqlCommand(sqlStatementReceivableUpdate);
-        //        updateReceivablesCommand.Parameters.Add("@receivableName", MySqlDbType.VarChar, 50, "Receivable name");
-        //        updateReceivablesCommand.Parameters.Add("@debtorName", MySqlDbType.VarChar, 30, "Debtor name");
-        //        updateReceivablesCommand.Parameters.Add("@receivableValue", MySqlDbType.Int32, 20, "Receivable value");
-        //        updateReceivablesCommand.Parameters.Add("@createdDate", MySqlDbType.Date, 10, "Creation date");
-        //        updateReceivablesCommand.Parameters.Add("@dueDate", MySqlDbType.Date, 10, "Due date");
-        //        updateReceivablesCommand.Connection = conn;
-
-
-        //        receivableRetrievalCommand.Connection = conn;
-
-        //        MySqlDataAdapter dataAdapter = new MySqlDataAdapter(receivableRetrievalCommand);
-        //        dataAdapter.UpdateCommand = updateReceivablesCommand;
-
-
-        //        MySqlParameter receivableID = dataAdapter.UpdateCommand.Parameters.Add("@receivableID", MySqlDbType.Int32, 20, "Receivable ID");
-        //        receivableID.SourceColumn = "Receivable ID";
-        //        receivableID.SourceVersion = DataRowVersion.Original;
-
-        //        executionResult = dataAdapter.Update(updatedReceivablesDT);
-        //    }
-
-        //    } catch(Exception ex) {
-        //        Console.WriteLine(String.Format("Error while updating the data.Reason:{0}", ex.Message));
-        //    }
-
-        //    if (executionResult != 0) {
-        //        return executionResult;
-        //    }
-
-        //    return -1;
-        //}
-
-
 
         public bool hasDBConnection() {
             return DBConnectionManager.hasConnection();
@@ -197,7 +150,5 @@ namespace BudgetManager.mvc.models {
             }
 
         }
-
-        //UTILITY METHODS
     }
 }
