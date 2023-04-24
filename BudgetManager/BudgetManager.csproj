@@ -53,12 +53,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="mvc\controllers\BudgetPlanManagementController.cs" />
+    <Compile Include="mvc\controllers\ReceivableManagementController.cs" />
     <Compile Include="mvc\controllers\SavingAccountController.cs" />
     <Compile Include="mvc\models\BudgetPlanManagementModel.cs" />
     <Compile Include="mvc\models\BudgetSummaryModel.cs" />
     <Compile Include="mvc\models\dto\IDataInsertionDTO.cs" />
+    <Compile Include="mvc\models\dto\PartialPaymentDTO.cs" />
     <Compile Include="mvc\models\dto\ReceivableDTO.cs" />
     <Compile Include="mvc\models\dto\SavingAccountInterestDTO.cs" />
+    <Compile Include="mvc\models\ReceivableManagementModel.cs" />
     <Compile Include="mvc\models\SavingAccountModel.cs" />
     <Compile Include="mvc\views\BudgetPlanManagementForm.cs">
       <SubType>Form</SubType>
@@ -66,11 +69,23 @@
     <Compile Include="mvc\views\BudgetPlanManagementForm.Designer.cs">
       <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="mvc\views\ReceivableManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="mvc\views\ReceivableManagementForm.Designer.cs">
+      <DependentUpon>ReceivableManagementForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="mvc\views\SavingAccountForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="mvc\views\SavingAccountForm.Designer.cs">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="non-mvc\DiscardReceivableChangeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="non-mvc\DiscardReceivableChangeForm.Designer.cs">
+      <DependentUpon>DiscardReceivableChangeForm.cs</DependentUpon>
     </Compile>
     <Compile Include="non-mvc\NetInterestCalculator.cs">
       <SubType>Form</SubType>
@@ -116,6 +131,8 @@
     <Compile Include="non-mvc\InsertDataForm.Designer.cs">
       <DependentUpon>InsertDataForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="utils\data_insertion\PartialPaymentInsertionCheckStrategy.cs" />
+    <Compile Include="utils\data_insertion\PartialPaymentInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\ReceivableInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\SavingInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\FormFieldWrapper.cs" />
@@ -125,6 +142,7 @@
     <Compile Include="utils\app_authentication\ConfirmationSender.cs" />
     <Compile Include="utils\enums\AccountType.cs" />
     <Compile Include="utils\enums\BudgetItemType.cs" />
+    <Compile Include="utils\enums\CRUDOperation.cs" />
     <Compile Include="utils\enums\EnumExtensions.cs" />
     <Compile Include="utils\enums\IncomeSource.cs" />
     <Compile Include="utils\enums\ReceivableStatus.cs" />
@@ -181,10 +199,14 @@
     <Compile Include="utils\data_transfer\QueryData.cs" />
     <Compile Include="utils\data_insertion\SavingAccountBalanceManager.cs" />
     <Compile Include="utils\database\SQLCommandBuilder.cs" />
+    <Compile Include="utils\ui_controls\DataSourceManager.cs" />
     <Compile Include="utils\ui_controls\UserControlsManager.cs" />
     <Compile Include="utils\miscellaneous\ViewCalculator.cs" />
     <EmbeddedResource Include="mvc\views\BudgetPlanManagementForm.resx">
       <DependentUpon>BudgetPlanManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="mvc\views\ReceivableManagementForm.resx">
+      <DependentUpon>ReceivableManagementForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="mvc\views\SavingAccountForm.resx">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
@@ -194,6 +216,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\BudgetPlanManagementCalculator.resx">
       <DependentUpon>BudgetPlanManagementCalculator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="non-mvc\DiscardReceivableChangeForm.resx">
+      <DependentUpon>DiscardReceivableChangeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\ExternalAccountsInsertionForm.resx">
       <DependentUpon>ExternalAccountsInsertionForm.cs</DependentUpon>

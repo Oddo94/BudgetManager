@@ -22,29 +22,42 @@ namespace BudgetManager.utils {
         }
 
         //SQL queries used for selecting the values that fill comboboxes
-        private String sqlStatementSelectIncomeTypes = @"SELECT typeName FROM income_types";
-        private String sqlStatementSelectExpenseTypes = @"SELECT categoryName FROM expense_types";
-        private String sqlStatementSelectCreditors = @"SELECT creditorName
-                FROM users INNER JOIN users_creditors ON users.userID = users_creditors.user_ID
-                INNER JOIN creditors ON users_creditors.creditor_ID = creditors.creditorID
-                WHERE users_creditors.user_ID = @paramUserID";
-        private String sqlStatementSelectDebtors = @"SELECT debtorName 
-                FROM users_debtors
-                INNER JOIN users ON users.userID = users_debtors.user_ID
-                INNER JOIN debtors ON debtors.debtorID = users_debtors.debtor_ID
-                WHERE users_debtors.user_ID = @paramUserID";
+        private String sqlStatementSelectIncomeTypes = @"SELECT typeName
+                                                         FROM income_types
+                                                         ORDER BY
+	                                                        CASE
+		                                                        WHEN typeName = 'Salary' THEN 1
+		                                                        WHEN typeName = 'Meal tickets refund' THEN 2
+		                                                        WHEN typeName = 'Goods sale' THEN 3
+		                                                        WHEN typeName = 'Other' THEN 4
+		                                                        ELSE 5
+	                                                        END;";
+
+        private String sqlStatementSelectExpenseTypes = @"SELECT categoryName FROM expense_types ORDER BY categoryName";
+
+        private String sqlStatementSelectCreditors = @"SELECT crs.creditorName
+                FROM users usr
+                INNER JOIN users_creditors uc ON usr.userID = uc.user_ID
+                INNER JOIN creditors crs ON uc.creditor_ID = crs.creditorID
+                WHERE uc.user_ID = @paramUserID
+                ORDER BY crs.creditorName;";
+
+        private String sqlStatementSelectDebtors = @"SELECT dbs.debtorName 
+                FROM users_debtors ud
+                INNER JOIN users usr ON usr.userID = ud.user_ID
+                INNER JOIN debtors dbs ON dbs.debtorID = ud.debtor_ID
+                WHERE ud.user_ID = @paramUserID
+                ORDER BY dbs.debtorName;";
+
         private String sqlStatementSelectSavingAccounts = @"SELECT sa.accountName 
                 FROM saving_accounts sa 
                 INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID 
-                WHERE sa.user_ID = @paramUserID";
-                //AND sat.typeName NOT LIKE '%SYSTEM_DEFINED%'";
-        private String sqlStatementSelectInterestTypes = @"SELECT typeName FROM interest_types";
-        private String sqlStatementSelectPaymentTypes = @"SELECT typeName FROM interest_payment_type";
-        //private String sqlStatementSelectUserAccounts = @"SELECT sa.accountName 
-        //        FROM saving_accounts sa
-        //        INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
-        //        WHERE sa.user_ID = @paramUserID
-        //        AND sat.typeName LIKE '%SYSTEM_DEFINED%'";
+                WHERE sa.user_ID = @paramUserID
+                ORDER BY sa.accountName";
+
+        private String sqlStatementSelectInterestTypes = @"SELECT typeName FROM interest_types ORDER BY typeName";
+
+        private String sqlStatementSelectPaymentTypes = @"SELECT typeName FROM interest_payment_type ORDER BY typeName";
 
         //Default method for filling comboboxes with data
         public void fillComboBox(ComboBox targetComboBox, ComboBoxType comboBoxType, int userID) {
@@ -84,14 +97,6 @@ namespace BudgetManager.utils {
                     targetComboBox.DisplayMember = "typeName";
                     break;
 
-                //case ComboBoxType.SAVING_ACCOUNT_COMBOBOX:
-                //    retrievedData = retrieveData(sqlStatementSelectSavingAccounts, userID);
-                //    Guard.notNull(retrievedData, "DataTable");
-
-                //    targetComboBox.DataSource = retrievedData;
-                //    targetComboBox.DisplayMember = "accountName";
-                //    break;
-
                 case ComboBoxType.INTEREST_TYPE_COMBOBOX:
                     retrievedData = retrieveData(sqlStatementSelectInterestTypes);
                     Guard.notNull(retrievedData, "DataTable");
@@ -124,12 +129,11 @@ namespace BudgetManager.utils {
             if (savingAccountType == AccountType.DEFAULT_ACCOUNT || savingAccountType == AccountType.CUSTOM_ACCOUNT) {
                 //Filters the account list based on the serach criterion(default/custom saving accounts only)
                 DataTable filteredAccounts = filterAccountList(savingAccountType, retrievedData);
-                targetComboBox.DataSource = filteredAccounts;            
+                targetComboBox.DataSource = filteredAccounts;
             } else {
                 //Inserts the entire account list regardless of the account types contained
                 targetComboBox.DataSource = retrievedData;
             }
-            
         }
 
         //Methods that filters the saving account list based on the account type
@@ -148,13 +152,13 @@ namespace BudgetManager.utils {
                     }
                 }
             } else if (searchedType == AccountType.CUSTOM_ACCOUNT) {
-                for(int i = originalNumberOfRecords - 1; i >= 0; i--) {
+                for (int i = originalNumberOfRecords - 1; i >= 0; i--) {
                     accountName = accountDataSource.Rows[i].ItemArray[0].ToString();
 
                     //Deletes all default saving accounts from the list of retrieved accounts
                     if ("SYSTEM_DEFINED_SAVING_ACCOUNT".Equals(accountName)) {
                         accountDataSource.Rows.RemoveAt(i);
-                    } 
+                    }
                 }
             }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BudgetManager.mvc.models.dto;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -134,6 +135,10 @@ namespace BudgetManager.utils {
                         return executionResult;
             */
 
+        }
+
+        public int performCheck() {
+            throw new NotImplementedException();
         }
 
         private int checkBudgetPlanExistence(BudgetPlanChecker planChecker) {

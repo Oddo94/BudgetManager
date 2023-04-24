@@ -13,11 +13,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BudgetManager.non_mvc {
-    //public enum AccountType {
-    //    SOURCE_ACCOUNT,
-    //    DESTINATION_ACCOUNT
-    //}
-
     public partial class ExternalAccountTransfersForm : Form {
 
         private int userID;

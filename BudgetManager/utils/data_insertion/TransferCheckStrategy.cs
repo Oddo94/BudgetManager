@@ -11,8 +11,7 @@ using System.Windows.Forms;
 namespace BudgetManager.non_mvc {
     class TransferCheckStrategy : DataInsertionCheckStrategy {
         private String accountBalanceCheckProcedure = "can_perform_requested_transfer";
-
-
+    
         public int performCheck(QueryData inputData, string selectedItemName, int valueToInsert) {
             int balanceCheckResult = checkAvailableBalance(inputData, valueToInsert);
 
@@ -69,6 +68,10 @@ namespace BudgetManager.non_mvc {
                 return -1;
             }
 
+        }
+
+        public int performCheck() {
+            throw new NotImplementedException();
         }
     }
 }

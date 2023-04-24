@@ -281,9 +281,7 @@ namespace BudgetManager.non_mvc {
             DateTime startDate = datePicker.Value;
             DateTime endDate = receivableDueDatePicker.Value;
 
-            //CHECK TO SEE IF THE BEHAVIOR IS CORRECT
             if (!isChronological(startDate, endDate)) {
-                //MessageBox.Show("The receivable creation date must be before the due date!");
                 addEntryButton.Enabled = false;
             } else {
                 addEntryButton.Enabled = true;
@@ -713,19 +711,73 @@ namespace BudgetManager.non_mvc {
         }
 
         private int checkReceivableDates() {
-            int checkResult = -1;
-            DateTime startDate = datePicker.Value;
-            DateTime endDate = receivableDueDatePicker.Value;
-            if (!isChronological(startDate, endDate)) {
+            int startDateCheckResult = -1;
+            int chronologicalCheckResult = -1;
+            //Gets the start date and end date of the receivable(retrieves only the Date component of the DateTime object for correct comparison)
+            DateTime receivableStartDate = datePicker.Value.Date;
+            DateTime receivableEndDate = receivableDueDatePicker.Value.Date;
+
+            //Calculates the start and end date of the month (retrieves only the Date component of the DateTime object for correct comparison)
+            DateTime currentDate = DateTime.Now.Date;
+            DateTime currentMonthStartDate = new DateTime(currentDate.Year, currentDate.Month, 1).Date;
+            DateTime currentMonthEndDate = currentMonthStartDate.AddMonths(1).AddDays(-1).Date;
+            
+            //Checks if the user tries to insert a receivable for the past or the future
+            if(receivableStartDate < currentMonthStartDate || receivableEndDate > currentMonthEndDate) {
+                MessageBox.Show("The creation date of the receivable cannot be prior/subsequent to the current month!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                datePicker.Value = DateTime.Now;
+                receivableDueDatePicker.Value = DateTime.Now;
+            } else {
+                startDateCheckResult = 0;
+            }
+
+            //Checks if the start date and end date of the receivable are in chronological order
+            if (!isChronological(receivableStartDate, receivableEndDate)) {
                 MessageBox.Show("The creation date and due date of the receivable must be in chronological order or at least equal!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 //Resets the values of the date time pickers for the receivable item if the user tries to insert incorrect values for creation date/due date
                 datePicker.Value = DateTime.Now;
-                receivableDueDatePicker.Value = DateTime.Now;                
+                receivableDueDatePicker.Value = DateTime.Now;
             } else {
-                checkResult = 0;
+                chronologicalCheckResult = 0;
             }
 
-            return checkResult;
+            //Both checks must pass in order for the receivable to be inserted
+            if(startDateCheckResult == 0 && chronologicalCheckResult == 0) {
+                return 0;
+            }
+
+        //Method for retrieving the user selected budget item type
+        private BudgetItemType getSelectedType(ComboBox comboBox) {
+            int selectedIndex = comboBox.SelectedIndex;
+
+            switch (selectedIndex) {
+                case 0:
+                    return BudgetItemType.INCOME;
+
+                case 1:
+                    return BudgetItemType.GENERAL_EXPENSE;//CHANGE(FROM EXPENSE TO GENERAL_EXPENSE)
+
+                case 2:
+                    return BudgetItemType.DEBT;
+
+                case 3:
+                    return BudgetItemType.RECEIVABLE;
+                
+                case 4:
+                    return BudgetItemType.SAVING;
+
+                case 5:
+                    return BudgetItemType.CREDITOR;
+
+                case 6:
+                    return BudgetItemType.DEBTOR;
+
+                case 7:
+                    return BudgetItemType.SAVING_ACCOUNT_INTEREST;
+
+                default:
+                    return BudgetItemType.UNDEFINED;
+            }
         }
 
         //Method for retrieving the user selected budget item type
@@ -786,7 +838,6 @@ namespace BudgetManager.non_mvc {
                     break;
 
                 //Expense insertion
-                //CHANGE TO ALLOW THE CORRECT SELECTION OF EXPENSE INSERTION STATEMENT
                 case 1:
                     //GENERAL_EXPENSE type is used since there is an intentional fall through the cases inside the configuration method so that both types are treated identically(they need the same data)
                     paramContainer = configureParamContainer(BudgetItemType.GENERAL_EXPENSE);
@@ -1065,7 +1116,7 @@ namespace BudgetManager.non_mvc {
 
                     budgetPlanCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerBPCheck, selectedItemName, valueToInsert);
 
-                    //If the general check fails(not enough money) then the general check execution result will rmain -1 (no data can be inserted)
+                    //If the general check fails(not enough money) then the general check execution result will remain -1 (no data can be inserted)
                     //Else, if the general check is passed and the budget plan check returns -1 (fail because there might not be a budget plan in place) the data can be inserted
                     //Otherwise the allChecksExecutionResult keeps its initial value(-1) and no data will be inserted(for example if a warning message is shown during budget plan checks due to the inserted value being higher than the value allowed by the budget plan item limit) 
                     if (generalCheckExecutionResult == -1) {

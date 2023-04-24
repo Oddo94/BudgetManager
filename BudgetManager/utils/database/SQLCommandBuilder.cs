@@ -355,6 +355,17 @@ namespace BudgetManager {
             return savingAccountInterestInsertionCommand;
         }
 
-       
+        public static MySqlCommand getPartialPaymentInsertionCommand(String sqlStatement, PartialPaymentDTO partialPaymentDTO) {
+            Guard.notNull(sqlStatement, "partial payment insertion SQL statement");
+            Guard.notNull(partialPaymentDTO, "partial payment DTO");
+
+            MySqlCommand partialPaymentInsertionCommand = new MySqlCommand(sqlStatement);
+            partialPaymentInsertionCommand.Parameters.AddWithValue("@paramReceivableID", partialPaymentDTO.ReceivableID);
+            partialPaymentInsertionCommand.Parameters.AddWithValue("@paramPaymentName", partialPaymentDTO.PaymentName);
+            partialPaymentInsertionCommand.Parameters.AddWithValue("@paramPaymentValue", partialPaymentDTO.PaymentValue);
+            partialPaymentInsertionCommand.Parameters.AddWithValue("@paramPaymentDate", partialPaymentDTO.PaymentDate);
+
+            return partialPaymentInsertionCommand;
+        }    
     }
 }

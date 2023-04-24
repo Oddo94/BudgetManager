@@ -1,4 +1,5 @@
-﻿using BudgetManager.utils.enums;
+﻿using BudgetManager.mvc.models.dto;
+using BudgetManager.utils.enums;
 using BudgetManager.utils.exceptions;
 using MySql.Data.MySqlClient;
 using System;
@@ -58,6 +59,10 @@ namespace BudgetManager.utils {
             }
 
             return 0;
+        }
+
+        public int performCheck() {
+            throw new NotImplementedException();
         }
 
         private bool hasEnoughMoney(IncomeSource incomeSource, int valueToInsert, QueryData paramContainer) {

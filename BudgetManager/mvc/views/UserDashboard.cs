@@ -387,6 +387,9 @@ namespace BudgetManager {
             gridViewManager.setDataGridView(dataGridViewIncomes);
             gridViewManager.fillDataGridView(results[0]);
 
+            //Displays the number of results found after executing the query for the specified time interval
+            displayDgvResultsCount(displayedIncomesCountLabel, model.DataSources[0]);
+
             fillDynamicTypePieChart(pieChartIncomes, (DataTable)results[1]);
             fillColumnChart(columnChartIncomes, (DataTable)results[2], currentYear, title);
 
@@ -456,6 +459,9 @@ namespace BudgetManager {
             gridViewManager.setDataGridView(dataGridViewExpenses);
             gridViewManager.fillDataGridView(model.DataSources[0]);
 
+            //Displays the number of results found after executing the query for the specified time interval
+            displayDgvResultsCount(displayedExpensesCountLabel, model.DataSources[0]);
+
             fillDynamicTypePieChart(pieChartExpenses, model.DataSources[1]);
             fillColumnChart(columnChartExpenses, model.DataSources[2], currentYear, title);
 
@@ -519,9 +525,11 @@ namespace BudgetManager {
             String title = "Monthly debts";
             int currentYear = dateTimePickerMonthlyDebts.Value.Year;
 
-
             gridViewManager.setDataGridView(dataGridViewDebts);
             gridViewManager.fillDataGridView(model.DataSources[0]);
+
+            //Displays the number of results found after executing the query for the specified time interval
+            displayDgvResultsCount(displayedDebtsCountLabel, model.DataSources[0]);
 
             fillPieChartWithVariablePoints(pieChartDebts, model.DataSources[1]);
             fillColumnChart(columnChartDebts, model.DataSources[2], currentYear, title);
@@ -585,16 +593,16 @@ namespace BudgetManager {
             String[] typeNames = new String[] { "Total savings", "Total incomes" };
             int currentYear = dateTimePickerMonthlySavings.Value.Year;
 
-            //fillDataGridView(dataGridViewSavings, model.DataSources[0]);
-            //CHANGE-DGW MANAGEMENT
             gridViewManager.setDataGridView(dataGridViewSavings);
             gridViewManager.fillDataGridView(model.DataSources[0]);
+
+            //Displays the number of results found after executing the query for the specified time interval
+            displayDgvResultsCount(displayedSavingsCountLabel, model.DataSources[0]);
 
             fillStaticTypePieChart(pieChartSavings, model.DataSources[1], typeNames);
             fillColumnChart(columnChartSavings, model.DataSources[2], currentYear, title);
         }
 
-        //Metoda generica pt populare grafice de tip ColumnChart
         //Generic method for filling ColumnChart objects with data
         private void fillColumnChart(Chart chart, DataTable dTable, int currentYear, String title) {
             //Removes all the existing points from the chart
@@ -996,6 +1004,20 @@ namespace BudgetManager {
             return null;
         }
 
+        //Method used for displaying the number of results displayed in the DataGridView
+        private void displayDgvResultsCount(Label targetLabel, DataTable dgvDataSource) {
+            String noResultsFoundMessage = "No results found!";
+            String resultsFoundMessage = "Displaying {0} result{1}";
+
+            int dgvDataSourceSize = dgvDataSource.Rows.Count;
+
+            if (dgvDataSourceSize > 0) {
+                targetLabel.Text = String.Format(resultsFoundMessage, dgvDataSourceSize, dgvDataSourceSize > 1 ? "s" : "");
+            } else {
+                targetLabel.Text = noResultsFoundMessage;
+            }
+        }
+
         private void updateDataToolStripMenuItem_Click(object sender, EventArgs e) {
             new UpdateUserDataForm(userID).ShowDialog();
         }
@@ -1074,6 +1096,10 @@ namespace BudgetManager {
 
         private void externalAccountTransfersToolStripMenuItem_Click(object sender, EventArgs e) {
             new ExternalAccountTransfersForm(userID).ShowDialog();
+        }
+
+        private void updateReceivablesToolStripMenuItem_Click(object sender, EventArgs e) {
+            new ReceivableManagementForm(userID).ShowDialog();
         }
     }
 }
