@@ -721,9 +721,9 @@ namespace BudgetManager.non_mvc {
             DateTime currentDate = DateTime.Now.Date;
             DateTime currentMonthStartDate = new DateTime(currentDate.Year, currentDate.Month, 1).Date;
             DateTime currentMonthEndDate = currentMonthStartDate.AddMonths(1).AddDays(-1).Date;
-            
+
             //Checks if the user tries to insert a receivable for the past or the future
-            if(receivableStartDate < currentMonthStartDate || receivableEndDate > currentMonthEndDate) {
+            if (receivableStartDate < currentMonthStartDate || receivableEndDate > currentMonthEndDate) {
                 MessageBox.Show("The creation date of the receivable cannot be prior/subsequent to the current month!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 datePicker.Value = DateTime.Now;
                 receivableDueDatePicker.Value = DateTime.Now;
@@ -742,42 +742,11 @@ namespace BudgetManager.non_mvc {
             }
 
             //Both checks must pass in order for the receivable to be inserted
-            if(startDateCheckResult == 0 && chronologicalCheckResult == 0) {
+            if (startDateCheckResult == 0 && chronologicalCheckResult == 0) {
                 return 0;
             }
 
-        //Method for retrieving the user selected budget item type
-        private BudgetItemType getSelectedType(ComboBox comboBox) {
-            int selectedIndex = comboBox.SelectedIndex;
-
-            switch (selectedIndex) {
-                case 0:
-                    return BudgetItemType.INCOME;
-
-                case 1:
-                    return BudgetItemType.GENERAL_EXPENSE;//CHANGE(FROM EXPENSE TO GENERAL_EXPENSE)
-
-                case 2:
-                    return BudgetItemType.DEBT;
-
-                case 3:
-                    return BudgetItemType.RECEIVABLE;
-                
-                case 4:
-                    return BudgetItemType.SAVING;
-
-                case 5:
-                    return BudgetItemType.CREDITOR;
-
-                case 6:
-                    return BudgetItemType.DEBTOR;
-
-                case 7:
-                    return BudgetItemType.SAVING_ACCOUNT_INTEREST;
-
-                default:
-                    return BudgetItemType.UNDEFINED;
-            }
+            return -1;
         }
 
         //Method for retrieving the user selected budget item type

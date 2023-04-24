@@ -26,7 +26,6 @@
             this.components = new System.ComponentModel.Container();
             this.receivableManagemenStartDatePicker = new System.Windows.Forms.DateTimePicker();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.updateReceivableCtxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.updateDetailsItem = new System.Windows.Forms.ToolStripMenuItem();
             this.partialPaymentItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,15 +64,6 @@
             this.label1.Size = new System.Drawing.Size(160, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Please select the search interval";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 216);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(136, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Displaying receivables for...";
             // 
             // updateReceivableCtxMenu
             // 
@@ -237,7 +227,6 @@
             this.Controls.Add(this.receivableManagementDgv);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.displayReceivablesButton);
-            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.receivableManagemenStartDatePicker);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -257,7 +246,6 @@
 
         private System.Windows.Forms.DateTimePicker receivableManagemenStartDatePicker;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button displayReceivablesButton;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ContextMenuStrip updateReceivableCtxMenu;
