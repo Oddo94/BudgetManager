@@ -382,16 +382,14 @@ namespace BudgetManager {
             String title = "Monthly income evolution";
             int currentYear = dateTimePickerMonthlyIncomes.Value.Year;
 
-            DataTable[] results = model.DataSources;
-
             gridViewManager.setDataGridView(dataGridViewIncomes);
-            gridViewManager.fillDataGridView(results[0]);
+            gridViewManager.fillDataGridView(model.DataSources[0]);
 
             //Displays the number of results found after executing the query for the specified time interval
             displayDgvResultsCount(displayedIncomesCountLabel, model.DataSources[0]);
 
-            fillDynamicTypePieChart(pieChartIncomes, (DataTable)results[1]);
-            fillColumnChart(columnChartIncomes, (DataTable)results[2], currentYear, title);
+            fillDynamicTypePieChart(pieChartIncomes, model.DataSources[1]);
+            fillColumnChart(columnChartIncomes, model.DataSources[2], currentYear, title);
 
 
         }
@@ -1006,6 +1004,11 @@ namespace BudgetManager {
 
         //Method used for displaying the number of results displayed in the DataGridView
         private void displayDgvResultsCount(Label targetLabel, DataTable dgvDataSource) {
+            //Checks if the data source object is null in order to prevent NPE when trying to fetch its size
+            if(dgvDataSource == null ) {
+                return;
+            }
+
             String noResultsFoundMessage = "No results found!";
             String resultsFoundMessage = "Displaying {0} result{1}";
 

@@ -39,8 +39,7 @@ namespace BudgetManager.mvc.models {
                                                         AND
 	                                                        rcs.createdDate BETWEEN @paramStartDate AND @paramEndDate                                                           
                                                         ORDER BY
-	                                                        YEAR(rcs.createdDate),
-	                                                        MONTH(rcs.createdDate);";
+	                                                        rcs.createdDate;";
 
         String sqlStatementReceivableUpdate = @"UPDATE receivables
                                                 SET name = @receivableName,

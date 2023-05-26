@@ -721,9 +721,9 @@ namespace BudgetManager.non_mvc {
             DateTime currentDate = DateTime.Now.Date;
             DateTime currentMonthStartDate = new DateTime(currentDate.Year, currentDate.Month, 1).Date;
             DateTime currentMonthEndDate = currentMonthStartDate.AddMonths(1).AddDays(-1).Date;
-
+            
             //Checks if the user tries to insert a receivable for the past or the future
-            if (receivableStartDate < currentMonthStartDate || receivableEndDate > currentMonthEndDate) {
+            if(receivableStartDate < currentMonthStartDate || receivableStartDate > currentMonthEndDate) {
                 MessageBox.Show("The creation date of the receivable cannot be prior/subsequent to the current month!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 datePicker.Value = DateTime.Now;
                 receivableDueDatePicker.Value = DateTime.Now;
@@ -742,7 +742,7 @@ namespace BudgetManager.non_mvc {
             }
 
             //Both checks must pass in order for the receivable to be inserted
-            if (startDateCheckResult == 0 && chronologicalCheckResult == 0) {
+            if(startDateCheckResult == 0 && chronologicalCheckResult == 0) {
                 return 0;
             }
 

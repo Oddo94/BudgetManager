@@ -122,9 +122,5 @@ namespace BudgetManager.mvc.models.dto {
         public BudgetItemType getBudgetItemType() {
             return BudgetItemType.RECEIVABLE;
         }
-
-        public string getName() {
-            throw new NotImplementedException();
-        }
     }
 }
