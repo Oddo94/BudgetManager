@@ -14,7 +14,7 @@ namespace BudgetManager {
             Guard.notNull(sqlStatement, "SQL statement");
             Guard.notNull(paramContainer, "parameter container");
   
-            MySqlCommand singleMonthCommand = new MySqlCommand(sqlStatement, DBConnectionManager.getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING));//Nu e neaparata adaugarea conexiunii la crearea comenzii intrucat metoda getData a clasei DBConnectionmanager face deja asta in mod implicit
+            MySqlCommand singleMonthCommand = new MySqlCommand(sqlStatement);
             singleMonthCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
             singleMonthCommand.Parameters.AddWithValue("@paramMonth", paramContainer.Month);
             singleMonthCommand.Parameters.AddWithValue("@paramYear", paramContainer.Year);
@@ -40,7 +40,7 @@ namespace BudgetManager {
             Guard.notNull(sqlStatement, "SQL statement");
             Guard.notNull(paramContainer, "parameter container");
 
-            MySqlCommand multipleMonthsCommand = new MySqlCommand(sqlStatement, DBConnectionManager.getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING));//Nu e neaparata adaugarea conexiunii la crearea comenzii intrucat metoda getData a clasei DBConnectionmanager face deja asta in mod implicit
+            MySqlCommand multipleMonthsCommand = new MySqlCommand(sqlStatement);
             multipleMonthsCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
             multipleMonthsCommand.Parameters.AddWithValue("@paramStartDate", paramContainer.StartDate);
             multipleMonthsCommand.Parameters.AddWithValue("@paramEndDate", paramContainer.EndDate);           
@@ -53,7 +53,7 @@ namespace BudgetManager {
             Guard.notNull(sqlStatement, "SQL statement");
             Guard.notNull(paramContainer, "parameter container");
 
-            MySqlCommand monthlyTotalsCommand = new MySqlCommand(sqlStatement, DBConnectionManager.getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING));//Nu e neaparata adaugarea conexiunii la crearea comenzii intrucat metoda getData a clasei DBConnectionmanager face deja asta in mod implicit
+            MySqlCommand monthlyTotalsCommand = new MySqlCommand(sqlStatement, DBConnectionManager.getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING));
             monthlyTotalsCommand.Parameters.AddWithValue("@paramID", paramContainer.UserID);
             monthlyTotalsCommand.Parameters.AddWithValue("@paramYear", paramContainer.Year);
 
