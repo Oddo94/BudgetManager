@@ -1,4 +1,5 @@
 ﻿using BudgetManager.mvc.views;
+using BudgetManager.mvp.views;
 using BudgetManager.non_mvc;
 using BudgetManager.utils;
 using System;
@@ -1103,6 +1104,11 @@ namespace BudgetManager {
 
         private void updateReceivablesToolStripMenuItem_Click(object sender, EventArgs e) {
             new ReceivableManagementForm(userID).ShowDialog();
+        }
+
+        private void externalAccountStatisticsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new ExternalAccountStatisticsForm().ShowDialog();
         }
     }
 }

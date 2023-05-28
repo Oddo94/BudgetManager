@@ -81,6 +81,12 @@
     <Compile Include="mvc\views\SavingAccountForm.Designer.cs">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="mvp\views\ExternalAccountStatisticsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="mvp\views\ExternalAccountStatisticsForm.Designer.cs">
+      <DependentUpon>ExternalAccountStatisticsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="non-mvc\DiscardReceivableChangeForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -211,6 +217,9 @@
     <EmbeddedResource Include="mvc\views\SavingAccountForm.resx">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="mvp\views\ExternalAccountStatisticsForm.resx">
+      <DependentUpon>ExternalAccountStatisticsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="non-mvc\BudgetPlanCreator.resx">
       <DependentUpon>BudgetPlanCreator.cs</DependentUpon>
     </EmbeddedResource>
@@ -270,7 +279,11 @@
     <Content Include="budget-vector-free-icon-set-23.ico" />
     <Content Include="budget-vector-free-icon-set-35.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="mvp\models\" />
+    <Folder Include="mvp\presenters\" />
+    <Folder Include="mvp\repositories\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

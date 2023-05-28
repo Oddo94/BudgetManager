@@ -62,8 +62,12 @@ D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Deb
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csproj.GenerateResource.Cache
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.exe
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.pdb
-D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csprojResolveAssemblyReference.cache
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.non_mvc.InsertDataForm.resources
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.mvc.views.ReceivableManagementForm.resources
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.non_mvc.NetInterestCalculator.resources
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.non_mvc.DiscardReceivableChangeForm.resources
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csproj.AssemblyReference.cache
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csproj.SuggestedBindingRedirects.cache
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csproj.CoreCompileInputs.cache
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.csproj.CopyComplete
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManager\obj\Debug\BudgetManager.mvp.views.ExternalAccountStatisticsForm.resources

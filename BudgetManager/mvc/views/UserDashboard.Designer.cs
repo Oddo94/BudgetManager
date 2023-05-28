@@ -92,6 +92,7 @@
             this.intervalCheckBoxBS = new System.Windows.Forms.CheckBox();
             this.dateTimePickerStartBS = new System.Windows.Forms.DateTimePicker();
             this.tabPageIncomes = new System.Windows.Forms.TabPage();
+            this.displayedIncomesCountLabel = new System.Windows.Forms.Label();
             this.dateTimePickerMonthlyIncomes = new System.Windows.Forms.DateTimePicker();
             this.label10 = new System.Windows.Forms.Label();
             this.columnChartIncomes = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -106,6 +107,7 @@
             this.intervalCheckBoxIncomes = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.tabPageExpenses = new System.Windows.Forms.TabPage();
+            this.displayedExpensesCountLabel = new System.Windows.Forms.Label();
             this.dateTimePickerMonthlyExpenses = new System.Windows.Forms.DateTimePicker();
             this.label9 = new System.Windows.Forms.Label();
             this.columnChartExpenses = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -120,6 +122,7 @@
             this.startLabelExpenses = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.tabPageDebts = new System.Windows.Forms.TabPage();
+            this.displayedDebtsCountLabel = new System.Windows.Forms.Label();
             this.dateTimePickerMonthlyDebts = new System.Windows.Forms.DateTimePicker();
             this.label8 = new System.Windows.Forms.Label();
             this.columnChartDebts = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -134,6 +137,7 @@
             this.startLabelDebts = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.tabPageSavings = new System.Windows.Forms.TabPage();
+            this.displayedSavingsCountLabel = new System.Windows.Forms.Label();
             this.savingAccountButton = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.dateTimePickerMonthlySavings = new System.Windows.Forms.DateTimePicker();
@@ -165,10 +169,7 @@
             this.budgetPlannerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editDeleteExistingPlansToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.displayedExpensesCountLabel = new System.Windows.Forms.Label();
-            this.displayedIncomesCountLabel = new System.Windows.Forms.Label();
-            this.displayedDebtsCountLabel = new System.Windows.Forms.Label();
-            this.displayedSavingsCountLabel = new System.Windows.Forms.Label();
+            this.externalAccountStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainTabControl.SuspendLayout();
             this.tabPageBS.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pieChartBS)).BeginInit();
@@ -394,6 +395,14 @@
             this.tabPageIncomes.Text = "Incomes";
             this.tabPageIncomes.UseVisualStyleBackColor = true;
             // 
+            // displayedIncomesCountLabel
+            // 
+            this.displayedIncomesCountLabel.AutoSize = true;
+            this.displayedIncomesCountLabel.Location = new System.Drawing.Point(32, 432);
+            this.displayedIncomesCountLabel.Name = "displayedIncomesCountLabel";
+            this.displayedIncomesCountLabel.Size = new System.Drawing.Size(0, 13);
+            this.displayedIncomesCountLabel.TabIndex = 11;
+            // 
             // dateTimePickerMonthlyIncomes
             // 
             this.dateTimePickerMonthlyIncomes.CustomFormat = "yyyy";
@@ -580,6 +589,14 @@
             this.tabPageExpenses.TabIndex = 2;
             this.tabPageExpenses.Text = "Expenses";
             this.tabPageExpenses.UseVisualStyleBackColor = true;
+            // 
+            // displayedExpensesCountLabel
+            // 
+            this.displayedExpensesCountLabel.AutoSize = true;
+            this.displayedExpensesCountLabel.Location = new System.Drawing.Point(23, 450);
+            this.displayedExpensesCountLabel.Name = "displayedExpensesCountLabel";
+            this.displayedExpensesCountLabel.Size = new System.Drawing.Size(0, 13);
+            this.displayedExpensesCountLabel.TabIndex = 13;
             // 
             // dateTimePickerMonthlyExpenses
             // 
@@ -770,6 +787,14 @@
             this.tabPageDebts.Text = "Debts";
             this.tabPageDebts.UseVisualStyleBackColor = true;
             // 
+            // displayedDebtsCountLabel
+            // 
+            this.displayedDebtsCountLabel.AutoSize = true;
+            this.displayedDebtsCountLabel.Location = new System.Drawing.Point(29, 447);
+            this.displayedDebtsCountLabel.Name = "displayedDebtsCountLabel";
+            this.displayedDebtsCountLabel.Size = new System.Drawing.Size(0, 13);
+            this.displayedDebtsCountLabel.TabIndex = 13;
+            // 
             // dateTimePickerMonthlyDebts
             // 
             this.dateTimePickerMonthlyDebts.CustomFormat = "yyyy";
@@ -955,6 +980,14 @@
             this.tabPageSavings.TabIndex = 4;
             this.tabPageSavings.Text = "Savings";
             this.tabPageSavings.UseVisualStyleBackColor = true;
+            // 
+            // displayedSavingsCountLabel
+            // 
+            this.displayedSavingsCountLabel.AutoSize = true;
+            this.displayedSavingsCountLabel.Location = new System.Drawing.Point(25, 464);
+            this.displayedSavingsCountLabel.Name = "displayedSavingsCountLabel";
+            this.displayedSavingsCountLabel.Size = new System.Drawing.Size(0, 13);
+            this.displayedSavingsCountLabel.TabIndex = 13;
             // 
             // savingAccountButton
             // 
@@ -1158,14 +1191,14 @@
             // logoutToolStripMenuItem
             // 
             this.logoutToolStripMenuItem.Name = "logoutToolStripMenuItem";
-            this.logoutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.logoutToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.logoutToolStripMenuItem.Text = "Logout";
             this.logoutToolStripMenuItem.Click += new System.EventHandler(this.logoutToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -1183,14 +1216,14 @@
             // insertDataToolStripMenuItem
             // 
             this.insertDataToolStripMenuItem.Name = "insertDataToolStripMenuItem";
-            this.insertDataToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.insertDataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.insertDataToolStripMenuItem.Text = "Insert data";
             this.insertDataToolStripMenuItem.Click += new System.EventHandler(this.insertDataToolStripMenuItem_Click);
             // 
             // updateDataToolStripMenuItem
             // 
             this.updateDataToolStripMenuItem.Name = "updateDataToolStripMenuItem";
-            this.updateDataToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.updateDataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.updateDataToolStripMenuItem.Text = "Update/Delete data";
             this.updateDataToolStripMenuItem.Click += new System.EventHandler(this.updateDataToolStripMenuItem_Click);
             // 
@@ -1198,9 +1231,10 @@
             // 
             this.manageExternalAccountsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createExternalAccountToolStripMenuItem,
-            this.externalAccountTransfersToolStripMenuItem});
+            this.externalAccountTransfersToolStripMenuItem,
+            this.externalAccountStatisticsToolStripMenuItem});
             this.manageExternalAccountsToolStripMenuItem.Name = "manageExternalAccountsToolStripMenuItem";
-            this.manageExternalAccountsToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.manageExternalAccountsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.manageExternalAccountsToolStripMenuItem.Text = "External accounts";
             // 
             // createExternalAccountToolStripMenuItem
@@ -1222,7 +1256,7 @@
             this.manageReceivablesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.updateReceivablesToolStripMenuItem});
             this.manageReceivablesToolStripMenuItem.Name = "manageReceivablesToolStripMenuItem";
-            this.manageReceivablesToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.manageReceivablesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.manageReceivablesToolStripMenuItem.Text = "Receivables";
             // 
             // updateReceivablesToolStripMenuItem
@@ -1271,37 +1305,12 @@
             this.editDeleteExistingPlansToolStripMenuItem.Text = "Edit/Delete budget plans";
             this.editDeleteExistingPlansToolStripMenuItem.Click += new System.EventHandler(this.editDeleteExistingPlansToolStripMenuItem_Click);
             // 
-            // displayedExpensesCountLabel
+            // externalAccountStatisticsToolStripMenuItem
             // 
-            this.displayedExpensesCountLabel.AutoSize = true;
-            this.displayedExpensesCountLabel.Location = new System.Drawing.Point(23, 450);
-            this.displayedExpensesCountLabel.Name = "displayedExpensesCountLabel";
-            this.displayedExpensesCountLabel.Size = new System.Drawing.Size(0, 13);
-            this.displayedExpensesCountLabel.TabIndex = 13;
-            // 
-            // displayedIncomesCountLabel
-            // 
-            this.displayedIncomesCountLabel.AutoSize = true;
-            this.displayedIncomesCountLabel.Location = new System.Drawing.Point(32, 432);
-            this.displayedIncomesCountLabel.Name = "displayedIncomesCountLabel";
-            this.displayedIncomesCountLabel.Size = new System.Drawing.Size(0, 13);
-            this.displayedIncomesCountLabel.TabIndex = 11;
-            // 
-            // displayedDebtsCountLabel
-            // 
-            this.displayedDebtsCountLabel.AutoSize = true;
-            this.displayedDebtsCountLabel.Location = new System.Drawing.Point(29, 447);
-            this.displayedDebtsCountLabel.Name = "displayedDebtsCountLabel";
-            this.displayedDebtsCountLabel.Size = new System.Drawing.Size(0, 13);
-            this.displayedDebtsCountLabel.TabIndex = 13;
-            // 
-            // displayedSavingsCountLabel
-            // 
-            this.displayedSavingsCountLabel.AutoSize = true;
-            this.displayedSavingsCountLabel.Location = new System.Drawing.Point(25, 464);
-            this.displayedSavingsCountLabel.Name = "displayedSavingsCountLabel";
-            this.displayedSavingsCountLabel.Size = new System.Drawing.Size(0, 13);
-            this.displayedSavingsCountLabel.TabIndex = 13;
+            this.externalAccountStatisticsToolStripMenuItem.Name = "externalAccountStatisticsToolStripMenuItem";
+            this.externalAccountStatisticsToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.externalAccountStatisticsToolStripMenuItem.Text = "External account statistics";
+            this.externalAccountStatisticsToolStripMenuItem.Click += new System.EventHandler(this.externalAccountStatisticsToolStripMenuItem_Click);
             // 
             // UserDashboard
             // 
@@ -1454,6 +1463,7 @@
         private System.Windows.Forms.Label displayedIncomesCountLabel;
         private System.Windows.Forms.Label displayedDebtsCountLabel;
         private System.Windows.Forms.Label displayedSavingsCountLabel;
+        private System.Windows.Forms.ToolStripMenuItem externalAccountStatisticsToolStripMenuItem;
     }
 }
 
