@@ -39,6 +39,7 @@
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MySql.Data, Version=8.0.19.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
@@ -81,6 +82,8 @@
     <Compile Include="mvc\views\SavingAccountForm.Designer.cs">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="mvp\models\ExternalAccountDetailsModel.cs" />
+    <Compile Include="mvp\models\IExternalAccountStatisticsRepository.cs" />
     <Compile Include="mvp\views\ExternalAccountStatisticsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -262,6 +265,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="Properties\DataSources\BudgetManager.mvp.models.ExternalAccountDetailsModel.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -280,7 +284,6 @@
     <Content Include="budget-vector-free-icon-set-35.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="mvp\models\" />
     <Folder Include="mvp\presenters\" />
     <Folder Include="mvp\repositories\" />
   </ItemGroup>
