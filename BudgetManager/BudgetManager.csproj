@@ -84,12 +84,15 @@
     </Compile>
     <Compile Include="mvp\models\ExternalAccountDetailsModel.cs" />
     <Compile Include="mvp\models\IExternalAccountStatisticsRepository.cs" />
+    <Compile Include="mvp\presenters\ExternalAccountStatisticsPresenter.cs" />
+    <Compile Include="mvp\repositories\ExternalAccountStatisticsRepository.cs" />
     <Compile Include="mvp\views\ExternalAccountStatisticsForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="mvp\views\ExternalAccountStatisticsForm.Designer.cs">
       <DependentUpon>ExternalAccountStatisticsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="mvp\views\IExternalAccountStatisticsView.cs" />
     <Compile Include="non-mvc\DiscardReceivableChangeForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -283,10 +286,7 @@
     <Content Include="budget-vector-free-icon-set-23.ico" />
     <Content Include="budget-vector-free-icon-set-35.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="mvp\presenters\" />
-    <Folder Include="mvp\repositories\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
