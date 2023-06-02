@@ -82,7 +82,7 @@
             this.userAccountsComboBox.FormattingEnabled = true;
             this.userAccountsComboBox.Location = new System.Drawing.Point(25, 79);
             this.userAccountsComboBox.Name = "userAccountsComboBox";
-            this.userAccountsComboBox.Size = new System.Drawing.Size(121, 21);
+            this.userAccountsComboBox.Size = new System.Drawing.Size(170, 21);
             this.userAccountsComboBox.TabIndex = 1;
             // 
             // groupBox1

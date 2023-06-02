@@ -1,4 +1,5 @@
-﻿using BudgetManager.mvp.models;
+﻿using BudgetManager.mvp.misc;
+using BudgetManager.mvp.models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,16 +16,18 @@ namespace BudgetManager.mvp.views
     {
         public event EventHandler loadUserAccountsEvent;
         public event EventHandler displayAccountStatisticsEvent;
-        public ExternalAccountStatisticsForm()
-        {
+        private int userId;
+        public ExternalAccountStatisticsForm(int userId) {
+            this.userId = userId;       
             InitializeComponent();
             associateAndRaiseEvents();
         }
 
         public void setControlsBindingSource(BindingSource userAccountsBindingSource, BindingSource accountStatisticsBindingSource)
         {
-            userAccountsComboBox.DataSource = userAccountsBindingSource;
 
+            userAccountsComboBox.DataSource = userAccountsBindingSource;
+            
             ExternalAccountDetailsModel model = new ExternalAccountDetailsModel("", "", DateTime.Now, 0, 0, 0, 0, 0);
             accountStatisticsBindingSource.DataSource = model;
 
@@ -41,9 +44,12 @@ namespace BudgetManager.mvp.views
 
         private void associateAndRaiseEvents()
         {
+            ExternalAccountEventArgs eventArgs = new ExternalAccountEventArgs();
+            eventArgs.UserId = userId;
             //userAccountsComboBox.Click += delegate { loadUserAccountsEvent?.Invoke(this, EventArgs.Empty); };
-            this.Shown += delegate { loadUserAccountsEvent?.Invoke(this, EventArgs.Empty); };
-            displayAccountStatisticsButton.Click += delegate { displayAccountStatisticsEvent?.Invoke(this, EventArgs.Empty); };
+            this.Shown += delegate { loadUserAccountsEvent?.Invoke(this, eventArgs); };
+
+            displayAccountStatisticsButton.Click += delegate { displayAccountStatisticsEvent?.Invoke(this, eventArgs); };
         }
 
         //private void displayAccountStatisticsButton_Click(object sender, EventArgs e)

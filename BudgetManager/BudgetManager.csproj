@@ -82,6 +82,7 @@
     <Compile Include="mvc\views\SavingAccountForm.Designer.cs">
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="mvp\misc\ExternalAccountEventArgs.cs" />
     <Compile Include="mvp\models\ExternalAccountDetailsModel.cs" />
     <Compile Include="mvp\models\IExternalAccountStatisticsRepository.cs" />
     <Compile Include="mvp\presenters\ExternalAccountStatisticsPresenter.cs" />

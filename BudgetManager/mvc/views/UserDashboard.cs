@@ -1111,7 +1111,7 @@ namespace BudgetManager {
 
         private void externalAccountStatisticsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExternalAccountStatisticsForm externalAccountsForm = new ExternalAccountStatisticsForm();
+            ExternalAccountStatisticsForm externalAccountsForm = new ExternalAccountStatisticsForm(this.userID);
             IExternalAccountStatisticsView externalAccountsView = externalAccountsForm;
             IExternalAccountStatisticsRepository externalAccountsRepository = new ExternalAccountStatisticsRepository();
             new ExternalAccountStatisticsPresenter(externalAccountsView, externalAccountsRepository);

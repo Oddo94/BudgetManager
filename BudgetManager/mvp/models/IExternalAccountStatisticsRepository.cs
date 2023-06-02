@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BudgetManager.mvp.models
 {
-    internal interface IExternalAccountStatisticsRepository
-    {
+    internal interface IExternalAccountStatisticsRepository {
+        DataTable getUserAccounts(int userId);
         ExternalAccountDetailsModel getAccountDetails(String accountName, int userId);
         ExternalAccountDetailsModel getAccountDetailsById(int accountId);
 
