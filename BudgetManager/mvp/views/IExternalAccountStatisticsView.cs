@@ -7,9 +7,11 @@ using System.Windows.Forms;
 
 namespace BudgetManager.mvp.views
 {
-    internal interface IExternalAccountStatisticsView {
+    public interface IExternalAccountStatisticsView {
         event EventHandler loadUserAccountsEvent;
         event EventHandler displayAccountStatisticsEvent;
+        int userId { get; set; }
+        String accountName { get; set; }
 
         void setControlsBindingSource(BindingSource bindingSource1, BindingSource bindingSource2);
     }

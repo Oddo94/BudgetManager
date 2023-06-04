@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BudgetManager.mvp.misc {
-    internal class ExternalAccountEventArgs : EventArgs {
+    public class ExternalAccountEventArgs : EventArgs {
         private int userId;
         private String accountName;
 
@@ -14,9 +14,34 @@ namespace BudgetManager.mvp.misc {
             this.accountName = accountName;
         }
 
-        public ExternalAccountEventArgs() { }
+        private ExternalAccountEventArgs() { }
 
-        public int UserId { get => userId; set => userId = value; }
-        public String AccountName { get => accountName; set => accountName = value; }
+        public int UserId { get => userId; }
+        public String AccountName { get => accountName; }
+
+        public class Builder {
+            private int userId;
+            private String accountName;
+
+            public int UserId { set => this.userId = value; }
+            public String AccountName { set => this.accountName = value; }
+
+            public Builder(int userId) {
+                this.userId = userId;
+            }
+
+            public Builder addAccountName(String accountName) {
+                this.accountName = accountName;
+
+                return this;
+            }
+
+            public ExternalAccountEventArgs build() {
+                return new ExternalAccountEventArgs {
+                    userId = this.userId,
+                    accountName = this.accountName
+                };
+            }
+        }
     }
 }

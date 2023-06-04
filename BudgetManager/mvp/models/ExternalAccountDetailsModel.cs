@@ -11,15 +11,14 @@ namespace BudgetManager.mvp.models
     internal class ExternalAccountDetailsModel {
         private String accountName;
         private String bankName;
-        private DateTime creationDate;
-        private int accountBalance;
-        private int totalInTransfers;
-        private int totalOutTransfers;
-        private int totalUnpaidReceivables;
-        private int totalInterestAmount;
+        private String creationDate;
+        private double accountBalance;
+        private double totalInTransfers;
+        private double totalOutTransfers;
+        private double totalUnpaidReceivables;
+        private double totalInterestAmount;
 
-        public ExternalAccountDetailsModel(string accountName, string bankName, DateTime creationDate, int accountBalance, int totalInTransfers, int totalOutTransfers, int totalUnpaidReceivables, int totalInterestAmount)
-        {
+        public ExternalAccountDetailsModel(String accountName, String bankName, String creationDate, double accountBalance, double totalInTransfers, double totalOutTransfers, double totalUnpaidReceivables, double totalInterestAmount) {
             this.accountName = accountName;
             this.bankName = bankName;
             this.creationDate = creationDate;
@@ -30,18 +29,20 @@ namespace BudgetManager.mvp.models
             this.totalInterestAmount = totalInterestAmount;
         }
 
-        public string AccountName { get => accountName; set => accountName = value; }
-        public string BankName { get => bankName; set => bankName = value; }
-        public DateTime CreationDate { get => creationDate; set => creationDate = value; }
+        public ExternalAccountDetailsModel() { }
+
+        public String AccountName { get => accountName; set => accountName = value; }
+        public String BankName { get => bankName; set => bankName = value; }
+        public String CreationDate { get => creationDate; set => creationDate = value; }
         [Required(ErrorMessage = "The account balance cannot be null! It must be greater or equal to 0.")]
-        public int AccountBalance { get => accountBalance; set => accountBalance = value; }
+        public double AccountBalance { get => accountBalance; set => accountBalance = value; }
         [Required(ErrorMessage = "The total IN transfers value cannot be null! It must be greater or equal to 0.")]
-        public int TotalInTransfers { get => totalInTransfers; set => totalInTransfers = value; }
+        public double TotalInTransfers { get => totalInTransfers; set => totalInTransfers = value; }
         [Required(ErrorMessage = "The total OUT transfers value cannot be null! It must be greater or equal to 0.")]
-        public int TotalOutTransfers { get => totalOutTransfers; set => totalOutTransfers = value; }
+        public double TotalOutTransfers { get => totalOutTransfers; set => totalOutTransfers = value; }
         [Required(ErrorMessage = "The total unpaid receivables value cannot be null! It must be greater or equal to 0.")]
-        public int TotalUnpaidReceivables { get => totalUnpaidReceivables; set => totalUnpaidReceivables = value; }
+        public double TotalUnpaidReceivables { get => totalUnpaidReceivables; set => totalUnpaidReceivables = value; }
         [Required(ErrorMessage = "The total interest amount value cannot be null! It must be greater or equal to 0.")]
-        public int TotalInterestAmount { get => totalInterestAmount; set => totalInterestAmount = value; }
+        public double TotalInterestAmount { get => totalInterestAmount; set => totalInterestAmount = value; }
     }
 }

@@ -17,8 +17,7 @@ namespace BudgetManager.mvp.presenters
         private BindingSource userAccountsBindingSource;
         private BindingSource accountStatisticsBindingSource;
 
-        public ExternalAccountStatisticsPresenter(IExternalAccountStatisticsView accountStatisticsView, IExternalAccountStatisticsRepository accountStatisticsRepository)
-        {
+        public ExternalAccountStatisticsPresenter(IExternalAccountStatisticsView accountStatisticsView, IExternalAccountStatisticsRepository accountStatisticsRepository) {
             this.accountStatisticsView = accountStatisticsView;
             this.accountStatisticsRepository = accountStatisticsRepository;
 
@@ -42,9 +41,11 @@ namespace BudgetManager.mvp.presenters
 
         }
 
-        private void getAccountStatistics(object sender, EventArgs e)
-        {
-            accountStatisticsBindingSource.DataSource = new ExternalAccountDetailsModel("Test Razvan", "Banca Romaneasca", DateTime.Now, 10000, 4000, 3000, 0, 999);
+        private void getAccountStatistics(object sender, EventArgs e) {                 
+            ExternalAccountDetailsModel externalAccountDetails = accountStatisticsRepository.getAccountDetails(accountStatisticsView.accountName, accountStatisticsView.userId);
+            //ExternalAccountDetailsModel externalAccountDetails = accountStatisticsRepository.getAccountDetails("SYSTEM_DEFINED_SAVING_ACCOUNT", 3);
+
+            accountStatisticsBindingSource.DataSource = externalAccountDetails;
         }
 
  
