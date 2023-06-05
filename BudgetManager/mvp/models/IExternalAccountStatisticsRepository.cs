@@ -11,6 +11,7 @@ namespace BudgetManager.mvp.models
         DataTable getUserAccounts(int userId);
         ExternalAccountDetailsModel getAccountDetails(String accountName, int userId);
         ExternalAccountDetailsModel getAccountDetailsById(int accountId);
+        DataTable getAccountTransfers(String accountName, int userId, String startDate, String endDate);
 
     }
 }

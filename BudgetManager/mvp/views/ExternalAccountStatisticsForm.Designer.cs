@@ -33,29 +33,35 @@
             this.userAccountsComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.accountCreationDateValueLabel = new System.Windows.Forms.Label();
-            this.externalAccountDetailsModelBindingSource7 = new System.Windows.Forms.BindingSource(this.components);
             this.accountCreationDateLabel = new System.Windows.Forms.Label();
             this.bankNameValueLabel = new System.Windows.Forms.Label();
-            this.externalAccountDetailsModelBindingSource6 = new System.Windows.Forms.BindingSource(this.components);
             this.accountNameValueLabel = new System.Windows.Forms.Label();
-            this.externalAccountDetailsModelBindingSource5 = new System.Windows.Forms.BindingSource(this.components);
             this.bankNameLabel = new System.Windows.Forms.Label();
             this.accountNameLabel = new System.Windows.Forms.Label();
             this.totalInterestAmountValueLabel = new System.Windows.Forms.Label();
-            this.externalAccountDetailsModelBindingSource4 = new System.Windows.Forms.BindingSource(this.components);
             this.totalOutTransfersValueLabel = new System.Windows.Forms.Label();
-            this.externalAccountDetailsModelBindingSource2 = new System.Windows.Forms.BindingSource(this.components);
             this.totalInTransfersValueLabel = new System.Windows.Forms.Label();
-            this.externalAccountDetailsModelBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.totalInterestAmountLabel = new System.Windows.Forms.Label();
             this.totaloutTransfersLabel = new System.Windows.Forms.Label();
             this.totalInTransfersLabel = new System.Windows.Forms.Label();
             this.accountBalanceValueLabel = new System.Windows.Forms.Label();
-            this.externalAccountDetailsModelBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.accountBalanceLabel = new System.Windows.Forms.Label();
+            this.displayAccountTransfersButton = new System.Windows.Forms.Button();
+            this.accountTransfersDgv = new System.Windows.Forms.DataGridView();
+            this.startDateTransfersDTPicker = new System.Windows.Forms.DateTimePicker();
+            this.endDateTransfersDTPicker = new System.Windows.Forms.DateTimePicker();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.externalAccountDetailsModelBindingSource7 = new System.Windows.Forms.BindingSource(this.components);
+            this.externalAccountDetailsModelBindingSource6 = new System.Windows.Forms.BindingSource(this.components);
+            this.externalAccountDetailsModelBindingSource5 = new System.Windows.Forms.BindingSource(this.components);
+            this.externalAccountDetailsModelBindingSource4 = new System.Windows.Forms.BindingSource(this.components);
+            this.externalAccountDetailsModelBindingSource2 = new System.Windows.Forms.BindingSource(this.components);
+            this.externalAccountDetailsModelBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.externalAccountDetailsModelBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.externalAccountDetailsModelBindingSource3 = new System.Windows.Forms.BindingSource(this.components);
-            this.displayAccountStatisticsButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.accountTransfersDgv)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource5)).BeginInit();
@@ -115,10 +121,6 @@
             this.accountCreationDateValueLabel.TabIndex = 19;
             this.accountCreationDateValueLabel.Text = "2023-05-24";
             // 
-            // externalAccountDetailsModelBindingSource7
-            // 
-            this.externalAccountDetailsModelBindingSource7.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
-            // 
             // accountCreationDateLabel
             // 
             this.accountCreationDateLabel.AutoSize = true;
@@ -138,10 +140,6 @@
             this.bankNameValueLabel.TabIndex = 17;
             this.bankNameValueLabel.Text = "Banca Transilvania";
             // 
-            // externalAccountDetailsModelBindingSource6
-            // 
-            this.externalAccountDetailsModelBindingSource6.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
-            // 
             // accountNameValueLabel
             // 
             this.accountNameValueLabel.AutoSize = true;
@@ -151,10 +149,6 @@
             this.accountNameValueLabel.Size = new System.Drawing.Size(70, 13);
             this.accountNameValueLabel.TabIndex = 16;
             this.accountNameValueLabel.Text = "Test account";
-            // 
-            // externalAccountDetailsModelBindingSource5
-            // 
-            this.externalAccountDetailsModelBindingSource5.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
             // 
             // bankNameLabel
             // 
@@ -184,10 +178,6 @@
             this.totalInterestAmountValueLabel.TabIndex = 11;
             this.totalInterestAmountValueLabel.Text = "5514";
             // 
-            // externalAccountDetailsModelBindingSource4
-            // 
-            this.externalAccountDetailsModelBindingSource4.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
-            // 
             // totalOutTransfersValueLabel
             // 
             this.totalOutTransfersValueLabel.AutoSize = true;
@@ -198,10 +188,6 @@
             this.totalOutTransfersValueLabel.TabIndex = 10;
             this.totalOutTransfersValueLabel.Text = "3000";
             // 
-            // externalAccountDetailsModelBindingSource2
-            // 
-            this.externalAccountDetailsModelBindingSource2.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
-            // 
             // totalInTransfersValueLabel
             // 
             this.totalInTransfersValueLabel.AutoSize = true;
@@ -211,10 +197,6 @@
             this.totalInTransfersValueLabel.Size = new System.Drawing.Size(31, 13);
             this.totalInTransfersValueLabel.TabIndex = 9;
             this.totalInTransfersValueLabel.Text = "8000";
-            // 
-            // externalAccountDetailsModelBindingSource1
-            // 
-            this.externalAccountDetailsModelBindingSource1.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
             // 
             // totalInterestAmountLabel
             // 
@@ -253,11 +235,6 @@
             this.accountBalanceValueLabel.TabIndex = 1;
             this.accountBalanceValueLabel.Text = "16514";
             // 
-            // externalAccountDetailsModelBindingSource
-            // 
-            this.externalAccountDetailsModelBindingSource.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
-            //this.externalAccountDetailsModelBindingSource.CurrentChanged += new System.EventHandler(this.externalAccountDetailsModelBindingSource_CurrentChanged);
-            // 
             // accountBalanceLabel
             // 
             this.accountBalanceLabel.AutoSize = true;
@@ -267,25 +244,105 @@
             this.accountBalanceLabel.TabIndex = 0;
             this.accountBalanceLabel.Text = "Account balance:";
             // 
+            // displayAccountTransfersButton
+            // 
+            this.displayAccountTransfersButton.Enabled = false;
+            this.displayAccountTransfersButton.Location = new System.Drawing.Point(365, 390);
+            this.displayAccountTransfersButton.Name = "displayAccountTransfersButton";
+            this.displayAccountTransfersButton.Size = new System.Drawing.Size(101, 23);
+            this.displayAccountTransfersButton.TabIndex = 3;
+            this.displayAccountTransfersButton.Text = "Show transfers";
+            this.displayAccountTransfersButton.UseVisualStyleBackColor = true;
+            // 
+            // accountTransfersDgv
+            // 
+            this.accountTransfersDgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.accountTransfersDgv.Location = new System.Drawing.Point(25, 439);
+            this.accountTransfersDgv.Name = "accountTransfersDgv";
+            this.accountTransfersDgv.Size = new System.Drawing.Size(832, 231);
+            this.accountTransfersDgv.TabIndex = 4;
+            // 
+            // startDateTransfersDTPicker
+            // 
+            this.startDateTransfersDTPicker.CustomFormat = "dd-MM-yyyy";
+            this.startDateTransfersDTPicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.startDateTransfersDTPicker.Location = new System.Drawing.Point(25, 393);
+            this.startDateTransfersDTPicker.Name = "startDateTransfersDTPicker";
+            this.startDateTransfersDTPicker.Size = new System.Drawing.Size(106, 20);
+            this.startDateTransfersDTPicker.TabIndex = 5;
+            this.startDateTransfersDTPicker.ValueChanged += new System.EventHandler(this.startDateTransfersDTPicker_ValueChanged);
+            // 
+            // endDateTransfersDTPicker
+            // 
+            this.endDateTransfersDTPicker.CustomFormat = "dd-MM-yyyy";
+            this.endDateTransfersDTPicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.endDateTransfersDTPicker.Location = new System.Drawing.Point(200, 393);
+            this.endDateTransfersDTPicker.Name = "endDateTransfersDTPicker";
+            this.endDateTransfersDTPicker.Size = new System.Drawing.Size(106, 20);
+            this.endDateTransfersDTPicker.TabIndex = 6;
+            this.endDateTransfersDTPicker.ValueChanged += new System.EventHandler(this.endDateTransfersDTPicker_ValueChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(22, 366);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Start date";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(197, 366);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(50, 13);
+            this.label3.TabIndex = 8;
+            this.label3.Text = "End date";
+            // 
+            // externalAccountDetailsModelBindingSource7
+            // 
+            this.externalAccountDetailsModelBindingSource7.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
+            // 
+            // externalAccountDetailsModelBindingSource6
+            // 
+            this.externalAccountDetailsModelBindingSource6.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
+            // 
+            // externalAccountDetailsModelBindingSource5
+            // 
+            this.externalAccountDetailsModelBindingSource5.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
+            // 
+            // externalAccountDetailsModelBindingSource4
+            // 
+            this.externalAccountDetailsModelBindingSource4.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
+            // 
+            // externalAccountDetailsModelBindingSource2
+            // 
+            this.externalAccountDetailsModelBindingSource2.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
+            // 
+            // externalAccountDetailsModelBindingSource1
+            // 
+            this.externalAccountDetailsModelBindingSource1.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
+            // 
+            // externalAccountDetailsModelBindingSource
+            // 
+            this.externalAccountDetailsModelBindingSource.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
+            // 
             // externalAccountDetailsModelBindingSource3
             // 
             this.externalAccountDetailsModelBindingSource3.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
-            // 
-            // displayAccountStatisticsButton
-            // 
-            this.displayAccountStatisticsButton.Location = new System.Drawing.Point(291, 77);
-            this.displayAccountStatisticsButton.Name = "displayAccountStatisticsButton";
-            this.displayAccountStatisticsButton.Size = new System.Drawing.Size(75, 23);
-            this.displayAccountStatisticsButton.TabIndex = 3;
-            this.displayAccountStatisticsButton.Text = "Test binding";
-            this.displayAccountStatisticsButton.UseVisualStyleBackColor = true;
             // 
             // ExternalAccountStatisticsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.displayAccountStatisticsButton);
+            this.ClientSize = new System.Drawing.Size(881, 682);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.endDateTransfersDTPicker);
+            this.Controls.Add(this.startDateTransfersDTPicker);
+            this.Controls.Add(this.accountTransfersDgv);
+            this.Controls.Add(this.displayAccountTransfersButton);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.userAccountsComboBox);
             this.Controls.Add(this.label1);
@@ -293,6 +350,7 @@
             this.Text = "External account statistics";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.accountTransfersDgv)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource5)).EndInit();
@@ -333,6 +391,11 @@
         private System.Windows.Forms.BindingSource externalAccountDetailsModelBindingSource6;
         private System.Windows.Forms.BindingSource externalAccountDetailsModelBindingSource5;
         private System.Windows.Forms.BindingSource externalAccountDetailsModelBindingSource7;
-        private System.Windows.Forms.Button displayAccountStatisticsButton;
+        private System.Windows.Forms.Button displayAccountTransfersButton;
+        private System.Windows.Forms.DataGridView accountTransfersDgv;
+        private System.Windows.Forms.DateTimePicker startDateTransfersDTPicker;
+        private System.Windows.Forms.DateTimePicker endDateTransfersDTPicker;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
     }
 }
