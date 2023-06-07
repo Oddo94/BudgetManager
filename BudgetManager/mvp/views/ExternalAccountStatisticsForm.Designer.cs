@@ -261,6 +261,8 @@
             this.accountTransfersDgv.Name = "accountTransfersDgv";
             this.accountTransfersDgv.Size = new System.Drawing.Size(832, 231);
             this.accountTransfersDgv.TabIndex = 4;
+            this.accountTransfersDgv.DataSourceChanged += new System.EventHandler(this.accountTransfersDgv_DataSourceChanged);
+            this.accountTransfersDgv.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.accountTransfersDgv_CellFormatting);
             // 
             // startDateTransfersDTPicker
             // 
@@ -346,6 +348,8 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.userAccountsComboBox);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "ExternalAccountStatisticsForm";
             this.Text = "External account statistics";
             this.groupBox1.ResumeLayout(false);

@@ -91,5 +91,23 @@ namespace BudgetManager.mvp.views {
                 displayAccountTransfersButton.Enabled = false;
             }
         }
+
+        private void accountTransfersDgv_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e) {
+            if (accountTransfersDgv.Rows.Count >= 1) {
+                Dictionary<String, Color> valueToColorDictionary = new Dictionary<String, Color> {
+                { "In", Color.GreenYellow },
+                { "Out", Color.Red }
+            };
+
+                int columnIndex = 4;
+
+                DataGridViewManager dgvManager = new DataGridViewManager(this.accountTransfersDgv);
+                dgvManager.highlightRowsBasedOnCondition(valueToColorDictionary, columnIndex);
+            }
+        }
+
+        private void accountTransfersDgv_DataSourceChanged(object sender, EventArgs e) {
+            
+        }
     }
 }
