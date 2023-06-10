@@ -38,7 +38,7 @@ namespace BudgetManager.mvp.views {
 
             userAccountsComboBox.DataSource = userAccountsBindingSource;
 
-            ExternalAccountDetailsModel model = new ExternalAccountDetailsModel("", "", DateTime.Now.ToString(), 0, 0, 0, 0, 0);
+            ExternalAccountDetailsModel model = new ExternalAccountDetailsModel("", "", "", DateTime.Now.ToString(), 0, 0, 0, 0, 0);
             accountStatisticsBindingSource.DataSource = model;
 
             externalAccountDetailsModelBindingSource.DataSource = accountStatisticsBindingSource;
@@ -49,6 +49,7 @@ namespace BudgetManager.mvp.views {
             externalAccountDetailsModelBindingSource5.DataSource = accountStatisticsBindingSource;
             externalAccountDetailsModelBindingSource6.DataSource = accountStatisticsBindingSource;
             externalAccountDetailsModelBindingSource7.DataSource = accountStatisticsBindingSource;
+            externalAccountDetailsModelBindingSource8.DataSource = accountStatisticsBindingSource;
 
             accountTransfersDgv.DataSource = accountTransfersBindingSource;
 

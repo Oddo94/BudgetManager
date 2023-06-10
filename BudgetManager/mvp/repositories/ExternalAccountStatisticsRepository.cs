@@ -53,6 +53,7 @@ namespace BudgetManager.mvp.repositories {
             MySqlParameter accountId = new MySqlParameter("p_account_ID", MySqlDbType.Int32, 20);
             MySqlParameter accountType = new MySqlParameter("p_account_type", MySqlDbType.VarChar, 50);
             MySqlParameter accountName = new MySqlParameter("p_account_name", MySqlDbType.VarChar, 50);
+            MySqlParameter accountCurrency = new MySqlParameter("p_account_ccy", MySqlDbType.VarChar, 50);
             MySqlParameter bankName = new MySqlParameter("p_bank_name", MySqlDbType.VarChar, 50);
             MySqlParameter accountCreationDate = new MySqlParameter("p_account_creation_date", MySqlDbType.VarChar, 10);
             MySqlParameter accountBalance = new MySqlParameter("p_account_balance", MySqlDbType.Double);
@@ -73,7 +74,7 @@ namespace BudgetManager.mvp.repositories {
 
 
             List<MySqlParameter> inputParameters = new List<MySqlParameter>() { accountId };
-            List<MySqlParameter> outputParameters = new List<MySqlParameter>() { accountType, accountName, bankName, accountCreationDate, accountBalance, totalInTransfers, totalOutTransfers, totalInterestAmount, totalSavingAccountExpenses, totalSavings, totalUnpaidReceivableAmount };
+            List<MySqlParameter> outputParameters = new List<MySqlParameter>() { accountType, accountName, bankName, accountCurrency, accountCreationDate, accountBalance, totalInTransfers, totalOutTransfers, totalInterestAmount, totalSavingAccountExpenses, totalSavings, totalUnpaidReceivableAmount };
 
 
             List<MySqlParameter> populatedOutputParameters = DBConnectionManager.callDatabaseStoredProcedure(procedureName, inputParameters, outputParameters);
@@ -87,6 +88,10 @@ namespace BudgetManager.mvp.repositories {
 
                     case "p_bank_name":
                         externalAccountDetails.BankName = currentParam.Value.ToString();
+                        break;
+
+                    case "p_account_ccy":
+                        externalAccountDetails.AccountCurrency = currentParam.Value.ToString();
                         break;
 
                     case "p_account_creation_date":

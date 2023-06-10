@@ -52,6 +52,8 @@
             this.endDateTransfersDTPicker = new System.Windows.Forms.DateTimePicker();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.accountCurrencyValueLabel = new System.Windows.Forms.Label();
             this.externalAccountDetailsModelBindingSource7 = new System.Windows.Forms.BindingSource(this.components);
             this.externalAccountDetailsModelBindingSource6 = new System.Windows.Forms.BindingSource(this.components);
             this.externalAccountDetailsModelBindingSource5 = new System.Windows.Forms.BindingSource(this.components);
@@ -60,6 +62,7 @@
             this.externalAccountDetailsModelBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.externalAccountDetailsModelBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.externalAccountDetailsModelBindingSource3 = new System.Windows.Forms.BindingSource(this.components);
+            this.externalAccountDetailsModelBindingSource8 = new System.Windows.Forms.BindingSource(this.components);
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.accountTransfersDgv)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource7)).BeginInit();
@@ -70,6 +73,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource8)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -91,6 +95,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.accountCurrencyValueLabel);
+            this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.accountCreationDateValueLabel);
             this.groupBox1.Controls.Add(this.accountCreationDateLabel);
             this.groupBox1.Controls.Add(this.bankNameValueLabel);
@@ -115,16 +121,16 @@
             // 
             this.accountCreationDateValueLabel.AutoSize = true;
             this.accountCreationDateValueLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.externalAccountDetailsModelBindingSource7, "CreationDate", true));
-            this.accountCreationDateValueLabel.Location = new System.Drawing.Point(79, 91);
+            this.accountCreationDateValueLabel.Location = new System.Drawing.Point(365, 38);
             this.accountCreationDateValueLabel.Name = "accountCreationDateValueLabel";
-            this.accountCreationDateValueLabel.Size = new System.Drawing.Size(61, 13);
+            this.accountCreationDateValueLabel.Size = new System.Drawing.Size(27, 13);
             this.accountCreationDateValueLabel.TabIndex = 19;
-            this.accountCreationDateValueLabel.Text = "2023-05-24";
+            this.accountCreationDateValueLabel.Text = "N/A";
             // 
             // accountCreationDateLabel
             // 
             this.accountCreationDateLabel.AutoSize = true;
-            this.accountCreationDateLabel.Location = new System.Drawing.Point(6, 91);
+            this.accountCreationDateLabel.Location = new System.Drawing.Point(289, 38);
             this.accountCreationDateLabel.Name = "accountCreationDateLabel";
             this.accountCreationDateLabel.Size = new System.Drawing.Size(70, 13);
             this.accountCreationDateLabel.TabIndex = 18;
@@ -136,19 +142,19 @@
             this.bankNameValueLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.externalAccountDetailsModelBindingSource6, "BankName", true));
             this.bankNameValueLabel.Location = new System.Drawing.Point(76, 63);
             this.bankNameValueLabel.Name = "bankNameValueLabel";
-            this.bankNameValueLabel.Size = new System.Drawing.Size(98, 13);
+            this.bankNameValueLabel.Size = new System.Drawing.Size(27, 13);
             this.bankNameValueLabel.TabIndex = 17;
-            this.bankNameValueLabel.Text = "Banca Transilvania";
+            this.bankNameValueLabel.Text = "N/A";
             // 
             // accountNameValueLabel
             // 
             this.accountNameValueLabel.AutoSize = true;
             this.accountNameValueLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.externalAccountDetailsModelBindingSource5, "AccountName", true));
-            this.accountNameValueLabel.Location = new System.Drawing.Point(82, 28);
+            this.accountNameValueLabel.Location = new System.Drawing.Point(91, 38);
             this.accountNameValueLabel.Name = "accountNameValueLabel";
-            this.accountNameValueLabel.Size = new System.Drawing.Size(70, 13);
+            this.accountNameValueLabel.Size = new System.Drawing.Size(27, 13);
             this.accountNameValueLabel.TabIndex = 16;
-            this.accountNameValueLabel.Text = "Test account";
+            this.accountNameValueLabel.Text = "N/A";
             // 
             // bankNameLabel
             // 
@@ -162,7 +168,7 @@
             // accountNameLabel
             // 
             this.accountNameLabel.AutoSize = true;
-            this.accountNameLabel.Location = new System.Drawing.Point(6, 28);
+            this.accountNameLabel.Location = new System.Drawing.Point(6, 38);
             this.accountNameLabel.Name = "accountNameLabel";
             this.accountNameLabel.Size = new System.Drawing.Size(79, 13);
             this.accountNameLabel.TabIndex = 14;
@@ -172,36 +178,36 @@
             // 
             this.totalInterestAmountValueLabel.AutoSize = true;
             this.totalInterestAmountValueLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.externalAccountDetailsModelBindingSource4, "TotalInterestAmount", true));
-            this.totalInterestAmountValueLabel.Location = new System.Drawing.Point(410, 91);
+            this.totalInterestAmountValueLabel.Location = new System.Drawing.Point(404, 116);
             this.totalInterestAmountValueLabel.Name = "totalInterestAmountValueLabel";
-            this.totalInterestAmountValueLabel.Size = new System.Drawing.Size(31, 13);
+            this.totalInterestAmountValueLabel.Size = new System.Drawing.Size(27, 13);
             this.totalInterestAmountValueLabel.TabIndex = 11;
-            this.totalInterestAmountValueLabel.Text = "5514";
+            this.totalInterestAmountValueLabel.Text = "N/A";
             // 
             // totalOutTransfersValueLabel
             // 
             this.totalOutTransfersValueLabel.AutoSize = true;
             this.totalOutTransfersValueLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.externalAccountDetailsModelBindingSource2, "TotalOutTransfers", true));
-            this.totalOutTransfersValueLabel.Location = new System.Drawing.Point(395, 63);
+            this.totalOutTransfersValueLabel.Location = new System.Drawing.Point(395, 91);
             this.totalOutTransfersValueLabel.Name = "totalOutTransfersValueLabel";
-            this.totalOutTransfersValueLabel.Size = new System.Drawing.Size(31, 13);
+            this.totalOutTransfersValueLabel.Size = new System.Drawing.Size(27, 13);
             this.totalOutTransfersValueLabel.TabIndex = 10;
-            this.totalOutTransfersValueLabel.Text = "3000";
+            this.totalOutTransfersValueLabel.Text = "N/A";
             // 
             // totalInTransfersValueLabel
             // 
             this.totalInTransfersValueLabel.AutoSize = true;
             this.totalInTransfersValueLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.externalAccountDetailsModelBindingSource1, "TotalInTransfers", true));
-            this.totalInTransfersValueLabel.Location = new System.Drawing.Point(395, 28);
+            this.totalInTransfersValueLabel.Location = new System.Drawing.Point(386, 63);
             this.totalInTransfersValueLabel.Name = "totalInTransfersValueLabel";
-            this.totalInTransfersValueLabel.Size = new System.Drawing.Size(31, 13);
+            this.totalInTransfersValueLabel.Size = new System.Drawing.Size(27, 13);
             this.totalInTransfersValueLabel.TabIndex = 9;
-            this.totalInTransfersValueLabel.Text = "8000";
+            this.totalInTransfersValueLabel.Text = "N/A";
             // 
             // totalInterestAmountLabel
             // 
             this.totalInterestAmountLabel.AutoSize = true;
-            this.totalInterestAmountLabel.Location = new System.Drawing.Point(295, 91);
+            this.totalInterestAmountLabel.Location = new System.Drawing.Point(289, 116);
             this.totalInterestAmountLabel.Name = "totalInterestAmountLabel";
             this.totalInterestAmountLabel.Size = new System.Drawing.Size(109, 13);
             this.totalInterestAmountLabel.TabIndex = 7;
@@ -210,7 +216,7 @@
             // totaloutTransfersLabel
             // 
             this.totaloutTransfersLabel.AutoSize = true;
-            this.totaloutTransfersLabel.Location = new System.Drawing.Point(295, 63);
+            this.totaloutTransfersLabel.Location = new System.Drawing.Point(289, 91);
             this.totaloutTransfersLabel.Name = "totaloutTransfersLabel";
             this.totaloutTransfersLabel.Size = new System.Drawing.Size(103, 13);
             this.totaloutTransfersLabel.TabIndex = 5;
@@ -219,7 +225,7 @@
             // totalInTransfersLabel
             // 
             this.totalInTransfersLabel.AutoSize = true;
-            this.totalInTransfersLabel.Location = new System.Drawing.Point(298, 28);
+            this.totalInTransfersLabel.Location = new System.Drawing.Point(289, 63);
             this.totalInTransfersLabel.Name = "totalInTransfersLabel";
             this.totalInTransfersLabel.Size = new System.Drawing.Size(91, 13);
             this.totalInTransfersLabel.TabIndex = 2;
@@ -229,16 +235,16 @@
             // 
             this.accountBalanceValueLabel.AutoSize = true;
             this.accountBalanceValueLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.externalAccountDetailsModelBindingSource, "AccountBalance", true));
-            this.accountBalanceValueLabel.Location = new System.Drawing.Point(94, 125);
+            this.accountBalanceValueLabel.Location = new System.Drawing.Point(103, 91);
             this.accountBalanceValueLabel.Name = "accountBalanceValueLabel";
-            this.accountBalanceValueLabel.Size = new System.Drawing.Size(37, 13);
+            this.accountBalanceValueLabel.Size = new System.Drawing.Size(27, 13);
             this.accountBalanceValueLabel.TabIndex = 1;
-            this.accountBalanceValueLabel.Text = "16514";
+            this.accountBalanceValueLabel.Text = "N/A";
             // 
             // accountBalanceLabel
             // 
             this.accountBalanceLabel.AutoSize = true;
-            this.accountBalanceLabel.Location = new System.Drawing.Point(6, 125);
+            this.accountBalanceLabel.Location = new System.Drawing.Point(6, 91);
             this.accountBalanceLabel.Name = "accountBalanceLabel";
             this.accountBalanceLabel.Size = new System.Drawing.Size(91, 13);
             this.accountBalanceLabel.TabIndex = 0;
@@ -302,6 +308,25 @@
             this.label3.TabIndex = 8;
             this.label3.Text = "End date";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 116);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(94, 13);
+            this.label4.TabIndex = 20;
+            this.label4.Text = "Account currency:";
+            // 
+            // accountCurrencyValueLabel
+            // 
+            this.accountCurrencyValueLabel.AutoSize = true;
+            this.accountCurrencyValueLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.externalAccountDetailsModelBindingSource8, "AccountCurrency", true));
+            this.accountCurrencyValueLabel.Location = new System.Drawing.Point(106, 116);
+            this.accountCurrencyValueLabel.Name = "accountCurrencyValueLabel";
+            this.accountCurrencyValueLabel.Size = new System.Drawing.Size(27, 13);
+            this.accountCurrencyValueLabel.TabIndex = 21;
+            this.accountCurrencyValueLabel.Text = "N/A";
+            // 
             // externalAccountDetailsModelBindingSource7
             // 
             this.externalAccountDetailsModelBindingSource7.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
@@ -334,6 +359,10 @@
             // 
             this.externalAccountDetailsModelBindingSource3.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
             // 
+            // externalAccountDetailsModelBindingSource8
+            // 
+            this.externalAccountDetailsModelBindingSource8.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
+            // 
             // ExternalAccountStatisticsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -363,6 +392,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource8)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -401,5 +431,8 @@
         private System.Windows.Forms.DateTimePicker endDateTransfersDTPicker;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label accountCurrencyValueLabel;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.BindingSource externalAccountDetailsModelBindingSource8;
     }
 }

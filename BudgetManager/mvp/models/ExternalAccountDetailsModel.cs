@@ -11,6 +11,7 @@ namespace BudgetManager.mvp.models
     internal class ExternalAccountDetailsModel {
         private String accountName;
         private String bankName;
+        private String accountCurrency;
         private String creationDate;
         private double accountBalance;
         private double totalInTransfers;
@@ -18,9 +19,10 @@ namespace BudgetManager.mvp.models
         private double totalUnpaidReceivables;
         private double totalInterestAmount;
 
-        public ExternalAccountDetailsModel(String accountName, String bankName, String creationDate, double accountBalance, double totalInTransfers, double totalOutTransfers, double totalUnpaidReceivables, double totalInterestAmount) {
+        public ExternalAccountDetailsModel(String accountName, String bankName, String accountCurrency, String creationDate, double accountBalance, double totalInTransfers, double totalOutTransfers, double totalUnpaidReceivables, double totalInterestAmount) {
             this.accountName = accountName;
             this.bankName = bankName;
+            this.accountCurrency = accountCurrency;
             this.creationDate = creationDate;
             this.accountBalance = accountBalance;
             this.totalInTransfers = totalInTransfers;
@@ -33,6 +35,7 @@ namespace BudgetManager.mvp.models
 
         public String AccountName { get => accountName; set => accountName = value; }
         public String BankName { get => bankName; set => bankName = value; }
+        public String AccountCurrency { get => accountCurrency; set => accountCurrency = value; }
         public String CreationDate { get => creationDate; set => creationDate = value; }
         [Required(ErrorMessage = "The account balance cannot be null! It must be greater or equal to 0.")]
         public double AccountBalance { get => accountBalance; set => accountBalance = value; }
