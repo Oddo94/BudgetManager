@@ -162,6 +162,7 @@
             this.manageExternalAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createExternalAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.externalAccountTransfersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.externalAccountStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manageReceivablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateReceivablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -169,7 +170,6 @@
             this.budgetPlannerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editDeleteExistingPlansToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.externalAccountStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainTabControl.SuspendLayout();
             this.tabPageBS.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pieChartBS)).BeginInit();
@@ -245,7 +245,7 @@
             this.pieChartBS.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             this.pieChartBS.Legends.Add(legend1);
-            this.pieChartBS.Location = new System.Drawing.Point(619, 243);
+            this.pieChartBS.Location = new System.Drawing.Point(585, 257);
             this.pieChartBS.Name = "pieChartBS";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -260,7 +260,7 @@
             series1.Points.Add(dataPoint3);
             series1.Points.Add(dataPoint4);
             this.pieChartBS.Series.Add(series1);
-            this.pieChartBS.Size = new System.Drawing.Size(300, 300);
+            this.pieChartBS.Size = new System.Drawing.Size(415, 323);
             this.pieChartBS.TabIndex = 8;
             this.pieChartBS.Text = "chart1";
             title1.Name = "PieChartBSTitle";
@@ -458,7 +458,7 @@
             this.pieChartIncomes.ChartAreas.Add(chartArea3);
             legend3.Name = "Legend1";
             this.pieChartIncomes.Legends.Add(legend3);
-            this.pieChartIncomes.Location = new System.Drawing.Point(674, 126);
+            this.pieChartIncomes.Location = new System.Drawing.Point(585, 147);
             this.pieChartIncomes.Name = "pieChartIncomes";
             series3.ChartArea = "ChartArea1";
             series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -469,7 +469,7 @@
             series3.Points.Add(dataPoint6);
             series3.Points.Add(dataPoint7);
             this.pieChartIncomes.Series.Add(series3);
-            this.pieChartIncomes.Size = new System.Drawing.Size(300, 300);
+            this.pieChartIncomes.Size = new System.Drawing.Size(415, 323);
             this.pieChartIncomes.TabIndex = 7;
             this.pieChartIncomes.Text = "chart1";
             title3.Name = "Title1";
@@ -512,7 +512,7 @@
             this.monthPickerPanelIncomes.Controls.Add(this.endLabelIncomes);
             this.monthPickerPanelIncomes.Location = new System.Drawing.Point(349, 105);
             this.monthPickerPanelIncomes.Name = "monthPickerPanelIncomes";
-            this.monthPickerPanelIncomes.Size = new System.Drawing.Size(259, 62);
+            this.monthPickerPanelIncomes.Size = new System.Drawing.Size(209, 62);
             this.monthPickerPanelIncomes.TabIndex = 3;
             this.monthPickerPanelIncomes.Visible = false;
             // 
@@ -653,7 +653,7 @@
             this.pieChartExpenses.ChartAreas.Add(chartArea5);
             legend5.Name = "Legend1";
             this.pieChartExpenses.Legends.Add(legend5);
-            this.pieChartExpenses.Location = new System.Drawing.Point(644, 163);
+            this.pieChartExpenses.Location = new System.Drawing.Point(585, 163);
             this.pieChartExpenses.Name = "pieChartExpenses";
             series5.ChartArea = "ChartArea1";
             series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -666,7 +666,7 @@
             series5.Points.Add(dataPoint10);
             series5.Points.Add(dataPoint11);
             this.pieChartExpenses.Series.Add(series5);
-            this.pieChartExpenses.Size = new System.Drawing.Size(300, 300);
+            this.pieChartExpenses.Size = new System.Drawing.Size(415, 323);
             this.pieChartExpenses.TabIndex = 9;
             this.pieChartExpenses.Text = "chart1";
             title5.Name = "Title1";
@@ -850,7 +850,7 @@
             this.pieChartDebts.ChartAreas.Add(chartArea7);
             legend7.Name = "Legend1";
             this.pieChartDebts.Legends.Add(legend7);
-            this.pieChartDebts.Location = new System.Drawing.Point(663, 152);
+            this.pieChartDebts.Location = new System.Drawing.Point(584, 171);
             this.pieChartDebts.Name = "pieChartDebts";
             series7.ChartArea = "ChartArea1";
             series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -859,7 +859,7 @@
             dataPoint13.LegendText = "Creditor1";
             series7.Points.Add(dataPoint13);
             this.pieChartDebts.Series.Add(series7);
-            this.pieChartDebts.Size = new System.Drawing.Size(300, 300);
+            this.pieChartDebts.Size = new System.Drawing.Size(415, 323);
             this.pieChartDebts.TabIndex = 9;
             this.pieChartDebts.Text = "chart1";
             title7.Name = "Title1";
@@ -1055,7 +1055,7 @@
             this.pieChartSavings.ChartAreas.Add(chartArea9);
             legend9.Name = "Legend1";
             this.pieChartSavings.Legends.Add(legend9);
-            this.pieChartSavings.Location = new System.Drawing.Point(672, 197);
+            this.pieChartSavings.Location = new System.Drawing.Point(585, 188);
             this.pieChartSavings.Name = "pieChartSavings";
             series9.ChartArea = "ChartArea1";
             series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -1067,7 +1067,7 @@
             series9.Points.Add(dataPoint15);
             series9.Points.Add(dataPoint16);
             this.pieChartSavings.Series.Add(series9);
-            this.pieChartSavings.Size = new System.Drawing.Size(300, 300);
+            this.pieChartSavings.Size = new System.Drawing.Size(415, 323);
             this.pieChartSavings.TabIndex = 9;
             this.pieChartSavings.Text = "chart1";
             title9.Name = "Title1";
@@ -1092,7 +1092,7 @@
             this.monthPickerPanelSavings.Controls.Add(this.endLabelSavings);
             this.monthPickerPanelSavings.Location = new System.Drawing.Point(349, 134);
             this.monthPickerPanelSavings.Name = "monthPickerPanelSavings";
-            this.monthPickerPanelSavings.Size = new System.Drawing.Size(267, 74);
+            this.monthPickerPanelSavings.Size = new System.Drawing.Size(213, 75);
             this.monthPickerPanelSavings.TabIndex = 7;
             this.monthPickerPanelSavings.Visible = false;
             // 
@@ -1216,14 +1216,14 @@
             // insertDataToolStripMenuItem
             // 
             this.insertDataToolStripMenuItem.Name = "insertDataToolStripMenuItem";
-            this.insertDataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.insertDataToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.insertDataToolStripMenuItem.Text = "Insert data";
             this.insertDataToolStripMenuItem.Click += new System.EventHandler(this.insertDataToolStripMenuItem_Click);
             // 
             // updateDataToolStripMenuItem
             // 
             this.updateDataToolStripMenuItem.Name = "updateDataToolStripMenuItem";
-            this.updateDataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.updateDataToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.updateDataToolStripMenuItem.Text = "Update/Delete data";
             this.updateDataToolStripMenuItem.Click += new System.EventHandler(this.updateDataToolStripMenuItem_Click);
             // 
@@ -1234,7 +1234,7 @@
             this.externalAccountTransfersToolStripMenuItem,
             this.externalAccountStatisticsToolStripMenuItem});
             this.manageExternalAccountsToolStripMenuItem.Name = "manageExternalAccountsToolStripMenuItem";
-            this.manageExternalAccountsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.manageExternalAccountsToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.manageExternalAccountsToolStripMenuItem.Text = "External accounts";
             // 
             // createExternalAccountToolStripMenuItem
@@ -1251,12 +1251,19 @@
             this.externalAccountTransfersToolStripMenuItem.Text = "External account transfers";
             this.externalAccountTransfersToolStripMenuItem.Click += new System.EventHandler(this.externalAccountTransfersToolStripMenuItem_Click);
             // 
+            // externalAccountStatisticsToolStripMenuItem
+            // 
+            this.externalAccountStatisticsToolStripMenuItem.Name = "externalAccountStatisticsToolStripMenuItem";
+            this.externalAccountStatisticsToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.externalAccountStatisticsToolStripMenuItem.Text = "External account statistics";
+            this.externalAccountStatisticsToolStripMenuItem.Click += new System.EventHandler(this.externalAccountStatisticsToolStripMenuItem_Click);
+            // 
             // manageReceivablesToolStripMenuItem
             // 
             this.manageReceivablesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.updateReceivablesToolStripMenuItem});
             this.manageReceivablesToolStripMenuItem.Name = "manageReceivablesToolStripMenuItem";
-            this.manageReceivablesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.manageReceivablesToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.manageReceivablesToolStripMenuItem.Text = "Receivables";
             // 
             // updateReceivablesToolStripMenuItem
@@ -1304,13 +1311,6 @@
             this.editDeleteExistingPlansToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.editDeleteExistingPlansToolStripMenuItem.Text = "Edit/Delete budget plans";
             this.editDeleteExistingPlansToolStripMenuItem.Click += new System.EventHandler(this.editDeleteExistingPlansToolStripMenuItem_Click);
-            // 
-            // externalAccountStatisticsToolStripMenuItem
-            // 
-            this.externalAccountStatisticsToolStripMenuItem.Name = "externalAccountStatisticsToolStripMenuItem";
-            this.externalAccountStatisticsToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.externalAccountStatisticsToolStripMenuItem.Text = "External account statistics";
-            this.externalAccountStatisticsToolStripMenuItem.Click += new System.EventHandler(this.externalAccountStatisticsToolStripMenuItem_Click);
             // 
             // UserDashboard
             // 
