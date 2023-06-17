@@ -2,6 +2,7 @@
 using BudgetManager.mvp.models;
 using BudgetManager.utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,6 +12,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace BudgetManager.mvp.views {
     public partial class ExternalAccountStatisticsForm : Form, IExternalAccountStatisticsView {
@@ -21,6 +23,11 @@ namespace BudgetManager.mvp.views {
         public String accountName;
         public String startDate;
         public String endDate;
+
+        //TEST ONLY
+        BindingSource mockBindingSource;
+        public List<int> inTransferValues = new List<int>() { 10, 100, 500, 458, 620, 700, 511, 300, 29, 100, 444, 777 };
+        public List<int> outTransferValues = new List<int>() { 400, 500, 433, 879, 230, 378, 289, 600, 80, 145, 766, 210 };
 
         public ExternalAccountStatisticsForm(int userId) {
             this.userId = userId;
@@ -52,6 +59,13 @@ namespace BudgetManager.mvp.views {
             externalAccountDetailsModelBindingSource8.DataSource = accountStatisticsBindingSource;
 
             accountTransfersDgv.DataSource = accountTransfersBindingSource;
+
+            mockBindingSource = new BindingSource();
+
+            accountTransferActivityChart.DataSource = mockBindingSource;
+
+
+
 
         }
 
@@ -97,7 +111,7 @@ namespace BudgetManager.mvp.views {
             if (accountTransfersDgv.Rows.Count >= 1) {
                 Dictionary<String, Color> valueToColorDictionary = new Dictionary<String, Color> {
                 { "In", Color.GreenYellow },
-                { "Out", Color.Red }
+                { "Out", Color.Tomato }
             };
 
                 int columnIndex = 4;
@@ -109,6 +123,62 @@ namespace BudgetManager.mvp.views {
 
         private void accountTransfersDgv_DataSourceChanged(object sender, EventArgs e) {
             
+        }
+
+        private void monthlyTransferEvolutionDisplayButton_Click(object sender, EventArgs e) {
+            DataTable mockDT = new DataTable();
+            mockDT.Columns.Add("Month");
+            mockDT.Columns.Add("Total IN transfers");
+            mockDT.Columns.Add("Total OUT transfers");
+
+            mockDT.Rows.Add("Jan", 500, 100);
+            mockDT.Rows.Add("Feb", 500, 100);
+            mockDT.Rows.Add("Mar", 500, 100);
+            mockDT.Rows.Add("Apr", 500, 100);
+            mockDT.Rows.Add("May", 500, 100);
+            mockDT.Rows.Add("Jun", 500, 100);
+            mockDT.Rows.Add("Jul", 500, 100);
+            mockDT.Rows.Add("Aug", 500, 100);
+            mockDT.Rows.Add("Sep", 500, 100);
+            mockDT.Rows.Add("Oct", 500, 100);
+            mockDT.Rows.Add("Nov", 500, 100);
+            mockDT.Rows.Add("Dec", 500, 100);
+
+            mockBindingSource.DataSource = mockDT;
+            accountTransferActivityChart.DataBind();
+
+           DialogResult userOption =  MessageBox.Show("Do you want to change the displayed data?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (userOption == DialogResult.Yes) {
+                mockDT.Rows.Clear();
+                mockDT.Rows.Add("Jan", 500, 100);
+                mockDT.Rows.Add("Feb", 970, 222);
+                mockDT.Rows.Add("Mar", 411, 100);
+                mockDT.Rows.Add("Apr", 550, 390);
+                mockDT.Rows.Add("May", 877, 23);
+                mockDT.Rows.Add("Jun", 599, 665);
+                mockDT.Rows.Add("Jul", 111, 388);
+                mockDT.Rows.Add("Aug", 412, 907);
+                mockDT.Rows.Add("Sep", 675, 180);
+                mockDT.Rows.Add("Oct", 999, 1500);
+                mockDT.Rows.Add("Nov", 89, 45);
+                mockDT.Rows.Add("Dec", 710, 333);
+
+                accountTransferActivityChart.DataBind();
+            }
+            //accountTransferActivityChart.DataSource = mockDT;
+
+            //BindingSource chartBinding = (BindingSource) accountTransferActivityChart.DataBindings[0];
+            //DataTable testDT = (DataTable)chartBinding.DataSource;
+            
+            //accountTransferActivityChart.DataSource = testDT;
+
+
+            //List<String> monthsList = new List<String>() { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+
+            //accountTransferActivityChart.Series["IN transfers"].Points.DataBindXY(monthsList, inTransferValues);
+            //accountTransferActivityChart.Series["OUT transfers"].Points.DataBindXY(monthsList, outTransferValues);
         }
     }
 }

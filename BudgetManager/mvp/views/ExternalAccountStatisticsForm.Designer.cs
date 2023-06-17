@@ -29,9 +29,39 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint1 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1D, 400D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint2 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(2D, 300D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint3 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(3D, 100D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint4 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(4D, 500D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint5 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(5D, 200D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint6 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(6D, 900D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint7 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(7D, 600D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint8 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(8D, 400D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint9 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(9D, 700D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint10 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(10D, 200D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint11 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(11D, 1000D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint12 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(12D, 800D);
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint13 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(1D, 200D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint14 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(2D, 300D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint15 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(3D, 500D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint16 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(4D, 100D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint17 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(5D, 200D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint18 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(6D, 500D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint19 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(7D, 400D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint20 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(8D, 100D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint21 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(9D, 700D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint22 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(10D, 800D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint23 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(11D, 100D);
+            System.Windows.Forms.DataVisualization.Charting.DataPoint dataPoint24 = new System.Windows.Forms.DataVisualization.Charting.DataPoint(12D, 300D);
             this.label1 = new System.Windows.Forms.Label();
             this.userAccountsComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.accountCurrencyValueLabel = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.accountCreationDateValueLabel = new System.Windows.Forms.Label();
             this.accountCreationDateLabel = new System.Windows.Forms.Label();
             this.bankNameValueLabel = new System.Windows.Forms.Label();
@@ -52,8 +82,9 @@
             this.endDateTransfersDTPicker = new System.Windows.Forms.DateTimePicker();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.accountCurrencyValueLabel = new System.Windows.Forms.Label();
+            this.accountTransferActivityChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.monthlyTransferEvolutionDisplayButton = new System.Windows.Forms.Button();
+            this.externalAccountDetailsModelBindingSource8 = new System.Windows.Forms.BindingSource(this.components);
             this.externalAccountDetailsModelBindingSource7 = new System.Windows.Forms.BindingSource(this.components);
             this.externalAccountDetailsModelBindingSource6 = new System.Windows.Forms.BindingSource(this.components);
             this.externalAccountDetailsModelBindingSource5 = new System.Windows.Forms.BindingSource(this.components);
@@ -62,9 +93,10 @@
             this.externalAccountDetailsModelBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.externalAccountDetailsModelBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.externalAccountDetailsModelBindingSource3 = new System.Windows.Forms.BindingSource(this.components);
-            this.externalAccountDetailsModelBindingSource8 = new System.Windows.Forms.BindingSource(this.components);
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.accountTransfersDgv)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.accountTransferActivityChart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource8)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource5)).BeginInit();
@@ -73,7 +105,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource8)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -116,6 +147,25 @@
             this.groupBox1.Size = new System.Drawing.Size(464, 206);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
+            // 
+            // accountCurrencyValueLabel
+            // 
+            this.accountCurrencyValueLabel.AutoSize = true;
+            this.accountCurrencyValueLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.externalAccountDetailsModelBindingSource8, "AccountCurrency", true));
+            this.accountCurrencyValueLabel.Location = new System.Drawing.Point(106, 116);
+            this.accountCurrencyValueLabel.Name = "accountCurrencyValueLabel";
+            this.accountCurrencyValueLabel.Size = new System.Drawing.Size(27, 13);
+            this.accountCurrencyValueLabel.TabIndex = 21;
+            this.accountCurrencyValueLabel.Text = "N/A";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 116);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(94, 13);
+            this.label4.TabIndex = 20;
+            this.label4.Text = "Account currency:";
             // 
             // accountCreationDateValueLabel
             // 
@@ -308,24 +358,88 @@
             this.label3.TabIndex = 8;
             this.label3.Text = "End date";
             // 
-            // label4
+            // accountTransferActivityChart
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 116);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(94, 13);
-            this.label4.TabIndex = 20;
-            this.label4.Text = "Account currency:";
+            chartArea1.Area3DStyle.Enable3D = true;
+            chartArea1.Area3DStyle.Inclination = 90;
+            chartArea1.Area3DStyle.IsClustered = true;
+            chartArea1.Area3DStyle.Rotation = 20;
+            chartArea1.AxisX.Interval = 1D;
+            chartArea1.AxisX.LabelAutoFitMinFontSize = 10;
+            chartArea1.AxisX.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            chartArea1.AxisY.LabelAutoFitMinFontSize = 10;
+            chartArea1.BackColor = System.Drawing.Color.White;
+            chartArea1.BackSecondaryColor = System.Drawing.Color.White;
+            chartArea1.InnerPlotPosition.Auto = false;
+            chartArea1.InnerPlotPosition.Height = 80F;
+            chartArea1.InnerPlotPosition.Width = 100F;
+            chartArea1.InnerPlotPosition.Y = 4.46808F;
+            chartArea1.Name = "ChartArea1";
+            chartArea1.ShadowColor = System.Drawing.Color.White;
+            this.accountTransferActivityChart.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.accountTransferActivityChart.Legends.Add(legend1);
+            this.accountTransferActivityChart.Location = new System.Drawing.Point(25, 734);
+            this.accountTransferActivityChart.Name = "accountTransferActivityChart";
+            series1.ChartArea = "ChartArea1";
+            series1.Color = System.Drawing.Color.Lime;
+            series1.Legend = "Legend1";
+            series1.Name = "IN transfers";
+            dataPoint1.AxisLabel = "January";
+            dataPoint1.Label = "";
+            dataPoint2.AxisLabel = "February";
+            series1.Points.Add(dataPoint1);
+            series1.Points.Add(dataPoint2);
+            series1.Points.Add(dataPoint3);
+            series1.Points.Add(dataPoint4);
+            series1.Points.Add(dataPoint5);
+            series1.Points.Add(dataPoint6);
+            series1.Points.Add(dataPoint7);
+            series1.Points.Add(dataPoint8);
+            series1.Points.Add(dataPoint9);
+            series1.Points.Add(dataPoint10);
+            series1.Points.Add(dataPoint11);
+            series1.Points.Add(dataPoint12);
+            series1.XValueMember = "Month";
+            series1.YValueMembers = "Total IN transfers";
+            series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            series2.ChartArea = "ChartArea1";
+            series2.Color = System.Drawing.Color.Tomato;
+            series2.Legend = "Legend1";
+            series2.Name = "OUT transfers";
+            series2.Points.Add(dataPoint13);
+            series2.Points.Add(dataPoint14);
+            series2.Points.Add(dataPoint15);
+            series2.Points.Add(dataPoint16);
+            series2.Points.Add(dataPoint17);
+            series2.Points.Add(dataPoint18);
+            series2.Points.Add(dataPoint19);
+            series2.Points.Add(dataPoint20);
+            series2.Points.Add(dataPoint21);
+            series2.Points.Add(dataPoint22);
+            series2.Points.Add(dataPoint23);
+            series2.Points.Add(dataPoint24);
+            series2.XValueMember = "Month";
+            series2.YValueMembers = "Total OUT transfers";
+            this.accountTransferActivityChart.Series.Add(series1);
+            this.accountTransferActivityChart.Series.Add(series2);
+            this.accountTransferActivityChart.Size = new System.Drawing.Size(832, 240);
+            this.accountTransferActivityChart.TabIndex = 9;
+            this.accountTransferActivityChart.Text = "chart1";
             // 
-            // accountCurrencyValueLabel
+            // monthlyTransferEvolutionDisplayButton
             // 
-            this.accountCurrencyValueLabel.AutoSize = true;
-            this.accountCurrencyValueLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.externalAccountDetailsModelBindingSource8, "AccountCurrency", true));
-            this.accountCurrencyValueLabel.Location = new System.Drawing.Point(106, 116);
-            this.accountCurrencyValueLabel.Name = "accountCurrencyValueLabel";
-            this.accountCurrencyValueLabel.Size = new System.Drawing.Size(27, 13);
-            this.accountCurrencyValueLabel.TabIndex = 21;
-            this.accountCurrencyValueLabel.Text = "N/A";
+            this.monthlyTransferEvolutionDisplayButton.Location = new System.Drawing.Point(365, 691);
+            this.monthlyTransferEvolutionDisplayButton.Name = "monthlyTransferEvolutionDisplayButton";
+            this.monthlyTransferEvolutionDisplayButton.Size = new System.Drawing.Size(112, 37);
+            this.monthlyTransferEvolutionDisplayButton.TabIndex = 10;
+            this.monthlyTransferEvolutionDisplayButton.Text = "Show monthly transfer evolution";
+            this.monthlyTransferEvolutionDisplayButton.UseVisualStyleBackColor = true;
+            this.monthlyTransferEvolutionDisplayButton.Click += new System.EventHandler(this.monthlyTransferEvolutionDisplayButton_Click);
+            // 
+            // externalAccountDetailsModelBindingSource8
+            // 
+            this.externalAccountDetailsModelBindingSource8.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
             // 
             // externalAccountDetailsModelBindingSource7
             // 
@@ -359,15 +473,13 @@
             // 
             this.externalAccountDetailsModelBindingSource3.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
             // 
-            // externalAccountDetailsModelBindingSource8
-            // 
-            this.externalAccountDetailsModelBindingSource8.DataSource = typeof(BudgetManager.mvp.models.ExternalAccountDetailsModel);
-            // 
             // ExternalAccountStatisticsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(881, 682);
+            this.ClientSize = new System.Drawing.Size(1040, 986);
+            this.Controls.Add(this.monthlyTransferEvolutionDisplayButton);
+            this.Controls.Add(this.accountTransferActivityChart);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.endDateTransfersDTPicker);
@@ -384,6 +496,8 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.accountTransfersDgv)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.accountTransferActivityChart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource8)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource5)).EndInit();
@@ -392,7 +506,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.externalAccountDetailsModelBindingSource8)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -434,5 +547,8 @@
         private System.Windows.Forms.Label accountCurrencyValueLabel;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.BindingSource externalAccountDetailsModelBindingSource8;
+        private System.Windows.Forms.DataVisualization.Charting.Chart accountTransferActivityChart;
+        private System.Windows.Forms.Button monthlyTransferEvolutionDisplayButton;
+        //        private System.Windows.Forms.BindingSource testObjectBindingSource;
     }
 }

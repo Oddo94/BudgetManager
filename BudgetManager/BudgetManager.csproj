@@ -83,8 +83,10 @@
       <DependentUpon>SavingAccountForm.cs</DependentUpon>
     </Compile>
     <Compile Include="mvp\misc\ExternalAccountEventArgs.cs" />
+    <Compile Include="mvp\models\AccountTransferActivityModel.cs" />
     <Compile Include="mvp\models\ExternalAccountDetailsModel.cs" />
     <Compile Include="mvp\models\IExternalAccountStatisticsRepository.cs" />
+    <Compile Include="mvp\models\TestObject.cs" />
     <Compile Include="mvp\presenters\ExternalAccountStatisticsPresenter.cs" />
     <Compile Include="mvp\repositories\ExternalAccountStatisticsRepository.cs" />
     <Compile Include="mvp\views\ExternalAccountStatisticsForm.cs">
@@ -269,7 +271,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="Properties\DataSources\BudgetManager.mvp.models.AccountTransferActivityModel.datasource" />
     <None Include="Properties\DataSources\BudgetManager.mvp.models.ExternalAccountDetailsModel.datasource" />
+    <None Include="Properties\DataSources\BudgetManager.mvp.models.IExternalAccountStatisticsRepository.datasource" />
+    <None Include="Properties\DataSources\BudgetManager.mvp.models.TestObject.datasource" />
+    <None Include="Properties\DataSources\BudgetManager.mvp.views.ExternalAccountStatisticsForm.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
