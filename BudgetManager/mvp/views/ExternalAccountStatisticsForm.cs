@@ -19,10 +19,14 @@ namespace BudgetManager.mvp.views {
         public event EventHandler loadUserAccountsEvent;
         public event EventHandler displayAccountStatisticsEvent;
         public event EventHandler displayAccountTransfersEvent;
+        public event EventHandler displayAccountTransfersActivityEvent;
+
         public int userId;
         public String accountName;
         public String startDate;
         public String endDate;
+        public int transfersActivityYear;
+        private bool isTransferActivityEvent;
 
         //TEST ONLY
         BindingSource mockBindingSource;
@@ -38,10 +42,11 @@ namespace BudgetManager.mvp.views {
 
         int IExternalAccountStatisticsView.userId { get => userId; set => this.userId = value; }
         string IExternalAccountStatisticsView.accountName { get => this.userAccountsComboBox.Text; set => this.accountName = this.userAccountsComboBox.Text; }
-        String IExternalAccountStatisticsView.startDate { get => startDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); set => startDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); }
-        String IExternalAccountStatisticsView.endDate { get => endDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); set => endDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); }
+        String IExternalAccountStatisticsView.startDate { get => startDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); set => this.startDate = startDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); }
+        String IExternalAccountStatisticsView.endDate { get => endDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); set => this.endDate = endDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); }
+        int IExternalAccountStatisticsView.transfersActivityYear { get => transfersActivityDateTimePicker.Value.Year; set => this.transfersActivityYear = transfersActivityDateTimePicker.Value.Year; }
 
-        public void setControlsBindingSource(BindingSource userAccountsBindingSource, BindingSource accountStatisticsBindingSource, BindingSource accountTransfersBindingSource) {
+        public void setControlsBindingSource(BindingSource userAccountsBindingSource, BindingSource accountStatisticsBindingSource, BindingSource accountTransfersBindingSource, BindingSource accountTransfersActivityBindingSource) {
 
             userAccountsComboBox.DataSource = userAccountsBindingSource;
 
@@ -62,11 +67,9 @@ namespace BudgetManager.mvp.views {
 
             mockBindingSource = new BindingSource();
 
-            accountTransferActivityChart.DataSource = mockBindingSource;
-
-
-
-
+            //accountTransferActivityChart.DataSource = mockBindingSource;
+            accountTransfersActivityChart.DataSource = accountTransfersActivityBindingSource;
+            //accountTransfersActivityBindingSource.DataSourceChanged += delegate { refreshAccountTransfersActivityChart(); };
         }
 
         private void associateAndRaiseEvents() {
@@ -80,6 +83,7 @@ namespace BudgetManager.mvp.views {
             //displayAccountStatisticsButton.Click += delegate { displayAccountStatisticsEvent?.Invoke(this, eventArgs); };
             this.userAccountsComboBox.SelectedValueChanged += delegate { displayAccountStatisticsEvent?.Invoke(this, EventArgs.Empty); };
             this.displayAccountTransfersButton.Click += delegate { displayAccountTransfersEvent?.Invoke(this, EventArgs.Empty); };
+            //this.accountTransfersActivityDisplayButton.Click += delegate { displayAccountTransfersActivityEvent?.Invoke(this, EventArgs.Empty); };           
         }
 
         //Method which raises the event which leads to account transfers retrieval only if the date selection is valid
@@ -125,52 +129,68 @@ namespace BudgetManager.mvp.views {
             
         }
 
-        private void monthlyTransferEvolutionDisplayButton_Click(object sender, EventArgs e) {
-            DataTable mockDT = new DataTable();
-            mockDT.Columns.Add("Month");
-            mockDT.Columns.Add("Total IN transfers");
-            mockDT.Columns.Add("Total OUT transfers");
-
-            mockDT.Rows.Add("Jan", 500, 100);
-            mockDT.Rows.Add("Feb", 500, 100);
-            mockDT.Rows.Add("Mar", 500, 100);
-            mockDT.Rows.Add("Apr", 500, 100);
-            mockDT.Rows.Add("May", 500, 100);
-            mockDT.Rows.Add("Jun", 500, 100);
-            mockDT.Rows.Add("Jul", 500, 100);
-            mockDT.Rows.Add("Aug", 500, 100);
-            mockDT.Rows.Add("Sep", 500, 100);
-            mockDT.Rows.Add("Oct", 500, 100);
-            mockDT.Rows.Add("Nov", 500, 100);
-            mockDT.Rows.Add("Dec", 500, 100);
-
-            mockBindingSource.DataSource = mockDT;
-            accountTransferActivityChart.DataBind();
-
-           DialogResult userOption =  MessageBox.Show("Do you want to change the displayed data?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (userOption == DialogResult.Yes) {
-                mockDT.Rows.Clear();
-                mockDT.Rows.Add("Jan", 500, 100);
-                mockDT.Rows.Add("Feb", 970, 222);
-                mockDT.Rows.Add("Mar", 411, 100);
-                mockDT.Rows.Add("Apr", 550, 390);
-                mockDT.Rows.Add("May", 877, 23);
-                mockDT.Rows.Add("Jun", 599, 665);
-                mockDT.Rows.Add("Jul", 111, 388);
-                mockDT.Rows.Add("Aug", 412, 907);
-                mockDT.Rows.Add("Sep", 675, 180);
-                mockDT.Rows.Add("Oct", 999, 1500);
-                mockDT.Rows.Add("Nov", 89, 45);
-                mockDT.Rows.Add("Dec", 710, 333);
-
-                accountTransferActivityChart.DataBind();
+        private void refreshAccountTransfersActivityChart() {
+            if(accountTransfersActivityChart != null) {
+                accountTransfersActivityChart.DataBind();
             }
+            
+        }
+
+        private void monthlyTransferEvolutionDisplayButton_Click(object sender, EventArgs e) {
+            //isTransferActivityEvent = true;
+            displayAccountTransfersActivityEvent?.Invoke(this, EventArgs.Empty);
+
+            accountTransfersActivityChart.DataBind();
+
+            //isTransferActivityEvent = false;
+
+
+
+            //DataTable mockDT = new DataTable();
+            //mockDT.Columns.Add("Month");
+            //mockDT.Columns.Add("Total in transfers");
+            //mockDT.Columns.Add("Total out transfers");
+
+            //mockDT.Rows.Add("Jan", 500, 100);
+            //mockDT.Rows.Add("Feb", 0, 0);
+            //mockDT.Rows.Add("Mar", 500, 100);
+            //mockDT.Rows.Add("Apr", 500, 100);
+            //mockDT.Rows.Add("May", 0, 0);
+            //mockDT.Rows.Add("Jun", 500, 100);
+            //mockDT.Rows.Add("Jul", 0, 0);
+            //mockDT.Rows.Add("Aug", 500, 100);
+            //mockDT.Rows.Add("Sep", 500, 100);
+            //mockDT.Rows.Add("Oct", 500, 100);
+            //mockDT.Rows.Add("Nov", 0, 0);
+            //mockDT.Rows.Add("Dec", 500, 100);
+
+            //mockBindingSource.DataSource = mockDT;
+            //accountTransfersActivityChart.DataBind();
+
+            // DialogResult userOption =  MessageBox.Show("Do you want to change the displayed data?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            //if (userOption == DialogResult.Yes) {
+            //    mockDT.Rows.Clear();
+            //    mockDT.Rows.Add("Jan", 500, 100);
+            //    mockDT.Rows.Add("Feb", 970, 222);
+            //    mockDT.Rows.Add("Mar", 411, 100);
+            //    mockDT.Rows.Add("Apr", 550, 390);
+            //    mockDT.Rows.Add("May", 877, 23);
+            //    mockDT.Rows.Add("Jun", 599, 665);
+            //    mockDT.Rows.Add("Jul", 111, 388);
+            //    mockDT.Rows.Add("Aug", 412, 907);
+            //    mockDT.Rows.Add("Sep", 675, 180);
+            //    mockDT.Rows.Add("Oct", 999, 1500);
+            //    mockDT.Rows.Add("Nov", 89, 45);
+            //    mockDT.Rows.Add("Dec", 710, 333);
+
+            //    accountTransfersActivityChart.DataBind();
+            //}
             //accountTransferActivityChart.DataSource = mockDT;
 
             //BindingSource chartBinding = (BindingSource) accountTransferActivityChart.DataBindings[0];
             //DataTable testDT = (DataTable)chartBinding.DataSource;
-            
+
             //accountTransferActivityChart.DataSource = testDT;
 
 

@@ -18,6 +18,7 @@ namespace BudgetManager.mvp.presenters
         private BindingSource userAccountsBindingSource;
         private BindingSource accountStatisticsBindingSource;
         private BindingSource accountTransfersBindingSource;
+        private BindingSource accountTransfersActivityBindingSource;
 
         public ExternalAccountStatisticsPresenter(IExternalAccountStatisticsView accountStatisticsView, IExternalAccountStatisticsRepository accountStatisticsRepository) {
             this.accountStatisticsView = accountStatisticsView;
@@ -26,11 +27,13 @@ namespace BudgetManager.mvp.presenters
             this.userAccountsBindingSource = new BindingSource();
             this.accountStatisticsBindingSource = new BindingSource();
             this.accountTransfersBindingSource = new BindingSource();
+            this.accountTransfersActivityBindingSource = new BindingSource();
 
             this.accountStatisticsView.loadUserAccountsEvent += getUserAccounts;
             this.accountStatisticsView.displayAccountStatisticsEvent += getAccountStatistics;
             this.accountStatisticsView.displayAccountTransfersEvent += getAccountTransfers;
-            this.accountStatisticsView.setControlsBindingSource(userAccountsBindingSource, accountStatisticsBindingSource, accountTransfersBindingSource);
+            this.accountStatisticsView.displayAccountTransfersActivityEvent += getAccountTransfersActivity;
+            this.accountStatisticsView.setControlsBindingSource(userAccountsBindingSource, accountStatisticsBindingSource, accountTransfersBindingSource, accountTransfersActivityBindingSource);
         }
 
         private void getUserAccounts(object sender, EventArgs e) {
@@ -55,6 +58,12 @@ namespace BudgetManager.mvp.presenters
         private void getAccountTransfers(object sender, EventArgs e) {
             DataTable accountTransfersDT = accountStatisticsRepository.getAccountTransfers(accountStatisticsView.accountName, accountStatisticsView.userId, accountStatisticsView.startDate, accountStatisticsView.endDate);
             accountTransfersBindingSource.DataSource = accountTransfersDT;
+        }
+
+        private void getAccountTransfersActivity(object sender, EventArgs e) {
+            DataTable accountTransfersActivityDT = accountStatisticsRepository.getAccountTransfersActivity(accountStatisticsView.accountName, accountStatisticsView.userId, accountStatisticsView.transfersActivityYear);
+            accountTransfersActivityBindingSource.DataSource = accountTransfersActivityDT;
+
         }
 
  

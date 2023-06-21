@@ -38,6 +38,49 @@ namespace BudgetManager.mvp.repositories {
 	                                                           AND sat.transferDate BETWEEN @paramStartDate AND @paramEndDate
                                                            ORDER BY
 	                                                           sat.transferDate";
+        private String sqlStatementGetAccountTransfersActivity = @"WITH months_list AS (
+                                                                   SELECT 1 AS mntValue UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION
+                                                                   SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11
+                                                                   UNION SELECT 12),
+
+                                                                   account_details AS ( SELECT accountID FROM saving_accounts WHERE accountName = @paramAccountName AND user_ID = @paramUserId)
+
+                                                                   SELECT
+	                                                                   CASE 
+		                                                                   WHEN mths.mntValue = 1 THEN 'Jan'
+		                                                                   WHEN mths.mntValue = 2 THEN 'Feb'
+		                                                                   WHEN mths.mntValue = 3 THEN 'Mar'
+		                                                                   WHEN mths.mntValue = 4 THEN 'Apr'
+		                                                                   WHEN mths.mntValue = 5 THEN 'May'
+		                                                                   WHEN mths.mntValue = 6 THEN 'Jun'
+		                                                                   WHEN mths.mntValue = 7 THEN 'Jul'
+		                                                                   WHEN mths.mntValue = 8 THEN 'Aug'
+		                                                                   WHEN mths.mntValue = 9 THEN 'Sep'
+		                                                                   WHEN mths.mntValue = 10 THEN 'Oct'
+		                                                                   WHEN mths.mntValue = 11 THEN 'Nov'
+                                                                           WHEN mths.mntValue = 12 THEN 'Dec'
+                                                                       END AS 'Month',
+	                                                                   CASE 
+		                                                                   WHEN sat.receivingAccountID = (SELECT accountID FROM account_details)  THEN
+		                                                                   sum(sat.receivedValue)
+		                                                                   ELSE 0
+	                                                                   END AS 'Total in transfers',		
+	                                                                   CASE
+		                                                                   WHEN sat.senderAccountID = (SELECT accountID FROM account_details)  THEN
+		                                                                   sum(sat.sentValue)
+		                                                                   ELSE 0
+	                                                                   END AS 'Total out transfers'
+                                                                   FROM
+		                                                               saving_accounts_transfers sat
+                                                                   RIGHT JOIN months_list mths ON MONTH(sat.transferDate) = mths.mntValue AND 
+                                                                        (sat.receivingAccountID = (SELECT accountID FROM account_details) OR 
+                                                                         sat.senderAccountID = (SELECT accountID FROM account_details) ) 
+                                                                        AND YEAR(sat.transferDate) = @paramYear
+                                                                   GROUP BY
+		                                                                  mths.mntValue
+                                                                   ORDER BY
+		                                                                  mths.mntValue,
+		                                                           YEAR(sat.transferDate)";
 
         public DataTable getUserAccounts(int userId) {
             QueryData paramContainer = new QueryData.Builder(userId).build();
@@ -129,6 +172,18 @@ namespace BudgetManager.mvp.repositories {
             DataTable accountTransfersDT = DBConnectionManager.getData(accountTransfersRetrievalCommand);
 
             return accountTransfersDT; 
+        }
+
+        public DataTable getAccountTransfersActivity(String accountName, int userId, int transfersActivityYear) {
+            MySqlCommand accountTransfersActivityRetrievalCommand = new MySqlCommand(sqlStatementGetAccountTransfersActivity);
+            accountTransfersActivityRetrievalCommand.Parameters.AddWithValue("@paramAccountName", accountName);
+            accountTransfersActivityRetrievalCommand.Parameters.AddWithValue("@paramYear", transfersActivityYear);
+            accountTransfersActivityRetrievalCommand.Parameters.AddWithValue("@paramUserId", userId);
+
+            DataTable accountTransfersActivityDT = DBConnectionManager.getData(accountTransfersActivityRetrievalCommand);
+
+            return accountTransfersActivityDT;
+
         }
 
         public ExternalAccountDetailsModel getAccountDetailsById(int accountId) {
