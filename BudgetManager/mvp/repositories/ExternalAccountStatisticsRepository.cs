@@ -38,6 +38,7 @@ namespace BudgetManager.mvp.repositories {
 	                                                           AND sat.transferDate BETWEEN @paramStartDate AND @paramEndDate
                                                            ORDER BY
 	                                                           sat.transferDate";
+
         private String sqlStatementGetAccountTransfersActivity = @"WITH months_list AS (
                                                                    SELECT 1 AS mntValue UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION
                                                                    SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11
@@ -81,6 +82,52 @@ namespace BudgetManager.mvp.repositories {
                                                                    ORDER BY
 		                                                                  mths.mntValue,
 		                                                           YEAR(sat.transferDate)";
+
+        private String sqlStatementGetAccountMonthlyBalanceEvolution = @"WITH months_list AS (
+                                                                         SELECT 1 AS mntValue UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION
+                                                                         SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11
+                                                                         UNION SELECT 12)
+
+                                                                         SELECT
+	                                                                         CASE 
+		                                                                         WHEN mths.mntValue = 1 THEN 'Jan'
+		                                                                         WHEN mths.mntValue = 2 THEN 'Feb'
+		                                                                         WHEN mths.mntValue = 3 THEN 'Mar'
+		                                                                         WHEN mths.mntValue = 4 THEN 'Apr'
+		                                                                         WHEN mths.mntValue = 5 THEN 'May'
+		                                                                         WHEN mths.mntValue = 6 THEN 'Jun'
+		                                                                         WHEN mths.mntValue = 7 THEN 'Jul'
+		                                                                         WHEN mths.mntValue = 8 THEN 'Aug'
+		                                                                         WHEN mths.mntValue = 9 THEN 'Sep'
+		                                                                         WHEN mths.mntValue = 10 THEN 'Oct'
+		                                                                         WHEN mths.mntValue = 11 THEN 'Nov'
+		                                                                         WHEN mths.mntValue = 12 THEN 'Dec'
+	                                                                         END AS 'Month',
+	                                                                         COALESCE(YEAR(createdDate), @paramYear) AS 'Year',
+	                                                                         CASE 
+		                                                                         WHEN eab.recordID IS NOT NULL THEN 
+			                                                                         SUM(value) OVER (PARTITION BY account_ID
+	                                                                         ORDER BY
+		                                                                         MONTH(createdDate),
+		                                                                         YEAR(createdDate))
+		                                                                         ELSE 0
+	                                                                         END
+                                                                         AS 'Monthly balance'
+                                                                        FROM
+	                                                                        external_accounts_balance eab
+                                                                        RIGHT JOIN months_list mths ON
+	                                                                        MONTH(eab.createdDate) = mths.mntValue
+	                                                                        AND
+	                                                                        account_ID = (
+	                                                                        SELECT
+		                                                                        accountID
+	                                                                        FROM
+		                                                                        saving_accounts
+	                                                                        WHERE
+		                                                                        accountName = @paramAccountName AND user_ID = @paramUserId)
+	                                                                        AND YEAR(createdDate) = @paramYear
+                                                                        ORDER BY
+	                                                                        mths.mntValue";
 
         public DataTable getUserAccounts(int userId) {
             QueryData paramContainer = new QueryData.Builder(userId).build();
@@ -184,6 +231,17 @@ namespace BudgetManager.mvp.repositories {
 
             return accountTransfersActivityDT;
 
+        }
+
+        public DataTable getAccountMonthlyBalanceEvolution(String accountName, int userId, int monthlyAccountBalanceYear) {
+            MySqlCommand accountMonthlyBalanceEvolutionRetrievalCommand = new MySqlCommand(sqlStatementGetAccountMonthlyBalanceEvolution);
+            accountMonthlyBalanceEvolutionRetrievalCommand.Parameters.AddWithValue("@paramYear", monthlyAccountBalanceYear);
+            accountMonthlyBalanceEvolutionRetrievalCommand.Parameters.AddWithValue("@paramAccountName", accountName);
+            accountMonthlyBalanceEvolutionRetrievalCommand.Parameters.AddWithValue("@paramUserId", userId);
+
+            DataTable accountBalanceMonthlyEvolutionDT = DBConnectionManager.getData(accountMonthlyBalanceEvolutionRetrievalCommand);
+
+            return accountBalanceMonthlyEvolutionDT;
         }
 
         public ExternalAccountDetailsModel getAccountDetailsById(int accountId) {

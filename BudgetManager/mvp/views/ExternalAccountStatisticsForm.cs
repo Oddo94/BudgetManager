@@ -20,13 +20,14 @@ namespace BudgetManager.mvp.views {
         public event EventHandler displayAccountStatisticsEvent;
         public event EventHandler displayAccountTransfersEvent;
         public event EventHandler displayAccountTransfersActivityEvent;
+        public event EventHandler displayAccountBalanceMonthlyEvolutionEvent;
 
         public int userId;
         public String accountName;
         public String startDate;
         public String endDate;
         public int transfersActivityYear;
-        private bool isTransferActivityEvent;
+        public int monthlyAccountBalanceYear;
 
         //TEST ONLY
         BindingSource mockBindingSource;
@@ -45,8 +46,9 @@ namespace BudgetManager.mvp.views {
         String IExternalAccountStatisticsView.startDate { get => startDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); set => this.startDate = startDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); }
         String IExternalAccountStatisticsView.endDate { get => endDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); set => this.endDate = endDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); }
         int IExternalAccountStatisticsView.transfersActivityYear { get => transfersActivityDateTimePicker.Value.Year; set => this.transfersActivityYear = transfersActivityDateTimePicker.Value.Year; }
+        int IExternalAccountStatisticsView.monthlyAccountBalanceYear { get => monthlyBalanceDateTimePicker.Value.Year; set => this.monthlyAccountBalanceYear = monthlyBalanceDateTimePicker.Value.Year; }
 
-        public void setControlsBindingSource(BindingSource userAccountsBindingSource, BindingSource accountStatisticsBindingSource, BindingSource accountTransfersBindingSource, BindingSource accountTransfersActivityBindingSource) {
+        public void setControlsBindingSource(BindingSource userAccountsBindingSource, BindingSource accountStatisticsBindingSource, BindingSource accountTransfersBindingSource, BindingSource accountTransfersActivityBindingSource, BindingSource monthlyAccountBalanceBindingSource) {
 
             userAccountsComboBox.DataSource = userAccountsBindingSource;
 
@@ -67,9 +69,8 @@ namespace BudgetManager.mvp.views {
 
             mockBindingSource = new BindingSource();
 
-            //accountTransferActivityChart.DataSource = mockBindingSource;
             accountTransfersActivityChart.DataSource = accountTransfersActivityBindingSource;
-            //accountTransfersActivityBindingSource.DataSourceChanged += delegate { refreshAccountTransfersActivityChart(); };
+            monthlyAccountBalanceChart.DataSource = monthlyAccountBalanceBindingSource;
         }
 
         private void associateAndRaiseEvents() {
@@ -77,13 +78,10 @@ namespace BudgetManager.mvp.views {
                 .addAccountName(accountName)
                 .build();
 
-            //userAccountsComboBox.Click += delegate { loadUserAccountsEvent?.Invoke(this, EventArgs.Empty); };
             this.Shown += delegate { loadUserAccountsEvent?.Invoke(this, eventArgs); };
 
-            //displayAccountStatisticsButton.Click += delegate { displayAccountStatisticsEvent?.Invoke(this, eventArgs); };
             this.userAccountsComboBox.SelectedValueChanged += delegate { displayAccountStatisticsEvent?.Invoke(this, EventArgs.Empty); };
             this.displayAccountTransfersButton.Click += delegate { displayAccountTransfersEvent?.Invoke(this, EventArgs.Empty); };
-            //this.accountTransfersActivityDisplayButton.Click += delegate { displayAccountTransfersActivityEvent?.Invoke(this, EventArgs.Empty); };           
         }
 
         //Method which raises the event which leads to account transfers retrieval only if the date selection is valid
@@ -199,6 +197,12 @@ namespace BudgetManager.mvp.views {
 
             //accountTransferActivityChart.Series["IN transfers"].Points.DataBindXY(monthsList, inTransferValues);
             //accountTransferActivityChart.Series["OUT transfers"].Points.DataBindXY(monthsList, outTransferValues);
+        }
+
+        private void accountBalanceEvolutionDisplayButton_Click(object sender, EventArgs e) {
+            displayAccountBalanceMonthlyEvolutionEvent?.Invoke(this, EventArgs.Empty);
+
+           monthlyAccountBalanceChart.DataBind();
         }
     }
 }
