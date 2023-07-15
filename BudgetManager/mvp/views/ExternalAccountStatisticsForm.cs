@@ -1,6 +1,7 @@
 ﻿using BudgetManager.mvp.misc;
 using BudgetManager.mvp.models;
 using BudgetManager.utils;
+using BudgetManager.utils.enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,8 +20,10 @@ namespace BudgetManager.mvp.views {
         public event EventHandler loadUserAccountsEvent;
         public event EventHandler displayAccountStatisticsEvent;
         public event EventHandler displayAccountTransfersEvent;
+        public event EventHandler displayAccountInterestsEvent;
         public event EventHandler displayAccountTransfersActivityEvent;
         public event EventHandler displayAccountBalanceMonthlyEvolutionEvent;
+
 
         public int userId;
         public String accountName;
@@ -28,6 +31,7 @@ namespace BudgetManager.mvp.views {
         public String endDate;
         public int transfersActivityYear;
         public int monthlyAccountBalanceYear;
+        public BudgetItemType selectedItemType;
 
         //TEST ONLY
         BindingSource mockBindingSource;
@@ -39,6 +43,7 @@ namespace BudgetManager.mvp.views {
             InitializeComponent();
             associateAndRaiseEvents();
             userAccountsComboBox.SelectedIndex = -1;
+            selectedItemType = BudgetItemType.ACCOUNT_TRANSFER;//The transfers item type will always be selected by default
         }
 
         int IExternalAccountStatisticsView.userId { get => userId; set => this.userId = value; }
@@ -47,8 +52,9 @@ namespace BudgetManager.mvp.views {
         String IExternalAccountStatisticsView.endDate { get => endDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); set => this.endDate = endDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); }
         int IExternalAccountStatisticsView.transfersActivityYear { get => transfersActivityDateTimePicker.Value.Year; set => this.transfersActivityYear = transfersActivityDateTimePicker.Value.Year; }
         int IExternalAccountStatisticsView.monthlyAccountBalanceYear { get => monthlyBalanceDateTimePicker.Value.Year; set => this.monthlyAccountBalanceYear = monthlyBalanceDateTimePicker.Value.Year; }
+        BudgetItemType IExternalAccountStatisticsView.selectedItemType { get => this.selectedItemType; }
 
-        public void setControlsBindingSource(BindingSource userAccountsBindingSource, BindingSource accountStatisticsBindingSource, BindingSource accountTransfersBindingSource, BindingSource accountTransfersActivityBindingSource, BindingSource monthlyAccountBalanceBindingSource) {
+        public void setControlsBindingSource(BindingSource userAccountsBindingSource, BindingSource accountStatisticsBindingSource, BindingSource accountTransfersOrInterestsBindingSource, BindingSource accountTransfersActivityBindingSource, BindingSource monthlyAccountBalanceBindingSource) {
 
             userAccountsComboBox.DataSource = userAccountsBindingSource;
 
@@ -65,7 +71,7 @@ namespace BudgetManager.mvp.views {
             externalAccountDetailsModelBindingSource7.DataSource = accountStatisticsBindingSource;
             externalAccountDetailsModelBindingSource8.DataSource = accountStatisticsBindingSource;
 
-            accountTransfersDgv.DataSource = accountTransfersBindingSource;
+            accountTransfersDgv.DataSource = accountTransfersOrInterestsBindingSource;
 
             mockBindingSource = new BindingSource();
 
@@ -81,7 +87,7 @@ namespace BudgetManager.mvp.views {
             this.Shown += delegate { loadUserAccountsEvent?.Invoke(this, eventArgs); };
 
             this.userAccountsComboBox.SelectedValueChanged += delegate { displayAccountStatisticsEvent?.Invoke(this, EventArgs.Empty); };
-            this.displayAccountTransfersButton.Click += delegate { displayAccountTransfersEvent?.Invoke(this, EventArgs.Empty); };
+            //this.displayAccountTransfersOrInterestsButton.Click += delegate { displayAccountTransfersEvent?.Invoke(this, EventArgs.Empty); };
         }
 
         //Method which raises the event which leads to account transfers retrieval only if the date selection is valid
@@ -95,17 +101,17 @@ namespace BudgetManager.mvp.views {
 
         private void startDateTransfersDTPicker_ValueChanged(object sender, EventArgs e) {
             if (UserControlsManager.isValidDateSelection(startDateTransfersDTPicker, endDateTransfersDTPicker)) {
-                displayAccountTransfersButton.Enabled = true;
+                displayAccountTransfersOrInterestsButton.Enabled = true;
             } else {
-                displayAccountTransfersButton.Enabled = false;
+                displayAccountTransfersOrInterestsButton.Enabled = false;
             }
         }
 
         private void endDateTransfersDTPicker_ValueChanged(object sender, EventArgs e) {
             if (UserControlsManager.isValidDateSelection(startDateTransfersDTPicker, endDateTransfersDTPicker)) {
-                displayAccountTransfersButton.Enabled = true;
+                displayAccountTransfersOrInterestsButton.Enabled = true;
             } else {
-                displayAccountTransfersButton.Enabled = false;
+                displayAccountTransfersOrInterestsButton.Enabled = false;
             }
         }
 
@@ -204,5 +210,42 @@ namespace BudgetManager.mvp.views {
 
            monthlyAccountBalanceChart.DataBind();
         }
+
+        //private void radioButtonTransfers_CheckedChanged(object sender, EventArgs e) {
+        //    displayAccountTransfersOrInterestsButton.Text = "Show transfers";
+        //    selectedItemType = BudgetItemType.ACCOUNT_TRANSFER;
+        //    Console.WriteLine("SELECTED BUDGET ITEM TYPE: {0}", selectedItemType.ToString());
+        //}
+
+        //private void radioButtonInterests_CheckedChanged(object sender, EventArgs e) {
+        //    displayAccountTransfersOrInterestsButton.Text = "Show interests";
+        //    selectedItemType = BudgetItemType.SAVING_ACCOUNT_INTEREST;
+        //    Console.WriteLine("SELECTED BUDGET ITEM TYPE: {0}", selectedItemType.ToString());
+        //}
+
+        private void displayAccountTransfersOrInterestsButton_Click(object sender, EventArgs e) {
+            if (radioButtonTransfers.Checked) {
+                displayAccountTransfersEvent?.Invoke(this, EventArgs.Empty);
+                Console.WriteLine("Successfully fired account transfers event!");
+            } else if (radioButtonInterests.Checked) {
+                displayAccountInterestsEvent?.Invoke(this, EventArgs.Empty);
+                Console.WriteLine("Successfully fired account interest event!");
+            }
+        }
+
+        private void radioButtonTransfers_Click(object sender, EventArgs e) {
+            displayAccountTransfersOrInterestsButton.Text = "Show transfers";
+            selectedItemType = BudgetItemType.ACCOUNT_TRANSFER;
+            Console.WriteLine("SELECTED BUDGET ITEM TYPE: {0}", selectedItemType.ToString());
+
+        }
+
+        private void radioButtonInterests_Click(object sender, EventArgs e) {
+            displayAccountTransfersOrInterestsButton.Text = "Show interests";
+            selectedItemType = BudgetItemType.SAVING_ACCOUNT_INTEREST;
+            Console.WriteLine("SELECTED BUDGET ITEM TYPE: {0}", selectedItemType.ToString());
+        }
+
+     
     }
 }

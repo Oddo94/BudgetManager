@@ -27,6 +27,8 @@ namespace BudgetManager.utils.enums {
         SAVING_ACCOUNT_INTEREST,
         [Description("partial payment")]
         PARTIAL_PAYMENT,
+        [Description("transfer")]
+        ACCOUNT_TRANSFER,
         UNDEFINED
     }
 }

@@ -38,6 +38,28 @@ namespace BudgetManager.mvp.repositories {
 	                                                           AND sat.transferDate BETWEEN @paramStartDate AND @paramEndDate
                                                            ORDER BY
 	                                                           sat.transferDate";
+        private String sqlStatementGetAccountInterests = @"SELECT
+	                                                           sai.interestID AS 'ID',
+	                                                           sai.interestName 'Interest name',
+	                                                           it.typeName AS 'Interest type',
+	                                                           ipt.typeName AS 'Payment type',
+	                                                           sai.interestRate AS 'Interest rate',
+	                                                           sai.value AS 'Interest value',
+	                                                           sai.transactionID AS 'Transaction ID',
+	                                                           sai.creationDate AS 'Creation date',
+	                                                           sai.updatedDate AS 'Updated date'
+                                                           FROM
+	                                                           saving_accounts_interest sai
+                                                           INNER JOIN saving_accounts sa ON
+	                                                           sai.account_ID = sa.accountID
+                                                           INNER JOIN interest_types it ON
+	                                                           sai.interestType = it.typeID
+                                                           INNER JOIN interest_payment_type ipt ON
+	                                                           sai.paymentType = ipt.typeID
+                                                           WHERE
+	                                                           sa.user_ID = @paramUserId
+	                                                           AND sa.accountName = @paramAccountName
+	                                                           AND sa.creationDate BETWEEN @paramStartDate AND @paramEndDate";
 
         private String sqlStatementGetAccountTransfersActivity = @"WITH months_list AS (
                                                                    SELECT 1 AS mntValue UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION
@@ -219,6 +241,18 @@ namespace BudgetManager.mvp.repositories {
             DataTable accountTransfersDT = DBConnectionManager.getData(accountTransfersRetrievalCommand);
 
             return accountTransfersDT; 
+        }
+
+        public DataTable getAccountInterests(string accountName, int userId, string startDate, string endDate) {
+            MySqlCommand accountInterestsRetrievalCommand = new MySqlCommand(sqlStatementGetAccountInterests);
+            accountInterestsRetrievalCommand.Parameters.AddWithValue("@paramUserId", userId);
+            accountInterestsRetrievalCommand.Parameters.AddWithValue("@paramAccountName", accountName);
+            accountInterestsRetrievalCommand.Parameters.AddWithValue("@paramStartDate", startDate);
+            accountInterestsRetrievalCommand.Parameters.AddWithValue("@paramEndDate", endDate);
+
+            DataTable accountInterestsDT = DBConnectionManager.getData(accountInterestsRetrievalCommand);
+
+            return accountInterestsDT;
         }
 
         public DataTable getAccountTransfersActivity(String accountName, int userId, int transfersActivityYear) {
