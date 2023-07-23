@@ -11,14 +11,16 @@ namespace BudgetManager.mvp.repositories {
     internal class ExternalAccountStatisticsRepository : IExternalAccountStatisticsRepository {
         private String sqlStatementGetUserAccounts = "SELECT accountName FROM saving_accounts WHERE user_ID = @paramID ORDER BY accountName";
         private String sqlStatementGetAccountId = "SELECT accountID FROM saving_accounts WHERE user_ID = @paramID AND accountName = @paramAccountName";
-        private String sqlStatementGetAccountTransfers = @"SELECT
+        private String sqlStatementGetAccountTransfers = @"WITH account_details AS (SELECT accountID FROM saving_accounts WHERE user_ID = @paramID AND accountName = @paramAccountName)
+                                                           
+                                                           SELECT
 	                                                           sat.transferID AS 'Transfer ID',
 	                                                           snd.accountName AS 'Sender account name',
 	                                                           rec.accountName AS 'Receiving account name',
 	                                                           sat.transferName AS 'Transfer name',
 	                                                           CASE 
-		                                                          WHEN sat.receivingAccountID = @paramRecordId THEN 'In'
-		                                                          WHEN sat.senderAccountID = @paramRecordId THEN 'Out'
+		                                                          WHEN sat.receivingAccountID = (SELECT accountID FROM account_details) THEN 'In'
+		                                                          WHEN sat.senderAccountID = (SELECT accountID FROM account_details) THEN 'Out'
 	                                                           END AS 'Transfer direction',
 	                                                           sat.sentValue AS 'Sent value',
 	                                                           sat.receivedValue AS 'Received value',
@@ -33,8 +35,8 @@ namespace BudgetManager.mvp.repositories {
                                                            INNER JOIN saving_accounts rec ON
 	                                                           sat.receivingAccountID = rec.accountID
                                                            WHERE
-	                                                           (senderAccountID = @paramRecordId
-		                                                           OR receivingAccountID = @paramRecordId)
+	                                                           (senderAccountID = (SELECT accountID FROM account_details)
+		                                                           OR receivingAccountID = (SELECT accountID FROM account_details))
 	                                                           AND sat.transferDate BETWEEN @paramStartDate AND @paramEndDate
                                                            ORDER BY
 	                                                           sat.transferDate";
@@ -234,10 +236,16 @@ namespace BudgetManager.mvp.repositories {
             return externalAccountDetails;
         }
 
-        public DataTable getAccountTransfers(String selectedAccountName, int userId, String startDate, String endDate) {
-            int accountId = getAccountId(selectedAccountName, userId);
+        public DataTable getAccountTransfers(String accountName, int userId, String startDate, String endDate) {
+            //int accountId = getAccountId(selectedAccountName, userId);
 
-            MySqlCommand accountTransfersRetrievalCommand = SQLCommandBuilder.getRecordsBasedOnIdAndDateInterval(sqlStatementGetAccountTransfers, accountId, startDate, endDate);
+            //MySqlCommand accountTransfersRetrievalCommand = SQLCommandBuilder.getRecordsBasedOnIdAndDateInterval(sqlStatementGetAccountTransfers, accountId, startDate, endDate);
+            MySqlCommand accountTransfersRetrievalCommand = new MySqlCommand(sqlStatementGetAccountTransfers);
+            accountTransfersRetrievalCommand.Parameters.AddWithValue("@paramID", userId);
+            accountTransfersRetrievalCommand.Parameters.AddWithValue("@paramAccountName", accountName);
+            accountTransfersRetrievalCommand.Parameters.AddWithValue("@paramStartDate", startDate);
+            accountTransfersRetrievalCommand.Parameters.AddWithValue("@paramEndDate", endDate);
+
             DataTable accountTransfersDT = DBConnectionManager.getData(accountTransfersRetrievalCommand);
 
             return accountTransfersDT; 
@@ -296,7 +304,6 @@ namespace BudgetManager.mvp.repositories {
             }
 
             return accountId;
-
         }
 
         private void setPrecisionAndScaleForDecimalParams(byte precision, byte scale, params MySqlParameter[] decimalParamList) {

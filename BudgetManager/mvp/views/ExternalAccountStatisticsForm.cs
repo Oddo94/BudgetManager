@@ -130,14 +130,14 @@ namespace BudgetManager.mvp.views {
         }
 
         private void accountTransfersDgv_DataSourceChanged(object sender, EventArgs e) {
-            
+
         }
 
         private void refreshAccountTransfersActivityChart() {
-            if(accountTransfersActivityChart != null) {
+            if (accountTransfersActivityChart != null) {
                 accountTransfersActivityChart.DataBind();
             }
-            
+
         }
 
         private void monthlyTransferEvolutionDisplayButton_Click(object sender, EventArgs e) {
@@ -208,7 +208,7 @@ namespace BudgetManager.mvp.views {
         private void accountBalanceEvolutionDisplayButton_Click(object sender, EventArgs e) {
             displayAccountBalanceMonthlyEvolutionEvent?.Invoke(this, EventArgs.Empty);
 
-           monthlyAccountBalanceChart.DataBind();
+            monthlyAccountBalanceChart.DataBind();
         }
 
         //private void radioButtonTransfers_CheckedChanged(object sender, EventArgs e) {
@@ -246,6 +246,17 @@ namespace BudgetManager.mvp.views {
             Console.WriteLine("SELECTED BUDGET ITEM TYPE: {0}", selectedItemType.ToString());
         }
 
-     
+        private void accountTransfersActivityChart_MouseHover(object sender, EventArgs e) {
+            accountTransfersActivityChart.Series[0].XValueType = ChartValueType.String;
+            accountTransfersActivityChart.Series[0].ToolTip = "Total IN transfers for #VALX: #VALY";
+
+            accountTransfersActivityChart.Series[1].XValueType = ChartValueType.String;
+            accountTransfersActivityChart.Series[1].ToolTip = "Total OUT transfers for #VALX: #VALY";
+        }
+
+        private void monthlyAccountBalanceChart_MouseHover(object sender, EventArgs e) {
+            monthlyAccountBalanceChart.Series[0].XValueType = ChartValueType.String;
+            monthlyAccountBalanceChart.Series[0].ToolTip = "#VALX balance:#VALY";
+        }
     }
 }
