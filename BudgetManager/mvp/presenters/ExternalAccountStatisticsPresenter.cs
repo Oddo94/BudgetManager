@@ -11,8 +11,11 @@ using System.Windows.Forms;
 namespace BudgetManager.mvp.presenters
 {
     internal class ExternalAccountStatisticsPresenter {
+        //Views
         private IExternalAccountStatisticsView accountStatisticsView;
         private IExternalAccountStatisticsRepository accountStatisticsRepository;
+
+        //Binding sources
         private BindingSource userAccountsBindingSource;
         private BindingSource accountStatisticsBindingSource;
         private BindingSource accountTransfersOrInterestsBindingSource;
@@ -51,8 +54,6 @@ namespace BudgetManager.mvp.presenters
 
         private void getAccountStatistics(object sender, EventArgs e) {                 
             ExternalAccountDetailsModel externalAccountDetails = accountStatisticsRepository.getAccountDetails(accountStatisticsView.accountName, accountStatisticsView.userId);
-            //ExternalAccountDetailsModel externalAccountDetails = accountStatisticsRepository.getAccountDetails("SYSTEM_DEFINED_SAVING_ACCOUNT", 3);
-
             accountStatisticsBindingSource.DataSource = externalAccountDetails;
         }
 
@@ -77,13 +78,13 @@ namespace BudgetManager.mvp.presenters
 
         private DataTable getAccountTransfers(object sender, EventArgs e) {
             DataTable accountTransfersDT = accountStatisticsRepository.getAccountTransfers(accountStatisticsView.accountName, accountStatisticsView.userId, accountStatisticsView.startDate, accountStatisticsView.endDate);
-            //accountTransfersBindingSource.DataSource = accountTransfersDT;
+            
             return accountTransfersDT;
         }
 
         private DataTable getAccountInterests(object sender, EventArgs e) {
             DataTable accountInterestsDT = accountStatisticsRepository.getAccountInterests(accountStatisticsView.accountName, accountStatisticsView.userId, accountStatisticsView.startDate, accountStatisticsView.endDate);
-            //accountTransfersBindingSource.DataSource = accountTransfersDT;
+            
             return accountInterestsDT;
         }
 

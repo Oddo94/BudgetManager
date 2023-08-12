@@ -3,20 +3,22 @@ using BudgetManager.mvp.models;
 using BudgetManager.utils;
 using BudgetManager.utils.enums;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
 namespace BudgetManager.mvp.views {
+    /*NOTE-MVC FLOW DESCRIPTION
+     This implementation of the MVC pattern uses events and binding sources for transferring data between the MODEL, VIEW and PRESENTER
+     Each DataGridView present in the GUI has its DataSource set to a BindingSource object. Whenever the user clicks on a button to display data the appropriate event is raised.
+     The event is intercepted by the PRESENTER which uses the REPOSITORY's exposed methods to retrieve the appropriate data. 
+     The PRESENTER also uses the public fields of the VIEW to get the data that needs to be used for querying the database and sends it to the REPOSITORY.
+     Once the data is retrieved as a DataTable object it is set as the DataSource of the BindingSource mentioned earlier. As a result, whenever the DataSource changes the DataGridView from the GUI will be updated automatically
+    */
     public partial class ExternalAccountStatisticsForm : Form, IExternalAccountStatisticsView {
+        //Events triggered when the user requests data
         public event EventHandler loadUserAccountsEvent;
         public event EventHandler displayAccountStatisticsEvent;
         public event EventHandler displayAccountTransfersEvent;
@@ -24,7 +26,7 @@ namespace BudgetManager.mvp.views {
         public event EventHandler displayAccountTransfersActivityEvent;
         public event EventHandler displayAccountBalanceMonthlyEvolutionEvent;
 
-
+        //Fields used to store the values that will be used when querying the database
         public int userId;
         public String accountName;
         public String startDate;
@@ -32,11 +34,6 @@ namespace BudgetManager.mvp.views {
         public int transfersActivityYear;
         public int monthlyAccountBalanceYear;
         public BudgetItemType selectedItemType;
-
-        //TEST ONLY
-        BindingSource mockBindingSource;
-        public List<int> inTransferValues = new List<int>() { 10, 100, 500, 458, 620, 700, 511, 300, 29, 100, 444, 777 };
-        public List<int> outTransferValues = new List<int>() { 400, 500, 433, 879, 230, 378, 289, 600, 80, 145, 766, 210 };
 
         public ExternalAccountStatisticsForm(int userId) {
             this.userId = userId;
@@ -46,6 +43,7 @@ namespace BudgetManager.mvp.views {
             selectedItemType = BudgetItemType.ACCOUNT_TRANSFER;//The transfers item type will always be selected by default
         }
 
+        
         int IExternalAccountStatisticsView.userId { get => userId; set => this.userId = value; }
         string IExternalAccountStatisticsView.accountName { get => this.userAccountsComboBox.Text; set => this.accountName = this.userAccountsComboBox.Text; }
         String IExternalAccountStatisticsView.startDate { get => startDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); set => this.startDate = startDateTransfersDTPicker.Value.Date.ToString("yyyy-MM-dd"); }
@@ -71,10 +69,7 @@ namespace BudgetManager.mvp.views {
             externalAccountDetailsModelBindingSource7.DataSource = accountStatisticsBindingSource;
             externalAccountDetailsModelBindingSource8.DataSource = accountStatisticsBindingSource;
 
-            accountTransfersDgv.DataSource = accountTransfersOrInterestsBindingSource;
-
-            mockBindingSource = new BindingSource();
-
+            accountTransfersOrInterestsDgv.DataSource = accountTransfersOrInterestsBindingSource;
             accountTransfersActivityChart.DataSource = accountTransfersActivityBindingSource;
             monthlyAccountBalanceChart.DataSource = monthlyAccountBalanceBindingSource;
         }
@@ -87,7 +82,6 @@ namespace BudgetManager.mvp.views {
             this.Shown += delegate { loadUserAccountsEvent?.Invoke(this, eventArgs); };
 
             this.userAccountsComboBox.SelectedValueChanged += delegate { displayAccountStatisticsEvent?.Invoke(this, EventArgs.Empty); };
-            //this.displayAccountTransfersOrInterestsButton.Click += delegate { displayAccountTransfersEvent?.Invoke(this, EventArgs.Empty); };
         }
 
         //Method which raises the event which leads to account transfers retrieval only if the date selection is valid
@@ -115,22 +109,27 @@ namespace BudgetManager.mvp.views {
             }
         }
 
-        private void accountTransfersDgv_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e) {
-            if (accountTransfersDgv.Rows.Count >= 1) {
-                Dictionary<String, Color> valueToColorDictionary = new Dictionary<String, Color> {
+        private void accountTransfersOrInterestsDgv_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e) {
+            //Cell formatting logic for transfers display
+            if (radioButtonTransfers.Checked == true) {
+                if (accountTransfersOrInterestsDgv.Rows.Count >= 1) {
+                    Dictionary<String, Color> valueToColorDictionary = new Dictionary<String, Color> {
                 { "In", Color.GreenYellow },
                 { "Out", Color.Tomato }
             };
 
-                int columnIndex = 4;
+                    int columnIndex = 4;
 
-                DataGridViewManager dgvManager = new DataGridViewManager(this.accountTransfersDgv);
-                dgvManager.highlightRowsBasedOnCondition(valueToColorDictionary, columnIndex);
+                    DataGridViewManager dgvManager = new DataGridViewManager(this.accountTransfersOrInterestsDgv);
+                    dgvManager.highlightRowsBasedOnCondition(valueToColorDictionary, columnIndex);
+                }
+            } else if (radioButtonInterests.Checked == true) {
+                //Cell formatting logic for interests display
+                for (int i = 0; i < accountTransfersOrInterestsDgv.Rows.Count - 1; i++) {
+                    DataGridViewRow currentRow = accountTransfersOrInterestsDgv.Rows[i];
+                    currentRow.DefaultCellStyle.BackColor = Color.GreenYellow;
+                }
             }
-        }
-
-        private void accountTransfersDgv_DataSourceChanged(object sender, EventArgs e) {
-
         }
 
         private void refreshAccountTransfersActivityChart() {
@@ -141,95 +140,80 @@ namespace BudgetManager.mvp.views {
         }
 
         private void monthlyTransferEvolutionDisplayButton_Click(object sender, EventArgs e) {
-            //isTransferActivityEvent = true;
             displayAccountTransfersActivityEvent?.Invoke(this, EventArgs.Empty);
-
             accountTransfersActivityChart.DataBind();
 
-            //isTransferActivityEvent = false;
+            //Logic for displaying an error message when no data is found for the specified year
+            DataTable currentDataSource = (DataTable) ((BindingSource) accountTransfersActivityChart.DataSource).DataSource;
 
+            bool hasZeroBalanceForAllMonths = true;
 
+            foreach (DataRow currentRow in currentDataSource.Rows) {
+                double totalInTransfersForCurrentMonth = 0;
+                double totalOutTransfersForCurrentMonth = 0;
 
-            //DataTable mockDT = new DataTable();
-            //mockDT.Columns.Add("Month");
-            //mockDT.Columns.Add("Total in transfers");
-            //mockDT.Columns.Add("Total out transfers");
+                bool canParseInTransfers = Double.TryParse(currentRow.ItemArray[1].ToString(), out totalInTransfersForCurrentMonth);
+                bool canParseOutTransfers = Double.TryParse(currentRow.ItemArray[2].ToString(), out totalOutTransfersForCurrentMonth);
 
-            //mockDT.Rows.Add("Jan", 500, 100);
-            //mockDT.Rows.Add("Feb", 0, 0);
-            //mockDT.Rows.Add("Mar", 500, 100);
-            //mockDT.Rows.Add("Apr", 500, 100);
-            //mockDT.Rows.Add("May", 0, 0);
-            //mockDT.Rows.Add("Jun", 500, 100);
-            //mockDT.Rows.Add("Jul", 0, 0);
-            //mockDT.Rows.Add("Aug", 500, 100);
-            //mockDT.Rows.Add("Sep", 500, 100);
-            //mockDT.Rows.Add("Oct", 500, 100);
-            //mockDT.Rows.Add("Nov", 0, 0);
-            //mockDT.Rows.Add("Dec", 500, 100);
+                //If the IN transfers for at least one of the twelve months is greater/lower than zero the flag will be set to false and the message won't be displayed
+                if (totalInTransfersForCurrentMonth > 0 || totalInTransfersForCurrentMonth < 0) {
+                    hasZeroBalanceForAllMonths = false;
+                    break;
+                }
 
-            //mockBindingSource.DataSource = mockDT;
-            //accountTransfersActivityChart.DataBind();
+                //If the OUT transfers for at least one of the twelve months is greater/lower than zero the flag will be set to false and the message won't be displayed
+                if (totalOutTransfersForCurrentMonth > 0 || totalOutTransfersForCurrentMonth < 0) {
+                    hasZeroBalanceForAllMonths = false;
+                    break;
+                }
+            }
 
-            // DialogResult userOption =  MessageBox.Show("Do you want to change the displayed data?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            //if (userOption == DialogResult.Yes) {
-            //    mockDT.Rows.Clear();
-            //    mockDT.Rows.Add("Jan", 500, 100);
-            //    mockDT.Rows.Add("Feb", 970, 222);
-            //    mockDT.Rows.Add("Mar", 411, 100);
-            //    mockDT.Rows.Add("Apr", 550, 390);
-            //    mockDT.Rows.Add("May", 877, 23);
-            //    mockDT.Rows.Add("Jun", 599, 665);
-            //    mockDT.Rows.Add("Jul", 111, 388);
-            //    mockDT.Rows.Add("Aug", 412, 907);
-            //    mockDT.Rows.Add("Sep", 675, 180);
-            //    mockDT.Rows.Add("Oct", 999, 1500);
-            //    mockDT.Rows.Add("Nov", 89, 45);
-            //    mockDT.Rows.Add("Dec", 710, 333);
-
-            //    accountTransfersActivityChart.DataBind();
-            //}
-            //accountTransferActivityChart.DataSource = mockDT;
-
-            //BindingSource chartBinding = (BindingSource) accountTransferActivityChart.DataBindings[0];
-            //DataTable testDT = (DataTable)chartBinding.DataSource;
-
-            //accountTransferActivityChart.DataSource = testDT;
-
-
-            //List<String> monthsList = new List<String>() { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-
-
-            //accountTransferActivityChart.Series["IN transfers"].Points.DataBindXY(monthsList, inTransferValues);
-            //accountTransferActivityChart.Series["OUT transfers"].Points.DataBindXY(monthsList, outTransferValues);
+            if (hasZeroBalanceForAllMonths) {
+                MessageBox.Show("No data found for the selected year!", "External account statistics", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void accountBalanceEvolutionDisplayButton_Click(object sender, EventArgs e) {
             displayAccountBalanceMonthlyEvolutionEvent?.Invoke(this, EventArgs.Empty);
 
             monthlyAccountBalanceChart.DataBind();
+
+            //Logic for displaying an error message when no data is found for the specified year
+            DataTable currentDataSource = (DataTable) ((BindingSource) monthlyAccountBalanceChart.DataSource).DataSource;
+
+            bool hasZeroBalanceForAllMonths = true;
+
+            foreach(DataRow currentRow in currentDataSource.Rows) {
+                double currentMonthBalance = 0;
+                bool canParse = Double.TryParse(currentRow.ItemArray[2].ToString(), out currentMonthBalance);
+
+                //If the balance for at least one of the twelve months is greater/lower than 0 the flag will be set to false and the message will not be displayed
+                if(currentMonthBalance > 0 || currentMonthBalance < 0) {
+                    hasZeroBalanceForAllMonths = false;
+                    break;
+                }
+            }
+
+            if (hasZeroBalanceForAllMonths) {
+                MessageBox.Show("No data found for the selected year!", "External account statistics", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-
-        //private void radioButtonTransfers_CheckedChanged(object sender, EventArgs e) {
-        //    displayAccountTransfersOrInterestsButton.Text = "Show transfers";
-        //    selectedItemType = BudgetItemType.ACCOUNT_TRANSFER;
-        //    Console.WriteLine("SELECTED BUDGET ITEM TYPE: {0}", selectedItemType.ToString());
-        //}
-
-        //private void radioButtonInterests_CheckedChanged(object sender, EventArgs e) {
-        //    displayAccountTransfersOrInterestsButton.Text = "Show interests";
-        //    selectedItemType = BudgetItemType.SAVING_ACCOUNT_INTEREST;
-        //    Console.WriteLine("SELECTED BUDGET ITEM TYPE: {0}", selectedItemType.ToString());
-        //}
 
         private void displayAccountTransfersOrInterestsButton_Click(object sender, EventArgs e) {
             if (radioButtonTransfers.Checked) {
                 displayAccountTransfersEvent?.Invoke(this, EventArgs.Empty);
-                Console.WriteLine("Successfully fired account transfers event!");
+                //Console.WriteLine("Successfully fired account transfers event!");
             } else if (radioButtonInterests.Checked) {
                 displayAccountInterestsEvent?.Invoke(this, EventArgs.Empty);
-                Console.WriteLine("Successfully fired account interest event!");
+                //Console.WriteLine("Successfully fired account interest event!");
+            }
+
+            //Logic for displaying an error message when no data is found for the specified time interval
+            DataTable currentDataSource = (DataTable) ((BindingSource) accountTransfersOrInterestsDgv.DataSource).DataSource;
+            int retrievedRows = currentDataSource.Rows.Count;
+
+            if(retrievedRows <= 0) {
+                MessageBox.Show("No data found for the specified time interval!", "External account statistics", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -256,7 +240,7 @@ namespace BudgetManager.mvp.views {
 
         private void monthlyAccountBalanceChart_MouseHover(object sender, EventArgs e) {
             monthlyAccountBalanceChart.Series[0].XValueType = ChartValueType.String;
-            monthlyAccountBalanceChart.Series[0].ToolTip = "#VALX balance:#VALY";
+            monthlyAccountBalanceChart.Series[0].ToolTip = "#VALX balance: #VALY";
         }
     }
 }

@@ -68,7 +68,7 @@
             this.accountBalanceValueLabel = new System.Windows.Forms.Label();
             this.accountBalanceLabel = new System.Windows.Forms.Label();
             this.displayAccountTransfersOrInterestsButton = new System.Windows.Forms.Button();
-            this.accountTransfersDgv = new System.Windows.Forms.DataGridView();
+            this.accountTransfersOrInterestsDgv = new System.Windows.Forms.DataGridView();
             this.startDateTransfersDTPicker = new System.Windows.Forms.DateTimePicker();
             this.endDateTransfersDTPicker = new System.Windows.Forms.DateTimePicker();
             this.label2 = new System.Windows.Forms.Label();
@@ -96,7 +96,7 @@
             this.externalAccountDetailsModelBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.externalAccountDetailsModelBindingSource3 = new System.Windows.Forms.BindingSource(this.components);
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.accountTransfersDgv)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.accountTransfersOrInterestsDgv)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.accountTransfersActivityChart)).BeginInit();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.monthlyAccountBalanceChart)).BeginInit();
@@ -158,7 +158,7 @@
             // 
             this.accountCurrencyValueLabel.AutoSize = true;
             this.accountCurrencyValueLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.externalAccountDetailsModelBindingSource8, "AccountCurrency", true));
-            this.accountCurrencyValueLabel.Location = new System.Drawing.Point(106, 116);
+            this.accountCurrencyValueLabel.Location = new System.Drawing.Point(106, 91);
             this.accountCurrencyValueLabel.Name = "accountCurrencyValueLabel";
             this.accountCurrencyValueLabel.Size = new System.Drawing.Size(27, 13);
             this.accountCurrencyValueLabel.TabIndex = 21;
@@ -167,7 +167,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 116);
+            this.label4.Location = new System.Drawing.Point(6, 91);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(94, 13);
             this.label4.TabIndex = 20;
@@ -291,7 +291,7 @@
             // 
             this.accountBalanceValueLabel.AutoSize = true;
             this.accountBalanceValueLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.externalAccountDetailsModelBindingSource, "AccountBalance", true));
-            this.accountBalanceValueLabel.Location = new System.Drawing.Point(103, 91);
+            this.accountBalanceValueLabel.Location = new System.Drawing.Point(105, 116);
             this.accountBalanceValueLabel.Name = "accountBalanceValueLabel";
             this.accountBalanceValueLabel.Size = new System.Drawing.Size(27, 13);
             this.accountBalanceValueLabel.TabIndex = 1;
@@ -300,7 +300,7 @@
             // accountBalanceLabel
             // 
             this.accountBalanceLabel.AutoSize = true;
-            this.accountBalanceLabel.Location = new System.Drawing.Point(6, 91);
+            this.accountBalanceLabel.Location = new System.Drawing.Point(6, 116);
             this.accountBalanceLabel.Name = "accountBalanceLabel";
             this.accountBalanceLabel.Size = new System.Drawing.Size(91, 13);
             this.accountBalanceLabel.TabIndex = 0;
@@ -317,15 +317,14 @@
             this.displayAccountTransfersOrInterestsButton.UseVisualStyleBackColor = true;
             this.displayAccountTransfersOrInterestsButton.Click += new System.EventHandler(this.displayAccountTransfersOrInterestsButton_Click);
             // 
-            // accountTransfersDgv
+            // accountTransfersOrInterestsDgv
             // 
-            this.accountTransfersDgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.accountTransfersDgv.Location = new System.Drawing.Point(16, 95);
-            this.accountTransfersDgv.Name = "accountTransfersDgv";
-            this.accountTransfersDgv.Size = new System.Drawing.Size(832, 231);
-            this.accountTransfersDgv.TabIndex = 4;
-            this.accountTransfersDgv.DataSourceChanged += new System.EventHandler(this.accountTransfersDgv_DataSourceChanged);
-            this.accountTransfersDgv.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.accountTransfersDgv_CellFormatting);
+            this.accountTransfersOrInterestsDgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.accountTransfersOrInterestsDgv.Location = new System.Drawing.Point(16, 95);
+            this.accountTransfersOrInterestsDgv.Name = "accountTransfersOrInterestsDgv";
+            this.accountTransfersOrInterestsDgv.Size = new System.Drawing.Size(832, 231);
+            this.accountTransfersOrInterestsDgv.TabIndex = 4;
+            this.accountTransfersOrInterestsDgv.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.accountTransfersOrInterestsDgv_CellFormatting);
             // 
             // startDateTransfersDTPicker
             // 
@@ -539,7 +538,7 @@
             this.groupBox3.Controls.Add(this.transfersActivityDateTimePicker);
             this.groupBox3.Controls.Add(this.label5);
             this.groupBox3.Controls.Add(this.endDateTransfersDTPicker);
-            this.groupBox3.Controls.Add(this.accountTransfersDgv);
+            this.groupBox3.Controls.Add(this.accountTransfersOrInterestsDgv);
             this.groupBox3.Controls.Add(this.displayAccountTransfersOrInterestsButton);
             this.groupBox3.Location = new System.Drawing.Point(25, 251);
             this.groupBox3.Name = "groupBox3";
@@ -633,7 +632,7 @@
             this.Text = "External account statistics";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.accountTransfersDgv)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.accountTransfersOrInterestsDgv)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.accountTransfersActivityChart)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
@@ -682,7 +681,7 @@
         private System.Windows.Forms.BindingSource externalAccountDetailsModelBindingSource5;
         private System.Windows.Forms.BindingSource externalAccountDetailsModelBindingSource7;
         private System.Windows.Forms.Button displayAccountTransfersOrInterestsButton;
-        private System.Windows.Forms.DataGridView accountTransfersDgv;
+        private System.Windows.Forms.DataGridView accountTransfersOrInterestsDgv;
         private System.Windows.Forms.DateTimePicker startDateTransfersDTPicker;
         private System.Windows.Forms.DateTimePicker endDateTransfersDTPicker;
         private System.Windows.Forms.Label label2;

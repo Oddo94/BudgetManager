@@ -3,9 +3,6 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BudgetManager.mvp.repositories {
     internal class ExternalAccountStatisticsRepository : IExternalAccountStatisticsRepository {
@@ -237,9 +234,6 @@ namespace BudgetManager.mvp.repositories {
         }
 
         public DataTable getAccountTransfers(String accountName, int userId, String startDate, String endDate) {
-            //int accountId = getAccountId(selectedAccountName, userId);
-
-            //MySqlCommand accountTransfersRetrievalCommand = SQLCommandBuilder.getRecordsBasedOnIdAndDateInterval(sqlStatementGetAccountTransfers, accountId, startDate, endDate);
             MySqlCommand accountTransfersRetrievalCommand = new MySqlCommand(sqlStatementGetAccountTransfers);
             accountTransfersRetrievalCommand.Parameters.AddWithValue("@paramID", userId);
             accountTransfersRetrievalCommand.Parameters.AddWithValue("@paramAccountName", accountName);
