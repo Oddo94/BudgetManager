@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Diagnostics.Contracts;
 using System.Collections;
 using System.Data;
+using System.Drawing;
 
 namespace BudgetManager.utils {
     //Enum that contains the type of index checks that can be made on the current DataGridView object
@@ -296,6 +297,27 @@ namespace BudgetManager.utils {
             }
 
             return false;
+        }
+
+        public void highlightRowsBasedOnCondition(Dictionary<String, Color> valueToColorDictionary, int columnIndex) {
+            Guard.notNull(targetDataGridView, "target DataGridView");
+            Guard.notNull(valueToColorDictionary, "dictionary containing the value to color mapping");
+            Guard.inRangeColumn(targetDataGridView, columnIndex);
+
+            for(int i = 0; i < targetDataGridView.Rows.Count - 1; i++) {
+                DataGridViewRow currentRow = targetDataGridView.Rows[i];
+                String valueToCheck = currentRow.Cells[columnIndex].Value.ToString();
+
+                foreach(KeyValuePair<String, Color> currentEntry in valueToColorDictionary) {
+                    String referenceValue = currentEntry.Key.ToString();
+
+                    if (valueToCheck != null && valueToCheck.Equals(referenceValue)) {
+                        Color specifiedColor = currentEntry.Value;
+                        currentRow.DefaultCellStyle.BackColor = specifiedColor;
+                    }
+                }
+            }
+
         }
     }
 }

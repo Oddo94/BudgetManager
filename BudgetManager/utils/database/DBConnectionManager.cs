@@ -48,7 +48,7 @@ namespace BudgetManager {
                 adp.Fill(dataTable);
 
             } catch (MySqlException ex) {               
-                //If an exception is thrown then a MessageBox containing the execption or the custom message (for error code 1042) is displayed
+                //If an exception is thrown then a MessageBox containing the exception or the custom message (for error code 1042) is displayed
                 int errorCode = ex.Number;
                 String message;
                 if (errorCode == 1042) {
