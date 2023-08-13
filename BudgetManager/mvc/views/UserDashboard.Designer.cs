@@ -92,6 +92,7 @@
             this.intervalCheckBoxBS = new System.Windows.Forms.CheckBox();
             this.dateTimePickerStartBS = new System.Windows.Forms.DateTimePicker();
             this.tabPageIncomes = new System.Windows.Forms.TabPage();
+            this.displayedIncomesCountLabel = new System.Windows.Forms.Label();
             this.dateTimePickerMonthlyIncomes = new System.Windows.Forms.DateTimePicker();
             this.label10 = new System.Windows.Forms.Label();
             this.columnChartIncomes = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -106,6 +107,7 @@
             this.intervalCheckBoxIncomes = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.tabPageExpenses = new System.Windows.Forms.TabPage();
+            this.displayedExpensesCountLabel = new System.Windows.Forms.Label();
             this.dateTimePickerMonthlyExpenses = new System.Windows.Forms.DateTimePicker();
             this.label9 = new System.Windows.Forms.Label();
             this.columnChartExpenses = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -120,6 +122,7 @@
             this.startLabelExpenses = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.tabPageDebts = new System.Windows.Forms.TabPage();
+            this.displayedDebtsCountLabel = new System.Windows.Forms.Label();
             this.dateTimePickerMonthlyDebts = new System.Windows.Forms.DateTimePicker();
             this.label8 = new System.Windows.Forms.Label();
             this.columnChartDebts = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -134,6 +137,7 @@
             this.startLabelDebts = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.tabPageSavings = new System.Windows.Forms.TabPage();
+            this.displayedSavingsCountLabel = new System.Windows.Forms.Label();
             this.savingAccountButton = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.dateTimePickerMonthlySavings = new System.Windows.Forms.DateTimePicker();
@@ -158,6 +162,7 @@
             this.manageExternalAccountsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createExternalAccountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.externalAccountTransfersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.externalAccountStatisticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manageReceivablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateReceivablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -165,10 +170,6 @@
             this.budgetPlannerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editDeleteExistingPlansToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.displayedExpensesCountLabel = new System.Windows.Forms.Label();
-            this.displayedIncomesCountLabel = new System.Windows.Forms.Label();
-            this.displayedDebtsCountLabel = new System.Windows.Forms.Label();
-            this.displayedSavingsCountLabel = new System.Windows.Forms.Label();
             this.mainTabControl.SuspendLayout();
             this.tabPageBS.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pieChartBS)).BeginInit();
@@ -244,7 +245,7 @@
             this.pieChartBS.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             this.pieChartBS.Legends.Add(legend1);
-            this.pieChartBS.Location = new System.Drawing.Point(619, 243);
+            this.pieChartBS.Location = new System.Drawing.Point(585, 257);
             this.pieChartBS.Name = "pieChartBS";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -259,7 +260,7 @@
             series1.Points.Add(dataPoint3);
             series1.Points.Add(dataPoint4);
             this.pieChartBS.Series.Add(series1);
-            this.pieChartBS.Size = new System.Drawing.Size(300, 300);
+            this.pieChartBS.Size = new System.Drawing.Size(415, 323);
             this.pieChartBS.TabIndex = 8;
             this.pieChartBS.Text = "chart1";
             title1.Name = "PieChartBSTitle";
@@ -394,6 +395,14 @@
             this.tabPageIncomes.Text = "Incomes";
             this.tabPageIncomes.UseVisualStyleBackColor = true;
             // 
+            // displayedIncomesCountLabel
+            // 
+            this.displayedIncomesCountLabel.AutoSize = true;
+            this.displayedIncomesCountLabel.Location = new System.Drawing.Point(32, 432);
+            this.displayedIncomesCountLabel.Name = "displayedIncomesCountLabel";
+            this.displayedIncomesCountLabel.Size = new System.Drawing.Size(0, 13);
+            this.displayedIncomesCountLabel.TabIndex = 11;
+            // 
             // dateTimePickerMonthlyIncomes
             // 
             this.dateTimePickerMonthlyIncomes.CustomFormat = "yyyy";
@@ -449,7 +458,7 @@
             this.pieChartIncomes.ChartAreas.Add(chartArea3);
             legend3.Name = "Legend1";
             this.pieChartIncomes.Legends.Add(legend3);
-            this.pieChartIncomes.Location = new System.Drawing.Point(674, 126);
+            this.pieChartIncomes.Location = new System.Drawing.Point(585, 147);
             this.pieChartIncomes.Name = "pieChartIncomes";
             series3.ChartArea = "ChartArea1";
             series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -460,7 +469,7 @@
             series3.Points.Add(dataPoint6);
             series3.Points.Add(dataPoint7);
             this.pieChartIncomes.Series.Add(series3);
-            this.pieChartIncomes.Size = new System.Drawing.Size(300, 300);
+            this.pieChartIncomes.Size = new System.Drawing.Size(415, 323);
             this.pieChartIncomes.TabIndex = 7;
             this.pieChartIncomes.Text = "chart1";
             title3.Name = "Title1";
@@ -503,7 +512,7 @@
             this.monthPickerPanelIncomes.Controls.Add(this.endLabelIncomes);
             this.monthPickerPanelIncomes.Location = new System.Drawing.Point(349, 105);
             this.monthPickerPanelIncomes.Name = "monthPickerPanelIncomes";
-            this.monthPickerPanelIncomes.Size = new System.Drawing.Size(259, 62);
+            this.monthPickerPanelIncomes.Size = new System.Drawing.Size(209, 62);
             this.monthPickerPanelIncomes.TabIndex = 3;
             this.monthPickerPanelIncomes.Visible = false;
             // 
@@ -581,6 +590,14 @@
             this.tabPageExpenses.Text = "Expenses";
             this.tabPageExpenses.UseVisualStyleBackColor = true;
             // 
+            // displayedExpensesCountLabel
+            // 
+            this.displayedExpensesCountLabel.AutoSize = true;
+            this.displayedExpensesCountLabel.Location = new System.Drawing.Point(23, 450);
+            this.displayedExpensesCountLabel.Name = "displayedExpensesCountLabel";
+            this.displayedExpensesCountLabel.Size = new System.Drawing.Size(0, 13);
+            this.displayedExpensesCountLabel.TabIndex = 13;
+            // 
             // dateTimePickerMonthlyExpenses
             // 
             this.dateTimePickerMonthlyExpenses.CustomFormat = "yyyy";
@@ -636,7 +653,7 @@
             this.pieChartExpenses.ChartAreas.Add(chartArea5);
             legend5.Name = "Legend1";
             this.pieChartExpenses.Legends.Add(legend5);
-            this.pieChartExpenses.Location = new System.Drawing.Point(644, 163);
+            this.pieChartExpenses.Location = new System.Drawing.Point(585, 163);
             this.pieChartExpenses.Name = "pieChartExpenses";
             series5.ChartArea = "ChartArea1";
             series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -649,7 +666,7 @@
             series5.Points.Add(dataPoint10);
             series5.Points.Add(dataPoint11);
             this.pieChartExpenses.Series.Add(series5);
-            this.pieChartExpenses.Size = new System.Drawing.Size(300, 300);
+            this.pieChartExpenses.Size = new System.Drawing.Size(415, 323);
             this.pieChartExpenses.TabIndex = 9;
             this.pieChartExpenses.Text = "chart1";
             title5.Name = "Title1";
@@ -770,6 +787,14 @@
             this.tabPageDebts.Text = "Debts";
             this.tabPageDebts.UseVisualStyleBackColor = true;
             // 
+            // displayedDebtsCountLabel
+            // 
+            this.displayedDebtsCountLabel.AutoSize = true;
+            this.displayedDebtsCountLabel.Location = new System.Drawing.Point(29, 447);
+            this.displayedDebtsCountLabel.Name = "displayedDebtsCountLabel";
+            this.displayedDebtsCountLabel.Size = new System.Drawing.Size(0, 13);
+            this.displayedDebtsCountLabel.TabIndex = 13;
+            // 
             // dateTimePickerMonthlyDebts
             // 
             this.dateTimePickerMonthlyDebts.CustomFormat = "yyyy";
@@ -825,7 +850,7 @@
             this.pieChartDebts.ChartAreas.Add(chartArea7);
             legend7.Name = "Legend1";
             this.pieChartDebts.Legends.Add(legend7);
-            this.pieChartDebts.Location = new System.Drawing.Point(663, 152);
+            this.pieChartDebts.Location = new System.Drawing.Point(584, 171);
             this.pieChartDebts.Name = "pieChartDebts";
             series7.ChartArea = "ChartArea1";
             series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -834,7 +859,7 @@
             dataPoint13.LegendText = "Creditor1";
             series7.Points.Add(dataPoint13);
             this.pieChartDebts.Series.Add(series7);
-            this.pieChartDebts.Size = new System.Drawing.Size(300, 300);
+            this.pieChartDebts.Size = new System.Drawing.Size(415, 323);
             this.pieChartDebts.TabIndex = 9;
             this.pieChartDebts.Text = "chart1";
             title7.Name = "Title1";
@@ -956,6 +981,14 @@
             this.tabPageSavings.Text = "Savings";
             this.tabPageSavings.UseVisualStyleBackColor = true;
             // 
+            // displayedSavingsCountLabel
+            // 
+            this.displayedSavingsCountLabel.AutoSize = true;
+            this.displayedSavingsCountLabel.Location = new System.Drawing.Point(25, 464);
+            this.displayedSavingsCountLabel.Name = "displayedSavingsCountLabel";
+            this.displayedSavingsCountLabel.Size = new System.Drawing.Size(0, 13);
+            this.displayedSavingsCountLabel.TabIndex = 13;
+            // 
             // savingAccountButton
             // 
             this.savingAccountButton.Location = new System.Drawing.Point(807, 72);
@@ -1022,7 +1055,7 @@
             this.pieChartSavings.ChartAreas.Add(chartArea9);
             legend9.Name = "Legend1";
             this.pieChartSavings.Legends.Add(legend9);
-            this.pieChartSavings.Location = new System.Drawing.Point(672, 197);
+            this.pieChartSavings.Location = new System.Drawing.Point(585, 188);
             this.pieChartSavings.Name = "pieChartSavings";
             series9.ChartArea = "ChartArea1";
             series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -1034,7 +1067,7 @@
             series9.Points.Add(dataPoint15);
             series9.Points.Add(dataPoint16);
             this.pieChartSavings.Series.Add(series9);
-            this.pieChartSavings.Size = new System.Drawing.Size(300, 300);
+            this.pieChartSavings.Size = new System.Drawing.Size(415, 323);
             this.pieChartSavings.TabIndex = 9;
             this.pieChartSavings.Text = "chart1";
             title9.Name = "Title1";
@@ -1059,7 +1092,7 @@
             this.monthPickerPanelSavings.Controls.Add(this.endLabelSavings);
             this.monthPickerPanelSavings.Location = new System.Drawing.Point(349, 134);
             this.monthPickerPanelSavings.Name = "monthPickerPanelSavings";
-            this.monthPickerPanelSavings.Size = new System.Drawing.Size(267, 74);
+            this.monthPickerPanelSavings.Size = new System.Drawing.Size(213, 75);
             this.monthPickerPanelSavings.TabIndex = 7;
             this.monthPickerPanelSavings.Visible = false;
             // 
@@ -1158,14 +1191,14 @@
             // logoutToolStripMenuItem
             // 
             this.logoutToolStripMenuItem.Name = "logoutToolStripMenuItem";
-            this.logoutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.logoutToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.logoutToolStripMenuItem.Text = "Logout";
             this.logoutToolStripMenuItem.Click += new System.EventHandler(this.logoutToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -1198,7 +1231,8 @@
             // 
             this.manageExternalAccountsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createExternalAccountToolStripMenuItem,
-            this.externalAccountTransfersToolStripMenuItem});
+            this.externalAccountTransfersToolStripMenuItem,
+            this.externalAccountStatisticsToolStripMenuItem});
             this.manageExternalAccountsToolStripMenuItem.Name = "manageExternalAccountsToolStripMenuItem";
             this.manageExternalAccountsToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.manageExternalAccountsToolStripMenuItem.Text = "External accounts";
@@ -1216,6 +1250,13 @@
             this.externalAccountTransfersToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
             this.externalAccountTransfersToolStripMenuItem.Text = "External account transfers";
             this.externalAccountTransfersToolStripMenuItem.Click += new System.EventHandler(this.externalAccountTransfersToolStripMenuItem_Click);
+            // 
+            // externalAccountStatisticsToolStripMenuItem
+            // 
+            this.externalAccountStatisticsToolStripMenuItem.Name = "externalAccountStatisticsToolStripMenuItem";
+            this.externalAccountStatisticsToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.externalAccountStatisticsToolStripMenuItem.Text = "External account statistics";
+            this.externalAccountStatisticsToolStripMenuItem.Click += new System.EventHandler(this.externalAccountStatisticsToolStripMenuItem_Click);
             // 
             // manageReceivablesToolStripMenuItem
             // 
@@ -1270,38 +1311,6 @@
             this.editDeleteExistingPlansToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.editDeleteExistingPlansToolStripMenuItem.Text = "Edit/Delete budget plans";
             this.editDeleteExistingPlansToolStripMenuItem.Click += new System.EventHandler(this.editDeleteExistingPlansToolStripMenuItem_Click);
-            // 
-            // displayedExpensesCountLabel
-            // 
-            this.displayedExpensesCountLabel.AutoSize = true;
-            this.displayedExpensesCountLabel.Location = new System.Drawing.Point(23, 450);
-            this.displayedExpensesCountLabel.Name = "displayedExpensesCountLabel";
-            this.displayedExpensesCountLabel.Size = new System.Drawing.Size(0, 13);
-            this.displayedExpensesCountLabel.TabIndex = 13;
-            // 
-            // displayedIncomesCountLabel
-            // 
-            this.displayedIncomesCountLabel.AutoSize = true;
-            this.displayedIncomesCountLabel.Location = new System.Drawing.Point(32, 432);
-            this.displayedIncomesCountLabel.Name = "displayedIncomesCountLabel";
-            this.displayedIncomesCountLabel.Size = new System.Drawing.Size(0, 13);
-            this.displayedIncomesCountLabel.TabIndex = 11;
-            // 
-            // displayedDebtsCountLabel
-            // 
-            this.displayedDebtsCountLabel.AutoSize = true;
-            this.displayedDebtsCountLabel.Location = new System.Drawing.Point(29, 447);
-            this.displayedDebtsCountLabel.Name = "displayedDebtsCountLabel";
-            this.displayedDebtsCountLabel.Size = new System.Drawing.Size(0, 13);
-            this.displayedDebtsCountLabel.TabIndex = 13;
-            // 
-            // displayedSavingsCountLabel
-            // 
-            this.displayedSavingsCountLabel.AutoSize = true;
-            this.displayedSavingsCountLabel.Location = new System.Drawing.Point(25, 464);
-            this.displayedSavingsCountLabel.Name = "displayedSavingsCountLabel";
-            this.displayedSavingsCountLabel.Size = new System.Drawing.Size(0, 13);
-            this.displayedSavingsCountLabel.TabIndex = 13;
             // 
             // UserDashboard
             // 
@@ -1454,6 +1463,7 @@
         private System.Windows.Forms.Label displayedIncomesCountLabel;
         private System.Windows.Forms.Label displayedDebtsCountLabel;
         private System.Windows.Forms.Label displayedSavingsCountLabel;
+        private System.Windows.Forms.ToolStripMenuItem externalAccountStatisticsToolStripMenuItem;
     }
 }
 

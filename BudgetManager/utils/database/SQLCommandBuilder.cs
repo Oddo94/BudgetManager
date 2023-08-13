@@ -247,6 +247,33 @@ namespace BudgetManager {
             return getSpecificUserRecordsCommand;
         }
 
+        //Method for retrieving database records based on a specific ID (e.g: transfers performed from/to an account)
+        public static MySqlCommand getRecordsBasedOnId(String sqlStatement, int recordId) {
+            Guard.notNull(sqlStatement, "SQL statement");
+            Guard.notNull(recordId, "record ID");
+
+            MySqlCommand recordRetrievalCommand = new MySqlCommand(sqlStatement);
+            recordRetrievalCommand.Parameters.AddWithValue("@paramRecordId", recordId);
+
+            return recordRetrievalCommand;
+        }
+
+        //Method for retrieving database records based on a specific ID (e.g: transfers performed from/to an account)
+        public static MySqlCommand getRecordsBasedOnIdAndDateInterval(String sqlStatement, int recordId, String startDate, String endDate) {
+            Guard.notNull(sqlStatement, "SQL statement");
+            Guard.notNull(recordId, "record ID");
+            Guard.notNull(startDate, "start date");
+            Guard.notNull(startDate, "end date");
+
+            MySqlCommand recordRetrievalCommand = new MySqlCommand(sqlStatement);
+            recordRetrievalCommand.Parameters.AddWithValue("@paramRecordId", recordId);
+            recordRetrievalCommand.Parameters.AddWithValue("@paramStartDate", startDate);
+            recordRetrievalCommand.Parameters.AddWithValue("@paramEndDate", endDate);
+
+
+            return recordRetrievalCommand;
+        }
+
         //Method for checking multiple arguments for null values(uses varargs to provide more flexibility regarding the number of passed objects to be processed)
         private static void performNullChecksForMultipleArguments(String argumentName, params Object[] arguments) {                
 

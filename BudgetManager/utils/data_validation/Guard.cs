@@ -19,7 +19,7 @@ namespace BudgetManager.utils {
         }
 
         //Method for checking if the provided row index of the DataGridView object is in range
-        public static void inRange(DataGridView gridView, int rowIndex) {
+        public static void inRangeRow(DataGridView gridView, int rowIndex) {
             int maxRowIndex = gridView.Rows.Count - 1;
 
             if (rowIndex < 0 || rowIndex >= gridView.Rows.Count) {
@@ -45,6 +45,21 @@ namespace BudgetManager.utils {
 
             if (columnIndex < minColumnIndex || columnIndex > maxColumnIndex) {
                 throw new ArgumentOutOfRangeException($"Column index {columnIndex} is out of allowed range 0-{maxColumnIndex}");
+            }
+        }
+
+        public static void inRangeColumn(DataGridView targetDataGridView, int cellIndex) {
+            if (targetDataGridView == null) {
+                throw new ArgumentNullException("target DataGridView", "The DataGridView whose cell index has to be checked cannot be null!");
+            } else if(targetDataGridView.Rows.Count == 0) {
+                throw new ArgumentException("target DataGridView", "The DataGridView whose cell index has to be checked must have at least one row!");
+            }
+
+            int minCellIndex = 0;
+            int maxCellIndex = targetDataGridView.Rows[0].Cells.Count - 1;
+
+            if (cellIndex < minCellIndex || cellIndex > maxCellIndex) {
+                throw new ArgumentOutOfRangeException($"Cell index {cellIndex} is out of allowed range 0-{maxCellIndex}");
             }
         }
     }

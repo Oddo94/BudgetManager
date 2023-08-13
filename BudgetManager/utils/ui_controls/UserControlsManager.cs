@@ -248,6 +248,16 @@ namespace BudgetManager.utils {
 
             return comboBoxDataTable;
         }
+
+        public static bool isValidDateSelection(DateTimePicker startPicker, DateTimePicker endPicker) {
+            Guard.notNull(startPicker, "start DateTimePicker");
+            Guard.notNull(endPicker, "start DateTimePicker");
+
+            DateTime startDate = startPicker.Value.Date;
+            DateTime endDate = endPicker.Value.Date;
+
+            return startDate <= endDate;
+        }
     }
 
 
