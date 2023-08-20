@@ -69,7 +69,7 @@ namespace BudgetManager.mvp.repositories {
                                                            WHERE
 	                                                           sa.user_ID = @paramUserId
 	                                                           AND sa.accountName = @paramAccountName
-	                                                           AND sa.creationDate BETWEEN @paramStartDate AND @paramEndDate";
+	                                                           AND sai.creationDate BETWEEN @paramStartDate AND @paramEndDate";
 
         private String sqlStatementGetAccountTransfersActivity = @"WITH months_list AS (
                                                                    SELECT 1 AS mntValue UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION
