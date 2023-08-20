@@ -148,7 +148,7 @@ namespace BudgetManager.mvc.views {
 
                 int j = 0;//the index of the current row from the DataTable object retrieved from the DB
                 for (int i = 0; i < chart.Series[0].Points.Count; i++) {                    
-                    //If there are no more rows in the DataTable(for example there may be months for which there are no records) the ) value is added to the respectiv month from the chart
+                    //If there are no more rows in the DataTable(for example there may be months for which there are no records) the 0 value is added to the respectiv month from the chart
                     if (j > inputDataTable.Rows.Count - 1) {
                         chart.Series[0].Points[i].SetValueY(0);
                         continue;
