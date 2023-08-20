@@ -504,6 +504,13 @@
             series3.Color = System.Drawing.Color.Lime;
             series3.Legend = "Legend1";
             series3.Name = "Monthly balance";
+            dataPoint1.Label = "";
+            dataPoint1.LabelToolTip = "";
+            dataPoint8.Label = "Aug";
+            dataPoint9.Label = "Sep";
+            dataPoint10.Label = "Oct";
+            dataPoint11.Label = "Nov";
+            dataPoint12.Label = "Dec";
             series3.Points.Add(dataPoint1);
             series3.Points.Add(dataPoint2);
             series3.Points.Add(dataPoint3);
