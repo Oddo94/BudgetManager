@@ -6,7 +6,18 @@ using System.Data;
 
 namespace BudgetManager.mvp.repositories {
     internal class ExternalAccountStatisticsRepository : IExternalAccountStatisticsRepository {
-        private String sqlStatementGetUserAccounts = "SELECT accountName FROM saving_accounts WHERE user_ID = @paramID ORDER BY accountName";
+        //SQL statement for retrieving ONLY the user defined saving accounts
+        private String sqlStatementGetUserAccounts = @"SELECT
+	                                                       sa.accountName
+                                                       FROM
+	                                                       saving_accounts sa
+                                                       INNER JOIN saving_account_types sat ON
+	                                                       sa.type_ID = sat.typeID
+                                                       WHERE
+	                                                       sat.typeName LIKE '%USER_DEFINED%'
+	                                                       AND sa.user_ID = @paramID
+                                                       ORDER BY
+	                                                       accountName";
         private String sqlStatementGetAccountId = "SELECT accountID FROM saving_accounts WHERE user_ID = @paramID AND accountName = @paramAccountName";
         private String sqlStatementGetAccountTransfers = @"WITH account_details AS (SELECT accountID FROM saving_accounts WHERE user_ID = @paramID AND accountName = @paramAccountName)
                                                            
@@ -104,7 +115,7 @@ namespace BudgetManager.mvp.repositories {
 		                                                                  mths.mntValue,
 		                                                           YEAR(sat.transferDate)";
 
-        private String sqlStatementGetAccountMonthlyBalanceEvolution = @"WITH months_list AS (
+        private String sqlStatementGetAccountMonthlyBalanceEvolution = @"SELECT * FROM (WITH months_list AS (
                                                                          SELECT 1 AS mntValue UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION
                                                                          SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11
                                                                          UNION SELECT 12)
@@ -129,8 +140,8 @@ namespace BudgetManager.mvp.repositories {
 		                                                                         WHEN eab.recordID IS NOT NULL THEN 
 			                                                                         SUM(value) OVER (PARTITION BY account_ID
 	                                                                         ORDER BY
-		                                                                         MONTH(createdDate),
-		                                                                         YEAR(createdDate))
+		                                                                         YEAR(createdDate),
+		                                                                         MONTH(createdDate))
 		                                                                         ELSE 0
 	                                                                         END
                                                                          AS 'Monthly balance'
@@ -146,9 +157,9 @@ namespace BudgetManager.mvp.repositories {
 		                                                                        saving_accounts
 	                                                                        WHERE
 		                                                                        accountName = @paramAccountName AND user_ID = @paramUserId)
-	                                                                        AND YEAR(createdDate) = @paramYear
-                                                                        ORDER BY
-	                                                                        mths.mntValue";
+	                                                                        AND YEAR(createdDate) <= @paramYear
+                                                                        ORDER BY	                                                                        
+	                                                                       YEAR(createdDate), mths.mntValue) AS subquery WHERE Year = @paramYear";
 
         public DataTable getUserAccounts(int userId) {
             QueryData paramContainer = new QueryData.Builder(userId).build();

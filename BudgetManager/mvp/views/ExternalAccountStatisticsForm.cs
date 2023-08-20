@@ -39,7 +39,7 @@ namespace BudgetManager.mvp.views {
             this.userId = userId;
             InitializeComponent();
             associateAndRaiseEvents();
-            userAccountsComboBox.SelectedIndex = -1;
+            userAccountsComboBox.SelectedItem = null;
             selectedItemType = BudgetItemType.ACCOUNT_TRANSFER;//The transfers item type will always be selected by default
         }
 
