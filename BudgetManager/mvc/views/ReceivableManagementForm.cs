@@ -170,6 +170,9 @@ namespace BudgetManager.mvc.views {
                     currentRowData = retrieveDataFromSelectedRow(rowIndexOnRightClick, receivableManagementDgv);
                     selectedReceivableID = currentRowData.Cells[0].Value.ToString();
                     insertPartialPaymentButton.Enabled = false;
+                    //Enables the partial payment name and value textboxes
+                    itemNameTextBox.Enabled = true;
+                    itemValueTextBox.Enabled = true;
                     break;
 
                 case "updateDetailsItem":
@@ -181,11 +184,11 @@ namespace BudgetManager.mvc.views {
                     try {
                         populateFormFields(currentRowData);
                         updateDgvRecordButton.Enabled = false;
+                        setUpdateFormComponentsState(true);//Enables the update form components after the user presses the "Update details" option from the context menu 
                     } catch (FormatException ex) {
                         Console.WriteLine(ex.Message);
                         MessageBox.Show("Invalid date format for the receivable due/created date! Unable to populate the update data form.", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     } finally {
-                        //updateDgvRecordButton.Enabled = false;
                     }
 
                     break;
@@ -204,13 +207,10 @@ namespace BudgetManager.mvc.views {
             MouseButtons pressedMouseBtn = e.Button;
 
             if (pressedMouseBtn == MouseButtons.Right) {
-                updateDgvRecordButton.Enabled = false;//CHANGE!!
+                updateDgvRecordButton.Enabled = false;
                 rowIndexOnRightClick = e.RowIndex;
                 columnIndexOnRightClick = e.ColumnIndex;
             }
-
-            //ONLY FOR DEBUGGING PURPOSES!!
-            Console.WriteLine("CURRENTLY SELECTED RECEIVABLE ID: " + selectedReceivableID);
         }
 
         private void receivableManagementDgv_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e) {
@@ -302,7 +302,7 @@ namespace BudgetManager.mvc.views {
                 rowIndexOnRightClick = -1;
                 selectedReceivableID = "";//Resets the receivable ID regardless of the update result
                 updateDgvRecordButton.Enabled = false;
-
+                setUpdateFormComponentsState(false);//Disables the update form components after the user presses the "Update record" button
             }
 
             UserControlsManager.clearActiveControls(activeControls);
@@ -463,7 +463,6 @@ namespace BudgetManager.mvc.views {
         }
 
         private void itemValueTextBox_TextChanged(object sender, EventArgs e) {
-            //Regex forbiddenCharacters = new Regex("[^0-9]+", RegexOptions.Compiled);
             Regex allowedCharacters = new Regex("^[1-9][0-9]*$", RegexOptions.Compiled);
 
             //Checks if the value text box contains non-digit characters and in that case it clears its content
@@ -900,7 +899,6 @@ namespace BudgetManager.mvc.views {
                 return;
             }
 
-            //DataTable receivableManagementDT = (DataTable)receivableManagementDgv.DataSource;
             //Sets the data source of the receivable management grid view as the DataTable with the discarded changes
             receivableManagementDgv.DataSource = dataTableWithDiscardedChanges;
             DataTable pendingChangesDT = dataTableWithDiscardedChanges.GetChanges();
@@ -1007,8 +1005,15 @@ namespace BudgetManager.mvc.views {
 
             QueryData paramContainer = configureParamContainer();
 
-            //sendDataToController(paramContainer);
             controller.requestData(QueryType.DATE_INTERVAL, paramContainer);
+        }
+
+        private void setUpdateFormComponentsState(Boolean isEnabled) {
+            itemNameTextBox.Enabled = isEnabled;
+            itemValueTextBox.Enabled = isEnabled;
+            receivableDebtorComboBox.Enabled = isEnabled;
+            receivableCreatedDatePicker.Enabled = isEnabled;
+            receivableDueDatePicker.Enabled = isEnabled;
         }
     }
 }
