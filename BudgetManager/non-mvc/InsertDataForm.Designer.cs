@@ -43,10 +43,11 @@
             "Saving",
             "Creditor",
             "Debtor",
-            "Saving account interest"});
+            "Saving account interest",
+            "External account banking fees"});
             this.itemTypeSelectionComboBox.Location = new System.Drawing.Point(33, 58);
             this.itemTypeSelectionComboBox.Name = "itemTypeSelectionComboBox";
-            this.itemTypeSelectionComboBox.Size = new System.Drawing.Size(159, 21);
+            this.itemTypeSelectionComboBox.Size = new System.Drawing.Size(185, 21);
             this.itemTypeSelectionComboBox.TabIndex = 0;
             this.itemTypeSelectionComboBox.SelectedIndexChanged += new System.EventHandler(this.itemTypeSelectionComboBox_SelectedIndexChanged);
             // 

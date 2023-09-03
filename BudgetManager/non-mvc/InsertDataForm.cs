@@ -185,21 +185,7 @@ namespace BudgetManager.non_mvc {
                 case 7:
                     container.Controls.Clear();
                     accountType = getAccountTypeForDataFiltering();//retrieves the account type by which the data will be filtered before populating the combobox
-                    dataProvider.fillSavingAccountsComboBox(savingAccountComboBox, accountType, userID);
-
-                    /*Net interest calculator button changes*/
-                    //FlowLayoutPanel interestValueInputPanel = new FlowLayoutPanel();
-                    //interestValueInputPanel.Size = new Size(400, 25);
-                    //interestValueInputPanel.Dock = DockStyle.None;
-                    //interestValueInputPanel.FlowDirection = FlowDirection.LeftToRight;
-                    ////interestValueInputPanel.Margin = new Padding(20, 20, 20, 20);                    
-
-                    //netInterestCalculatorButton = new Button();
-                    //netInterestCalculatorButton.Text = "Calculate net interest";
-                    //netInterestCalculatorButton.Size = new Size(130, 20);
-                    //netInterestCalculatorButton.Anchor = AnchorStyles.Top;
-                    //netInterestCalculatorButton.Anchor = AnchorStyles.Left;
-                    //netInterestCalculatorButton.Margin = new Padding(3, 3, 3, 3);
+                    dataProvider.fillSavingAccountsComboBox(savingAccountComboBox, accountType, userID);        
 
                     interestValueInputPanel.Controls.Add(itemValueTextBox);
                     interestValueInputPanel.Controls.Add(netInterestCalculatorButton);
@@ -208,6 +194,18 @@ namespace BudgetManager.non_mvc {
                     List<Control> controlsListSavingAccountInterest = new List<Control> { itemDatePickerLabel, datePicker, itemNameLabel, itemNameTextBox, savingAccountLabel, savingAccountComboBox, interestTypeLabel, interestTypeComboBox,
                         paymentTypeLabel, paymentTypeComboBox, interestRateLabel, interestRateTextBox, itemValueLabel, interestValueInputPanel, transactionIDLabel, transactionIDTextBox};
                     addControlsToContainer(container, controlsListSavingAccountInterest);
+                    populateActiveControlsList(itemTypeSelectionComboBox);
+                    clearActiveControls(activeControls);
+                    break;
+
+                    //External accounts banking fees
+                    case 8:
+                    container.Controls.Clear();
+                    accountType = getAccountTypeForDataFiltering();
+                    dataProvider.fillSavingAccountsComboBox(savingAccountComboBox, accountType, userID);
+
+                    List<Control> controlsListExternalAccountsBankingFees = new List<Control>() { itemDatePickerLabel, datePicker, itemNameLabel, itemNameTextBox, itemValueLabel, itemValueTextBox, savingAccountLabel, savingAccountComboBox };
+                    addControlsToContainer(container, controlsListExternalAccountsBankingFees);
                     populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
                     break;
@@ -615,7 +613,12 @@ namespace BudgetManager.non_mvc {
                 case 7:
                     activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(savingAccountComboBox, true), new FormFieldWrapper(interestTypeComboBox, true),
                         new FormFieldWrapper(paymentTypeComboBox, true), new FormFieldWrapper(interestRateTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(transactionIDLabel, true), new FormFieldWrapper(transactionIDTextBox, false) };
-                    break;              
+                    break;
+
+                //External account banking fees
+                case 8:
+                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(savingAccountComboBox, true) };
+                    break;
 
                 default:
                     return;
