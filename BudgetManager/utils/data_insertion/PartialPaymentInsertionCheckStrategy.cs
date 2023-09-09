@@ -33,6 +33,10 @@ namespace BudgetManager.utils.data_insertion {
             return executionResult;
         }
 
+        public int performCheck(QueryData paramContainer, String selectedItemName, double valueToInsert) {
+            throw new NotImplementedException();
+        }
+
         public int performCheck(QueryData inputData, string selectedItemName, int valueToInsert) {
             throw new NotImplementedException();
         }

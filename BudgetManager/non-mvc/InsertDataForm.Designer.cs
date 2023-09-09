@@ -44,7 +44,7 @@
             "Creditor",
             "Debtor",
             "Saving account interest",
-            "External account banking fees"});
+            "External account banking fee"});
             this.itemTypeSelectionComboBox.Location = new System.Drawing.Point(33, 58);
             this.itemTypeSelectionComboBox.Name = "itemTypeSelectionComboBox";
             this.itemTypeSelectionComboBox.Size = new System.Drawing.Size(185, 21);

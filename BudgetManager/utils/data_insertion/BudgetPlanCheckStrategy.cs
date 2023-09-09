@@ -137,6 +137,10 @@ namespace BudgetManager.utils {
 
         }
 
+        public int performCheck(QueryData paramContainer, String selectedItemName, double valueToInsert) {
+            throw new NotImplementedException();
+        }
+
         public int performCheck() {
             throw new NotImplementedException();
         }

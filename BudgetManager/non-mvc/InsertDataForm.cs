@@ -33,7 +33,7 @@ namespace BudgetManager.non_mvc {
         private Label incomeTypeLabel;
         private Label incomeSourceLabel;
         private RadioButton generalIncomesRadioButton;
-        private RadioButton savingAccountRadioButton;      
+        private RadioButton savingAccountRadioButton;
 
         //Expenses
         private ComboBox expenseTypeComboBox;
@@ -91,7 +91,7 @@ namespace BudgetManager.non_mvc {
 
             itemTypeSelectionComboBox.SelectedIndex = 0;
             //incomeTypeComboBox.SelectedIndex = -1;
-                 
+
         }
 
         private void InsertDataForm2_Load(object sender, EventArgs e) {
@@ -107,7 +107,7 @@ namespace BudgetManager.non_mvc {
             interestTypeComboBox.SelectedIndexChanged += new EventHandler(interestTypeComboBox_SelectedIndexChanged);
             paymentTypeComboBox.SelectedIndexChanged += new EventHandler(paymentTypeComboBox_SelectedIndexChanged);
             interestRateTextBox.TextChanged += new EventHandler(interestRateTextBox_TextChanged);
-            netInterestCalculatorButton.Click += new EventHandler(netInterestCalculatorButton_Click);       
+            netInterestCalculatorButton.Click += new EventHandler(netInterestCalculatorButton_Click);
         }
 
         private void itemTypeSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -120,7 +120,7 @@ namespace BudgetManager.non_mvc {
                 case 0:
                     container.Controls.Clear();
                     addGeneralPurposeControls();
-                    List<Control> controlsListIncomes = new List<Control>() { incomeTypeLabel, incomeTypeComboBox};
+                    List<Control> controlsListIncomes = new List<Control>() { incomeTypeLabel, incomeTypeComboBox };
                     addControlsToContainer(container, controlsListIncomes);
                     populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
@@ -157,7 +157,7 @@ namespace BudgetManager.non_mvc {
 
                     List<Control> controlsListReceivables = new List<Control>() { receivableCreationDateLabel, datePicker, receivableDueDateLabel, receivableDueDatePicker, itemNameLabel,
                     itemNameTextBox, itemValueLabel, itemValueTextBox, debtorSelectionLabel, debtorNameComboBox, incomeSourceLabel, savingAccountComboBox};
-                    addControlsToContainer(container, controlsListReceivables);                  
+                    addControlsToContainer(container, controlsListReceivables);
                     populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
                     debtorNameComboBox.SelectedIndex = -1;
@@ -185,11 +185,11 @@ namespace BudgetManager.non_mvc {
                 case 7:
                     container.Controls.Clear();
                     accountType = getAccountTypeForDataFiltering();//retrieves the account type by which the data will be filtered before populating the combobox
-                    dataProvider.fillSavingAccountsComboBox(savingAccountComboBox, accountType, userID);        
+                    dataProvider.fillSavingAccountsComboBox(savingAccountComboBox, accountType, userID);
 
                     interestValueInputPanel.Controls.Add(itemValueTextBox);
                     interestValueInputPanel.Controls.Add(netInterestCalculatorButton);
-                   
+
 
                     List<Control> controlsListSavingAccountInterest = new List<Control> { itemDatePickerLabel, datePicker, itemNameLabel, itemNameTextBox, savingAccountLabel, savingAccountComboBox, interestTypeLabel, interestTypeComboBox,
                         paymentTypeLabel, paymentTypeComboBox, interestRateLabel, interestRateTextBox, itemValueLabel, interestValueInputPanel, transactionIDLabel, transactionIDTextBox};
@@ -198,8 +198,8 @@ namespace BudgetManager.non_mvc {
                     clearActiveControls(activeControls);
                     break;
 
-                    //External accounts banking fees
-                    case 8:
+                //External accounts banking fees
+                case 8:
                     container.Controls.Clear();
                     accountType = getAccountTypeForDataFiltering();
                     dataProvider.fillSavingAccountsComboBox(savingAccountComboBox, accountType, userID);
@@ -217,13 +217,15 @@ namespace BudgetManager.non_mvc {
 
         private void itemValueTextBox_TextChanged(object sender, EventArgs e) {
             String selectedItemName = itemTypeSelectionComboBox.Text;
-            String specialItem = "Saving account interest";
+            //String specialItem = "Saving account interest";
+            //List of budget items that have to allow the input of decimal values
+            List<String> itemsWithDecimalValues = new List<String> { "Saving account interest", "External account banking fee" };
 
             String inputValue = itemValueTextBox.Text;
 
             //Special check to verify if the saving account interest value can be parsed as a double(to allow for a greater precision when calculating the account balance)
             //The values of the other items will still be treated as integers
-            if (specialItem.Equals(selectedItemName)) {               
+            if (itemsWithDecimalValues.Contains(selectedItemName)) {
                 double result;
                 bool isValid = Double.TryParse(inputValue, NumberStyles.AllowDecimalPoint, new NumberFormatInfo { NumberDecimalSeparator = "." }, out result);
 
@@ -242,9 +244,9 @@ namespace BudgetManager.non_mvc {
 
                 //Regex that matches any non-digit character
                 Regex forbiddenCharacters = new Regex("[^0-9]+", RegexOptions.Compiled);
-            
+
                 //If any such character is found the textbox will be cleared as the value field can contain only numbers
-                if(forbiddenCharacters.IsMatch(inputValue)) {
+                if (forbiddenCharacters.IsMatch(inputValue)) {
                     itemValueTextBox.Clear();
                 }
             }
@@ -291,7 +293,7 @@ namespace BudgetManager.non_mvc {
             setAddEntryButtonState(activeControls);
         }
 
-        private void savingAccountComboBox_MouseHover(object sender, EventArgs e) {          
+        private void savingAccountComboBox_MouseHover(object sender, EventArgs e) {
             String itemName = savingAccountComboBox.Text;
             //ToolTip toolTip = new ToolTip();
 
@@ -311,15 +313,15 @@ namespace BudgetManager.non_mvc {
             double result;
             bool isValid = Double.TryParse(inputValue, NumberStyles.AllowDecimalPoint, new NumberFormatInfo { NumberDecimalSeparator = "." }, out result);
 
-            if(!isValid) {
+            if (!isValid) {
                 interestRateTextBox.Clear();
             }
 
-            setAddEntryButtonState(activeControls);       
+            setAddEntryButtonState(activeControls);
         }
 
         private void addEntryButton_Click(object sender, EventArgs e) {
-            int allChecksExecutionResult = -1;           
+            int allChecksExecutionResult = -1;
             int dataInsertionExecutionResult = -1;
             int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
 
@@ -328,7 +330,7 @@ namespace BudgetManager.non_mvc {
             if (userOptionConfirmInsertion == DialogResult.No) {
                 return;
             }
-        
+
             String selectedItemName = itemTypeSelectionComboBox.Text;
             String specialItemName = "Saving account interest";
 
@@ -339,10 +341,14 @@ namespace BudgetManager.non_mvc {
                 //Checks the execution result returned by the insertion method (positive value means success while -1 means the failure of the operation)
                 if (allChecksExecutionResult != -1) {
                     dataInsertionExecutionResult = insertSelectedItem(selectedIndex);
+                } else {
+                    //Added to prevent the data insertion error message being shown when precheck conditions are not met
+                    return;
                 }
+
             } else {
                 dataInsertionExecutionResult = insertSelectedItem(selectedIndex);//The saving account interest can be inserted directly without performing a precheck
-            }   
+            }
 
             //Checks the execution result returned by the insertion method (positive value means success while -1 means the failure of the operation)
             if (dataInsertionExecutionResult != -1) {
@@ -350,7 +356,7 @@ namespace BudgetManager.non_mvc {
                 //Clears the active controls if the data insertion is successful
                 clearActiveControls(activeControls);
             } else {
-                MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Unable to insert the input data! Please try again.", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
         }
@@ -389,10 +395,10 @@ namespace BudgetManager.non_mvc {
             DataProvider dataProvider = new DataProvider();
 
             //Incomes
-            incomeTypeComboBox = new ComboBox();           
+            incomeTypeComboBox = new ComboBox();
             dataProvider.fillComboBox(incomeTypeComboBox, ComboBoxType.INCOME_TYPE_COMBOBOX, userID);
             incomeTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            incomeTypeComboBox.Margin = new Padding(0, 0, 0, 0);       
+            incomeTypeComboBox.Margin = new Padding(0, 0, 0, 0);
 
             //Expenses
             expenseTypeComboBox = new ComboBox();
@@ -425,7 +431,7 @@ namespace BudgetManager.non_mvc {
             dataProvider.fillComboBox(interestTypeComboBox, ComboBoxType.INTEREST_TYPE_COMBOBOX, userID);
             interestTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             interestTypeComboBox.Margin = new Padding(0, 0, 0, 0);
-            
+
             //Payment types
             paymentTypeComboBox = new ComboBox();
             dataProvider.fillComboBox(paymentTypeComboBox, ComboBoxType.PAYMENT_TYPE_COMBOBOX, userID);
@@ -444,19 +450,19 @@ namespace BudgetManager.non_mvc {
         private void createLabels() {
             itemDatePickerLabel = new Label();
             itemDatePickerLabel.Text = "Date";
-           
+
             itemNameLabel = new Label();
             itemNameLabel.Text = "Name";
             itemNameLabel.Margin = new Padding(0, 10, 0, 0);
 
             itemValueLabel = new Label();
             itemValueLabel.Text = "Value";
-            itemValueLabel.Margin = new Padding(0, 10, 0, 0);       
+            itemValueLabel.Margin = new Padding(0, 10, 0, 0);
 
             incomeTypeLabel = new Label();
             incomeTypeLabel.Text = "Income type";
             incomeTypeLabel.Margin = new Padding(0, 10, 0, 0);
-            
+
             incomeSourceLabel = new Label();
             incomeSourceLabel.Text = "Income source";
             incomeSourceLabel.Margin = new Padding(0, 10, 0, 0);
@@ -480,7 +486,7 @@ namespace BudgetManager.non_mvc {
             debtorSelectionLabel = new Label();
             debtorSelectionLabel.Text = "Select debtor";
             debtorSelectionLabel.Margin = new Padding(0, 10, 0, 0);
-            
+
             savingAccountLabel = new Label();
             savingAccountLabel.Text = "Saving account";
             savingAccountLabel.Margin = new Padding(0, 10, 0, 0);
@@ -547,7 +553,7 @@ namespace BudgetManager.non_mvc {
             netInterestCalculatorButton.Margin = new Padding(3, 3, 3, 3);
         }
 
-        private void addGeneralPurposeControls() {           
+        private void addGeneralPurposeControls() {
             container.Controls.Add(itemDatePickerLabel);
             container.Controls.Add(datePicker);
             container.Controls.Add(itemNameLabel);
@@ -563,7 +569,7 @@ namespace BudgetManager.non_mvc {
             if (!controlsList.Any()) {
                 return;
             }
-           
+
             foreach (Control currentControl in controlsList) {
                 targetContainer.Controls.Add(currentControl);
             }
@@ -578,7 +584,7 @@ namespace BudgetManager.non_mvc {
             switch (selectedIndex) {
                 //Selected item -> incomes
                 case 0:
-                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(incomeTypeComboBox, true)};
+                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(incomeTypeComboBox, true) };
                     break;
 
                 //Selected item -> expenses   
@@ -589,7 +595,7 @@ namespace BudgetManager.non_mvc {
 
                 //Selected item -> debts
                 case 2:
-                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(creditorNameComboBox, true)};
+                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(creditorNameComboBox, true) };
                     break;
 
                 //Selected item -> receivables
@@ -600,13 +606,13 @@ namespace BudgetManager.non_mvc {
 
                 //Selected item -> savings
                 case 4:
-                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true)};
+                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true) };
                     break;
 
                 //Selected item -> creditors or debtors(intentional fall through since the layout is identical)
                 case 5:
                 case 6:
-                    activeControls = new ArrayList() { new FormFieldWrapper(itemNameTextBox, true)};
+                    activeControls = new ArrayList() { new FormFieldWrapper(itemNameTextBox, true) };
                     break;
 
                 //Selected item-> saving account interest
@@ -683,7 +689,7 @@ namespace BudgetManager.non_mvc {
         private IncomeSource getIncomeSource(BudgetItemType budgetItemType) {
             //Setting the default value for the income source
             IncomeSource incomeSource = IncomeSource.UNDEFINED;
-          
+
             switch (budgetItemType) {
                 case BudgetItemType.GENERAL_EXPENSE:
                     if (generalIncomesRadioButton.Checked == true) {
@@ -724,9 +730,9 @@ namespace BudgetManager.non_mvc {
             DateTime currentDate = DateTime.Now.Date;
             DateTime currentMonthStartDate = new DateTime(currentDate.Year, currentDate.Month, 1).Date;
             DateTime currentMonthEndDate = currentMonthStartDate.AddMonths(1).AddDays(-1).Date;
-            
+
             //Checks if the user tries to insert a receivable for the past or the future
-            if(receivableStartDate < currentMonthStartDate || receivableStartDate > currentMonthEndDate) {
+            if (receivableStartDate < currentMonthStartDate || receivableStartDate > currentMonthEndDate) {
                 MessageBox.Show("The creation date of the receivable cannot be prior/subsequent to the current month!", "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 datePicker.Value = DateTime.Now;
                 receivableDueDatePicker.Value = DateTime.Now;
@@ -745,7 +751,7 @@ namespace BudgetManager.non_mvc {
             }
 
             //Both checks must pass in order for the receivable to be inserted
-            if(startDateCheckResult == 0 && chronologicalCheckResult == 0) {
+            if (startDateCheckResult == 0 && chronologicalCheckResult == 0) {
                 return 0;
             }
 
@@ -768,7 +774,7 @@ namespace BudgetManager.non_mvc {
 
                 case 3:
                     return BudgetItemType.RECEIVABLE;
-                
+
                 case 4:
                     return BudgetItemType.SAVING;
 
@@ -806,7 +812,7 @@ namespace BudgetManager.non_mvc {
                     dataInsertionContext.setStrategy(incomeInsertionStrategy);
 
                     //Executes the strategy by calling the invoke() method of the context and passing it the paramContainer object
-                    executionResult = dataInsertionContext.invoke(paramContainer);                                 
+                    executionResult = dataInsertionContext.invoke(paramContainer);
                     break;
 
                 //Expense insertion
@@ -818,7 +824,7 @@ namespace BudgetManager.non_mvc {
                     DataInsertionStrategy expenseInsertionStrategy = new ExpenseInsertionStrategy();
                     dataInsertionContext.setStrategy(expenseInsertionStrategy);
 
-                    executionResult = dataInsertionContext.invoke(paramContainer);              
+                    executionResult = dataInsertionContext.invoke(paramContainer);
                     break;
 
                 //Debt insertion
@@ -829,7 +835,7 @@ namespace BudgetManager.non_mvc {
                     DataInsertionStrategy debtInsertionStrategy = new DebtInsertionStrategy();
                     dataInsertionContext.setStrategy(debtInsertionStrategy);
 
-                    executionResult = dataInsertionContext.invoke(paramContainer);               
+                    executionResult = dataInsertionContext.invoke(paramContainer);
                     break;
 
                 //Receivable insertion
@@ -862,7 +868,7 @@ namespace BudgetManager.non_mvc {
                     DataInsertionStrategy creditorInsertionStrategy = new CreditorInsertionStrategy();
                     dataInsertionContext.setStrategy(creditorInsertionStrategy);
 
-                    executionResult = dataInsertionContext.invoke(paramContainer);                
+                    executionResult = dataInsertionContext.invoke(paramContainer);
                     break;
 
                 //New debtor insertion
@@ -884,9 +890,12 @@ namespace BudgetManager.non_mvc {
                     DataInsertionStrategy accountInterestInsertionStrategy = new AccountInterestInsertionStrategy();
                     dataInsertionContext.setStrategy(accountInterestInsertionStrategy);
 
-                    executionResult = dataInsertionContext.invoke(dataInsertionDTO);                   
+                    executionResult = dataInsertionContext.invoke(dataInsertionDTO);
                     break;
-                
+
+                case 8:
+                    MessageBox.Show("Data insertion", "External account banking fee insertion is not implemented yet!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
 
                 default:
                     break;
@@ -991,14 +1000,14 @@ namespace BudgetManager.non_mvc {
             /* NOTE!
             The parameter container is not used for saving account interest insertion since the necessary data is transfered to the DB using a DTO(see below) */
 
-                    return paramContainer;
+            return paramContainer;
         }
 
         //Method for testing a future refactoring(using DTO classes instead of QueryData class)
         private IDataInsertionDTO configureDataInsertionDTO(BudgetItemType selectedItemType) {
             IDataInsertionDTO dataInsertionDTO = null;
 
-            switch(selectedItemType) {
+            switch (selectedItemType) {
 
                 case BudgetItemType.SAVING_ACCOUNT_INTEREST:
                     String interestCreationDate = datePicker.Value.ToString("yyyy-MM-dd");
@@ -1010,7 +1019,7 @@ namespace BudgetManager.non_mvc {
                     double interestRate = Convert.ToDouble(interestRateTextBox.Text);
                     double interestValue = Convert.ToDouble(itemValueTextBox.Text);
 
-                    dataInsertionDTO = new SavingAccountInterestDTO(interestCreationDate, interestName, accountName, interestType, paymentType, interestRate, interestValue, transactionID, userID);              
+                    dataInsertionDTO = new SavingAccountInterestDTO(interestCreationDate, interestName, accountName, interestType, paymentType, interestRate, interestValue, transactionID, userID);
                     break;
 
                 case BudgetItemType.RECEIVABLE:
@@ -1023,7 +1032,7 @@ namespace BudgetManager.non_mvc {
                     String receivableCreationDate = datePicker.Value.ToString("yyyy-MM-dd");
                     String receivableDueDate = receivableDueDatePicker.Value.ToString("yyyy-MM-dd");
 
-                    dataInsertionDTO = new ReceivableDTO(receivableName, receivableValue, debtorName, sourceAccountName, totalPaidAmount, receivableStatus, receivableCreationDate, receivableDueDate, userID);               
+                    dataInsertionDTO = new ReceivableDTO(receivableName, receivableValue, debtorName, sourceAccountName, totalPaidAmount, receivableStatus, receivableCreationDate, receivableDueDate, userID);
                     break;
             }
 
@@ -1044,12 +1053,12 @@ namespace BudgetManager.non_mvc {
             QueryData paramContainerBPCheck = null;
             DataInsertionCheckerContext dataInsertionCheckContext = null;
             GeneralInsertionCheckStrategy generalCheckStrategy = null;
-            int valueToInsert = 0;
+            //int valueToInsert = 0;
 
             //Check if it can be improved
             if (!selectedItemName.Equals("Debtor") && !selectedItemName.Equals("Creditor") && !selectedItemName.Equals("Income")) {
                 //Checks if the user has enough money left to insert the selected item value
-                valueToInsert = Convert.ToInt32(itemValueTextBox.Text);
+                //valueToInsert = Convert.ToInt32(itemValueTextBox.Text);
                 int selectedMonth = datePicker.Value.Month;
                 int selectedYear = datePicker.Value.Year;
 
@@ -1078,15 +1087,16 @@ namespace BudgetManager.non_mvc {
                 case 2:
 
                 //Saving
-                case 4:                   
+                case 4:
+                    int savingValue = Convert.ToInt32(itemValueTextBox.Text); ;
                     dataInsertionCheckContext.setStrategy(generalCheckStrategy);
 
-                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
+                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, savingValue);
 
                     BudgetPlanCheckStrategy budgetPlanCheckStrategy = new BudgetPlanCheckStrategy();
                     dataInsertionCheckContext.setStrategy(budgetPlanCheckStrategy);
 
-                    budgetPlanCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerBPCheck, selectedItemName, valueToInsert);
+                    budgetPlanCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerBPCheck, selectedItemName, savingValue);
 
                     //If the general check fails(not enough money) then the general check execution result will remain -1 (no data can be inserted)
                     //Else, if the general check is passed and the budget plan check returns -1 (fail because there might not be a budget plan in place) the data can be inserted
@@ -1104,8 +1114,11 @@ namespace BudgetManager.non_mvc {
                     if (checkReceivableDates() == -1) {
                         break;
                     }
+
+                    int receivableValue = Convert.ToInt32(itemValueTextBox.Text);
                     dataInsertionCheckContext.setStrategy(generalCheckStrategy);
-                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, valueToInsert);
+                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, receivableValue);
+
 
                     if (generalCheckExecutionResult == -1) {
                         break;
@@ -1123,10 +1136,27 @@ namespace BudgetManager.non_mvc {
                 case 6:
                     allChecksExecutionResult = 0;
                     break;
-                
+
                 //Saving account interest
                 case 7:
                     allChecksExecutionResult = 0;
+                    break;
+
+                //External account banking fee
+                case 8:
+                    double externalAccountBankingFeeValue = Convert.ToDouble(itemValueTextBox.Text);
+                    GeneralAccountBalanceCheckStrategy accountBalanceCheckStrategy = new GeneralAccountBalanceCheckStrategy();
+                    dataInsertionCheckContext.setStrategy(accountBalanceCheckStrategy);
+
+                    String accountName = savingAccountComboBox.Text;
+                    QueryData paramContainerAccountBalanceCheck = new QueryData.Builder(userID).addItemName(accountName).build();
+                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerAccountBalanceCheck, "external account banking fee", externalAccountBankingFeeValue);
+
+                    if (generalCheckExecutionResult == -1) {
+                        break;
+                    } else {
+                        allChecksExecutionResult = 0;
+                    }
                     break;
 
                 default:
@@ -1142,7 +1172,7 @@ namespace BudgetManager.non_mvc {
         public static String getEnumDescriptionAttribute(Enum value) {
             FieldInfo field = value.GetType().GetField(value.ToString());
 
-            DescriptionAttribute attribute = (DescriptionAttribute) Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute));
+            DescriptionAttribute attribute = (DescriptionAttribute)Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute));
 
             return attribute == null ? value.ToString() : attribute.Description;
         }
@@ -1152,7 +1182,7 @@ namespace BudgetManager.non_mvc {
             String selectedItem = itemTypeSelectionComboBox.Text;
 
             //If the receivable item is selected, only the default account will be retrieved, otherwise all of them will be retrieved
-            if("Receivable".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase)) {
+            if ("Receivable".Equals(selectedItem, StringComparison.InvariantCultureIgnoreCase)) {
                 return AccountType.DEFAULT_ACCOUNT;
             } else {
                 return AccountType.CUSTOM_ACCOUNT;
