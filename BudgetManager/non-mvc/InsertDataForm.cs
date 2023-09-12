@@ -1046,7 +1046,7 @@ namespace BudgetManager.non_mvc {
                     String bankingFeeAccountName = savingAccountComboBox.Text;
                     String bankingFeeName = itemNameTextBox.Text;
                     double bankingFeeValue = Convert.ToDouble(itemValueTextBox.Text);
-                    String bankingFeeCreatedDate = receivableDueDatePicker.Value.ToString("yyyy-MM-dd");
+                    String bankingFeeCreatedDate = datePicker.Value.ToString("yyyy-MM-dd");
 
                     dataInsertionDTO = new BankingFeeDTO(bankingFeeAccountName, bankingFeeName, bankingFeeValue, bankingFeeCreatedDate, userID);
                     break;
