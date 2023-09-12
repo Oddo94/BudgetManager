@@ -893,8 +893,15 @@ namespace BudgetManager.non_mvc {
                     executionResult = dataInsertionContext.invoke(dataInsertionDTO);
                     break;
 
+                //External account banking fee insertion
                 case 8:
-                    MessageBox.Show("Data insertion", "External account banking fee insertion is not implemented yet!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    dataInsertionDTO = configureDataInsertionDTO(BudgetItemType.EXTERNAL_ACCOUNT_BANKING_FEE);
+                    Guard.notNull(dataInsertionDTO, "external account banking fee DTO");
+
+                    DataInsertionStrategy bankingFeeInsertionStrategy = new ExternalAccountBankingFeeInsertionStrategy();
+                    dataInsertionContext.setStrategy(bankingFeeInsertionStrategy);
+
+                    executionResult = dataInsertionContext.invoke(dataInsertionDTO);
                     break;
 
                 default:
@@ -1033,6 +1040,15 @@ namespace BudgetManager.non_mvc {
                     String receivableDueDate = receivableDueDatePicker.Value.ToString("yyyy-MM-dd");
 
                     dataInsertionDTO = new ReceivableDTO(receivableName, receivableValue, debtorName, sourceAccountName, totalPaidAmount, receivableStatus, receivableCreationDate, receivableDueDate, userID);
+                    break;
+
+                case BudgetItemType.EXTERNAL_ACCOUNT_BANKING_FEE:
+                    String bankingFeeAccountName = savingAccountComboBox.Text;
+                    String bankingFeeName = itemNameTextBox.Text;
+                    double bankingFeeValue = Convert.ToDouble(itemValueTextBox.Text);
+                    String bankingFeeCreatedDate = receivableDueDatePicker.Value.ToString("yyyy-MM-dd");
+
+                    dataInsertionDTO = new BankingFeeDTO(bankingFeeAccountName, bankingFeeName, bankingFeeValue, bankingFeeCreatedDate, userID);
                     break;
             }
 

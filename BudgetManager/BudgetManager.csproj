@@ -58,6 +58,7 @@
     <Compile Include="mvc\controllers\SavingAccountController.cs" />
     <Compile Include="mvc\models\BudgetPlanManagementModel.cs" />
     <Compile Include="mvc\models\BudgetSummaryModel.cs" />
+    <Compile Include="mvc\models\dto\BankingFeeDTO.cs" />
     <Compile Include="mvc\models\dto\IDataInsertionDTO.cs" />
     <Compile Include="mvc\models\dto\PartialPaymentDTO.cs" />
     <Compile Include="mvc\models\dto\ReceivableDTO.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="non-mvc\ExternalAccountTransfersForm.Designer.cs">
       <DependentUpon>ExternalAccountTransfersForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="utils\data_insertion\ExternalAccountBankingFeeInsertionStrategy.cs" />
     <Compile Include="utils\data_insertion\GeneralAccountBalanceCheckStrategy.cs" />
     <Compile Include="utils\data_insertion\IncomeInsertionStrategy.cs" />
     <Compile Include="non-mvc\InsertDataForm.cs">

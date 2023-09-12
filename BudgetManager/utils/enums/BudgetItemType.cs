@@ -29,6 +29,8 @@ namespace BudgetManager.utils.enums {
         PARTIAL_PAYMENT,
         [Description("transfer")]
         ACCOUNT_TRANSFER,
+        [Description("external account banking fee")]
+        EXTERNAL_ACCOUNT_BANKING_FEE,
         UNDEFINED
     }
 }
