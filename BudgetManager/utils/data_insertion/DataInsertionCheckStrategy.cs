@@ -9,6 +9,7 @@ namespace BudgetManager.utils {
     interface DataInsertionCheckStrategy {
 
         int performCheck(QueryData inputData, String selectedItemName, int valueToInsert);
+        int performCheck(QueryData inputData, String selectedItemName, double valueToInsert);
         int performCheck();
     }
 }

@@ -61,10 +61,13 @@ namespace BudgetManager.utils {
             return 0;
         }
 
-        public int performCheck() {
+        public int performCheck(QueryData paramContainer, String selectedItemName, double valueToInsert) {
             throw new NotImplementedException();
         }
 
+        public int performCheck() {
+            throw new NotImplementedException();
+        }
         private bool hasEnoughMoney(IncomeSource incomeSource, int valueToInsert, QueryData paramContainer) {
             if (incomeSource == IncomeSource.GENERAL_INCOMES) {
                 //Getting the total value for each budget element        
