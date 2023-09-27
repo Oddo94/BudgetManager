@@ -1,4 +1,5 @@
-﻿using BudgetManager.mvc.models.dto;
+﻿using BudgetManager.mvc.models;
+using BudgetManager.mvc.models.dto;
 using BudgetManager.utils;
 using BudgetManager.utils.data_insertion;
 using BudgetManager.utils.enums;
@@ -321,7 +322,10 @@ namespace BudgetManager.non_mvc {
         }
 
         private void addEntryButton_Click(object sender, EventArgs e) {
-            int allChecksExecutionResult = -1;
+            //int allChecksExecutionResult = -1;
+            DataCheckResponse dataCheckResponse = new DataCheckResponse();
+            dataCheckResponse.ExecutionResult = -1;
+
             int dataInsertionExecutionResult = -1;
             int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
 
@@ -336,12 +340,16 @@ namespace BudgetManager.non_mvc {
 
             //There is no need to perform checks when inserting a saving account interest item
             if (!specialItemName.Equals(selectedItemName)) {
-                allChecksExecutionResult = performDataChecks();
+                //allChecksExecutionResult = performDataChecks();
+                dataCheckResponse = performDataChecks();
 
                 //Checks the execution result returned by the insertion method (positive value means success while -1 means the failure of the operation)
-                if (allChecksExecutionResult != -1) {
+                if (dataCheckResponse.ExecutionResult != -1) {
                     dataInsertionExecutionResult = insertSelectedItem(selectedIndex);
                 } else {
+                    //Displays the error essage returned by the data insertion precheck method
+                    MessageBox.Show(dataCheckResponse.ErrorMessage, "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                     //Added to prevent the data insertion error message being shown when precheck conditions are not met
                     return;
                 }
@@ -1056,10 +1064,15 @@ namespace BudgetManager.non_mvc {
         }
 
 
-        private int performDataChecks() {
-            int allChecksExecutionResult = -1;
-            int generalCheckExecutionResult = -1;
-            int budgetPlanCheckExecutionResult = -1;
+        private DataCheckResponse performDataChecks() {
+            //int allChecksExecutionResult = -1;
+            //int generalCheckExecutionResult = -1;
+            //int budgetPlanCheckExecutionResult = -1;
+            DataCheckResponse finalDataCheckResponse = new DataCheckResponse();
+            finalDataCheckResponse.ExecutionResult = -1;
+
+            DataCheckResponse generalCheckResponse = new DataCheckResponse();
+            DataCheckResponse budgetPlanCheckResponse = new DataCheckResponse();
             //int dataInsertionExecutionResult = -1;
 
             int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
@@ -1095,7 +1108,8 @@ namespace BudgetManager.non_mvc {
             switch (selectedIndex) {
                 //Income
                 case 0:
-                    allChecksExecutionResult = 0;
+                    //allChecksExecutionResult = 0;
+                    finalDataCheckResponse.ExecutionResult = 0;
                     break;
                 //Expense
                 case 1:
@@ -1107,20 +1121,21 @@ namespace BudgetManager.non_mvc {
                     int savingValue = Convert.ToInt32(itemValueTextBox.Text); ;
                     dataInsertionCheckContext.setStrategy(generalCheckStrategy);
 
-                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, savingValue);
+                    generalCheckResponse = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, savingValue);
 
                     BudgetPlanCheckStrategy budgetPlanCheckStrategy = new BudgetPlanCheckStrategy();
                     dataInsertionCheckContext.setStrategy(budgetPlanCheckStrategy);
 
-                    budgetPlanCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerBPCheck, selectedItemName, savingValue);
+                    budgetPlanCheckResponse = dataInsertionCheckContext.invoke(paramContainerBPCheck, selectedItemName, savingValue);
 
                     //If the general check fails(not enough money) then the general check execution result will remain -1 (no data can be inserted)
                     //Else, if the general check is passed and the budget plan check returns -1 (fail because there might not be a budget plan in place) the data can be inserted
                     //Otherwise the allChecksExecutionResult keeps its initial value(-1) and no data will be inserted(for example if a warning message is shown during budget plan checks due to the inserted value being higher than the value allowed by the budget plan item limit) 
-                    if (generalCheckExecutionResult == -1) {
+                    if (generalCheckResponse.ExecutionResult == -1) {
                         break;
-                    } else if (generalCheckExecutionResult == 0 && budgetPlanCheckExecutionResult == -1) {
-                        allChecksExecutionResult = 0;
+                    } else if (generalCheckResponse.ExecutionResult == 0 && budgetPlanCheckResponse.ExecutionResult == -1) {
+                        //allChecksExecutionResult = 0;
+                        finalDataCheckResponse.ExecutionResult = 0;
                     }
 
                     break;
@@ -1133,29 +1148,33 @@ namespace BudgetManager.non_mvc {
 
                     int receivableValue = Convert.ToInt32(itemValueTextBox.Text);
                     dataInsertionCheckContext.setStrategy(generalCheckStrategy);
-                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, receivableValue);
+                    generalCheckResponse = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, receivableValue);
 
 
-                    if (generalCheckExecutionResult == -1) {
+                    if (generalCheckResponse.ExecutionResult == -1) {
                         break;
                     } else {
-                        allChecksExecutionResult = 0;
+                        //allChecksExecutionResult = 0;
+                        finalDataCheckResponse.ExecutionResult = 0;
                     }
 
                     break;
                 //Creditor
                 case 5:
-                    allChecksExecutionResult = 0;
+                    //allChecksExecutionResult = 0;
+                    finalDataCheckResponse.ExecutionResult = 0;
                     break;
 
                 //Debtor
                 case 6:
-                    allChecksExecutionResult = 0;
+                    //allChecksExecutionResult = 0;
+                    finalDataCheckResponse.ExecutionResult = 0;
                     break;
 
                 //Saving account interest
                 case 7:
-                    allChecksExecutionResult = 0;
+                    //allChecksExecutionResult = 0;
+                    finalDataCheckResponse.ExecutionResult = 0;
                     break;
 
                 //External account banking fee
@@ -1166,12 +1185,13 @@ namespace BudgetManager.non_mvc {
 
                     String accountName = savingAccountComboBox.Text;
                     QueryData paramContainerAccountBalanceCheck = new QueryData.Builder(userID).addItemName(accountName).build();
-                    generalCheckExecutionResult = dataInsertionCheckContext.invoke(paramContainerAccountBalanceCheck, "external account banking fee", externalAccountBankingFeeValue);
+                    generalCheckResponse = dataInsertionCheckContext.invoke(paramContainerAccountBalanceCheck, "external account banking fee", externalAccountBankingFeeValue);
 
-                    if (generalCheckExecutionResult == -1) {
+                    if (generalCheckResponse.ExecutionResult == -1) {
                         break;
                     } else {
-                        allChecksExecutionResult = 0;
+                        //allChecksExecutionResult = 0;
+                        finalDataCheckResponse.ExecutionResult = 0;
                     }
                     break;
 
@@ -1179,7 +1199,8 @@ namespace BudgetManager.non_mvc {
                     break;
             }
 
-            return allChecksExecutionResult;
+            //return allChecksExecutionResult;
+            return finalDataCheckResponse;
         }
 
 

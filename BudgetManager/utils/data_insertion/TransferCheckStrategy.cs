@@ -7,19 +7,33 @@ using BudgetManager.mvc.models.dto;
 using BudgetManager.utils;
 using MySql.Data.MySqlClient;
 using System.Windows.Forms;
+using BudgetManager.mvc.models;
 
 namespace BudgetManager.non_mvc {
     class TransferCheckStrategy : DataInsertionCheckStrategy {
         private String accountBalanceCheckProcedure = "can_perform_requested_transfer";
     
-        public int performCheck(QueryData inputData, string selectedItemName, int valueToInsert) {
-            int balanceCheckResult = checkAvailableBalance(inputData, valueToInsert);
+        public DataCheckResponse performCheck(QueryData inputData, string selectedItemName, int valueToInsert) {
+            //int balanceCheckResult = checkAvailableBalance(inputData, valueToInsert);
 
-            return balanceCheckResult;
+            DataCheckResponse dataCheckResponse = new DataCheckResponse();
+            if (checkAvailableBalance(inputData, valueToInsert) == 1) {
+                dataCheckResponse.ExecutionResult = 1;
+                dataCheckResponse.SuccessMessage = "The transfer can be performed.";
+
+            } else {
+                dataCheckResponse.ExecutionResult = 0;
+                dataCheckResponse.ErrorMessage = "The specified transfer value is higher than the currently available account balance! Please specify a value lower or equal to the account balance and try again.";
+            }
+
+            //return balanceCheckResult;
+
+            return dataCheckResponse;
 
         }
 
         //Method that checks if the transferred amount is lower/equal to the balance of the specified account, using a database stored procedure
+        //The stored procedure returns 1 (true) if the transfer can be performed and 0 (false) otherwise
         private int checkAvailableBalance(QueryData inputData, int transferValue) {
             MySqlParameter checkResultOutput = null;
             MySqlParameter accountBalanceOutput = null;
@@ -70,11 +84,11 @@ namespace BudgetManager.non_mvc {
 
         }
 
-        public int performCheck(QueryData paramContainer, String selectedItemName, double valueToInsert) {
+        public DataCheckResponse performCheck(QueryData paramContainer, String selectedItemName, double valueToInsert) {
             throw new NotImplementedException();
         }
 
-        public int performCheck() {
+        public DataCheckResponse performCheck() {
             throw new NotImplementedException();
         }
     }
