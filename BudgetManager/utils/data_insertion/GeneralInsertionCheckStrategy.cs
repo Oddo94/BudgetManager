@@ -69,7 +69,7 @@ namespace BudgetManager.utils {
                     //return -1;
 
                     dataCheckResponse.ExecutionResult = -1;
-                    dataCheckResponse.ErrorMessage = "The inserted value for the current {0} is higher than the money left! You cannot exceed the maximum incomes for the current month.";
+                    dataCheckResponse.ErrorMessage = String.Format("The inserted value for the current {0} is higher than the money left! You cannot exceed the total incomes for the current month!", selectedItemName);
 
                     return dataCheckResponse;
                 }

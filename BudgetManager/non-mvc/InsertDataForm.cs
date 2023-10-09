@@ -347,7 +347,7 @@ namespace BudgetManager.non_mvc {
                 if (dataCheckResponse.ExecutionResult != -1) {
                     dataInsertionExecutionResult = insertSelectedItem(selectedIndex);
                 } else {
-                    //Displays the error essage returned by the data insertion precheck method
+                    //Displays the error message returned by the data insertion precheck method
                     MessageBox.Show(dataCheckResponse.ErrorMessage, "Data insertion", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     //Added to prevent the data insertion error message being shown when precheck conditions are not met
@@ -1076,7 +1076,7 @@ namespace BudgetManager.non_mvc {
             //int dataInsertionExecutionResult = -1;
 
             int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
-            String selectedItemName = itemTypeSelectionComboBox.Text;
+            String selectedItemName = itemTypeSelectionComboBox.Text.ToLower();
 
             QueryData paramContainerGeneralCheck = null;
             QueryData paramContainerBPCheck = null;
@@ -1118,24 +1118,31 @@ namespace BudgetManager.non_mvc {
 
                 //Saving
                 case 4:
-                    int savingValue = Convert.ToInt32(itemValueTextBox.Text); ;
+                    int selectedItemValue = Convert.ToInt32(itemValueTextBox.Text); ;
                     dataInsertionCheckContext.setStrategy(generalCheckStrategy);
 
-                    generalCheckResponse = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, savingValue);
+                    generalCheckResponse = dataInsertionCheckContext.invoke(paramContainerGeneralCheck, selectedItemName, selectedItemValue);
 
                     BudgetPlanCheckStrategy budgetPlanCheckStrategy = new BudgetPlanCheckStrategy();
                     dataInsertionCheckContext.setStrategy(budgetPlanCheckStrategy);
 
-                    budgetPlanCheckResponse = dataInsertionCheckContext.invoke(paramContainerBPCheck, selectedItemName, savingValue);
+                    budgetPlanCheckResponse = dataInsertionCheckContext.invoke(paramContainerBPCheck, selectedItemName, selectedItemValue);
 
                     //If the general check fails(not enough money) then the general check execution result will remain -1 (no data can be inserted)
                     //Else, if the general check is passed and the budget plan check returns -1 (fail because there might not be a budget plan in place) the data can be inserted
                     //Otherwise the allChecksExecutionResult keeps its initial value(-1) and no data will be inserted(for example if a warning message is shown during budget plan checks due to the inserted value being higher than the value allowed by the budget plan item limit) 
                     if (generalCheckResponse.ExecutionResult == -1) {
+                        finalDataCheckResponse.ExecutionResult = -1;
+                        finalDataCheckResponse.ErrorMessage = generalCheckResponse.ErrorMessage;
                         break;
                     } else if (generalCheckResponse.ExecutionResult == 0 && budgetPlanCheckResponse.ExecutionResult == -1) {
                         //allChecksExecutionResult = 0;
                         finalDataCheckResponse.ExecutionResult = 0;
+                        finalDataCheckResponse.SuccessMessage = generalCheckResponse.SuccessMessage;
+                    } else {
+                        //Budget plan limit check failure branch
+                        finalDataCheckResponse.ExecutionResult = -1;
+                        finalDataCheckResponse.ErrorMessage = budgetPlanCheckResponse.ErrorMessage;
                     }
 
                     break;
@@ -1159,21 +1166,14 @@ namespace BudgetManager.non_mvc {
                     }
 
                     break;
+
+                //Intentional fall-through because no check is needed for these three budget items
                 //Creditor
                 case 5:
-                    //allChecksExecutionResult = 0;
-                    finalDataCheckResponse.ExecutionResult = 0;
-                    break;
-
                 //Debtor
                 case 6:
-                    //allChecksExecutionResult = 0;
-                    finalDataCheckResponse.ExecutionResult = 0;
-                    break;
-
                 //Saving account interest
                 case 7:
-                    //allChecksExecutionResult = 0;
                     finalDataCheckResponse.ExecutionResult = 0;
                     break;
 

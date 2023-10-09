@@ -98,7 +98,7 @@ namespace BudgetManager {
                         break;
 
                     case 1062:
-                        message = "The entry already exists in the database!";
+                        message = "The entry already exists in the database! Please check the input data and try again.";
                         break;
 
                     default:

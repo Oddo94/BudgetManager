@@ -280,7 +280,7 @@ namespace BudgetManager.utils {
 
         //Method for checking if the current item total value is above threshold but is lower than max limit set through the budget plan
         public bool isBetweenThresholdAndMaxLimit(int currentItemTotalValue, int thresholdValue, int maxLimitValue) {
-            if (currentItemTotalValue > thresholdValue && currentItemTotalValue <= maxLimitValue) {
+            if (thresholdValue > 0 && (currentItemTotalValue > thresholdValue && currentItemTotalValue <= maxLimitValue)) {
                 return true;
             }
 
