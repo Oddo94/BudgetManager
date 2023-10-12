@@ -1132,15 +1132,20 @@ namespace BudgetManager.non_mvc {
                     //Else, if the general check is passed and the budget plan check returns -1 (fail because there might not be a budget plan in place) the data can be inserted
                     //Otherwise the allChecksExecutionResult keeps its initial value(-1) and no data will be inserted(for example if a warning message is shown during budget plan checks due to the inserted value being higher than the value allowed by the budget plan item limit) 
                     if (generalCheckResponse.ExecutionResult == -1) {
+                        //General check failure branch
                         finalDataCheckResponse.ExecutionResult = -1;
                         finalDataCheckResponse.ErrorMessage = generalCheckResponse.ErrorMessage;
                         break;
                     } else if (generalCheckResponse.ExecutionResult == 0 && budgetPlanCheckResponse.ExecutionResult == -1) {
-                        //allChecksExecutionResult = 0;
+                        //General check success and budget plan check failure branch
+                        finalDataCheckResponse.ExecutionResult = 0;
+                        finalDataCheckResponse.SuccessMessage = generalCheckResponse.SuccessMessage;
+                    } else if (budgetPlanCheckResponse.ExecutionResult == 0 && generalCheckResponse.ExecutionResult == 0) {
+                        //General check success and budget plan check success branch
                         finalDataCheckResponse.ExecutionResult = 0;
                         finalDataCheckResponse.SuccessMessage = generalCheckResponse.SuccessMessage;
                     } else {
-                        //Budget plan limit check failure branch
+                        //Default check failure branch
                         finalDataCheckResponse.ExecutionResult = -1;
                         finalDataCheckResponse.ErrorMessage = budgetPlanCheckResponse.ErrorMessage;
                     }

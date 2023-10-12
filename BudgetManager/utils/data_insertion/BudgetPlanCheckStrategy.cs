@@ -48,12 +48,17 @@ namespace BudgetManager.utils {
                 dataCheckResponse.ExecutionResult = budgetPlanItemLimitCheckResult;
                 dataCheckResponse.ErrorMessage = "The inserted value is higher than the value allowed by the currently applicable budget plan. The data insertion will be aborted.";
                 return dataCheckResponse;
+            } else if (budgetPlanItemLimitCheckResult == 0) {
+                //Successful check branch
+                dataCheckResponse.ExecutionResult = budgetPlanItemLimitCheckResult;
+                dataCheckResponse.SuccessMessage = "The inserted value is between the allowed limits. The data insertion can continue.";
+                return dataCheckResponse;
+            } else {
+                //return checkResult;
+                dataCheckResponse.ExecutionResult = checkResult;
+                dataCheckResponse.ErrorMessage = "Unable to insert the provided data!";
+                return dataCheckResponse;
             }
-
-            //return checkResult;
-            dataCheckResponse.ExecutionResult = checkResult;
-            dataCheckResponse.ErrorMessage = "Unable to insert the provided data!";
-            return dataCheckResponse;
         }
 
         public DataCheckResponse performCheck(QueryData paramContainer, String selectedItemName, double valueToInsert) {
@@ -189,7 +194,7 @@ namespace BudgetManager.utils {
                 } else {
                     //executionResult = insertSelectedItem(selectedItemIndex);
                     //checkResult = -1;//Check result is set to -1 so the element can be inserted because it does not exceed the limits imposed by the applicable budget plan
-                    checkResult = 0; 
+                    checkResult = 0;
                 }
             }
 
