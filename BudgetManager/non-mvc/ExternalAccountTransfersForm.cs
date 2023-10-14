@@ -116,7 +116,7 @@ namespace BudgetManager.non_mvc {
 
             //Source account balance check
             if (transferAmountCheckResult.ExecutionResult == -1) {
-                MessageBox.Show(transferAmountCheckResult.ErrorMessage, "Transfer check", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+                MessageBox.Show(transferAmountCheckResult.ErrorMessage, "Transfer check", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
                 return;
             }
 
@@ -237,7 +237,6 @@ namespace BudgetManager.non_mvc {
             //int transferValueCheckResult = dataInsertionCheckerContext.invoke(paramContainer, itemName, transferValue);
             DataCheckResponse transferValueCheckResponse = dataInsertionCheckerContext.invoke(paramContainer, itemName, transferValue);
 
-            // return transferValueCheckResult;
 
             return transferValueCheckResponse;
 

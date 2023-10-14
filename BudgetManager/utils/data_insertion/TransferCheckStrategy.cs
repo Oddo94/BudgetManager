@@ -14,19 +14,16 @@ namespace BudgetManager.non_mvc {
         private String accountBalanceCheckProcedure = "can_perform_requested_transfer";
     
         public DataCheckResponse performCheck(QueryData inputData, string selectedItemName, int valueToInsert) {
-            //int balanceCheckResult = checkAvailableBalance(inputData, valueToInsert);
-
             DataCheckResponse dataCheckResponse = new DataCheckResponse();
-            if (checkAvailableBalance(inputData, valueToInsert) == 1) {
-                dataCheckResponse.ExecutionResult = 1;
+
+            if (checkAvailableBalance(inputData, valueToInsert) == 0) {
+                dataCheckResponse.ExecutionResult = 0;
                 dataCheckResponse.SuccessMessage = "The transfer can be performed.";
 
             } else {
-                dataCheckResponse.ExecutionResult = 0;
+                dataCheckResponse.ExecutionResult = -1;
                 dataCheckResponse.ErrorMessage = "The specified transfer value is higher than the currently available account balance! Please specify a value lower or equal to the account balance and try again.";
             }
-
-            //return balanceCheckResult;
 
             return dataCheckResponse;
 
@@ -76,6 +73,7 @@ namespace BudgetManager.non_mvc {
             int checkResult = Convert.ToInt32(checkResultOutput.Value.ToString());
 
             //If the procedure returns the value 1 it means that the transfer can be performed otherwise the operation is not possible
+            //Transforms the procedure output(1-true/0-false to 0-true/-1-false which is the return value convention inside the app) 
             if (checkResult == 1) {
                 return 0;
             } else {

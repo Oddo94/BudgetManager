@@ -38,7 +38,7 @@ namespace BudgetManager.utils {
             if (budgetPlanAlarmCheckResult != 0) {
                 //return budgetPlanAlarmCheckResult;
                 dataCheckResponse.ExecutionResult = budgetPlanAlarmCheckResult;
-                dataCheckResponse.ErrorMessage = "No budget plan alarm was found.The budget plan checks can continue.";
+                //dataCheckResponse.ErrorMessage = "No budget plan alarm was found.The budget plan checks can continue.";
                 //return dataCheckResponse;
             }
 
