@@ -91,8 +91,6 @@ namespace BudgetManager.non_mvc {
             groupBox1.Controls.Add(container);
 
             itemTypeSelectionComboBox.SelectedIndex = 0;
-            //incomeTypeComboBox.SelectedIndex = -1;
-
         }
 
         private void InsertDataForm2_Load(object sender, EventArgs e) {
@@ -102,7 +100,6 @@ namespace BudgetManager.non_mvc {
             expenseTypeComboBox.SelectedIndexChanged += new EventHandler(expenseTypeComboBox_SelectedIndexChanged);
             creditorNameComboBox.SelectedIndexChanged += new EventHandler(creditorNameComboBox_IndexChanged);
             debtorNameComboBox.SelectedIndexChanged += new EventHandler(debtorNameComboBox_IndexChanged);
-            //receivableDueDatePicker.ValueChanged += new EventHandler(receivableDueDatePicker_ValueChanged);
             savingAccountComboBox.SelectedIndexChanged += new EventHandler(savingAccountComboBox_SelectedIndexChanged);
             savingAccountComboBox.MouseHover += new EventHandler(savingAccountComboBox_MouseHover);
             interestTypeComboBox.SelectedIndexChanged += new EventHandler(interestTypeComboBox_SelectedIndexChanged);
@@ -234,15 +231,6 @@ namespace BudgetManager.non_mvc {
                     itemValueTextBox.Clear();
                 }
             } else {
-                //Regex numberRegex = new Regex("\\b[0-9]+\\b", RegexOptions.Compiled);
-                //Regex specialCharacterRegex = new Regex("[^\\w\\d\\s]", RegexOptions.Compiled);
-
-                //String value = itemValueTextBox.Text;
-                //if (!numberRegex.IsMatch(value) || specialCharacterRegex.IsMatch(value)) {
-                //    //itemValueTextBox.Text = "";
-                //    itemValueTextBox.Clear();
-                //}
-
                 //Regex that matches any non-digit character
                 Regex forbiddenCharacters = new Regex("[^0-9]+", RegexOptions.Compiled);
 
@@ -296,7 +284,6 @@ namespace BudgetManager.non_mvc {
 
         private void savingAccountComboBox_MouseHover(object sender, EventArgs e) {
             String itemName = savingAccountComboBox.Text;
-            //ToolTip toolTip = new ToolTip();
 
             dataHighlighter.SetToolTip(savingAccountComboBox, itemName);
         }
@@ -371,7 +358,6 @@ namespace BudgetManager.non_mvc {
 
 
         private void resetButton_Click(object sender, EventArgs e) {
-            //incomeTypeComboBox.SelectedIndex = -1;
             clearActiveControls(activeControls);
         }
 
@@ -428,9 +414,7 @@ namespace BudgetManager.non_mvc {
 
             //Saving accounts
             savingAccountComboBox = new ComboBox();
-            savingAccountComboBox.Size = new Size(165, 21);
-            //AccountType accountType = getAccountTypeForDataFiltering();//retrieves the account type by which the data will be filtered before populating the combobox
-            //dataProvider.fillSavingAccountsComboBox(savingAccountComboBox, accountType, userID);
+            savingAccountComboBox.Size = new Size(165, 21);       
             savingAccountComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             savingAccountComboBox.Margin = new Padding(0, 0, 0, 0);
 
@@ -1065,15 +1049,11 @@ namespace BudgetManager.non_mvc {
 
 
         private DataCheckResponse performDataChecks() {
-            //int allChecksExecutionResult = -1;
-            //int generalCheckExecutionResult = -1;
-            //int budgetPlanCheckExecutionResult = -1;
             DataCheckResponse finalDataCheckResponse = new DataCheckResponse();
             finalDataCheckResponse.ExecutionResult = -1;
 
             DataCheckResponse generalCheckResponse = new DataCheckResponse();
             DataCheckResponse budgetPlanCheckResponse = new DataCheckResponse();
-            //int dataInsertionExecutionResult = -1;
 
             int selectedIndex = itemTypeSelectionComboBox.SelectedIndex;
             String selectedItemName = itemTypeSelectionComboBox.Text.ToLower();
@@ -1082,12 +1062,10 @@ namespace BudgetManager.non_mvc {
             QueryData paramContainerBPCheck = null;
             DataInsertionCheckerContext dataInsertionCheckContext = null;
             GeneralInsertionCheckStrategy generalCheckStrategy = null;
-            //int valueToInsert = 0;
 
             //Check if it can be improved
             if (!selectedItemName.Equals("Debtor") && !selectedItemName.Equals("Creditor") && !selectedItemName.Equals("Income")) {
                 //Checks if the user has enough money left to insert the selected item value
-                //valueToInsert = Convert.ToInt32(itemValueTextBox.Text);
                 int selectedMonth = datePicker.Value.Month;
                 int selectedYear = datePicker.Value.Year;
 
@@ -1108,7 +1086,6 @@ namespace BudgetManager.non_mvc {
             switch (selectedIndex) {
                 //Income
                 case 0:
-                    //allChecksExecutionResult = 0;
                     finalDataCheckResponse.ExecutionResult = 0;
                     break;
                 //Expense
@@ -1164,10 +1141,13 @@ namespace BudgetManager.non_mvc {
 
 
                     if (generalCheckResponse.ExecutionResult == -1) {
+                        finalDataCheckResponse.ExecutionResult = -1;
+                        finalDataCheckResponse.ErrorMessage = generalCheckResponse.ErrorMessage;
                         break;
                     } else {
                         //allChecksExecutionResult = 0;
                         finalDataCheckResponse.ExecutionResult = 0;
+                        finalDataCheckResponse.SuccessMessage = generalCheckResponse.SuccessMessage;
                     }
 
                     break;
@@ -1204,7 +1184,6 @@ namespace BudgetManager.non_mvc {
                     break;
             }
 
-            //return allChecksExecutionResult;
             return finalDataCheckResponse;
         }
 

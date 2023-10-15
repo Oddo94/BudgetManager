@@ -1060,7 +1060,6 @@ namespace BudgetManager {
 
         //Sets the default date for the DateTimePicker objects as the first day of the current month of the current year
         private void setDateTimePickerDefaultDate(DateTimePicker[] dateTimePickers) {
-            //Creaza o instanta a datei curente
             //Creates an instance of the current date
             DateTime defaultDate = DateTime.Now;
 

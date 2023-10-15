@@ -39,9 +39,6 @@ namespace BudgetManager.utils {
             if (paramContainer.IncomeSource == IncomeSource.SAVING_ACCOUNT) {         
                 try {
                     if (!hasEnoughMoney(IncomeSource.SAVING_ACCOUNT, valueToInsert, paramContainer)) {
-                        //MessageBox.Show("The inserted value is higher than the money left in the saving account! You cannot exceed the currently available balance of the saving account.", "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-
-                        //return -1;
                         dataCheckResponse.ExecutionResult = -1;
                         dataCheckResponse.ErrorMessage = "The inserted value is higher than the money left in the saving account! You cannot exceed the currently available balance of the saving account.";
 
@@ -50,8 +47,6 @@ namespace BudgetManager.utils {
 
                 } catch (Exception ex) when (ex is MySqlException || ex is NoDataFoundException) {
                     //Handles exceptions occured during the retrieval of data needed to check the account balance
-                    //MessageBox.Show(ex.Message, "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-                    //return -1;
 
                     dataCheckResponse.ExecutionResult = -1;
                     dataCheckResponse.ErrorMessage = ex.Message;
@@ -64,10 +59,6 @@ namespace BudgetManager.utils {
                 //GENERAL CHECK(item value(general expense, debt, saving) > available amount)
                 //Checks if the inserted item value is greater than the amount of money left           
                 if (!hasEnoughMoney(IncomeSource.GENERAL_INCOMES, valueToInsert, paramContainer)) {
-                    //MessageBox.Show(String.Format("The inserted value for the current {0} is higher than the money left! You cannot exceed the maximum incomes for the current month.", selectedItemName.ToLower()), "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-
-                    //return -1;
-
                     dataCheckResponse.ExecutionResult = -1;
                     dataCheckResponse.ErrorMessage = String.Format("The inserted value for the current {0} is higher than the money left! You cannot exceed the total incomes for the current month!", selectedItemName);
 
@@ -79,8 +70,6 @@ namespace BudgetManager.utils {
             dataCheckResponse.SuccessMessage = "Data check passed!";
 
             return dataCheckResponse;
-            
-            //return 0;
         }
 
         public DataCheckResponse performCheck(QueryData paramContainer, String selectedItemName, double valueToInsert) {
@@ -94,7 +83,6 @@ namespace BudgetManager.utils {
             if (incomeSource == IncomeSource.GENERAL_INCOMES) {
                 //Getting the total value for each budget element        
                 int totalIncomes = getTotalValueForSelectedElement(BudgetItemType.INCOME, sqlStatementSingleMonthIncomes, paramContainer);
-                //int totalExpenses = getTotalValueForSelectedElement(BudgetItemType.EXPENSE, sqlStatementSingleMonthExpenses, paramContainer);
                 int totalExpenses = getTotalValueForSelectedElement(BudgetItemType.GENERAL_EXPENSE, sqlStatementSingleMonthExpenses, paramContainer);
                 int totalDebts = getTotalValueForSelectedElement(BudgetItemType.DEBT, sqlStatementSingleMonthDebts, paramContainer);
                 int totalSavings = getTotalValueForSelectedElement(BudgetItemType.SAVING, sqlStatementSingleMonthSavings, paramContainer);
