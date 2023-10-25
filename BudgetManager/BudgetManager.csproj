@@ -58,6 +58,7 @@
     <Compile Include="mvc\controllers\SavingAccountController.cs" />
     <Compile Include="mvc\models\BudgetPlanManagementModel.cs" />
     <Compile Include="mvc\models\BudgetSummaryModel.cs" />
+    <Compile Include="mvc\models\DataCheckResponse.cs" />
     <Compile Include="mvc\models\dto\BankingFeeDTO.cs" />
     <Compile Include="mvc\models\dto\IDataInsertionDTO.cs" />
     <Compile Include="mvc\models\dto\PartialPaymentDTO.cs" />

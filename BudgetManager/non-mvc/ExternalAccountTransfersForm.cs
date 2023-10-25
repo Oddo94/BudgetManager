@@ -1,4 +1,5 @@
-﻿using BudgetManager.utils;
+﻿using BudgetManager.mvc.models;
+using BudgetManager.utils;
 using BudgetManager.utils.enums;
 using MySql.Data.MySqlClient;
 using System;
@@ -111,11 +112,11 @@ namespace BudgetManager.non_mvc {
 
             QueryData paramContainer = retrieveUserInputData();
             //Transfer amount check(checks if it's less than the available balance of the saving account)
-            int transferAmountCheckResult = performTransferValueCheck(paramContainer.SentValue, paramContainer.SourceAccountID);
+            DataCheckResponse transferAmountCheckResult = performTransferValueCheck(paramContainer.SentValue, paramContainer.SourceAccountID);
 
             //Source account balance check
-            if (transferAmountCheckResult == -1) {
-                MessageBox.Show("The specified transfer value is higher than the currently available account balance! Please specify a value lower or equal to the account balance and try again.", "Transfer check", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+            if (transferAmountCheckResult.ExecutionResult == -1) {
+                MessageBox.Show(transferAmountCheckResult.ErrorMessage, "Transfer check", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
                 return;
             }
 
@@ -223,7 +224,7 @@ namespace BudgetManager.non_mvc {
         }
 
         //Method for checking if the amount to be transferred is greater than the available balance f the saving account
-        private int performTransferValueCheck(int transferValue, int sourceAccountID) {
+        private DataCheckResponse performTransferValueCheck(int transferValue, int sourceAccountID) {
             //Improve the check method (performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert)) to accept all the parameters being sent as attributes of the QueryData object
             String itemName = "account transfer";
 
@@ -233,9 +234,12 @@ namespace BudgetManager.non_mvc {
             DataInsertionCheckerContext dataInsertionCheckerContext = new DataInsertionCheckerContext();
             dataInsertionCheckerContext.setStrategy(transferCheckStrategy);
 
-            int transferValueCheckResult = dataInsertionCheckerContext.invoke(paramContainer, itemName, transferValue);
+            //int transferValueCheckResult = dataInsertionCheckerContext.invoke(paramContainer, itemName, transferValue);
+            DataCheckResponse transferValueCheckResponse = dataInsertionCheckerContext.invoke(paramContainer, itemName, transferValue);
 
-            return transferValueCheckResult;
+
+            return transferValueCheckResponse;
+
         }
 
         //Methods for populating comboboxes with data

@@ -1,4 +1,5 @@
-﻿using BudgetManager.mvc.models.dto;
+﻿using BudgetManager.mvc.models;
+using BudgetManager.mvc.models.dto;
 using BudgetManager.utils.enums;
 using BudgetManager.utils.exceptions;
 using MySql.Data.MySqlClient;
@@ -31,20 +32,26 @@ namespace BudgetManager.utils {
         //SQL query used for retrieving the account ID for which the balance check is performed
         private String sqlStatementGetAccountID = @"SELECT accountID FROM saving_accounts WHERE accountName LIKE CONCAT('%', @paramRecordName,'%') AND user_ID = @paramID";
 
-        public int performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert) {
+        public DataCheckResponse performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert) {
+            DataCheckResponse dataCheckResponse = new DataCheckResponse();
+
             /****SAVING ACCOUNT SOURCE****/
             if (paramContainer.IncomeSource == IncomeSource.SAVING_ACCOUNT) {         
                 try {
                     if (!hasEnoughMoney(IncomeSource.SAVING_ACCOUNT, valueToInsert, paramContainer)) {
-                        MessageBox.Show("The inserted value is higher than the money left in the saving account! You cannot exceed the currently available balance of the saving account.", "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+                        dataCheckResponse.ExecutionResult = -1;
+                        dataCheckResponse.ErrorMessage = "The inserted value is higher than the money left in the saving account! You cannot exceed the currently available balance of the saving account.";
 
-                        return -1;
+                        return dataCheckResponse;
                     }
 
                 } catch (Exception ex) when (ex is MySqlException || ex is NoDataFoundException) {
                     //Handles exceptions occured during the retrieval of data needed to check the account balance
-                    MessageBox.Show(ex.Message, "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-                    return -1;
+
+                    dataCheckResponse.ExecutionResult = -1;
+                    dataCheckResponse.ErrorMessage = ex.Message;
+
+                    return dataCheckResponse;
                 }
 
             } else if (paramContainer.IncomeSource == IncomeSource.GENERAL_INCOMES) {
@@ -52,27 +59,30 @@ namespace BudgetManager.utils {
                 //GENERAL CHECK(item value(general expense, debt, saving) > available amount)
                 //Checks if the inserted item value is greater than the amount of money left           
                 if (!hasEnoughMoney(IncomeSource.GENERAL_INCOMES, valueToInsert, paramContainer)) {
-                    MessageBox.Show(String.Format("The inserted value for the current {0} is higher than the money left! You cannot exceed the maximum incomes for the current month.", selectedItemName.ToLower()), "Data insertion", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+                    dataCheckResponse.ExecutionResult = -1;
+                    dataCheckResponse.ErrorMessage = String.Format("The inserted value for the current {0} is higher than the money left! You cannot exceed the total incomes for the current month!", selectedItemName);
 
-                    return -1;
+                    return dataCheckResponse;
                 }
             }
 
-            return 0;
+            dataCheckResponse.ExecutionResult = 0;
+            dataCheckResponse.SuccessMessage = "Data check passed!";
+
+            return dataCheckResponse;
         }
 
-        public int performCheck(QueryData paramContainer, String selectedItemName, double valueToInsert) {
+        public DataCheckResponse performCheck(QueryData paramContainer, String selectedItemName, double valueToInsert) {
             throw new NotImplementedException();
         }
 
-        public int performCheck() {
+        public DataCheckResponse performCheck() {
             throw new NotImplementedException();
         }
         private bool hasEnoughMoney(IncomeSource incomeSource, int valueToInsert, QueryData paramContainer) {
             if (incomeSource == IncomeSource.GENERAL_INCOMES) {
                 //Getting the total value for each budget element        
                 int totalIncomes = getTotalValueForSelectedElement(BudgetItemType.INCOME, sqlStatementSingleMonthIncomes, paramContainer);
-                //int totalExpenses = getTotalValueForSelectedElement(BudgetItemType.EXPENSE, sqlStatementSingleMonthExpenses, paramContainer);
                 int totalExpenses = getTotalValueForSelectedElement(BudgetItemType.GENERAL_EXPENSE, sqlStatementSingleMonthExpenses, paramContainer);
                 int totalDebts = getTotalValueForSelectedElement(BudgetItemType.DEBT, sqlStatementSingleMonthDebts, paramContainer);
                 int totalSavings = getTotalValueForSelectedElement(BudgetItemType.SAVING, sqlStatementSingleMonthSavings, paramContainer);
