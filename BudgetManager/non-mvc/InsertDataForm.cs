@@ -642,7 +642,7 @@ namespace BudgetManager.non_mvc {
 
                 //External account banking fees
                 case 8:
-                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(savingAccountComboBox, true), new FormFieldWrapper(itemDescriptionTextBox, true) };
+                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(savingAccountComboBox, true), new FormFieldWrapper(itemDescriptionTextBox, false) };
                     break;
 
                 default:
@@ -1067,9 +1067,10 @@ namespace BudgetManager.non_mvc {
                     String bankingFeeAccountName = savingAccountComboBox.Text;
                     String bankingFeeName = itemNameTextBox.Text;
                     double bankingFeeValue = Convert.ToDouble(itemValueTextBox.Text);
+                    String description = !"".Equals(itemDescriptionTextBox.Text) ? itemDescriptionTextBox.Text : null;//Sets the description field to null if the UI textbox is empty
                     String bankingFeeCreatedDate = datePicker.Value.ToString("yyyy-MM-dd");
 
-                    dataInsertionDTO = new BankingFeeDTO(bankingFeeAccountName, bankingFeeName, bankingFeeValue, bankingFeeCreatedDate, userID);
+                    dataInsertionDTO = new BankingFeeDTO(bankingFeeAccountName, bankingFeeName, bankingFeeValue, description, bankingFeeCreatedDate, userID);
                     break;
             }
 

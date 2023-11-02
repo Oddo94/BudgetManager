@@ -6,15 +6,17 @@ namespace BudgetManager.mvc.models.dto {
         private String accountName;
         private String name;
         private double value;
+        private String description;
         private String createdDate;
         private int userID;
 
         public BankingFeeDTO() { }
 
-        public BankingFeeDTO(String accountName, String name, double value, String createdDate, int userID) {
+        public BankingFeeDTO(String accountName, String name, double value, String description, String createdDate, int userID) {
             this.accountName = accountName;
             this.name = name;
             this.value = value;
+            this.description = description;
             this.createdDate = createdDate;
             this.userID = userID;
         }
@@ -46,6 +48,16 @@ namespace BudgetManager.mvc.models.dto {
 
             set {
                 this.value = value;
+            }
+        }
+
+        public String Description {
+            get {
+                return this.description;
+            }
+
+            set {
+                this.description = value;
             }
         }
 
