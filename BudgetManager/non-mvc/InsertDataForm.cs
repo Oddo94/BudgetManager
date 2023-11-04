@@ -338,9 +338,6 @@ namespace BudgetManager.non_mvc {
             String selectedItemName = itemTypeSelectionComboBox.Text;
             String specialItemName = "Saving account interest";
 
-            String selectedItemName = itemTypeSelectionComboBox.Text;
-            String specialItemName = "Saving account interest";
-
             //There is no need to perform checks when inserting a saving account interest item
             if (!specialItemName.Equals(selectedItemName)) {
                 //allChecksExecutionResult = performDataChecks();
