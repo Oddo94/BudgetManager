@@ -43,10 +43,11 @@
             "Saving",
             "Creditor",
             "Debtor",
-            "Saving account interest"});
+            "Saving account interest",
+            "External account banking fee"});
             this.itemTypeSelectionComboBox.Location = new System.Drawing.Point(33, 58);
             this.itemTypeSelectionComboBox.Name = "itemTypeSelectionComboBox";
-            this.itemTypeSelectionComboBox.Size = new System.Drawing.Size(159, 21);
+            this.itemTypeSelectionComboBox.Size = new System.Drawing.Size(185, 21);
             this.itemTypeSelectionComboBox.TabIndex = 0;
             this.itemTypeSelectionComboBox.SelectedIndexChanged += new System.EventHandler(this.itemTypeSelectionComboBox_SelectedIndexChanged);
             // 
@@ -90,7 +91,7 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(574, 609);
+            this.cancelButton.Location = new System.Drawing.Point(590, 609);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 5;

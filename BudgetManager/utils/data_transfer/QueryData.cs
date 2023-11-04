@@ -46,6 +46,7 @@ namespace BudgetManager {
         private String genericID;   
         private IncomeSource incomeSource;
         private BudgetItemType budgetItemType;
+        private AccountType accountType;
 
         private QueryData() {
 
@@ -280,6 +281,12 @@ namespace BudgetManager {
                 return this.budgetItemType;
             }
         }
+
+        public AccountType AccountType {
+            get {
+                return this.accountType;
+            }
+        }
       
         public class Builder {
             private int userID;
@@ -320,6 +327,7 @@ namespace BudgetManager {
             private String genericID;
             private IncomeSource incomeSource;
             private BudgetItemType budgetItemType;
+            private AccountType accountType;
 
             public Builder() {
 
@@ -551,6 +559,12 @@ namespace BudgetManager {
                 return this;
             }
 
+            public Builder addAcountType(AccountType accountType) {
+                this.accountType = accountType;
+
+                return this;
+            }
+
             public QueryData build() {
                 return new QueryData {
                     userID = this.userID,
@@ -590,7 +604,8 @@ namespace BudgetManager {
                     additionalData = this.additionalData,
                     genericID = this.genericID,
                     incomeSource = this.incomeSource,
-                    budgetItemType = this.budgetItemType
+                    budgetItemType = this.budgetItemType,
+                    accountType = this.accountType
                 };
         }
         }

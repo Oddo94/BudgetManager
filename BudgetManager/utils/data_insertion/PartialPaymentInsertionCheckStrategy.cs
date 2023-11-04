@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BudgetManager.mvc.models.dto;
 using MySql.Data.MySqlClient;
 using System.Data;
+using BudgetManager.mvc.models;
 
 namespace BudgetManager.utils.data_insertion {
     class PartialPaymentInsertionCheckStrategy : DataInsertionCheckStrategy {
@@ -19,21 +20,32 @@ namespace BudgetManager.utils.data_insertion {
             this.dataInsertionDTO = dataInsertionDTO;
         }
 
-        public int performCheck() {
-            int executionResult = -1;
+        public DataCheckResponse performCheck() {
+            DataCheckResponse dataCheckResponse = new DataCheckResponse();
+            //int executionResult = -1;
 
             PartialPaymentDTO partialPaymentDTO = (PartialPaymentDTO) dataInsertionDTO;
             int valueToInsert = partialPaymentDTO.PaymentValue;
             int receivableID = partialPaymentDTO.ReceivableID;
 
             if(canInsertPartialPayment(valueToInsert, sqlStatementCheckAmountLeftToInsert, receivableID)) {
-                executionResult = 0;
+                //executionResult = 0;
+                dataCheckResponse.ExecutionResult = 0;
+                dataCheckResponse.SuccessMessage = "The partial payment can be inserted.";
+            } else {
+                dataCheckResponse.ExecutionResult = -1;
+                dataCheckResponse.ErrorMessage = "The partial payment value is higher than the amount left to be paid for the currently selected receivable!";
             }
 
-            return executionResult;
+            //return executionResult;
+            return dataCheckResponse;
         }
 
-        public int performCheck(QueryData inputData, string selectedItemName, int valueToInsert) {
+        public DataCheckResponse performCheck(QueryData paramContainer, String selectedItemName, double valueToInsert) {
+            throw new NotImplementedException();
+        }
+
+        public DataCheckResponse performCheck(QueryData inputData, string selectedItemName, int valueToInsert) {
             throw new NotImplementedException();
         }
 

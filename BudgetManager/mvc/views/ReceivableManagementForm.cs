@@ -338,7 +338,7 @@ namespace BudgetManager.mvc.views {
             DataInsertionCheckerContext dataCheckContext = new DataInsertionCheckerContext();
             dataCheckContext.setStrategy(partialPaymentCheckStrategy);
 
-            int checkResult = dataCheckContext.invoke();
+            DataCheckResponse partialPaymentCheckResponse = dataCheckContext.invoke();
 
             String userPrompt = String.Format("Are you sure that you want to insert a partial payment of {0} for the receivable '{1}'?", paymentValue, selectedReceivableName);
             DialogResult userOption = MessageBox.Show(userPrompt, "Receivables management", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -353,8 +353,8 @@ namespace BudgetManager.mvc.views {
 
             }
 
-            if (checkResult == -1) {
-                MessageBox.Show("The partial payment value is higher than the amount left to be paid for the currently selected receivable!", "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            if (partialPaymentCheckResponse.ExecutionResult == -1) {
+                MessageBox.Show(partialPaymentCheckResponse.ErrorMessage, "Receivable management", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
