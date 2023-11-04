@@ -14,6 +14,7 @@ namespace BudgetManager.utils.data_insertion {
 	                                                                       external_accounts_banking_fees (account_ID,
 	                                                                       name,
 	                                                                       value,
+                                                                           description,
 	                                                                       createdDate)
                                                                        VALUES (
                                                                        (
@@ -26,6 +27,7 @@ namespace BudgetManager.utils.data_insertion {
 	                                                                         AND user_ID = @paramUserId),
                                                                         @paramBankingFeeName,
                                                                         @paramBankingFeeValue,
+                                                                        @paramBankingFeeDescription,
                                                                         @paramBankingFeeCreatedDate
                                                                         )";
         public int execute(QueryData paramContainer) {
@@ -40,6 +42,7 @@ namespace BudgetManager.utils.data_insertion {
             bankingFeeInsertionCommand.Parameters.AddWithValue("@paramUserId", bankingFeeDTO.UserID);
             bankingFeeInsertionCommand.Parameters.AddWithValue("@paramBankingFeeName", bankingFeeDTO.Name);
             bankingFeeInsertionCommand.Parameters.AddWithValue("@paramBankingFeeValue", bankingFeeDTO.Value);
+            bankingFeeInsertionCommand.Parameters.AddWithValue("@paramBankingFeeDescription", bankingFeeDTO.Description);
             bankingFeeInsertionCommand.Parameters.AddWithValue("@paramBankingFeeCreatedDate", bankingFeeDTO.CreatedDate);
 
             int executionResult = DBConnectionManager.insertData(bankingFeeInsertionCommand);

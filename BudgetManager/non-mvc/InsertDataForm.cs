@@ -23,10 +23,13 @@ namespace BudgetManager.non_mvc {
         //General controls
         private TextBox itemNameTextBox;
         private TextBox itemValueTextBox;
+        private RichTextBox itemDescriptionTextBox;
         private DateTimePicker datePicker;
         private Label itemNameLabel;
         private Label itemValueLabel;
         private Label itemDatePickerLabel;
+        private Label itemDescriptionLabel;
+        private Label remainingCharactersLabel;
 
 
         //Incomes     
@@ -106,6 +109,7 @@ namespace BudgetManager.non_mvc {
             paymentTypeComboBox.SelectedIndexChanged += new EventHandler(paymentTypeComboBox_SelectedIndexChanged);
             interestRateTextBox.TextChanged += new EventHandler(interestRateTextBox_TextChanged);
             netInterestCalculatorButton.Click += new EventHandler(netInterestCalculatorButton_Click);
+            itemDescriptionTextBox.TextChanged += new EventHandler(itemDescriptionTextBox_TextChanged);
         }
 
         private void itemTypeSelectionComboBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -202,7 +206,7 @@ namespace BudgetManager.non_mvc {
                     accountType = getAccountTypeForDataFiltering();
                     dataProvider.fillSavingAccountsComboBox(savingAccountComboBox, accountType, userID);
 
-                    List<Control> controlsListExternalAccountsBankingFees = new List<Control>() { itemDatePickerLabel, datePicker, itemNameLabel, itemNameTextBox, itemValueLabel, itemValueTextBox, savingAccountLabel, savingAccountComboBox };
+                    List<Control> controlsListExternalAccountsBankingFees = new List<Control>() { itemDatePickerLabel, datePicker, itemNameLabel, itemNameTextBox, itemValueLabel, itemValueTextBox, itemDescriptionLabel, itemDescriptionTextBox, remainingCharactersLabel, savingAccountLabel, savingAccountComboBox };                    
                     addControlsToContainer(container, controlsListExternalAccountsBankingFees);
                     populateActiveControlsList(itemTypeSelectionComboBox);
                     clearActiveControls(activeControls);
@@ -308,6 +312,15 @@ namespace BudgetManager.non_mvc {
             setAddEntryButtonState(activeControls);
         }
 
+        private void itemDescriptionTextBox_TextChanged(object sender, EventArgs e) {
+            int maxCharacters = itemDescriptionTextBox.MaxLength;
+            int currentCharacterCount = itemDescriptionTextBox.Text.Length;
+            int remainingCharacters = maxCharacters - currentCharacterCount;
+
+            //Updates the remaining characters label with the new value
+            remainingCharactersLabel.Text = String.Format("You have {0} characters left", remainingCharacters);
+        }
+
         private void addEntryButton_Click(object sender, EventArgs e) {
             //int allChecksExecutionResult = -1;
             DataCheckResponse dataCheckResponse = new DataCheckResponse();
@@ -383,6 +396,12 @@ namespace BudgetManager.non_mvc {
             transactionIDTextBox.Width = 200;
             transactionIDTextBox.Margin = new Padding(0, 0, 0, 0);
             transactionIDTextBox.MaxLength = 50;//sets the maxiumum number of characters that can be introduced, in order to match the database field constraints
+
+            itemDescriptionTextBox = new RichTextBox();
+            itemDescriptionTextBox.Width = 189;
+            itemDescriptionTextBox.MaxLength = 100;
+            itemDescriptionTextBox.Padding = new Padding(0, 0, 0, 0);
+
         }
 
         private void createComboBoxes() {
@@ -499,6 +518,14 @@ namespace BudgetManager.non_mvc {
             transactionIDLabel.Text = "Transaction ID";
             transactionIDLabel.Margin = new Padding(0, 10, 0, 0);
 
+            itemDescriptionLabel = new Label();
+            itemDescriptionLabel.Text = "Description";
+            itemDescriptionLabel.Margin = new Padding(0, 10, 0, 0);
+
+            remainingCharactersLabel = new Label();
+            remainingCharactersLabel.Text = "";
+            remainingCharactersLabel.AutoSize = true;
+            remainingCharactersLabel.Margin = new Padding(0, 10, 0, 20);
         }
 
         private void createRadioButtons() {
@@ -615,7 +642,7 @@ namespace BudgetManager.non_mvc {
 
                 //External account banking fees
                 case 8:
-                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(savingAccountComboBox, true) };
+                    activeControls = new ArrayList() { new FormFieldWrapper(datePicker, true), new FormFieldWrapper(itemNameTextBox, true), new FormFieldWrapper(itemValueTextBox, true), new FormFieldWrapper(savingAccountComboBox, true), new FormFieldWrapper(itemDescriptionTextBox, false) };
                     break;
 
                 default:
@@ -644,6 +671,8 @@ namespace BudgetManager.non_mvc {
                 Control control = currentItem.FormField;//gets the control object from the FormFieldWrapper object
                 if (control is TextBox) {
                     ((TextBox)control).Text = "";
+                } else if (control is RichTextBox) {
+                    ((RichTextBox)control).Text = "";
                 } else if (control is ComboBox) {
                     //Setting SelectedIndex to -1 when any item other than the first one is selected does not work properly
                     ((ComboBox)control).SelectedIndex = -1;
@@ -1038,9 +1067,10 @@ namespace BudgetManager.non_mvc {
                     String bankingFeeAccountName = savingAccountComboBox.Text;
                     String bankingFeeName = itemNameTextBox.Text;
                     double bankingFeeValue = Convert.ToDouble(itemValueTextBox.Text);
+                    String description = !"".Equals(itemDescriptionTextBox.Text) ? itemDescriptionTextBox.Text : null;//Sets the description field to null if the UI textbox is empty
                     String bankingFeeCreatedDate = datePicker.Value.ToString("yyyy-MM-dd");
 
-                    dataInsertionDTO = new BankingFeeDTO(bankingFeeAccountName, bankingFeeName, bankingFeeValue, bankingFeeCreatedDate, userID);
+                    dataInsertionDTO = new BankingFeeDTO(bankingFeeAccountName, bankingFeeName, bankingFeeValue, description, bankingFeeCreatedDate, userID);
                     break;
             }
 
