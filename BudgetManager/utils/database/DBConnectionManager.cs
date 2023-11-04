@@ -98,7 +98,7 @@ namespace BudgetManager {
                         break;
 
                     case 1062:
-                        message = "The entry already exists in the database!";
+                        message = "The entry already exists in the database! Please check the input data and try again.";
                         break;
 
                     default:
@@ -272,7 +272,7 @@ namespace BudgetManager {
                 }
 
                 /*Throwing the exception using "throw ex" will erase the stack trace so in order to preserve it only "throw" will be used
-                The caught exception is rethrown so the it can better be handled in the code which called the method(for showing a more appropriate error message)*/
+                The caught exception is rethrown so that it can better be handled in the code which called the method(for showing a more appropriate error message)*/
                 Console.WriteLine(String.Format("Error message: {0}\nStack trace: {1}", ex.Message, ex.StackTrace));
                 throw;
             }

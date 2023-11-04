@@ -7,19 +7,30 @@ using BudgetManager.mvc.models.dto;
 using BudgetManager.utils;
 using MySql.Data.MySqlClient;
 using System.Windows.Forms;
+using BudgetManager.mvc.models;
 
 namespace BudgetManager.non_mvc {
     class TransferCheckStrategy : DataInsertionCheckStrategy {
         private String accountBalanceCheckProcedure = "can_perform_requested_transfer";
     
-        public int performCheck(QueryData inputData, string selectedItemName, int valueToInsert) {
-            int balanceCheckResult = checkAvailableBalance(inputData, valueToInsert);
+        public DataCheckResponse performCheck(QueryData inputData, string selectedItemName, int valueToInsert) {
+            DataCheckResponse dataCheckResponse = new DataCheckResponse();
 
-            return balanceCheckResult;
+            if (checkAvailableBalance(inputData, valueToInsert) == 0) {
+                dataCheckResponse.ExecutionResult = 0;
+                dataCheckResponse.SuccessMessage = "The transfer can be performed.";
+
+            } else {
+                dataCheckResponse.ExecutionResult = -1;
+                dataCheckResponse.ErrorMessage = "The specified transfer value is higher than the currently available account balance! Please specify a value lower or equal to the account balance and try again.";
+            }
+
+            return dataCheckResponse;
 
         }
 
         //Method that checks if the transferred amount is lower/equal to the balance of the specified account, using a database stored procedure
+        //The stored procedure returns 1 (true) if the transfer can be performed and 0 (false) otherwise
         private int checkAvailableBalance(QueryData inputData, int transferValue) {
             MySqlParameter checkResultOutput = null;
             MySqlParameter accountBalanceOutput = null;
@@ -62,6 +73,7 @@ namespace BudgetManager.non_mvc {
             int checkResult = Convert.ToInt32(checkResultOutput.Value.ToString());
 
             //If the procedure returns the value 1 it means that the transfer can be performed otherwise the operation is not possible
+            //Transforms the procedure output(1-true/0-false to 0-true/-1-false which is the return value convention inside the app) 
             if (checkResult == 1) {
                 return 0;
             } else {
@@ -70,7 +82,11 @@ namespace BudgetManager.non_mvc {
 
         }
 
-        public int performCheck() {
+        public DataCheckResponse performCheck(QueryData paramContainer, String selectedItemName, double valueToInsert) {
+            throw new NotImplementedException();
+        }
+
+        public DataCheckResponse performCheck() {
             throw new NotImplementedException();
         }
     }

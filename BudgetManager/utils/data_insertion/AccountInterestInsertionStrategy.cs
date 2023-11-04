@@ -21,10 +21,8 @@ namespace BudgetManager.non_mvc {
                                                                    @paramUpdatedDate)";
 
         public int execute(IDataInsertionDTO dataInsertionDTO) {
-            int executionResult = -1;
-
             MySqlCommand savingAccountInterestInsertionCommand = SQLCommandBuilder.getSavingAccountInterestInsertionCommand(sqlStatementInsertSavingAccountInterest, dataInsertionDTO);
-            executionResult = DBConnectionManager.insertData(savingAccountInterestInsertionCommand);
+            int executionResult = DBConnectionManager.insertData(savingAccountInterestInsertionCommand);
 
             return executionResult;
         }
