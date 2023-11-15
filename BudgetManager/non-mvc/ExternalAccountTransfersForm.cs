@@ -32,11 +32,15 @@ namespace BudgetManager.non_mvc {
         private List<Control> activeControls;
         //Map containing key-value pairs of account names and their corresponding currencies
         private Dictionary<String, String> accountCurrencyMap;
+        private ErrorProvider transferValueErrorProvider;
 
         public ExternalAccountTransfersForm(int userID) {
             InitializeComponent();
             activeControls = new List<Control>() { transferNameTextBox, sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox, transferDateTimePicker, transactionIDTextBox, transferObservationsRichTextBox };
             this.userID = userID;
+            
+            transferValueErrorProvider = new ErrorProvider();
+            transferValueErrorProvider.SetIconAlignment(amountTransferredTextBox, ErrorIconAlignment.MiddleRight);
 
             populateControls(userID);
             populateDataMaps();
@@ -45,11 +49,25 @@ namespace BudgetManager.non_mvc {
         }
 
         private void amountTransferredTextBox_TextChanged(object sender, EventArgs e) {
-            String transferredAmount = amountTransferredTextBox.Text;
-            Regex transferredAmountRegex = new Regex("^\\d+$");
+            //String transferredAmount = amountTransferredTextBox.Text;
+            //Regex transferredAmountRegex = new Regex("^\\d+$");
 
-            if (!isValidInputAmount(transferredAmount, transferredAmountRegex)) {
-                amountTransferredTextBox.Text = "";
+            //if (!isValidInputAmount(transferredAmount, transferredAmountRegex)) {
+            //    amountTransferredTextBox.Text = "";
+            //}
+        }
+
+        private void amountTransferredTextBox_Validated(object sender, EventArgs e) {
+            String transferredAmount = amountTransferredTextBox.Text;
+            double parseResult;
+            bool canParseTransferredAmount = Double.TryParse(transferredAmount, out parseResult);
+
+            if(!canParseTransferredAmount) {
+                transferValueErrorProvider.SetError(amountTransferredTextBox, "The transfer value must be a positive integer/decimal value!");
+                transferButton.Enabled = false;
+            } else {
+                transferValueErrorProvider.SetError(amountTransferredTextBox, String.Empty);
+                transferButton.Enabled = true;
             }
         }
 
@@ -224,7 +242,7 @@ namespace BudgetManager.non_mvc {
         }
 
         //Method for checking if the amount to be transferred is greater than the available balance f the saving account
-        private DataCheckResponse performTransferValueCheck(int transferValue, int sourceAccountID) {
+        private DataCheckResponse performTransferValueCheck(double transferValue, int sourceAccountID) {
             //Improve the check method (performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert)) to accept all the parameters being sent as attributes of the QueryData object
             String itemName = "account transfer";
 
@@ -292,8 +310,10 @@ namespace BudgetManager.non_mvc {
             int sourceAccountId = getAccountId(sourceAccountIdRetrievalCommand);
             int destinationAccountId = getAccountId(destinationAccountIdRetrievalCommand);
             double exchangeRate = Convert.ToDouble(exchangeRateTextBox.Text);//How much one unit of the sent currency represents compared to one unit of the received currency(e.g-GBP-EUR-1.17 => 1 GBP is equal to 1.17 EUR)
-            int sentValue = Convert.ToInt32(amountTransferredTextBox.Text);
-            int receivedValue = (int)(sentValue / exchangeRate);
+            //int sentValue = Convert.ToInt32(amountTransferredTextBox.Text);
+            double sentValue = Convert.ToDouble(amountTransferredTextBox.Text);
+            //int receivedValue = (int)(sentValue / exchangeRate);
+            double receivedValue = sentValue / exchangeRate;
             String transferDate = transferDateTimePicker.Value.ToString("yyyy-MM-dd");
             String transferObservations = transferObservationsRichTextBox.Text;
             String transactionID = !transactionIDTextBox.Text.Equals("") ? transactionIDTextBox.Text : null;
