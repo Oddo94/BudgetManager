@@ -4,13 +4,9 @@ using BudgetManager.utils.enums;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BudgetManager.non_mvc {
@@ -38,7 +34,7 @@ namespace BudgetManager.non_mvc {
             InitializeComponent();
             activeControls = new List<Control>() { transferNameTextBox, sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox, transferDateTimePicker, transactionIDTextBox, transferObservationsRichTextBox };
             this.userID = userID;
-            
+
             transferValueErrorProvider = new ErrorProvider();
             transferValueErrorProvider.SetIconAlignment(amountTransferredTextBox, ErrorIconAlignment.MiddleRight);
 
@@ -48,21 +44,12 @@ namespace BudgetManager.non_mvc {
 
         }
 
-        private void amountTransferredTextBox_TextChanged(object sender, EventArgs e) {
-            //String transferredAmount = amountTransferredTextBox.Text;
-            //Regex transferredAmountRegex = new Regex("^\\d+$");
-
-            //if (!isValidInputAmount(transferredAmount, transferredAmountRegex)) {
-            //    amountTransferredTextBox.Text = "";
-            //}
-        }
-
         private void amountTransferredTextBox_Validated(object sender, EventArgs e) {
             String transferredAmount = amountTransferredTextBox.Text;
             double parseResult;
             bool canParseTransferredAmount = Double.TryParse(transferredAmount, out parseResult);
 
-            if(!canParseTransferredAmount) {
+            if (!canParseTransferredAmount || (canParseTransferredAmount && Convert.ToDouble(transferredAmount) <= 0)) {
                 transferValueErrorProvider.SetError(amountTransferredTextBox, "The transfer value must be a positive integer/decimal value!");
                 transferButton.Enabled = false;
             } else {
@@ -119,10 +106,10 @@ namespace BudgetManager.non_mvc {
             if (userOptionConfirmTransfer == DialogResult.No) {
                 return;
             }
-         
+
             //General input check
-            int userInputCheckResult = performInputChecks();        
-         
+            int userInputCheckResult = performInputChecks();
+
             //User input data check
             if (userInputCheckResult == -1) {
                 return;
@@ -365,7 +352,7 @@ namespace BudgetManager.non_mvc {
             String exchangeRateData = String.Format("{0, -10}: {1, -10}\n", "Exchange rate", paramContainer.ExchangeRate);
             String transactionIDData = String.Format("{0, -10}: {1, 10}\n", "Transfer ID", paramContainer.GenericID);
             String transferDateData = String.Format("{0, -10}: {1, -10}\n", "Transfer date", paramContainer.ItemCreationDate);
-            String transferObservationsData = String.Format("{0, -10}: {1, 10}\n\n", "Transfer observations", paramContainer.AdditionalData);         
+            String transferObservationsData = String.Format("{0, -10}: {1, 10}\n\n", "Transfer observations", paramContainer.AdditionalData);
             String hintData = String.Format("{0, -10}", "Press Ctrl + C to copy the transfer details information.");
 
             List<String> dataList = new List<String>();
