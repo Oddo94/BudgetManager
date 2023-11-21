@@ -4,13 +4,9 @@ using BudgetManager.utils.enums;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BudgetManager.non_mvc {
@@ -32,11 +28,15 @@ namespace BudgetManager.non_mvc {
         private List<Control> activeControls;
         //Map containing key-value pairs of account names and their corresponding currencies
         private Dictionary<String, String> accountCurrencyMap;
+        private ErrorProvider transferValueErrorProvider;
 
         public ExternalAccountTransfersForm(int userID) {
             InitializeComponent();
             activeControls = new List<Control>() { transferNameTextBox, sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox, transferDateTimePicker, transactionIDTextBox, transferObservationsRichTextBox };
             this.userID = userID;
+
+            transferValueErrorProvider = new ErrorProvider();
+            transferValueErrorProvider.SetIconAlignment(amountTransferredTextBox, ErrorIconAlignment.MiddleRight);
 
             populateControls(userID);
             populateDataMaps();
@@ -44,12 +44,17 @@ namespace BudgetManager.non_mvc {
 
         }
 
-        private void amountTransferredTextBox_TextChanged(object sender, EventArgs e) {
+        private void amountTransferredTextBox_Validated(object sender, EventArgs e) {
             String transferredAmount = amountTransferredTextBox.Text;
-            Regex transferredAmountRegex = new Regex("^\\d+$");
+            double parseResult;
+            bool canParseTransferredAmount = Double.TryParse(transferredAmount, out parseResult);
 
-            if (!isValidInputAmount(transferredAmount, transferredAmountRegex)) {
-                amountTransferredTextBox.Text = "";
+            if (!canParseTransferredAmount || (canParseTransferredAmount && Convert.ToDouble(transferredAmount) <= 0)) {
+                transferValueErrorProvider.SetError(amountTransferredTextBox, "The transfer value must be a positive integer/decimal value!");
+                transferButton.Enabled = false;
+            } else {
+                transferValueErrorProvider.SetError(amountTransferredTextBox, String.Empty);
+                transferButton.Enabled = true;
             }
         }
 
@@ -101,10 +106,10 @@ namespace BudgetManager.non_mvc {
             if (userOptionConfirmTransfer == DialogResult.No) {
                 return;
             }
-         
+
             //General input check
-            int userInputCheckResult = performInputChecks();        
-         
+            int userInputCheckResult = performInputChecks();
+
             //User input data check
             if (userInputCheckResult == -1) {
                 return;
@@ -224,7 +229,7 @@ namespace BudgetManager.non_mvc {
         }
 
         //Method for checking if the amount to be transferred is greater than the available balance f the saving account
-        private DataCheckResponse performTransferValueCheck(int transferValue, int sourceAccountID) {
+        private DataCheckResponse performTransferValueCheck(double transferValue, int sourceAccountID) {
             //Improve the check method (performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert)) to accept all the parameters being sent as attributes of the QueryData object
             String itemName = "account transfer";
 
@@ -292,8 +297,10 @@ namespace BudgetManager.non_mvc {
             int sourceAccountId = getAccountId(sourceAccountIdRetrievalCommand);
             int destinationAccountId = getAccountId(destinationAccountIdRetrievalCommand);
             double exchangeRate = Convert.ToDouble(exchangeRateTextBox.Text);//How much one unit of the sent currency represents compared to one unit of the received currency(e.g-GBP-EUR-1.17 => 1 GBP is equal to 1.17 EUR)
-            int sentValue = Convert.ToInt32(amountTransferredTextBox.Text);
-            int receivedValue = (int)(sentValue / exchangeRate);
+            //int sentValue = Convert.ToInt32(amountTransferredTextBox.Text);
+            double sentValue = Convert.ToDouble(amountTransferredTextBox.Text);
+            //int receivedValue = (int)(sentValue / exchangeRate);
+            double receivedValue = sentValue / exchangeRate;
             String transferDate = transferDateTimePicker.Value.ToString("yyyy-MM-dd");
             String transferObservations = transferObservationsRichTextBox.Text;
             String transactionID = !transactionIDTextBox.Text.Equals("") ? transactionIDTextBox.Text : null;
@@ -345,7 +352,7 @@ namespace BudgetManager.non_mvc {
             String exchangeRateData = String.Format("{0, -10}: {1, -10}\n", "Exchange rate", paramContainer.ExchangeRate);
             String transactionIDData = String.Format("{0, -10}: {1, 10}\n", "Transfer ID", paramContainer.GenericID);
             String transferDateData = String.Format("{0, -10}: {1, -10}\n", "Transfer date", paramContainer.ItemCreationDate);
-            String transferObservationsData = String.Format("{0, -10}: {1, 10}\n\n", "Transfer observations", paramContainer.AdditionalData);         
+            String transferObservationsData = String.Format("{0, -10}: {1, 10}\n\n", "Transfer observations", paramContainer.AdditionalData);
             String hintData = String.Format("{0, -10}", "Press Ctrl + C to copy the transfer details information.");
 
             List<String> dataList = new List<String>();

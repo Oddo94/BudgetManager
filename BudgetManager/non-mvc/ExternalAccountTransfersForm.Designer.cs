@@ -119,7 +119,7 @@
             this.amountTransferredTextBox.Name = "amountTransferredTextBox";
             this.amountTransferredTextBox.Size = new System.Drawing.Size(191, 20);
             this.amountTransferredTextBox.TabIndex = 7;
-            this.amountTransferredTextBox.TextChanged += new System.EventHandler(this.amountTransferredTextBox_TextChanged);
+            this.amountTransferredTextBox.Validated += new System.EventHandler(this.amountTransferredTextBox_Validated);
             // 
             // exchangeRateTextBox
             // 
