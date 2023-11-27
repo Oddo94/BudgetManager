@@ -58,7 +58,6 @@ namespace BudgetManager.non_mvc {
             populateControls(userID);
             populateDataMaps();
             setDefaultIndexForComboBoxes();
-
         }
 
 
@@ -75,11 +74,16 @@ namespace BudgetManager.non_mvc {
             }
         }
 
+        //DATA VALIDATION LOGIC
         private void sourceAccountComboBox_Validated(object sender, EventArgs e) {
             int selectedIndex = sourceAccountComboBox.SelectedIndex;
+            String sourceAccountName = sourceAccountComboBox.Text;
+            String destinationAccountName = destinationAccountComboBox.Text;
 
             if (selectedIndex == -1) {
                 sourceAccountErrorProvider.SetError(sourceAccountComboBox, "Please select the source account for your transfer!");
+            } else if (sourceAccountName.Equals(destinationAccountName)) {
+                sourceAccountErrorProvider.SetError(sourceAccountComboBox, "Cannot perform transfers between the same account! The source and destination accounts must be different.");
             } else {
                 sourceAccountErrorProvider.SetError(sourceAccountComboBox, String.Empty);
             }
@@ -87,9 +91,13 @@ namespace BudgetManager.non_mvc {
 
         private void destinationAccountComboBox_Validated(object sender, EventArgs e) {
             int selectedIndex = destinationAccountComboBox.SelectedIndex;
+            String sourceAccountName = sourceAccountComboBox.Text;
+            String destinationAccountName = destinationAccountComboBox.Text;
 
             if (selectedIndex == -1) {
                 destinationAccountErrorProvider.SetError(destinationAccountComboBox, "Please select the destination account for your transfer!");
+            } else if (sourceAccountName.Equals(destinationAccountName)) {
+                destinationAccountErrorProvider.SetError(destinationAccountComboBox, "Cannot perform transfers between the same account! The source and destination accounts must be different.");
             } else {
                 destinationAccountErrorProvider.SetError(destinationAccountComboBox, String.Empty);
             }
@@ -145,6 +153,7 @@ namespace BudgetManager.non_mvc {
 
         }
 
+        //TRANSFER EXECUTION LOGIC
         private void transferButton_Click(object sender, EventArgs e) {
             DialogResult userOptionConfirmTransfer = MessageBox.Show("Are you sure that you want to perform the requested transfer?", "External account transfers", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -191,14 +200,6 @@ namespace BudgetManager.non_mvc {
 
         //Shows a preview of the transfer that is about to be performed
         private void previewTransferButton_Click(object sender, EventArgs e) {
-            //String transferAmountValidationErrorMessage = transferValueErrorProvider.GetError(amountTransferredTextBox);
-            //String exchangeRateValidationErrorMessage = exchangeRateValueErrorProvider.GetError(exchangeRateTextBox);
-
-            //if (!transferAmountValidationErrorMessage.Equals(String.Empty) || !exchangeRateValidationErrorMessage.Equals(String.Empty)) {
-            //    MessageBox.Show("Please correct all the invalid form data before previewing the transfer!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    return;
-            //}
-
             int checkResult = performInputChecks();
 
             if (checkResult == -1) {
@@ -232,6 +233,7 @@ namespace BudgetManager.non_mvc {
 
 
         //DATA CHECKS METHODS
+        //Method for performing general input checks (checks if any error message was triggered for the form fields)
         private int performInputChecks() {
             int transferNameMaxLength = 50;
             String sourceAccountName = sourceAccountComboBox.Text;
@@ -259,64 +261,7 @@ namespace BudgetManager.non_mvc {
             return 0;
         }
 
-
-        //Method for performing general input checks
-        //private int performInputChecks() {
-        //    int transferNameMaxLength = 50;
-        //    String sourceAccountName = sourceAccountComboBox.Text;
-        //    String destinationAccountName = destinationAccountComboBox.Text;
-
-        //    String transferAmountValidationErrorMessage = transferValueErrorProvider.GetError(amountTransferredTextBox);
-        //    String exchangeRateValidationErrorMessage = exchangeRateValueErrorProvider.GetError(exchangeRateTextBox);
-
-        //    if (!transferAmountValidationErrorMessage.Equals(String.Empty) || !exchangeRateValidationErrorMessage.Equals(String.Empty)) {
-        //        MessageBox.Show("Please correct all the invalid form data before performing the transfer!", "External account transfers", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        return -1;
-        //    }
-
-
-        //    if ("".Equals(transferNameTextBox.Text)) {
-        //        MessageBox.Show("Please provide a name for your transfer!", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return -1;
-        //    }
-
-        //    if (transferNameTextBox.Text.Length > transferNameMaxLength) {
-        //        MessageBox.Show("The transfer name length cannot exceed 50 characters.", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return -1;
-        //    }
-
-        //    if (sourceAccountComboBox.SelectedIndex == -1) {
-        //        MessageBox.Show("Please select the source account for your transfer!", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return -1;
-        //    }
-
-        //    if (sourceAccountName.Equals(destinationAccountName)) {
-        //        MessageBox.Show("Cannot perform transfers between the same account! The source and destination accounts must be different.", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return -1;
-        //    }
-
-        //    if (destinationAccountComboBox.SelectedIndex == -1) {
-        //        MessageBox.Show("Please select the destination account for your transfer!", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return -1;
-        //    }
-
-        //    if ("".Equals(amountTransferredTextBox.Text)) {
-        //        MessageBox.Show("Please specify the transferred amount!", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return -1;
-        //    }
-
-        //    if ("".Equals(exchangeRateTextBox.Text)) {
-        //        MessageBox.Show("Please specify the exchange rate value!", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return -1;
-        //    } else if (!"".Equals(invalidExchangeRateFormatLabel.Text)) {
-        //        MessageBox.Show("Invalid exchange rate value!", "Transfer check", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return -1;
-        //    }
-
-        //    return 0;
-        //}
-
-        //Method for checking if the amount to be transferred is greater than the available balance f the saving account
+        //Method for checking if the amount to be transferred is greater than the available balance of the saving account
         private DataCheckResponse performTransferValueCheck(double transferValue, int sourceAccountID) {
             //Improve the check method (performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert)) to accept all the parameters being sent as attributes of the QueryData object
             String itemName = "account transfer";
@@ -509,7 +454,7 @@ namespace BudgetManager.non_mvc {
                 return;
             }
 
-            foreach(Control control in controlList) {
+            foreach (Control control in controlList) {
                 control.Focus();
             }
         }
