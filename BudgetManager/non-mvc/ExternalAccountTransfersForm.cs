@@ -23,6 +23,8 @@ namespace BudgetManager.non_mvc {
         private string sqlStatementInsertTransfer = @"INSERT INTO saving_accounts_transfers(senderAccountID, receivingAccountID, transferName, sentValue, receivedValue, exchangeRate, transactionID, observations, transferDate) 
                                                     VALUES(@paramSenderAccountId, @paramReceivingAccountId, @paramTransferName, @paramSentValue, @paramReceivedValue, @paramExchangeRate, @paramTransactionID, @paramObservations, @paramTransferDate)";
 
+        private String forbiddenDecimalSeparator;
+
         //Command was added at class level so that it can be reused by other methods (it is initialized once the comboboxes are populated)     
         private MySqlCommand userAccountsDataRetrievalCommand;
 
@@ -35,10 +37,12 @@ namespace BudgetManager.non_mvc {
         private ErrorProvider transferValueErrorProvider;
         private ErrorProvider exchangeRateValueErrorProvider;
 
+
         public ExternalAccountTransfersForm(int userID) {
             InitializeComponent();
             activeControls = new List<Control>() { transferNameTextBox, sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox, transferDateTimePicker, transactionIDTextBox, transferObservationsRichTextBox };
             this.userID = userID;
+            this.forbiddenDecimalSeparator = ",";
 
             sourceAccountErrorProvider = new ErrorProvider();
             sourceAccountErrorProvider.SetIconAlignment(sourceAccountComboBox, ErrorIconAlignment.MiddleRight);
@@ -108,6 +112,8 @@ namespace BudgetManager.non_mvc {
 
             if (!isValidDecimal(transferredAmount) || (isValidDecimal(transferredAmount) && Convert.ToDouble(transferredAmount) <= 0)) {
                 transferValueErrorProvider.SetError(amountTransferredTextBox, "The transfer value must be a positive integer/decimal value!");
+            } else if (transferredAmount.Contains(forbiddenDecimalSeparator)) {
+                transferValueErrorProvider.SetError(amountTransferredTextBox, "The transfer value cannot contain the ',' character as decimal separator!");
             } else {
                 transferValueErrorProvider.SetError(amountTransferredTextBox, String.Empty);
             }
@@ -118,6 +124,8 @@ namespace BudgetManager.non_mvc {
 
             if (!isValidDecimal(exchangeRateAmount) || (isValidDecimal(exchangeRateAmount) && Convert.ToDouble(exchangeRateAmount) <= 0)) {
                 exchangeRateValueErrorProvider.SetError(exchangeRateTextBox, "The exchange rate must be a positive integer/decimal value!");
+            } else if (exchangeRateAmount.Contains(forbiddenDecimalSeparator)) {
+                exchangeRateValueErrorProvider.SetError(exchangeRateTextBox, "The exchange rate value cannot contain the ',' character as decimal separator!");
             } else {
                 exchangeRateValueErrorProvider.SetError(exchangeRateTextBox, String.Empty);
             }
