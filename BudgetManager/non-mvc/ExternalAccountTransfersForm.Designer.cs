@@ -102,6 +102,7 @@
             this.sourceAccountComboBox.Size = new System.Drawing.Size(190, 21);
             this.sourceAccountComboBox.TabIndex = 5;
             this.sourceAccountComboBox.MouseHover += new System.EventHandler(this.sourceAccountComboBox_MouseHover);
+            this.sourceAccountComboBox.Validated += new System.EventHandler(this.sourceAccountComboBox_Validated);
             // 
             // destinationAccountComboBox
             // 
@@ -112,6 +113,7 @@
             this.destinationAccountComboBox.Size = new System.Drawing.Size(190, 21);
             this.destinationAccountComboBox.TabIndex = 6;
             this.destinationAccountComboBox.MouseHover += new System.EventHandler(this.destinationAccountComboBox_MouseHover);
+            this.destinationAccountComboBox.Validated += new System.EventHandler(this.destinationAccountComboBox_Validated);
             // 
             // amountTransferredTextBox
             // 
@@ -119,7 +121,7 @@
             this.amountTransferredTextBox.Name = "amountTransferredTextBox";
             this.amountTransferredTextBox.Size = new System.Drawing.Size(191, 20);
             this.amountTransferredTextBox.TabIndex = 7;
-            this.amountTransferredTextBox.TextChanged += new System.EventHandler(this.amountTransferredTextBox_TextChanged);
+            this.amountTransferredTextBox.Validated += new System.EventHandler(this.amountTransferredTextBox_Validated);
             // 
             // exchangeRateTextBox
             // 
@@ -127,7 +129,7 @@
             this.exchangeRateTextBox.Name = "exchangeRateTextBox";
             this.exchangeRateTextBox.Size = new System.Drawing.Size(190, 20);
             this.exchangeRateTextBox.TabIndex = 8;
-            this.exchangeRateTextBox.TextChanged += new System.EventHandler(this.exchangeRateTextBox_TextChanged);
+            this.exchangeRateTextBox.Validated += new System.EventHandler(this.exchangeRateTextBox_Validated);
             // 
             // label6
             // 
@@ -237,6 +239,7 @@
             this.transferNameTextBox.Name = "transferNameTextBox";
             this.transferNameTextBox.Size = new System.Drawing.Size(190, 20);
             this.transferNameTextBox.TabIndex = 20;
+            this.transferNameTextBox.Validated += new System.EventHandler(this.transferNameTextBox_Validated);
             // 
             // previewTransferButton
             // 

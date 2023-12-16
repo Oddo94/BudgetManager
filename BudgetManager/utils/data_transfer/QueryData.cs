@@ -26,8 +26,8 @@ namespace BudgetManager {
         private int currencyID;
         private int sourceAccountID;    
         private int destinationAccountID;
-        private int sentValue;
-        private int receivedValue;
+        private double sentValue;
+        private double receivedValue;
         private double exchangeRate;
         private String itemCreationDate;
         private String startDate;
@@ -160,13 +160,13 @@ namespace BudgetManager {
             }
         }
 
-        public int SentValue {
+        public double SentValue {
             get {
                 return this.sentValue;
             }
         }
 
-        public int ReceivedValue {
+        public double ReceivedValue {
             get {
                 return this.receivedValue;
             }
@@ -307,8 +307,8 @@ namespace BudgetManager {
             private int currencyID;
             private int sourceAccountID;           
             private int destinationAccountID;
-            private int sentValue;
-            private int receivedValue;
+            private double sentValue;
+            private double receivedValue;
             private double exchangeRate;
             private String itemCreationDate;
             private String startDate;
@@ -445,13 +445,13 @@ namespace BudgetManager {
                 return this;
             }
 
-            public Builder addSentValue(int sentValue) {
+            public Builder addSentValue(double sentValue) {
                 this.sentValue = sentValue;
 
                 return this;
             }
 
-            public Builder addReceivedValue(int receivedValue) {
+            public Builder addReceivedValue(double receivedValue) {
                 this.receivedValue = receivedValue;
 
                 return this;

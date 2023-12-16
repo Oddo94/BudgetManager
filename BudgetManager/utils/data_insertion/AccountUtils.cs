@@ -51,6 +51,7 @@ namespace BudgetManager.utils.data_insertion {
 
         public int getAccountID(String accountName, int userID) {
             //Setting the default value for current balance.If data cannot be retrieved for any reason then 0 will be returned since it is not be allowed for the saving account to have negative balance
+            double currentBalance = 0;
             int accountID = -1;
             DataTable accountIDDataTable = null;
 
