@@ -23,6 +23,8 @@ namespace BudgetManager.non_mvc {
         private string sqlStatementInsertTransfer = @"INSERT INTO saving_accounts_transfers(senderAccountID, receivingAccountID, transferName, sentValue, receivedValue, exchangeRate, transactionID, observations, transferDate) 
                                                     VALUES(@paramSenderAccountId, @paramReceivingAccountId, @paramTransferName, @paramSentValue, @paramReceivedValue, @paramExchangeRate, @paramTransactionID, @paramObservations, @paramTransferDate)";
 
+        private String forbiddenDecimalSeparator;
+
         //Command was added at class level so that it can be reused by other methods (it is initialized once the comboboxes are populated)     
         private MySqlCommand userAccountsDataRetrievalCommand;
 
@@ -35,10 +37,12 @@ namespace BudgetManager.non_mvc {
         private ErrorProvider transferValueErrorProvider;
         private ErrorProvider exchangeRateValueErrorProvider;
 
+
         public ExternalAccountTransfersForm(int userID) {
             InitializeComponent();
             activeControls = new List<Control>() { transferNameTextBox, sourceAccountComboBox, destinationAccountComboBox, amountTransferredTextBox, exchangeRateTextBox, transferDateTimePicker, transactionIDTextBox, transferObservationsRichTextBox };
             this.userID = userID;
+            this.forbiddenDecimalSeparator = ",";
 
             sourceAccountErrorProvider = new ErrorProvider();
             sourceAccountErrorProvider.SetIconAlignment(sourceAccountComboBox, ErrorIconAlignment.MiddleRight);
@@ -108,6 +112,8 @@ namespace BudgetManager.non_mvc {
 
             if (!isValidDecimal(transferredAmount) || (isValidDecimal(transferredAmount) && Convert.ToDouble(transferredAmount) <= 0)) {
                 transferValueErrorProvider.SetError(amountTransferredTextBox, "The transfer value must be a positive integer/decimal value!");
+            } else if (transferredAmount.Contains(forbiddenDecimalSeparator)) {
+                transferValueErrorProvider.SetError(amountTransferredTextBox, "The transfer value cannot contain the ',' character as decimal separator!");
             } else {
                 transferValueErrorProvider.SetError(amountTransferredTextBox, String.Empty);
             }
@@ -118,6 +124,8 @@ namespace BudgetManager.non_mvc {
 
             if (!isValidDecimal(exchangeRateAmount) || (isValidDecimal(exchangeRateAmount) && Convert.ToDouble(exchangeRateAmount) <= 0)) {
                 exchangeRateValueErrorProvider.SetError(exchangeRateTextBox, "The exchange rate must be a positive integer/decimal value!");
+            } else if (exchangeRateAmount.Contains(forbiddenDecimalSeparator)) {
+                exchangeRateValueErrorProvider.SetError(exchangeRateTextBox, "The exchange rate value cannot contain the ',' character as decimal separator!");
             } else {
                 exchangeRateValueErrorProvider.SetError(exchangeRateTextBox, String.Empty);
             }
@@ -330,10 +338,8 @@ namespace BudgetManager.non_mvc {
             int sourceAccountId = getAccountId(sourceAccountIdRetrievalCommand);
             int destinationAccountId = getAccountId(destinationAccountIdRetrievalCommand);
             double exchangeRate = Convert.ToDouble(exchangeRateTextBox.Text);//How much one unit of the sent currency represents compared to one unit of the received currency(e.g-GBP-EUR-1.17 => 1 GBP is equal to 1.17 EUR)
-            //int sentValue = Convert.ToInt32(amountTransferredTextBox.Text);
             double sentValue = Convert.ToDouble(amountTransferredTextBox.Text);
-            //int receivedValue = (int)(sentValue / exchangeRate);
-            double receivedValue = sentValue / exchangeRate;
+            double receivedValue = sentValue * exchangeRate;
             String transferDate = transferDateTimePicker.Value.ToString("yyyy-MM-dd");
             String transferObservations = transferObservationsRichTextBox.Text;
             String transactionID = !transactionIDTextBox.Text.Equals("") ? transactionIDTextBox.Text : null;
@@ -380,8 +386,8 @@ namespace BudgetManager.non_mvc {
             String transferNameData = String.Format("{0, -10}: {1, -10}\n", "Transfer name", paramContainer.ItemName);
             String sourceAccountData = String.Format("{0, -10}: {1, -10}\n", "Source account", sourceAccountComboBox.Text);
             String destinationAccountData = String.Format("{0, -10}: {1, -10}\n", "Destination account", destinationAccountComboBox.Text);
-            String amountTransferredData = String.Format("{0, -10}: {1} {2}\n", "Amount transferred", paramContainer.SentValue, sourceAccountCurrency);
-            String amountReceivedData = String.Format("{0, -10}: {1} {2}\n", "Amount received", paramContainer.ReceivedValue, destinationAccountCurrency);
+            String amountTransferredData = String.Format("{0, -10}: {1:0.##} {2}\n", "Amount transferred", paramContainer.SentValue, sourceAccountCurrency);
+            String amountReceivedData = String.Format("{0, -10}: {1} {2:0.##}\n", "Amount received", paramContainer.ReceivedValue, destinationAccountCurrency);
             String exchangeRateData = String.Format("{0, -10}: {1, -10}\n", "Exchange rate", paramContainer.ExchangeRate);
             String transactionIDData = String.Format("{0, -10}: {1, 10}\n", "Transfer ID", paramContainer.GenericID);
             String transferDateData = String.Format("{0, -10}: {1, -10}\n", "Transfer date", paramContainer.ItemCreationDate);
