@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace BudgetManager {  
     //Utility class for managing the application connection to the database
-    class DBConnectionManager {
+    public class DBConnectionManager {
         
         public static readonly String BUDGET_MANAGER_CONN_STRING = Properties.Settings.Default.BUDGET_MANAGER_CONN_STRING;
 
