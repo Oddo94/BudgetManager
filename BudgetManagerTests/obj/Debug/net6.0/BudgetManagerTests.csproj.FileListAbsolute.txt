@@ -124,3 +124,5 @@ D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManagerTests\bi
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManagerTests\bin\Debug\net6.0\runtimes\win-x64\native\krb5_64.dll
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManagerTests\bin\Debug\net6.0\runtimes\win-x64\native\krbcc64.dll
 D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManagerTests\bin\Debug\net6.0\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManagerTests\bin\Debug\net6.0\BudgetManagerTests.exe
+D:\IAP\Proiecte in dezvoltare\Budget Manager\BudgetManager\BudgetManagerTests\obj\Debug\net6.0\BudgetManagerTests.csproj.ResolveComReference.cache

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BudgetManager.non_mvc {
-    class SavingInsertionStrategy : DataInsertionStrategy {
+   public class SavingInsertionStrategy : DataInsertionStrategy {
 
         //SQL query for inserting a new saving into the database
         private String sqlStatementInsertSaving = @"INSERT INTO savings(user_ID, name, value, date) VALUES(@paramID, @paramSavingName, @paramSavingValue, @paramSavingDate)";
