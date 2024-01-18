@@ -9,10 +9,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BudgetManager {  
+namespace BudgetManager {
     //Utility class for managing the application connection to the database
     public class DBConnectionManager {
-        
+
         public static readonly String BUDGET_MANAGER_CONN_STRING = Properties.Settings.Default.BUDGET_MANAGER_CONN_STRING;
 
         //Creates a new connection
@@ -28,16 +28,16 @@ namespace BudgetManager {
 
         }
 
-        public static DataTable getData(MySqlCommand command) {       
+        public static DataTable getData(MySqlCommand command) {
             //Creates a new connection
             MySqlConnection conn = DBConnectionManager.getConnection(DBConnectionManager.BUDGET_MANAGER_CONN_STRING);
 
             //Assigning the connection to the command object
             command.Connection = conn;
-           
+
             //Creating a DataAdapter based on the command object
             MySqlDataAdapter adp = DBConnectionManager.getDataAdapter(command);
-           
+
             //Creating an empty DataTable
             DataTable dataTable = new DataTable();
 
@@ -47,22 +47,22 @@ namespace BudgetManager {
                 conn.Open();
                 adp.Fill(dataTable);
 
-            } catch (MySqlException ex) {               
+            } catch (MySqlException ex) {
                 //If an exception is thrown then a MessageBox containing the exception or the custom message (for error code 1042) is displayed
                 int errorCode = ex.Number;
                 String message;
                 if (errorCode == 1042) {
-                     message = "Unable to connect to the database! Please check the connection and try again.";
+                    message = "Unable to connect to the database! Please check the connection and try again.";
                 } else {
-                     message = ex.Message;
-                }          
+                    message = ex.Message;
+                }
                 MessageBox.Show(message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
+
             } finally {
                 //Closing the connection irrespective of the command execution result
                 conn.Close();
             }
-           
+
             return dataTable;
         }
 
@@ -92,7 +92,7 @@ namespace BudgetManager {
                 //The message is composed based on the error code returned (in order to improve the error understanding for the end user)
                 string message = "";
 
-                switch (errorCode) {               
+                switch (errorCode) {
                     case 1042:
                         message = "Unable to connect to the database! Please check the connection and try again.";
                         break;
@@ -109,7 +109,7 @@ namespace BudgetManager {
                 //Null check for the transaction object to avoid NPE when there's no DB connectionn(in that case the transaction remains null since the conn.Object() statement throws an exception and the rest of the code is not executed anymore)
                 if (tx != null) {
                     tx.Rollback();//Reverting the DB to its original state
-                }              
+                }
             } finally {
                 conn.Close();
             }
@@ -125,17 +125,17 @@ namespace BudgetManager {
 
         public static int updateData(MySqlCommand command, DataTable sourceTable) {
             int executionResult = 0;
-           
+
             //Creating the connection object and assigning it to the command object
             MySqlConnection conn = getConnection(BUDGET_MANAGER_CONN_STRING);
             command.Connection = conn;
-                
+
             //Creating the transaction(it is created here and initialised to null to allow its use in the catch block)
             MySqlTransaction tx = null;
-                           
+
             //Creating the DataAdapter object for updating the DB with the changes performed by the user in the GUI
             MySqlDataAdapter dataAdapter = getDataAdapter(command);
-            
+
             //Creating the CommandBuilder object for the automatic creation of the INSERT, UPDATE, DELETE commands which will reflect the changes from the source DataTable into the DB 
             MySqlCommandBuilder commandBuilder = new MySqlCommandBuilder(dataAdapter);
 
@@ -144,7 +144,7 @@ namespace BudgetManager {
 
                 tx = conn.BeginTransaction();
                 command.Transaction = tx;
-               
+
                 //The number of affected rows after the execution of the SQL statement command is stored in this variable(if the number is greater than 0 is means that the command was executed successfully otherwise it means that it has failed)
                 executionResult = dataAdapter.Update(sourceTable);
                 sourceTable.AcceptChanges();
@@ -168,11 +168,11 @@ namespace BudgetManager {
                 if (tx != null) {
                     tx.Rollback();//Reverting the DB to its original state
                 }
-                
+
             } finally {
                 conn.Close();
             }
-            
+
             //If the execution was successfull the number of affected rows is returned, otherwise the method returns -1 which means that the update operation failed
             if (executionResult != 0) {
                 return executionResult;
@@ -251,7 +251,7 @@ namespace BudgetManager {
 
                     //Adds the primary key parameter 
                     dataAdapter.UpdateCommand.Parameters.Add(primaryKey);
-                  
+
                     //Executes the update
                     executionResult = dataAdapter.Update(sourceDataTable);
 
@@ -259,7 +259,7 @@ namespace BudgetManager {
                     tx.Commit();
                 }
 
-            } catch(MySqlException ex) {
+            } catch (MySqlException ex) {
                 //Reverts the changes in case of exception
                 //tx.Rollback();
 
@@ -311,15 +311,15 @@ namespace BudgetManager {
                     tx.Commit();
 
                 }
-            } catch(MySqlException ex) {
+            } catch (MySqlException ex) {
                 int errorCode = ex.Number;
 
-                /*Checks to see if the error is caused by th fac that the app is unbale to connect to the DB.
+                /*Checks to see if the error is caused by the fact that the app is unbale to connect to the DB.
                 In that case there's no point in trying to rollback the transaction*/
-                if(errorCode != 1042) {
+                if (errorCode != 1042) {
                     tx.Rollback();
                 }
-              
+
                 Console.WriteLine(String.Format("Error message: {0}\nStack trace: {1}", ex.Message, ex.StackTrace));
                 throw;
             }
@@ -333,7 +333,7 @@ namespace BudgetManager {
             command.Connection = conn;
 
             MySqlTransaction tx = null;
-      
+
             MySqlDataAdapter dataAdapter = getDataAdapter(command);
             MySqlCommandBuilder commandBuilder = new MySqlCommandBuilder(dataAdapter);
 
@@ -358,13 +358,13 @@ namespace BudgetManager {
                 } else {
                     message = ex.Message;
                 }
-                
+
                 MessageBox.Show(message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 if (tx != null) {
                     tx.Rollback();
                 }
-                
+
             } catch (DBConcurrencyException ex) {
                 MessageBox.Show(ex.Message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 tx.Rollback();
@@ -375,6 +375,34 @@ namespace BudgetManager {
 
             return executionResult;
 
+        }
+
+        public static int deleteData(MySqlCommand command) {
+            int executionResult = -1;
+
+            try {
+                using (MySqlConnection conn = getConnection(BUDGET_MANAGER_CONN_STRING)) {
+                    command.Connection = conn;
+                    conn.Open();
+
+                    executionResult = command.ExecuteNonQuery();
+
+                }
+            } catch (MySqlException ex) {
+                //Retrieving the error code
+                int errorCode = ex.Number;
+                //The message is composed based on the error code returned (in order to improve the error understanding for the end user)
+                String message;
+                if (errorCode == 1042) {
+                    message = "Unable to connect to the database! Please check the connection and try again.";
+                } else {
+                    message = ex.Message;
+                }
+
+                MessageBox.Show(message, "DBConnectionManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return executionResult;
         }
 
         //General purpose method used for calling stored procedures from the database
@@ -435,7 +463,7 @@ namespace BudgetManager {
                 conn.Open();
                 return true;
 
-            } catch(MySqlException ex) {
+            } catch (MySqlException ex) {
                 Console.WriteLine(ex.Message);
                 return false;
             }
