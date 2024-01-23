@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+  <TestRunParameters>
+    <Parameter name="accountId" value="8"/>
+    <Parameter name="userId" value="3"/>
+    <Parameter name="savingName" value="AUTOMATED_TEST_SAVING-1"/>
+    <Parameter name="savingValue" value="200"/>
+    <Parameter name="newLowerSavingValue" value="100"/>
+    <Parameter name="newHigherSavingValue" value="300"/>
+    <Parameter name="savingDate" value="2024-01-18"/>
+  </TestRunParameters>
+</RunSettings>

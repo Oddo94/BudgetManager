@@ -4,17 +4,21 @@ using BudgetManager.non_mvc;
 using BudgetManager.utils.exceptions;
 using MySql.Data.MySqlClient;
 using System.Data;
+using System.Runtime.CompilerServices;
 
 namespace BudgetManagerTests {
     [TestClass]
     public class AccountBalanceTests {
-        private static readonly int accountId = 8;
-        private static readonly int userId = 3;
-        private static readonly String savingName = "AUTOMATED_TEST_SAVING-1";
-        private static readonly int savingValue = 200;
-        private static readonly int newLowerSavingValue = 100;
-        private static readonly int newHigherSavingValue = 300;
-        private static readonly String savingDate = "2024-01-18";
+
+        public static TestContext testContextWork;
+
+        private static int accountId;
+        private static int userId;
+        private static String savingName;
+        private static int savingValue;
+        private static int newLowerSavingValue;
+        private static int newHigherSavingValue;
+        private static String savingDate;
 
         private String sqlStatementSavingAccountCurrentBalance = @"SELECT SUM(value) FROM
                 (SELECT sab.value, sab.account_ID, sat.typeID, sab.month, sab.year FROM saving_accounts_balance sab
@@ -27,6 +31,20 @@ namespace BudgetManagerTests {
 
         private String sqlStatementDeleteInsertedSaving = "DELETE FROM savings WHERE name = @paramName";
         private String sqlStatementUpdateInsertedSaving = "UPDATE savings SET value = @paramValue WHERE name = @paramName";
+
+
+        [ClassInitialize]
+        public static void setupTestData(TestContext testContext) {
+            testContextWork = testContext;
+
+            accountId = Convert.ToInt32(testContextWork.Properties["accountId"].ToString());
+            userId = Convert.ToInt32(testContextWork.Properties["userId"].ToString());
+            savingName = testContextWork.Properties["savingName"].ToString();
+            savingValue = Convert.ToInt32(testContextWork.Properties["savingValue"].ToString());
+            newLowerSavingValue = Convert.ToInt32(testContextWork.Properties["newLowerSavingValue"].ToString());
+            newHigherSavingValue = Convert.ToInt32(testContextWork.Properties["newHigherSavingValue"].ToString());
+            savingDate = testContextWork.Properties["savingDate"].ToString();
+        }
 
         //[TestMethod]
         public void testCurrentAccountBalance() {
@@ -130,9 +148,9 @@ namespace BudgetManagerTests {
 
             int intialBalance = getAccountBalanceFromSelect(userId);
             Console.WriteLine("INITIAL BALANCE: " + intialBalance);
-            
+
             int insertExecutionResult = insertTestSavingIntoDb(userId);
-            if(insertExecutionResult == -1) {
+            if (insertExecutionResult == -1) {
                 Assert.Fail(String.Format("Unable to insert the test saving {0} into the database", savingName));
             }
 
@@ -156,23 +174,100 @@ namespace BudgetManagerTests {
             Assert.AreEqual(expectedBalanceAfterUpdate, actualBalanceAfterUpdate);
         }
 
+        [TestMethod]
+        public void testBalanceAfterUpdatingSavingToHigherValue() {
+            Console.WriteLine("======TestBalanceAfterUpdatingSavingToHigherValue======");
+
+            int intialBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("INITIAL BALANCE: " + intialBalance);
+
+            int insertExecutionResult = insertTestSavingIntoDb(userId);
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test saving {0} into the database", savingName));
+            }
+
+            int currentBalanceAfterInsert = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("CURRENT BALANCE AFTER INSERT: " + currentBalanceAfterInsert);
+
+            int updateExecutionResult = updateTestSavingFromDb(savingName, newHigherSavingValue);
+            if (updateExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to update the test saving {0}", savingName));
+            }
+
+            int actualBalanceAfterUpdate = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("CURRENT BALANCE AFTER UPDATE: " + actualBalanceAfterUpdate);
+
+            int amountDifference = newHigherSavingValue - savingValue;
+            Console.WriteLine("AMOUNT DIFFERENCE: " + amountDifference);
+
+            int expectedBalanceAfterUpdate = currentBalanceAfterInsert + amountDifference;
+            Console.WriteLine("EXPECTED BALANCE AFTER UPDATE: " + expectedBalanceAfterUpdate);
+
+            Assert.AreEqual(expectedBalanceAfterUpdate, actualBalanceAfterUpdate);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterSavingDeletion() {
+            int initialBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("INITIAL BALANCE: " + initialBalance);
+
+            int insertExecutionResult = insertTestSavingIntoDb(userId);
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test saving {0} into the database", savingName));
+            }
+
+            int currentBalanceAfterInsert = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("CURRENT BALANCE AFTER INSERT: " + currentBalanceAfterInsert);
+
+            int deleteExecutionResult = deleteTestSavingFromDb(savingName);
+            if (deleteExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to delete saving {0} from the database", savingName));
+            }
+
+            int expectedBalance = initialBalance;
+            int actualBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("CURRENT BALANCE AFTER DELETE: " + actualBalance);
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+
         [TestCleanup]
         public void removeInsertedSavingFromDb() {
+            Console.WriteLine("\n======RemoveInsertedSavingFromDb======");
             int initialBalance = getAccountBalanceFromSelect(userId);
             Console.WriteLine("INITIAL BALANCE BEFORE DELETION: " + initialBalance);
 
-            int expectedBalance = initialBalance - savingValue;
-            Console.WriteLine("EXPECTED BALANCE AFTER DELETION: " + expectedBalance);
 
-            MySqlCommand sqlCommandDeleteSaving = new MySqlCommand(sqlStatementDeleteInsertedSaving);
-            sqlCommandDeleteSaving.Parameters.AddWithValue("@paramName", savingName);
-
-            int executionResult = DBConnectionManager.deleteData(sqlCommandDeleteSaving);
+            int executionResult = deleteTestSavingFromDb(savingName);
 
             if (executionResult == -1) {
                 Console.WriteLine(String.Format("Unable to delete the test saving {0}", savingName));
             }
+
+            int finalBalance = getAccountBalanceFromSelect(userId); ;
+            Console.WriteLine("FINAL BALANCE AFTER DELETION: " + finalBalance);
         }
+
+        //[TestCleanup]
+        //public void removeInsertedSavingFromDb() {
+        //    Console.WriteLine("======RemoveInsertedSavingFromDb======");
+        //    int initialBalance = getAccountBalanceFromSelect(userId);
+        //    Console.WriteLine("INITIAL BALANCE BEFORE DELETION: " + initialBalance);
+
+        //    MySqlCommand sqlCommandDeleteSaving = new MySqlCommand(sqlStatementDeleteInsertedSaving);
+        //    sqlCommandDeleteSaving.Parameters.AddWithValue("@paramName", savingName);
+
+        //    int executionResult = DBConnectionManager.deleteData(sqlCommandDeleteSaving);
+
+        //    if (executionResult == -1) {
+        //        Console.WriteLine(String.Format("Unable to delete the test saving {0}", savingName));
+        //    }
+
+        //    int finalBalance = initialBalance - savingValue;
+        //    Console.WriteLine("FINAL BALANCE AFTER DELETION: " + finalBalance);
+        //}
+
 
         private double getAccountBalanceFromProcedure(int testAccountId) {
             MySqlParameter accountId = new MySqlParameter("p_account_ID", testAccountId);
@@ -210,7 +305,7 @@ namespace BudgetManagerTests {
             int accountBalance = -1;
             bool parseResult;
             if (resultDataTable != null && resultDataTable.Rows.Count > 0) {
-               parseResult = Int32.TryParse(resultDataTable.Rows[0].ItemArray[0].ToString(), out accountBalance);
+                parseResult = Int32.TryParse(resultDataTable.Rows[0].ItemArray[0].ToString(), out accountBalance);
 
             } else {
                 throw new NoDataFoundException("Unable to retrieve the balance of the saving account which needs to be checked!");
@@ -241,6 +336,15 @@ namespace BudgetManagerTests {
             sqlCommandUpdateSaving.Parameters.AddWithValue("@paramName", savingName);
 
             int executionResult = DBConnectionManager.updateData(sqlCommandUpdateSaving);
+
+            return executionResult;
+        }
+
+        private int deleteTestSavingFromDb(String savingName) {
+            MySqlCommand sqlCommandDeleteSaving = new MySqlCommand(sqlStatementDeleteInsertedSaving);
+            sqlCommandDeleteSaving.Parameters.AddWithValue("@paramName", savingName);
+
+            int executionResult = DBConnectionManager.deleteData(sqlCommandDeleteSaving);
 
             return executionResult;
         }
