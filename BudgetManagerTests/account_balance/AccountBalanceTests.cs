@@ -1,5 +1,6 @@
 
 using BudgetManager;
+using BudgetManager.utils.enums;
 using BudgetManager.utils.exceptions;
 using BudgetManagerTests.utils;
 using MySql.Data.MySqlClient;
@@ -8,14 +9,24 @@ using System.Data;
 namespace BudgetManagerTests.account_balance {
     [TestClass]
     public class AccountBalanceTests {
-
+        //Test saving variables
         private static int accountId;
         private static int userId;
-        private static string savingName;
+        private static String savingName;
         private static int savingValue;
         private static int newLowerSavingValue;
         private static int newHigherSavingValue;
-        private static string savingDate;
+        private static String savingDate;
+
+        //Test receivable variables
+        private static String receivableName;
+        private static int receivableValue;
+        private static String debtorName;
+        private static String sourceAccountName;
+        private static int totalPaidAmount;
+        private static ReceivableStatus receivableStatus;
+        private static String createdDate;
+        private static String dueDate;
 
         private string sqlStatementSavingAccountCurrentBalance = @"SELECT SUM(value) FROM
                 (SELECT sab.value, sab.account_ID, sat.typeID, sab.month, sab.year FROM saving_accounts_balance sab
@@ -28,6 +39,7 @@ namespace BudgetManagerTests.account_balance {
 
         public static TestContext testContextWork;
         private static TestSavingUtils testSavingUtils;
+        private static TestReceivableUtils testReceivableUtils;
 
         [ClassInitialize]
         public static void setupTestData(TestContext testContext) {
@@ -41,7 +53,17 @@ namespace BudgetManagerTests.account_balance {
             newHigherSavingValue = Convert.ToInt32(testContextWork.Properties["newHigherSavingValue"].ToString());
             savingDate = testContextWork.Properties["savingDate"].ToString();
 
+            receivableName = testContext.Properties["receivableName"].ToString();
+            receivableValue = Convert.ToInt32(testContext.Properties["receivableValue"].ToString());
+            debtorName = testContext.Properties["debtorName"].ToString();
+            sourceAccountName = testContext.Properties["sourceAccountName"].ToString();
+            totalPaidAmount = Convert.ToInt32(testContext.Properties["totalPaidAmount"].ToString());
+            receivableStatus = ReceivableStatusExtension.getReceivableStatusByDescription(testContext.Properties["receivableStatus"].ToString());
+            createdDate = testContext.Properties["createdDate"].ToString();
+            dueDate = testContext.Properties["dueDate"].ToString();
+
             testSavingUtils = new TestSavingUtils(savingName, savingValue, savingDate);
+            testReceivableUtils = new TestReceivableUtils(receivableName, receivableValue, totalPaidAmount, debtorName, sourceAccountName, receivableStatus, createdDate, dueDate, userId);
         }
 
         [TestMethod]
@@ -154,9 +176,38 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
+        [TestMethod]
+        public void testBalanceAfterReceivableInsertion() {
+            int initialBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("INITIAL BALANCE: " + initialBalance);
+
+            int insertExecutionResult = testReceivableUtils.insertTestReceivableIntoDb();
+            if(insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test receivable {0} into the database", receivableName));
+            }
+
+            int actualBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("ACTUAL BALANCE AFTER INSERT: " + actualBalance);
+
+            int expectedBalance = initialBalance - receivableValue;
+            Console.WriteLine("EXPECTED BALANCE AFTER INSERT: " + expectedBalance);
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
 
         [TestCleanup]
-        public void removeInsertedSavingFromDb() {
+        public void performTestCleanup() {
+            String testName = testContextWork.TestName;
+
+            if(testName.Contains("Saving")) {
+                removeTestSavingFromDb();
+            } else if (testName.Contains("Receivable")) {
+                removeTestReceivableFromDb();
+            }
+        }
+
+        //[TestCleanup]
+        public void removeTestSavingFromDb() {
             Console.WriteLine("\n======RemoveInsertedSavingFromDb======");
             int initialBalance = getAccountBalanceFromSelect(userId);
             Console.WriteLine("INITIAL BALANCE BEFORE DELETION: " + initialBalance);
@@ -170,6 +221,23 @@ namespace BudgetManagerTests.account_balance {
 
             int finalBalance = getAccountBalanceFromSelect(userId); ;
             Console.WriteLine("FINAL BALANCE AFTER DELETION: " + finalBalance);
+        }
+
+        //[TestCleanup]
+        public void removeTestReceivableFromDb() {
+            Console.WriteLine("\n======RemoveTestReceivableFromDb======");
+            int initialBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("INITIAL BALANCE BEFORE DELETION: " + initialBalance);
+
+            int executionResult = testReceivableUtils.deleteTestReceivableFromDb();
+
+            if (executionResult == -1) {
+                Console.WriteLine(string.Format("Unable to delete the test receivable {0}", receivableName));
+            }
+
+            int finalBalance = getAccountBalanceFromSelect(userId); ;
+            Console.WriteLine("FINAL BALANCE AFTER DELETION: " + finalBalance);
+
         }
 
         private double getAccountBalanceFromProcedure(int testAccountId) {

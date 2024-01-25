@@ -4,7 +4,7 @@ using MySql.Data.MySqlClient;
 using System;
 
 namespace BudgetManager.non_mvc {
-    class ReceivableInsertionStrategy : DataInsertionStrategy {
+    public class ReceivableInsertionStrategy : DataInsertionStrategy {
         private String sqlStatementInsertReceivable = @"INSERT INTO receivables(name, value, debtor_ID, account_ID,  totalPaidAmount, status_ID, createdDate, dueDate) VALUES(
                                                         @paramName, 
                                                         @paramValue, 

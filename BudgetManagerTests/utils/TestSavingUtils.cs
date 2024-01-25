@@ -8,9 +8,8 @@ namespace BudgetManagerTests.utils {
         private int savingValue;
         private String savingDate;
 
-
-        private String sqlStatementDeleteInsertedSaving = "DELETE FROM savings WHERE name = @paramName";
-        private String sqlStatementUpdateInsertedSaving = "UPDATE savings SET value = @paramValue WHERE name = @paramName";
+        private String sqlStatementUpdateTestSaving = "UPDATE savings SET value = @paramValue WHERE name = @paramName";
+        private String sqlStatementDeleteTestSaving = "DELETE FROM savings WHERE name = @paramName";
 
         public TestSavingUtils(string savingName, int savingValue, string savingDate) {
             this.savingName = savingName;
@@ -35,20 +34,20 @@ namespace BudgetManagerTests.utils {
         }
 
         public int updateTestSavingFromDb(string savingName, int newSavingValue) {
-            MySqlCommand sqlCommandUpdateSaving = new MySqlCommand(sqlStatementUpdateInsertedSaving);
-            sqlCommandUpdateSaving.Parameters.AddWithValue("@paramValue", newSavingValue);
-            sqlCommandUpdateSaving.Parameters.AddWithValue("@paramName", savingName);
+            MySqlCommand sqlCommandUpdateTestSaving = new MySqlCommand(sqlStatementUpdateTestSaving);
+            sqlCommandUpdateTestSaving.Parameters.AddWithValue("@paramValue", newSavingValue);
+            sqlCommandUpdateTestSaving.Parameters.AddWithValue("@paramName", savingName);
 
-            int executionResult = DBConnectionManager.updateData(sqlCommandUpdateSaving);
+            int executionResult = DBConnectionManager.updateData(sqlCommandUpdateTestSaving);
 
             return executionResult;
         }
 
         public int deleteTestSavingFromDb(string savingName) {
-            MySqlCommand sqlCommandDeleteSaving = new MySqlCommand(sqlStatementDeleteInsertedSaving);
-            sqlCommandDeleteSaving.Parameters.AddWithValue("@paramName", savingName);
+            MySqlCommand sqlCommandDeleteTestSaving = new MySqlCommand(sqlStatementDeleteTestSaving);
+            sqlCommandDeleteTestSaving.Parameters.AddWithValue("@paramName", savingName);
 
-            int executionResult = DBConnectionManager.deleteData(sqlCommandDeleteSaving);
+            int executionResult = DBConnectionManager.deleteData(sqlCommandDeleteTestSaving);
 
             return executionResult;
         }
