@@ -37,21 +37,23 @@ namespace BudgetManagerTests.account_balance {
                   AND year <= year(CURDATE())) AS subquery
                 WHERE (subquery.month <= MONTH(CURDATE()) AND subquery.year <= YEAR(CURDATE())) OR (subquery.month > MONTH(CURDATE()) AND subquery.year < YEAR(CURDATE()))";
 
-        public static TestContext testContextWork;
+        //Declaring the TestContext variable like this will ensure that it will be updated after each test so that the current test name can be retrieved correctly
+        public TestContext TestContext { get; set; }
         private static TestSavingUtils testSavingUtils;
         private static TestReceivableUtils testReceivableUtils;
 
         [ClassInitialize]
         public static void setupTestData(TestContext testContext) {
-            testContextWork = testContext;
+            //The 'testContext' object used here is only for initializing the class attributes related to the test data
+            //In order to have access to the updated object (which changes after each test execution) use the 'TestContext' object defined above as a property
 
-            accountId = Convert.ToInt32(testContextWork.Properties["accountId"].ToString());
-            userId = Convert.ToInt32(testContextWork.Properties["userId"].ToString());
-            savingName = testContextWork.Properties["savingName"].ToString();
-            savingValue = Convert.ToInt32(testContextWork.Properties["savingValue"].ToString());
-            newLowerSavingValue = Convert.ToInt32(testContextWork.Properties["newLowerSavingValue"].ToString());
-            newHigherSavingValue = Convert.ToInt32(testContextWork.Properties["newHigherSavingValue"].ToString());
-            savingDate = testContextWork.Properties["savingDate"].ToString();
+            accountId = Convert.ToInt32(testContext.Properties["accountId"].ToString());
+            userId = Convert.ToInt32(testContext.Properties["userId"].ToString());
+            savingName = testContext.Properties["savingName"].ToString();
+            savingValue = Convert.ToInt32(testContext.Properties["savingValue"].ToString());
+            newLowerSavingValue = Convert.ToInt32(testContext.Properties["newLowerSavingValue"].ToString());
+            newHigherSavingValue = Convert.ToInt32(testContext.Properties["newHigherSavingValue"].ToString());
+            savingDate = testContext.Properties["savingDate"].ToString();
 
             receivableName = testContext.Properties["receivableName"].ToString();
             receivableValue = Convert.ToInt32(testContext.Properties["receivableValue"].ToString());
@@ -87,7 +89,7 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+       [TestMethod]
         public void testBalanceAfterUpdatingSavingToLowerValue() {
             Console.WriteLine("======TestBalanceAfterUpdatingSavingToLowerValue======");
 
@@ -197,7 +199,9 @@ namespace BudgetManagerTests.account_balance {
 
         [TestCleanup]
         public void performTestCleanup() {
-            String testName = testContextWork.TestName;
+            //Retrieves the current test name which will be used to decide the correct cleanup method to be executed
+            String testName = TestContext.TestName;
+            Console.WriteLine("CURRENT TEST NAME: " + testName);
 
             if(testName.Contains("Saving")) {
                 removeTestSavingFromDb();
@@ -206,7 +210,6 @@ namespace BudgetManagerTests.account_balance {
             }
         }
 
-        //[TestCleanup]
         public void removeTestSavingFromDb() {
             Console.WriteLine("\n======RemoveInsertedSavingFromDb======");
             int initialBalance = getAccountBalanceFromSelect(userId);
@@ -223,7 +226,6 @@ namespace BudgetManagerTests.account_balance {
             Console.WriteLine("FINAL BALANCE AFTER DELETION: " + finalBalance);
         }
 
-        //[TestCleanup]
         public void removeTestReceivableFromDb() {
             Console.WriteLine("\n======RemoveTestReceivableFromDb======");
             int initialBalance = getAccountBalanceFromSelect(userId);
