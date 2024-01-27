@@ -21,6 +21,7 @@ namespace BudgetManagerTests.utils {
         private String receivableDueDate;
         private int userId;
 
+        private String sqlStatementUpdateTestReceivable = "UPDATE receivables SET value = @paramValue WHERE name = @paramName";
         private String sqlStatementDeleteTestReceivable = "DELETE FROM receivables WHERE name = @paramName";
 
         public TestReceivableUtils(String receivableName, int receivableValue, int totalPaidAmount, String debtorName, String sourceAccountName, ReceivableStatus receivableStatus, String receivableCreationDate, String receivableDueDate, int userId) {
@@ -37,12 +38,22 @@ namespace BudgetManagerTests.utils {
 
         public int insertTestReceivableIntoDb() {
             ReceivableDTO dataInsertionDTO = new ReceivableDTO(receivableName, receivableValue, debtorName, sourceAccountName, totalPaidAmount, receivableStatus, receivableCreationDate, receivableDueDate, userId);
-            
+
             ReceivableInsertionStrategy receivableInsertionStrategy = new ReceivableInsertionStrategy();
             DataInsertionContext dataInsertionContext = new DataInsertionContext();
             dataInsertionContext.setStrategy(receivableInsertionStrategy);
 
             int executionResult = dataInsertionContext.invoke(dataInsertionDTO);
+
+            return executionResult;
+        }
+
+        public int updateTestReceivableFromDb(String receivableName, int newReceivableValue) {
+            MySqlCommand updateTestReceivableCommand = new MySqlCommand(sqlStatementUpdateTestReceivable);
+            updateTestReceivableCommand.Parameters.AddWithValue("@paramValue", newReceivableValue);
+            updateTestReceivableCommand.Parameters.AddWithValue("@paramName", receivableName);
+
+            int executionResult = DBConnectionManager.updateData(updateTestReceivableCommand);
 
             return executionResult;
         }

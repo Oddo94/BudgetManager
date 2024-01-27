@@ -21,6 +21,8 @@ namespace BudgetManagerTests.account_balance {
         //Test receivable variables
         private static String receivableName;
         private static int receivableValue;
+        private static int newLowerReceivableValue;
+        private static int newHigherReceivableValue;
         private static String debtorName;
         private static String sourceAccountName;
         private static int totalPaidAmount;
@@ -57,6 +59,8 @@ namespace BudgetManagerTests.account_balance {
 
             receivableName = testContext.Properties["receivableName"].ToString();
             receivableValue = Convert.ToInt32(testContext.Properties["receivableValue"].ToString());
+            newLowerReceivableValue = Convert.ToInt32(testContext.Properties["newLowerReceivableValue"].ToString());
+            newHigherReceivableValue = Convert.ToInt32(testContext.Properties["newHigherReceivableValue"].ToString());
             debtorName = testContext.Properties["debtorName"].ToString();
             sourceAccountName = testContext.Properties["sourceAccountName"].ToString();
             totalPaidAmount = Convert.ToInt32(testContext.Properties["totalPaidAmount"].ToString());
@@ -89,10 +93,8 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-       [TestMethod]
+        [TestMethod]
         public void testBalanceAfterUpdatingSavingToLowerValue() {
-            Console.WriteLine("======TestBalanceAfterUpdatingSavingToLowerValue======");
-
             int intialBalance = getAccountBalanceFromSelect(userId);
             Console.WriteLine("INITIAL BALANCE: " + intialBalance);
 
@@ -123,8 +125,6 @@ namespace BudgetManagerTests.account_balance {
 
         [TestMethod]
         public void testBalanceAfterUpdatingSavingToHigherValue() {
-            Console.WriteLine("======TestBalanceAfterUpdatingSavingToHigherValue======");
-
             int intialBalance = getAccountBalanceFromSelect(userId);
             Console.WriteLine("INITIAL BALANCE: " + intialBalance);
 
@@ -184,7 +184,7 @@ namespace BudgetManagerTests.account_balance {
             Console.WriteLine("INITIAL BALANCE: " + initialBalance);
 
             int insertExecutionResult = testReceivableUtils.insertTestReceivableIntoDb();
-            if(insertExecutionResult == -1) {
+            if (insertExecutionResult == -1) {
                 Assert.Fail(String.Format("Unable to insert the test receivable {0} into the database", receivableName));
             }
 
@@ -197,13 +197,98 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
+        [TestMethod]
+        public void testBalanceAfterUpdatingReceivableToLowerValue() {
+            int initialBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testReceivableUtils.insertTestReceivableIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test receivable {0}", receivableName));
+            }
+
+            int currentBalanceAfterInsert = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("CURRENT BALANCE AFTER INSERT: " + currentBalanceAfterInsert);
+
+            int updateExecutionResult = testReceivableUtils.updateTestReceivableFromDb(receivableName, newLowerReceivableValue);
+            if (updateExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to update the test receivable {0}", receivableName));
+            }
+
+            int actualBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER UPDATE: {0}", actualBalance));
+
+            int amountDifference = receivableValue - newLowerReceivableValue;
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE: {0}", amountDifference));
+
+            int expectedBalance = currentBalanceAfterInsert + amountDifference;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER UPDATE: {0}", expectedBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterUpdatingReceivableToHigherValue() {
+            int initialBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testReceivableUtils.insertTestReceivableIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test receivable {0}", receivableName));
+            }
+
+            int currentBalanceAfterInsert = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("CURRENT BALANCE AFTER INSERT: " + currentBalanceAfterInsert);
+
+            int updateExecutionResult = testReceivableUtils.updateTestReceivableFromDb(receivableName, newHigherReceivableValue);
+            if (updateExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to update the test receivable {0}", receivableName));
+            }
+
+            int actualBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER UPDATE: {0}", actualBalance));
+
+            int amountDifference = receivableValue - newHigherReceivableValue;
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE: {0}", amountDifference));
+
+            int expectedBalance = currentBalanceAfterInsert + amountDifference;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER UPDATE: {0}", expectedBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterReceivableDeletion() {
+            int initialBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testReceivableUtils.insertTestReceivableIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test receivable {0} into the database", receivableName));
+            }
+
+            int currentBalanceAfterInsert = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("CURRENT BALANCE AFTER INSERT: " + currentBalanceAfterInsert);
+
+            int deleteExecutionResult = testReceivableUtils.deleteTestReceivableFromDb();
+            if (deleteExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to delete the test receivable {0} from the database", receivableName));
+            }
+
+            int actualBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine("CURRENT BALANCE AFTER DELETE: " + actualBalance);
+
+            int expectedBalance = initialBalance;
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
         [TestCleanup]
         public void performTestCleanup() {
             //Retrieves the current test name which will be used to decide the correct cleanup method to be executed
             String testName = TestContext.TestName;
-            Console.WriteLine("CURRENT TEST NAME: " + testName);
 
-            if(testName.Contains("Saving")) {
+            if (testName.Contains("Saving")) {
                 removeTestSavingFromDb();
             } else if (testName.Contains("Receivable")) {
                 removeTestReceivableFromDb();

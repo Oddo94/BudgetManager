@@ -1,15 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <RunSettings>
   <TestRunParameters>
+    <!--TEST SAVING DATA-->
     <!-- Test saving insertion parameters-->
     <Parameter name="accountId" value="8"/>
     <Parameter name="userId" value="3"/>
     <Parameter name="savingName" value="AUTOMATED_TEST_SAVING-1"/>
     <Parameter name="savingValue" value="200"/>
-    <Parameter name="newLowerSavingValue" value="100"/>
-    <Parameter name="newHigherSavingValue" value="300"/>
     <Parameter name="savingDate" value="2024-01-18"/>
 
+    <!-- Test saving update parameters-->
+    <Parameter name="newLowerSavingValue" value="100"/>
+    <Parameter name="newHigherSavingValue" value="300"/>
+
+
+    <!--TEST RECEIVABLE DATA-->
     <!--Test receivable insertion parameters-->
     <Parameter name="receivableName" value="AUTOMATED_TEST_RECEIVABLE-1"/>
     <Parameter name="receivableValue" value="200"/>
@@ -19,6 +24,10 @@
     <Parameter name="receivableStatus" value="New"/>
     <Parameter name="createdDate" value="2024-01-25"/>
     <Parameter name="dueDate" value="2026-01-25"/>
+    
+    <!--Test receivable update parameters-->
+    <Parameter name="newLowerReceivableValue" value="100"/>
+    <Parameter name="newHigherReceivableValue" value="300"/>
     
   </TestRunParameters>
 </RunSettings>
