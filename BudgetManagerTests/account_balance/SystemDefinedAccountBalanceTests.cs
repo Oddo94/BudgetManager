@@ -8,7 +8,7 @@ using System.Data;
 
 namespace BudgetManagerTests.account_balance {
     [TestClass]
-    public class AccountBalanceTests {
+    public class SystemDefinedAccountBalanceTests {
         //Test saving variables
         private static int accountId;
         private static int userId;
@@ -29,6 +29,23 @@ namespace BudgetManagerTests.account_balance {
         private static ReceivableStatus receivableStatus;
         private static String createdDate;
         private static String dueDate;
+
+        //Test transfer variables
+        private static int sourceAccountId;
+        private static int destinationAccountId;
+        private static String transferName;
+        private static double sentValue;
+        private static double newLowerSentValue;
+        private static double newHigherSentValue;
+        private static double receivedValue;
+        private static double newLowerReceivedValue;
+        private static double newHigherReceivedValue;
+        private static double exchangeRate;
+        private static String transactionId; 
+        private static String transferObservations;
+        private static String transferDate;
+
+
 
         private string sqlStatementSavingAccountCurrentBalance = @"SELECT SUM(value) FROM
                 (SELECT sab.value, sab.account_ID, sat.typeID, sab.month, sab.year FROM saving_accounts_balance sab
@@ -67,6 +84,20 @@ namespace BudgetManagerTests.account_balance {
             receivableStatus = ReceivableStatusExtension.getReceivableStatusByDescription(testContext.Properties["receivableStatus"].ToString());
             createdDate = testContext.Properties["createdDate"].ToString();
             dueDate = testContext.Properties["dueDate"].ToString();
+
+            sourceAccountId = Convert.ToInt32(testContext.Properties["sourceAccountId"].ToString());
+            destinationAccountId = Convert.ToInt32(testContext.Properties["destinationAccountId"].ToString());
+            transferName = testContext.Properties["transferName"].ToString();
+            sentValue = Convert.ToDouble(testContext.Properties["sentValue"].ToString());
+            newLowerSentValue = Convert.ToDouble(testContext.Properties["newLowerSentValue"].ToString());
+            newHigherSentValue = Convert.ToDouble(testContext.Properties["newHigherSentValue"].ToString());
+            receivedValue = Convert.ToDouble(testContext.Properties["receivedValue"].ToString());
+            newLowerReceivedValue = Convert.ToDouble(testContext.Properties["newLowerReceivedValue"].ToString());
+            newHigherReceivedValue = Convert.ToDouble(testContext.Properties["newHigherReceivedValue"].ToString());
+            exchangeRate = Convert.ToDouble(testContext.Properties["exchangeRate"].ToString());
+            transactionId = testContext.Properties["transactionId"].ToString();
+            transferObservations = testContext.Properties["transferObservations"].ToString();
+            transferDate = testContext.Properties["transferDate"].ToString();
 
             testSavingUtils = new TestSavingUtils(savingName, savingValue, savingDate);
             testReceivableUtils = new TestReceivableUtils(receivableName, receivableValue, totalPaidAmount, debtorName, sourceAccountName, receivableStatus, createdDate, dueDate, userId);
