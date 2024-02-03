@@ -24,11 +24,11 @@
     <Parameter name="receivableStatus" value="New"/>
     <Parameter name="createdDate" value="2024-01-25"/>
     <Parameter name="dueDate" value="2026-01-25"/>
-    
+
     <!--Test receivable update parameters-->
     <Parameter name="newLowerReceivableValue" value="100"/>
     <Parameter name="newHigherReceivableValue" value="300"/>
-    
+
     <!--TEST TRANSFER DATA-->
     <!--Test transfer insertion parameters-->
     <Parameter name="sourceAccountId" value="8"/>
@@ -40,11 +40,11 @@
     <Parameter name="transactionId" value=""/>
     <Parameter name="transferObservations" value=""/>
     <Parameter name="transferDate" value="2024-01-28"/>
-  
+
     <!--Test transfer update parameters-->
-  <Parameter name="newLowerSentValue" value="400"/>
-  <Parameter name="newHigherSentValue" value="600"/>
-  <Parameter name="newLowerReceivedValue" value="400"/>
-  <Parameter name="newHigherReceivedValue" value="600"/>
+    <Parameter name="newLowerSentValue" value="400"/>
+    <Parameter name="newHigherSentValue" value="600"/>
+    <Parameter name="newLowerReceivedValue" value="400"/>
+    <Parameter name="newHigherReceivedValue" value="600"/>
   </TestRunParameters>
 </RunSettings>

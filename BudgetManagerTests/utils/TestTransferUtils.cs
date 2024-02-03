@@ -36,7 +36,7 @@ namespace BudgetManagerTests.utils {
 
         private String sqlStatementInsertTestTransfer = @"INSERT INTO saving_accounts_transfers(senderAccountID, receivingAccountID, transferName, sentValue, receivedValue, exchangeRate, transactionID, observations, transferDate) 
                                                                 VALUES(@paramSenderAccountId, @paramReceivingAccountId, @paramTransferName, @paramSentValue, @paramReceivedValue, @paramExchangeRate, @paramTransactionID, @paramObservations, @paramTransferDate)";
-        private String sqlStatementUpdateTestTransfer = @"UPDATE saving_account_transfers SET sentValue = @paramSentValue, receivedValue = @paramReceivedValue WHERE transferName = @paramTransferName";
+        private String sqlStatementUpdateTestTransfer = @"UPDATE saving_accounts_transfers SET sentValue = @paramSentValue, receivedValue = @paramReceivedValue, exchangeRate = @paramExchangeRate WHERE transferName = @paramTransferName";
         private String sqlStatementDeleteTestTransfer = @"DELETE FROM saving_accounts_transfers WHERE transferName = @paramTransferName";
 
     
@@ -59,10 +59,11 @@ namespace BudgetManagerTests.utils {
             return executionResult;
         }
 
-        public int updateTestTransferFromDb(String transferName, double newSentValue, double newReceivedValue) {
+        public int updateTestTransferFromDb(String transferName, double newSentValue, double newReceivedValue, double newExchangeRate) {
             MySqlCommand updateTestTransferCommand = new MySqlCommand(sqlStatementUpdateTestTransfer);
             updateTestTransferCommand.Parameters.AddWithValue("@paramSentValue", newSentValue);
             updateTestTransferCommand.Parameters.AddWithValue("@paramReceivedValue", newReceivedValue);
+            updateTestTransferCommand.Parameters.AddWithValue("@paramExchangeRate", newExchangeRate);
             updateTestTransferCommand.Parameters.AddWithValue("@paramTransferName", transferName);
 
             int executionResult = DBConnectionManager.updateData(updateTestTransferCommand);

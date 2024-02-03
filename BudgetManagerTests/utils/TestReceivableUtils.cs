@@ -58,7 +58,7 @@ namespace BudgetManagerTests.utils {
             return executionResult;
         }
 
-        public int deleteTestReceivableFromDb() {
+        public int deleteTestReceivableFromDb(String receivableName) {
             MySqlCommand deleteTestReceivableCommand = new MySqlCommand(sqlStatementDeleteTestReceivable);
             deleteTestReceivableCommand.Parameters.AddWithValue("@paramName", receivableName);
 
