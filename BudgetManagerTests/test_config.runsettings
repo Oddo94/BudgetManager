@@ -34,17 +34,17 @@
     <Parameter name="sourceAccountId" value="8"/>
     <Parameter name="destinationAccountId" value="24"/>
     <Parameter name="transferName" value="AUTOMATED_TEST_TRANSFER_1"/>
-    <Parameter name="sentValue" value="500.50"/>
-    <Parameter name="receivedValue" value="500.50"/>
+    <Parameter name="sentValue" value="500.39"/>
+    <Parameter name="receivedValue" value="500.39"/>
     <Parameter name="exchangeRate" value="1.0"/>
     <Parameter name="transactionId" value=""/>
     <Parameter name="transferObservations" value=""/>
     <Parameter name="transferDate" value="2024-01-28"/>
 
     <!--Test transfer update parameters-->
-    <Parameter name="newLowerSentValue" value="400.80"/>
-    <Parameter name="newHigherSentValue" value="600.90"/>
-    <Parameter name="newLowerReceivedValue" value="400.80"/>
-    <Parameter name="newHigherReceivedValue" value="600.90"/>
+    <Parameter name="newLowerSentValue" value="400.89"/>
+    <Parameter name="newHigherSentValue" value="600.94"/>
+    <Parameter name="newLowerReceivedValue" value="400.89"/>
+    <Parameter name="newHigherReceivedValue" value="600.94"/>
   </TestRunParameters>
 </RunSettings>
