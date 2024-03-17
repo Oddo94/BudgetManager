@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BudgetManager.mvc.models.dto {
-    interface IDataInsertionDTO {
+    public interface IDataInsertionDTO {
         //String getName();
         //Method that returns the type of budget item represented by the DTO class that implements this interface
         BudgetItemType getBudgetItemType();

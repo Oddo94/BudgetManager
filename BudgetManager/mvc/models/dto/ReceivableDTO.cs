@@ -2,7 +2,7 @@
 using System;
 
 namespace BudgetManager.mvc.models.dto {
-    class ReceivableDTO : IDataInsertionDTO {
+   public class ReceivableDTO : IDataInsertionDTO {
         private String name;
         private int value;
         private String debtorName;
