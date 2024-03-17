@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BudgetManager.non_mvc {
-    class DataInsertionContext {
+    public class DataInsertionContext {
         DataInsertionStrategy insertionStrategy;
 
         public DataInsertionContext() { }
