@@ -6,7 +6,7 @@ using System;
 
 namespace BudgetManager {   
     //Utilty class used for creating SQL commands(single/multiple months)
-    class SQLCommandBuilder {
+    public class SQLCommandBuilder {
        
         //General purpose method for creating single month SQL commands
         public static MySqlCommand getSingleMonthCommand(String sqlStatement, QueryData paramContainer) {

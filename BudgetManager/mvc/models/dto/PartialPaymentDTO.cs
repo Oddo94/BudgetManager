@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using BudgetManager.utils.enums;
 
 namespace BudgetManager.mvc.models.dto {
-    class PartialPaymentDTO : IDataInsertionDTO {
+    public class PartialPaymentDTO : IDataInsertionDTO {
         private int receivableID;
         private String paymentName;
         private int paymentValue;
