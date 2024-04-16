@@ -7,7 +7,7 @@
     <Parameter name="userId" value="3"/>
     <Parameter name="savingName" value="AUTOMATED_TEST_SAVING-1"/>
     <Parameter name="savingValue" value="200"/>
-    <Parameter name="savingDate" value="2024-01-18"/>
+    <Parameter name="savingDate" value="2024-04-16"/>
 
     <!-- Test saving update parameters-->
     <Parameter name="newLowerSavingValue" value="100"/>
