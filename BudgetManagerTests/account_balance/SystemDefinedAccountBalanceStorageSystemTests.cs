@@ -35,6 +35,10 @@ namespace BudgetManagerTests.account_balance {
         private static String createdDate;
         private static String dueDate;
 
+        //Test partial payment variables
+        private static String partialPaymentName;
+        private static int partialPaymentValue;
+
         //Test transfer variables
         private static int sourceAccountId;
         private static int destinationAccountId;
@@ -58,6 +62,7 @@ namespace BudgetManagerTests.account_balance {
         private static TestSavingUtils testSavingUtils;
         private static TestReceivableUtils testReceivableUtils;
         private static TestTransferUtils testTransferUtils;
+        private static TestPartialPaymentUtils testPartialPaymentUtils;
 
         [ClassInitialize]
         public static void setupTestData(TestContext testContext) {
@@ -83,6 +88,9 @@ namespace BudgetManagerTests.account_balance {
             createdDate = testContext.Properties["createdDate"].ToString();
             dueDate = testContext.Properties["dueDate"].ToString();
 
+            partialPaymentName = testContext.Properties["partialPaymentName"].ToString();
+            partialPaymentValue = Convert.ToInt32(testContext.Properties["partialPaymentValue"].ToString());
+
             sourceAccountId = Convert.ToInt32(testContext.Properties["sourceAccountId"].ToString());
             destinationAccountId = Convert.ToInt32(testContext.Properties["destinationAccountId"].ToString());
             transferName = testContext.Properties["transferName"].ToString();
@@ -100,6 +108,7 @@ namespace BudgetManagerTests.account_balance {
             testSavingUtils = new TestSavingUtils(savingName, savingValue, savingDate);
             testReceivableUtils = new TestReceivableUtils(receivableName, receivableValue, totalPaidAmount, debtorName, sourceAccountName, receivableStatus, createdDate, dueDate, userId);
             testTransferUtils = new TestTransferUtils(sourceAccountId, destinationAccountId, transferName, sentValue, receivedValue, exchangeRate, transactionId, transferObservations, transferDate, userId);
+            testPartialPaymentUtils = new TestPartialPaymentUtils(partialPaymentName, receivableName, partialPaymentValue);
         }
 
         [TestMethod]
@@ -310,6 +319,32 @@ namespace BudgetManagerTests.account_balance {
 
             double expectedBalance = initialBalance;
 
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterPartialPaymentInsertion() {
+            double initialBalance = getAccountBalanceFromSelect(accountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int receivableInsertionExecutionResult = testReceivableUtils.insertTestReceivableIntoDb();
+            if (receivableInsertionExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test receivable '{0}' into the database", receivableName));
+            }
+
+            double currentBalanceAfterReceivableInsertion = getAccountBalanceFromSelect(accountId);
+            Console.WriteLine("CURRENT BALANCE AFTER RECEIVABLE INSERTION: " + currentBalanceAfterReceivableInsertion);
+
+            int partialPaymentInsertionExecutionResult = testPartialPaymentUtils.insertTestPartialPaymentIntoDb();
+            if(partialPaymentInsertionExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test partial payment '{0}' into the database"));
+            }
+
+            double expectedBalance = currentBalanceAfterReceivableInsertion + partialPaymentValue;
+
+            double actualBalance = getAccountBalanceFromSelect(accountId);
+            Console.WriteLine("CURRENT BALANCE AFTER PARTIAL PAYMENT INSERTION: " + actualBalance);
+    
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 

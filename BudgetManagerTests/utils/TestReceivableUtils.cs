@@ -67,7 +67,5 @@ namespace BudgetManagerTests.utils {
             return executionResult;
 
         }
-
-
     }
 }

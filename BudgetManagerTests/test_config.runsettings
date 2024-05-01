@@ -28,6 +28,11 @@
     <!--Test receivable update parameters-->
     <Parameter name="newLowerReceivableValue" value="100"/>
     <Parameter name="newHigherReceivableValue" value="300"/>
+    
+    <!--TEST PARTIAL PAYMENT DATA-->
+    <!--Test partial payment insertion parameters-->
+    <Parameter name="partialPaymentName" value="AUTOMATED_TEST_PARTIAL_PAYMENT_1"/>
+    <Parameter name="partialPaymentValue" value="100"/>
 
     <!--TEST TRANSFER DATA-->
     <!--Test transfer insertion parameters-->
