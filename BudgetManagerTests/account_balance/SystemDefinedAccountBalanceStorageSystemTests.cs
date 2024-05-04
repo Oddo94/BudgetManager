@@ -3,12 +3,7 @@ using BudgetManager.utils.enums;
 using BudgetManager.utils.exceptions;
 using BudgetManagerTests.utils;
 using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BudgetManagerTests.account_balance {
     /*This class contains all the tests that are designed to check the corectness of the account balance records for system defined accounts using the new balance storage system implemented in the database*/
@@ -38,6 +33,8 @@ namespace BudgetManagerTests.account_balance {
         //Test partial payment variables
         private static String partialPaymentName;
         private static int partialPaymentValue;
+        private static int newLowerPartialPaymentValue;
+        private static int newHigherPartialPaymentValue;
 
         //Test transfer variables
         private static int sourceAccountId;
@@ -90,6 +87,8 @@ namespace BudgetManagerTests.account_balance {
 
             partialPaymentName = testContext.Properties["partialPaymentName"].ToString();
             partialPaymentValue = Convert.ToInt32(testContext.Properties["partialPaymentValue"].ToString());
+            newLowerPartialPaymentValue = Convert.ToInt32(testContext.Properties["newLowerPartialPaymentValue"].ToString());
+            newHigherPartialPaymentValue = Convert.ToInt32(testContext.Properties["newHigherPartialPaymentValue"].ToString());
 
             sourceAccountId = Convert.ToInt32(testContext.Properties["sourceAccountId"].ToString());
             destinationAccountId = Convert.ToInt32(testContext.Properties["destinationAccountId"].ToString());
@@ -341,10 +340,87 @@ namespace BudgetManagerTests.account_balance {
             }
 
             double expectedBalance = currentBalanceAfterReceivableInsertion + partialPaymentValue;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER PARTIAL PAYMENT INSERTION: {0}", expectedBalance));
 
             double actualBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine("CURRENT BALANCE AFTER PARTIAL PAYMENT INSERTION: " + actualBalance);
     
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterUpdatingPartialPaymentToLowerValue() {
+            double initialBalance = getAccountBalanceFromSelect(accountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int receivableInsertionExecutionResult = testReceivableUtils.insertTestReceivableIntoDb();
+            if (receivableInsertionExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test receivable '{0}' into the database", receivableName));
+            }
+
+            double currentBalanceAfterReceivableInsertion = getAccountBalanceFromSelect(accountId);
+            Console.WriteLine("CURRENT BALANCE AFTER RECEIVABLE INSERTION: " + currentBalanceAfterReceivableInsertion);
+
+            int partialPaymentInsertionExecutionResult = testPartialPaymentUtils.insertTestPartialPaymentIntoDb();
+            if (partialPaymentInsertionExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test partial payment '{0}' into the database"));
+            }
+        
+            double currentBalanceAfterPartialPaymentInsertion = getAccountBalanceFromSelect(accountId);
+            Console.WriteLine("CURRENT BALANCE AFTER PARTIAL PAYMENT INSERTION: " + currentBalanceAfterPartialPaymentInsertion);
+
+            int partialPaymentUpdateExecutionResult = testPartialPaymentUtils.updateTestPartialPaymentFromDb(newLowerPartialPaymentValue, partialPaymentName);
+            if(partialPaymentUpdateExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to update the test partial payment '{0}'", partialPaymentName));
+            }
+
+            int amountDifference = newLowerPartialPaymentValue - partialPaymentValue;
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE: {0}", amountDifference));
+        
+            double expectedBalance = currentBalanceAfterPartialPaymentInsertion + amountDifference;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER UPDATE: {0}", expectedBalance));
+
+            double actualBalance = getAccountBalanceFromSelect(accountId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER UPDATE: {0}", actualBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterUpdatingPartialPaymentToHigherValue() {
+            double initialBalance = getAccountBalanceFromSelect(accountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int receivableInsertionExecutionResult = testReceivableUtils.insertTestReceivableIntoDb();
+            if (receivableInsertionExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test receivable '{0}' into the database", receivableName));
+            }
+
+            double currentBalanceAfterReceivableInsertion = getAccountBalanceFromSelect(accountId);
+            Console.WriteLine("CURRENT BALANCE AFTER RECEIVABLE INSERTION: " + currentBalanceAfterReceivableInsertion);
+
+            int partialPaymentInsertionExecutionResult = testPartialPaymentUtils.insertTestPartialPaymentIntoDb();
+            if (partialPaymentInsertionExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test partial payment '{0}' into the database"));
+            }
+
+            double currentBalanceAfterPartialPaymentInsertion = getAccountBalanceFromSelect(accountId);
+            Console.WriteLine("CURRENT BALANCE AFTER PARTIAL PAYMENT INSERTION: " + currentBalanceAfterPartialPaymentInsertion);
+
+            int partialPaymentUpdateExecutionResult = testPartialPaymentUtils.updateTestPartialPaymentFromDb(newHigherPartialPaymentValue, partialPaymentName);
+            if (partialPaymentUpdateExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to update the test partial payment '{0}'", partialPaymentName));
+            }
+
+            int amountDifference = newHigherPartialPaymentValue - partialPaymentValue;
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE: {0}", amountDifference));
+
+            double expectedBalance = currentBalanceAfterPartialPaymentInsertion + amountDifference;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER UPDATE: {0}", expectedBalance));
+
+            double actualBalance = getAccountBalanceFromSelect(accountId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER UPDATE: {0}", actualBalance));
+
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
@@ -356,7 +432,7 @@ namespace BudgetManagerTests.account_balance {
 
             if (testName.Contains("Saving")) {
                 removeTestSavingFromDb();
-            } else if (testName.Contains("Receivable")) {
+            } else if (testName.Contains("Receivable") || testName.Contains("PartialPayment")) {
                 removeTestReceivableFromDb();
             } else if (testName.Contains("Transfer")) {
                 //removeTestTransferFromDb();

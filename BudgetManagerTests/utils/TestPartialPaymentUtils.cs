@@ -16,6 +16,7 @@ namespace BudgetManagerTests.utils {
 
         private String sqlStatementGetTestReceivableId = "SELECT receivableID from receivables WHERE name = @paramName";
         private String sqlStatementInsertTestPartialPayment = "INSERT INTO partial_payments(receivable_ID, paymentName, paymentValue, paymentDate) VALUES(@paramId, @paramName, @paramValue, CURDATE())";
+        private String sqlStatementUpdateTestPartialPayment = "UPDATE partial_payments SET paymentValue = @paramValue WHERE paymentName = @paramName";
 
         public TestPartialPaymentUtils(string partialPaymentName, string targetReceivableName, int partialPaymentValue) {
             this.partialPaymentName = partialPaymentName;
@@ -42,6 +43,16 @@ namespace BudgetManagerTests.utils {
             insertPartialPaymentCommand.Parameters.AddWithValue("@paramValue", partialPaymentValue);
 
             int executionResult = DBConnectionManager.insertData(insertPartialPaymentCommand);
+
+            return executionResult;
+        }
+
+        public int updateTestPartialPaymentFromDb(int partialPaymentValue, String partialPaymentName) {
+            MySqlCommand updatePartialPaymentCommand = new MySqlCommand(sqlStatementUpdateTestPartialPayment);
+            updatePartialPaymentCommand.Parameters.AddWithValue("@paramValue", partialPaymentValue);
+            updatePartialPaymentCommand.Parameters.AddWithValue("@paramName", partialPaymentName);
+
+            int executionResult = DBConnectionManager.updateData(updatePartialPaymentCommand);
 
             return executionResult;
         }

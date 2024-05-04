@@ -17,7 +17,7 @@
     <!--TEST RECEIVABLE DATA-->
     <!--Test receivable insertion parameters-->
     <Parameter name="receivableName" value="AUTOMATED_TEST_RECEIVABLE-1"/>
-    <Parameter name="receivableValue" value="200"/>
+    <Parameter name="receivableValue" value="500"/>
     <Parameter name="debtorName" value="John"/>
     <Parameter name="sourceAccountName" value="SYSTEM_DEFINED_SAVING_ACCOUNT"/>
     <Parameter name="totalPaidAmount" value="0"/>
@@ -32,7 +32,9 @@
     <!--TEST PARTIAL PAYMENT DATA-->
     <!--Test partial payment insertion parameters-->
     <Parameter name="partialPaymentName" value="AUTOMATED_TEST_PARTIAL_PAYMENT_1"/>
-    <Parameter name="partialPaymentValue" value="100"/>
+    <Parameter name="partialPaymentValue" value="200"/>
+    <Parameter name="newLowerPartialPaymentValue" value="100"/>
+    <Parameter name="newHigherPartialPaymentValue" value="300"/>
 
     <!--TEST TRANSFER DATA-->
     <!--Test transfer insertion parameters-->
