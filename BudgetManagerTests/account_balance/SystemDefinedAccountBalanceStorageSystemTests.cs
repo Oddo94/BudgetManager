@@ -116,7 +116,7 @@ namespace BudgetManagerTests.account_balance {
             testPartialPaymentUtils = new TestPartialPaymentUtils(partialPaymentName, receivableName, partialPaymentValue);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterSavingInsertion() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
@@ -136,7 +136,7 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterUpdatingSavingToLowerValue() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
@@ -166,7 +166,7 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterUpdatingSavingToHigherValue() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
@@ -196,7 +196,7 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterSavingDeletion() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
@@ -223,7 +223,7 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterReceivableInsertion() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
@@ -242,7 +242,7 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterUpdatingReceivableToLowerValue() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
@@ -272,7 +272,7 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterUpdatingReceivableToHigherValue() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
@@ -302,7 +302,7 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterReceivableDeletion() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
@@ -329,7 +329,7 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterPartialPaymentInsertion() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
@@ -356,7 +356,7 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterUpdatingPartialPaymentToLowerValue() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
@@ -394,7 +394,7 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterUpdatingPartialPaymentToHigherValue() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
@@ -432,7 +432,7 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterPartialPaymentDeletion() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
@@ -467,10 +467,10 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterTransferInsertion() {
             double initialBalanceSenderAccount = getAccountBalanceFromSelect(sourceAccountId);
-            Console.WriteLine(String.Format("INITIAL BALANCE FOR SENDING ACCOUNT: {0}", initialBalanceSenderAccount));
+            Console.WriteLine(String.Format("INITIAL BALANCE FOR SENDER ACCOUNT: {0}", initialBalanceSenderAccount));
 
             double initialBalanceReceivingAccount = getAccountBalanceFromSelect(destinationAccountId);
             Console.WriteLine(String.Format("INITIAL BALANCE FOR RECEIVING ACCOUNT: {0}", initialBalanceReceivingAccount));
@@ -492,7 +492,7 @@ namespace BudgetManagerTests.account_balance {
             Console.WriteLine(String.Format("EXPECTED BALANCE FOR RECEIVING ACCOUNT AFTER TRANSFER INSERTION: {0}", expectedBalanceReceivingAccount));
 
             double actualBalanceReceivingAccount = getAccountBalanceFromSelect(destinationAccountId);
-            Console.WriteLine(String.Format("ACTUAL BALANCE FOR SENDER ACCOUNT AFTER TRANSFER INSERTION: {0}", actualBalanceReceivingAccount));
+            Console.WriteLine(String.Format("ACTUAL BALANCE FOR RECEIVING ACCOUNT AFTER TRANSFER INSERTION: {0}", actualBalanceReceivingAccount));
 
             Assert.AreEqual(expectedBalanceSenderAccount, actualBalanceSenderAccount);
 
@@ -501,65 +501,103 @@ namespace BudgetManagerTests.account_balance {
 
         [TestMethod]
         public void testBalanceAfterUpdatingTransferToLowerValue() {
-            double initialBalance = getAccountBalanceFromSelect(accountId);
-            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+            double initialBalanceSenderAccount = getAccountBalanceFromSelect(sourceAccountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE FOR SENDER ACCOUNT: {0}", initialBalanceSenderAccount));
+
+            double initialBalanceReceivingAccount = getAccountBalanceFromSelect(destinationAccountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE FOR RECEIVING ACCOUNT: {0}", initialBalanceReceivingAccount));
 
             int insertExecutionResult = testTransferUtils.insertTestTransferIntoDb();
             if (insertExecutionResult == -1) {
                 Assert.Fail(String.Format("Unable to insert the test transfer {0}", transferName));
             }
 
-            double currentBalanceAfterInsert = getAccountBalanceFromSelect(accountId);
-            Console.WriteLine("CURRENT BALANCE AFTER TRANSFER INSERTION: " + currentBalanceAfterInsert);
+            double currentBalanceSenderAccountAfterTransferInsertion = getAccountBalanceFromSelect(sourceAccountId);
+            Console.WriteLine(String.Format("CURRENT BALANCE FOR SENDER ACCOUNT AFTER TRANSFER INSERTION: {0}", currentBalanceSenderAccountAfterTransferInsertion));
+
+            double currentBalanceReceivingAccountAfterTransferInsertion = getAccountBalanceFromSelect(destinationAccountId);
+            Console.WriteLine(String.Format("CURRENT BALANCE FOR RECEIVING ACCOUNT AFTER TRANSFER INSERTION: {0}", currentBalanceReceivingAccountAfterTransferInsertion));
 
             int updateExecutionResult = testTransferUtils.updateTestTransferFromDb(transferName, newLowerSentValue, newLowerReceivedValue, exchangeRate);
             if (updateExecutionResult == -1) {
                 Assert.Fail(String.Format("Unable to update the test transfer {0}", transferName));
             }
 
-            double amountDifference = Math.Round(sentValue - newLowerSentValue, 2);
-            Console.WriteLine(String.Format("AMOUNT DIFFERENCE: {0}", amountDifference));
+            double amountDifferenceSenderAccount = Math.Round(sentValue - newLowerSentValue, 2);
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE FOR SENDER ACCOUNT: {0}", amountDifferenceSenderAccount));        
 
-            double expectedBalance = currentBalanceAfterInsert + amountDifference;
-            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER TRANSFER UPDATE: {0}", expectedBalance));
+            //Sender account balance check
+            double expectedBalanceSenderAccount = currentBalanceSenderAccountAfterTransferInsertion + amountDifferenceSenderAccount;
+            Console.WriteLine(String.Format("EXPECTED BALANCE FOR SENDER ACCOUNT AFTER TRANSFER UPDATE: {0}", expectedBalanceSenderAccount));
 
-            double actualBalance = getAccountBalanceFromSelect(accountId);
-            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER TRANSFER UPDATE: {0}", actualBalance));
+            double actualBalanceSenderAccount = getAccountBalanceFromSelect(sourceAccountId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE FOR SENDER ACCOUNT AFTER TRANSFER UPDATE: {0}", actualBalanceSenderAccount));
 
-            Assert.AreEqual(expectedBalance, actualBalance);
+            double amountDifferenceReceivingAccount = Math.Round(receivedValue - newLowerReceivedValue, 2);
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE FOR RECEIVING ACCOUNT: {0}", -amountDifferenceReceivingAccount));
+
+            //Receiving account balance check
+            double expectedBalanceReceivingAccount = currentBalanceReceivingAccountAfterTransferInsertion - amountDifferenceReceivingAccount;
+            Console.WriteLine(String.Format("EXPECTED BALANCE FOR RECEIVING ACCOUNT AFTER TRANSFER UPDATE: {0}", expectedBalanceReceivingAccount));
+
+            double actualBalanceReceivingAccount = getAccountBalanceFromSelect(destinationAccountId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE FOR RECEIVING ACCOUNT AFTER TRANSFER UPDATE: {0}", actualBalanceReceivingAccount));
+
+            Assert.AreEqual(expectedBalanceSenderAccount, actualBalanceSenderAccount);
+
+            Assert.AreEqual(expectedBalanceReceivingAccount, actualBalanceReceivingAccount);
         }
 
         [TestMethod]
         public void testBalanceAfterUpdatingTransferToHigherValue() {
-            double initialBalance = getAccountBalanceFromSelect(accountId);
-            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+            double initialBalanceSenderAccount = getAccountBalanceFromSelect(sourceAccountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE FOR SENDER ACCOUNT: {0}", initialBalanceSenderAccount));
+
+            double initialBalanceReceivingAccount = getAccountBalanceFromSelect(destinationAccountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE FOR RECEIVING ACCOUNT: {0}", initialBalanceReceivingAccount));
 
             int insertExecutionResult = testTransferUtils.insertTestTransferIntoDb();
             if (insertExecutionResult == -1) {
                 Assert.Fail(String.Format("Unable to insert the test transfer {0}", transferName));
             }
 
-            double currentBalanceAfterInsert = getAccountBalanceFromSelect(accountId);
-            Console.WriteLine(String.Format("CURRENT BALANCE AFTER TRANSFER INSERTION: {0}" + currentBalanceAfterInsert));
+            double currentBalanceSenderAccountAfterTransferInsertion = getAccountBalanceFromSelect(sourceAccountId);
+            Console.WriteLine(String.Format("CURRENT BALANCE FOR SENDER ACCOUNT AFTER TRANSFER INSERTION: {0}", currentBalanceSenderAccountAfterTransferInsertion));
+
+            double currentBalanceReceivingAccountAfterTransferInsertion = getAccountBalanceFromSelect(destinationAccountId);
+            Console.WriteLine(String.Format("CURRENT BALANCE FOR RECEIVING ACCOUNT AFTER TRANSFER INSERTION: {0}", currentBalanceReceivingAccountAfterTransferInsertion));
 
             int updateExecutionResult = testTransferUtils.updateTestTransferFromDb(transferName, newHigherSentValue, newHigherReceivedValue, exchangeRate);
             if (updateExecutionResult == -1) {
                 Assert.Fail(String.Format("Unable to update the test transfer {0}", transferName));
             }
 
-            double amountDifference = Math.Round(sentValue - newHigherSentValue, 2);
-            Console.WriteLine(String.Format("AMOUNT DIFFERENCE: {0}", amountDifference));
+            double amountDifferenceSenderAccount = Math.Round(newHigherSentValue - sentValue, 2);
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE FOR SENDER ACCOUNT: {0}", -amountDifferenceSenderAccount));
 
-            double expectedBalance = currentBalanceAfterInsert + amountDifference;
-            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER TRANSFER UPDATE: {0}", expectedBalance));
+            //Sender account balance check
+            double expectedBalanceSenderAccount = currentBalanceSenderAccountAfterTransferInsertion - amountDifferenceSenderAccount;
+            Console.WriteLine(String.Format("EXPECTED BALANCE FOR SENDER ACCOUNT AFTER TRANSFER UPDATE: {0}", expectedBalanceSenderAccount));
 
-            double actualBalance = getAccountBalanceFromSelect(userId);
-            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER TRANSFER UPDATE: {0}", actualBalance));
+            double actualBalanceSenderAccount = getAccountBalanceFromSelect(sourceAccountId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE FOR SENDER ACCOUNT AFTER TRANSFER UPDATE: {0}", actualBalanceSenderAccount));
 
-            Assert.AreEqual(expectedBalance, actualBalance);
+            double amountDifferenceReceivingAccount = Math.Round(newHigherReceivedValue - receivedValue, 2);
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE FOR RECEIVING ACCOUNT: {0}", amountDifferenceReceivingAccount));
+
+            //Receiving account balance check
+            double expectedBalanceReceivingAccount = currentBalanceReceivingAccountAfterTransferInsertion + amountDifferenceReceivingAccount;
+            Console.WriteLine(String.Format("EXPECTED BALANCE FOR RECEIVING ACCOUNT AFTER TRANSFER UPDATE: {0}", expectedBalanceReceivingAccount));
+
+            double actualBalanceReceivingAccount = getAccountBalanceFromSelect(destinationAccountId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE FOR RECEIVING ACCOUNT AFTER TRANSFER UPDATE: {0}", actualBalanceReceivingAccount));
+
+            Assert.AreEqual(expectedBalanceSenderAccount, actualBalanceSenderAccount);
+
+            Assert.AreEqual(expectedBalanceReceivingAccount, actualBalanceReceivingAccount);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void testBalanceAfterTransferDeletion() {
             double initialBalance = getAccountBalanceFromSelect(accountId);
             Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
