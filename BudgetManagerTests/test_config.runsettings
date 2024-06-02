@@ -53,5 +53,15 @@
     <Parameter name="newHigherSentValue" value="600.94"/>
     <Parameter name="newLowerReceivedValue" value="400.89"/>
     <Parameter name="newHigherReceivedValue" value="600.94"/>
+    
+    <!--TEST SAVING ACCOUNT INTEREST DATA-->
+    <Parameter name="interestAccountId" value="24"/>
+    <Parameter name="interestName" value="AUTOMATED_TEST_SAVING ACCOUNT_INTEREST_1"/>
+    <Parameter name="interestType" value="1"/>
+    <Parameter name="interestPaymentType" value="1"/>
+    <Parameter name="interestRate" value="4"/>
+    <Parameter name="interestValue" value="436.75"/>
+    <Parameter name="interestTransactionId" value="TST1234TRN5413"/>
+    <Parameter name="interestCreationDate" value="2024-06-01"/>
   </TestRunParameters>
 </RunSettings>
