@@ -25,7 +25,7 @@ namespace BudgetManagerTests.utils {
 
         private String sqlStatementInsertTestSavingAccountInterest = @"INSERT INTO saving_accounts_interest(account_ID, interestName, interestType, paymentType, interestRate, value, transactionID, creationDate) 
                                                                        VALUES (@paramAccountId, @paramInterestName, @paramInterestType, @paramInterestPaymentType, @paramInterestRate, @paramInterestValue, @paramTransactionID, @paramCreationDate)";
-        private String sqlStatementUpdateTestSavingAccountInterest = @"UPDATE saving_account_interest SET value = @paramInterestValue WHERE interestName = @paramInterestName";
+        private String sqlStatementUpdateTestSavingAccountInterest = @"UPDATE saving_accounts_interest SET value = @paramInterestValue WHERE interestName = @paramInterestName";
         private String sqlStatementDeleteTestSavingAccountInterest = @"DELETE FROM saving_accounts_interest WHERE interestName = @paramInterestName";
 
 

@@ -61,6 +61,8 @@ namespace BudgetManagerTests.account_balance {
         private static int interestPaymentType;
         private static double interestRate;
         private static double interestValue;
+        private static double newLowerInterestValue;
+        private static double newHigherInterestValue;
         private static String interestTransactionId;
         private static String interestCreationDate;
 
@@ -127,6 +129,8 @@ namespace BudgetManagerTests.account_balance {
             interestPaymentType = Convert.ToInt32(testContext.Properties["interestPaymentType"].ToString());
             interestRate = Convert.ToDouble(testContext.Properties["interestRate"].ToString());
             interestValue = Convert.ToDouble(testContext.Properties["interestValue"].ToString());
+            newLowerInterestValue = Convert.ToDouble(testContext.Properties["newLowerInterestValue"].ToString());
+            newHigherInterestValue = Convert.ToDouble(testContext.Properties["newHigherInterestValue"].ToString());
             interestTransactionId = testContext.Properties["interestTransactionId"].ToString();
             interestCreationDate = testContext.Properties["interestCreationDate"].ToString();
 
@@ -134,7 +138,7 @@ namespace BudgetManagerTests.account_balance {
             testReceivableUtils = new TestReceivableUtils(receivableName, receivableValue, totalPaidAmount, debtorName, sourceAccountName, receivableStatus, createdDate, dueDate, userId);
             testTransferUtils = new TestTransferUtils(sourceAccountId, destinationAccountId, transferName, sentValue, receivedValue, exchangeRate, transactionId, transferObservations, transferDate, userId);
             testPartialPaymentUtils = new TestPartialPaymentUtils(partialPaymentName, receivableName, partialPaymentValue);
-            testSavingAccountInterestUtils = new TestSavingAccountInterestUtils(interestAccountId, interestName, interestType, interestPaymentType, interestRate, interestValue, interestTransactionId, interestCreationDate);   
+            testSavingAccountInterestUtils = new TestSavingAccountInterestUtils(interestAccountId, interestName, interestType, interestPaymentType, interestRate, interestValue, interestTransactionId, interestCreationDate);
         }
 
         [TestMethod]
@@ -663,6 +667,67 @@ namespace BudgetManagerTests.account_balance {
 
             Assert.AreEqual(expectedBalance, actualBalance);
         }
+
+        [TestMethod]
+        public void testBalanceAfterUpdatingSavingAccountInterestToLowerValue() {
+            double initialBalance = getAccountBalanceFromSelect(interestAccountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testSavingAccountInterestUtils.insertTestSavingAccountInterestIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test saving account interest {0} into the database", interestName));
+            }
+
+            double currentBalanceAfterInsert = getAccountBalanceFromSelect(interestAccountId);
+            Console.WriteLine(String.Format("CURRENT BALANCE AFTER SAVING ACCOUNT INTEREST INSERTION: {0}", currentBalanceAfterInsert));
+
+            int updateExecutionResult = testSavingAccountInterestUtils.updateTestSavingAccountInterestFromDb(interestName, newLowerInterestValue);
+            if (updateExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to update the test saving account interest {0}", interestName));
+            }
+
+            double amountDifference = interestValue - newLowerInterestValue;
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE: {0}", -amountDifference));
+
+            double expectedBalance = currentBalanceAfterInsert - amountDifference;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER SAVING ACCOUNT INTEREST UPDATE: {0}", expectedBalance));
+
+            double actualBalance = getAccountBalanceFromSelect(interestAccountId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER SAVING ACCOUNT INTEREST UPDATE: {0}", actualBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterUpdatingSavingAccountInterestToHigherValue() {
+            double initialBalance = getAccountBalanceFromSelect(interestAccountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testSavingAccountInterestUtils.insertTestSavingAccountInterestIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test saving account interest {0} into the database", interestName));
+            }
+
+            double currentBalanceAfterInsert = getAccountBalanceFromSelect(interestAccountId);
+            Console.WriteLine(String.Format("CURRENT BALANCE AFTER SAVING ACCOUNT INTEREST INSERTION: {0}", currentBalanceAfterInsert));
+
+            int updateExecutionResult = testSavingAccountInterestUtils.updateTestSavingAccountInterestFromDb(interestName, newHigherInterestValue);
+            if (updateExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to update the test saving account interest {0}", interestName));
+            }
+
+            double amountDifference = newHigherInterestValue - interestValue;
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE: {0}", amountDifference));
+
+            double expectedBalance = currentBalanceAfterInsert + amountDifference;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER SAVING ACCOUNT INTEREST UPDATE: {0}", expectedBalance));
+
+            double actualBalance = getAccountBalanceFromSelect(interestAccountId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER SAVING ACCOUNT INTEREST UPDATE: {0}", actualBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
 
         [TestMethod]
         public void testBalanceAfterSavingAccountInterestDeletion() {

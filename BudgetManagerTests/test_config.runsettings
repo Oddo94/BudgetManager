@@ -55,6 +55,7 @@
     <Parameter name="newHigherReceivedValue" value="600.94"/>
     
     <!--TEST SAVING ACCOUNT INTEREST DATA-->
+    <!--Test saving account interest insertion data-->
     <Parameter name="interestAccountId" value="24"/>
     <Parameter name="interestName" value="AUTOMATED_TEST_SAVING ACCOUNT_INTEREST_1"/>
     <Parameter name="interestType" value="1"/>
@@ -63,5 +64,9 @@
     <Parameter name="interestValue" value="436.75"/>
     <Parameter name="interestTransactionId" value="TST1234TRN5413"/>
     <Parameter name="interestCreationDate" value="2024-06-01"/>
+  
+    <!--Test saving account interest update data-->
+    <Parameter name="newLowerInterestValue" value="395.75"/>
+    <Parameter name="newHigherInterestValue" value="487.75"/>
   </TestRunParameters>
 </RunSettings>
