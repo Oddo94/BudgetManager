@@ -84,9 +84,11 @@ namespace BudgetManager.utils.data_insertion {
         }
 
         public int createAccountBalanceStorageRecordForAccount(String userName, AccountType accountType, String accountName) {
+            String accountTypeName = EnumExtensions.getEnumDescription(accountType);
+
             MySqlCommand getAccountIdForStorageRecordCreationCommand = new MySqlCommand(sqlStatementGetAccountIdForStorageRecordCreation);
             getAccountIdForStorageRecordCreationCommand.Parameters.AddWithValue("@paramUsername", userName);
-            getAccountIdForStorageRecordCreationCommand.Parameters.AddWithValue("@paramTypeName", accountType);
+            getAccountIdForStorageRecordCreationCommand.Parameters.AddWithValue("@paramTypeName", accountTypeName);
             getAccountIdForStorageRecordCreationCommand.Parameters.AddWithValue("@paramAccountName", accountName);
 
             DataTable accountIdDataTable = DBConnectionManager.getData(getAccountIdForStorageRecordCreationCommand);
@@ -96,13 +98,13 @@ namespace BudgetManager.utils.data_insertion {
                 Object result = accountIdDataTable.Rows[0].ItemArray[0];
 
                 if (result == DBNull.Value) {
-                    throw new NoDataFoundException("No ID was found of the specified saving account!");
+                    return -1;
                 }
 
                 accountID = Convert.ToInt32(result);
 
             } else {
-                throw new NoDataFoundException("Unable to retrieve the ID of the specified saving account!");
+                return -1;
             }
 
 

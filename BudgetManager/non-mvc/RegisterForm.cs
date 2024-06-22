@@ -11,6 +11,7 @@ using System.Windows.Forms;
 namespace BudgetManager {
     public partial class RegisterForm : Form {
         private TextBox[] textBoxes;
+        private int maximumUsernameLength;
         private int minimumPasswordLength;
         private String sqlStatementCheckUserExistence = "SELECT userID, username FROM users WHERE username = @paramUserName";
         private String sqlStatementCreateNewUser = @"INSERT INTO users(username, salt, password, email) VALUES(@paramUserName, @paramSalt, @paramHashCode, @paramEmailAddress)";
@@ -28,7 +29,9 @@ namespace BudgetManager {
         public RegisterForm(LoginForm loginForm) {
             InitializeComponent();
             textBoxes = new TextBox[] { userNameTextBox, passwordTextBox, emailTextBox };
+            maximumUsernameLength = 30;
             minimumPasswordLength = 10;
+
             accountUtils = new AccountUtils();
             this.loginForm = loginForm;
         }
@@ -64,11 +67,15 @@ namespace BudgetManager {
                 return;
             }
 
+            if (userName.Length > maximumUsernameLength) {
+                MessageBox.Show("Your username length cannot exceed 30 characters! Please try again.", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             if (password.Length < minimumPasswordLength) {
                 MessageBox.Show("Your password should be at least 10 characters long! Please try again.", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
-            }
+            }         
 
             if (!isValidPassword(password)) {
                 MessageBox.Show("Invalid password! Your password must contain:\n1.Lowercase and uppercase letters (a-zA-z) \n2.Digits (0-9) \n3.Special characters (@#$%<>?)\n4.No whitespaces", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
