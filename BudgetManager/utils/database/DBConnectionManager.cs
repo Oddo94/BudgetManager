@@ -72,7 +72,7 @@ namespace BudgetManager {
             MySqlConnection conn = getConnection(BUDGET_MANAGER_CONN_STRING);
             command.Connection = conn;
 
-            //Creating a new transaction (it is created here to allow it to be referneced in the catch block      
+            //Creating a new transaction (it is created here to allow it to be referenced in the catch block      
             MySqlTransaction tx = null;
 
             try {
