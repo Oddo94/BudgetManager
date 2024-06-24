@@ -1,20 +1,17 @@
-﻿using Microsoft.VisualBasic;
+﻿using BudgetManager.utils.data_insertion;
+using BudgetManager.utils.enums;
+using Microsoft.VisualBasic;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Net.Mail;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BudgetManager {
     public partial class RegisterForm : Form {
         private TextBox[] textBoxes;
+        private int maximumUsernameLength;
         private int minimumPasswordLength;
         private String sqlStatementCheckUserExistence = "SELECT userID, username FROM users WHERE username = @paramUserName";
         private String sqlStatementCreateNewUser = @"INSERT INTO users(username, salt, password, email) VALUES(@paramUserName, @paramSalt, @paramHashCode, @paramEmailAddress)";
@@ -25,12 +22,17 @@ namespace BudgetManager {
                                                                         (SELECT bankID FROM banks WHERE bankName = @paramBankName), 
                                                                         (SELECT currencyID FROM currencies WHERE currencyName = @paramCurrencyName)
                                                                         ,@paramCreationDate)";
+        private AccountUtils accountUtils;
         private LoginForm loginForm;
+        
 
         public RegisterForm(LoginForm loginForm) {
             InitializeComponent();
             textBoxes = new TextBox[] { userNameTextBox, passwordTextBox, emailTextBox };
+            maximumUsernameLength = 30;
             minimumPasswordLength = 10;
+
+            accountUtils = new AccountUtils();
             this.loginForm = loginForm;
         }
 
@@ -65,11 +67,15 @@ namespace BudgetManager {
                 return;
             }
 
+            if (userName.Length > maximumUsernameLength) {
+                MessageBox.Show("Your username length cannot exceed 30 characters! Please try again.", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             if (password.Length < minimumPasswordLength) {
                 MessageBox.Show("Your password should be at least 10 characters long! Please try again.", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
-            }
+            }         
 
             if (!isValidPassword(password)) {
                 MessageBox.Show("Invalid password! Your password must contain:\n1.Lowercase and uppercase letters (a-zA-z) \n2.Digits (0-9) \n3.Special characters (@#$%<>?)\n4.No whitespaces", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -108,7 +114,8 @@ namespace BudgetManager {
                 int userCreationResult = DBConnectionManager.insertData(userCreationCommand);
 
                 //Default saving account creation
-                int savingAccountCreationResult = createDefaultSavingAccount(sqlStatementCreateDefaultSavingAccount, userName); 
+                String defaultAccountName = "SYSTEM_DEFINED_SAVING_ACCOUNT";
+                int savingAccountCreationResult = createDefaultSavingAccount(sqlStatementCreateDefaultSavingAccount, defaultAccountName, userName); 
 
                 if (userCreationResult == -1) {
                     MessageBox.Show("Could not create the requested user!", "Register", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -118,7 +125,15 @@ namespace BudgetManager {
                 if (savingAccountCreationResult == -1) {
                     MessageBox.Show("Could not create the default saving account for the registered user! Please contact the application administrator for fixing this issue.", "Register", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
-                }          
+                }
+
+
+                int savingAccountBalanceStorageRecordCreationResult = accountUtils.createAccountBalanceStorageRecordForAccount(userName, AccountType.DEFAULT_ACCOUNT, defaultAccountName);
+
+                if (savingAccountBalanceStorageRecordCreationResult == -1) {
+                    MessageBox.Show("Could not create the balance storage record for the user's default saving account! Please contact the application administrator for fixing this issue.", "Register", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
                 MessageBox.Show("Your user was succesfully created!", "Register", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 clearInputFields(textBoxes);
@@ -226,12 +241,11 @@ namespace BudgetManager {
             }
         }
 
-        private int createDefaultSavingAccount(String sqlStatement, String userName) {
+        private int createDefaultSavingAccount(String sqlStatement, String defaultAccountName, String userName) {
             if(userName == null) {
                 return -1;
             }
 
-            String defaultAccountName = "SYSTEM_DEFINED_SAVING_ACCOUNT";
             String accountTypeName = "SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT";
             String bankName = "NO_BANK";
             String currencyName = "RON";
