@@ -128,7 +128,7 @@ namespace BudgetManager {
                 }
 
 
-                int savingAccountBalanceStorageRecordCreationResult = accountUtils.createAccountBalanceStorageRecordForAccount(userName, AccountType.DEFAULT_ACCOUNT, defaultAccountName);
+                int savingAccountBalanceStorageRecordCreationResult = accountUtils.createAccountBalanceStorageRecordForAccount(userName, null, AccountType.DEFAULT_ACCOUNT, defaultAccountName);
 
                 if (savingAccountBalanceStorageRecordCreationResult == -1) {
                     MessageBox.Show("Could not create the balance storage record for the user's default saving account! Please contact the application administrator for fixing this issue.", "Register", MessageBoxButtons.OK, MessageBoxIcon.Error);
