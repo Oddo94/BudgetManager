@@ -1,14 +1,10 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using BudgetManager.utils;
+using BudgetManager.utils.enums;
 using BudgetManager.utils.data_insertion;
 
 
@@ -54,7 +50,7 @@ namespace BudgetManager.non_mvc {
 
             int externalAccountCreationResult = DBConnectionManager.insertData(externalAccountInsertionCommand);
 
-            int accountBalanceStorageRecordCreationResult = accountUtils.createAccountBalanceStorageRecordForAccount(null, userID, utils.enums.AccountType.CUSTOM_ACCOUNT, paramContainer.ItemName);
+            int accountBalanceStorageRecordCreationResult = accountUtils.createAccountBalanceStorageRecordForAccount(null, userID, AccountType.CUSTOM_ACCOUNT, paramContainer.ItemName);
 
             String successMessage;
             String errorMessage;
@@ -73,7 +69,6 @@ namespace BudgetManager.non_mvc {
 
         }
 
-
         private void fillComboBoxesWithData() {
             DataTable accountTypeComboBoxData = retrieveComboBoxData(sqlStatementRetrieveAccountTypes);
             DataTable accountCurrencyComboBoxData = retrieveComboBoxData(sqlStatementRetrieveAvailableCurrencies);
@@ -87,9 +82,6 @@ namespace BudgetManager.non_mvc {
             accountCurrencyComboBox.SelectedIndex = -1;
             accountBankComboBox.SelectedIndex = -1;
         }
-
-
-
 
         private void fillComboBox(ComboBox targetComboBox, DataTable sourceDataTable, String displayMember) {
             Guard.notNull(targetComboBox, "comboBox");
@@ -109,7 +101,6 @@ namespace BudgetManager.non_mvc {
 
             return comboBoxDataTable;
         }
-
 
         private QueryData getDataForInsertion() {
             String accountName = externalAccountNameTextField.Text;
