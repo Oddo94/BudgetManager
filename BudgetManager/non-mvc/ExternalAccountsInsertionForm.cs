@@ -1,14 +1,11 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using BudgetManager.utils;
+using BudgetManager.utils.enums;
+using BudgetManager.utils.data_insertion;
 
 
 namespace BudgetManager.non_mvc {
@@ -17,6 +14,7 @@ namespace BudgetManager.non_mvc {
         private int userID;
         private List<Control> activeControls;
         private List<Control> allFormControls;
+        private AccountUtils accountUtils;
         //Boolean flag used to determine if the controls was changes as a result of user action or code execution(e.g: when creating and populating controls with data)
         private bool isEditedByUser = false;
 
@@ -34,8 +32,9 @@ namespace BudgetManager.non_mvc {
             fillComboBoxesWithData();
             this.userID = userID;
             this.isEditedByUser = true;//After the controls are created and populated with data the flag is set to true as from that point on any change can be performed only by the user(not the code)
-            activeControls = new List<Control>() { externalAccountNameTextField, accountTypeComboBox, accountCurrencyComboBox, accountBankComboBox };
-            allFormControls = new List<Control>() { externalAccountNameTextField, externalAccountNumberTextField, accountTypeComboBox, accountCurrencyComboBox, accountBankComboBox, accountCreationDateTimePicker };
+            this.activeControls = new List<Control>() { externalAccountNameTextField, accountTypeComboBox, accountCurrencyComboBox, accountBankComboBox };
+            this.allFormControls = new List<Control>() { externalAccountNameTextField, externalAccountNumberTextField, accountTypeComboBox, accountCurrencyComboBox, accountBankComboBox, accountCreationDateTimePicker };
+            this.accountUtils = new AccountUtils();
         }
 
         private void createAccountButton_Click(object sender, EventArgs e) {
@@ -49,20 +48,26 @@ namespace BudgetManager.non_mvc {
 
             MySqlCommand externalAccountInsertionCommand = SQLCommandBuilder.getExternalAccountInsertionCommand(sqlStatementInsertExternalAccount, paramContainer);
 
-            int executionResult = DBConnectionManager.insertData(externalAccountInsertionCommand);
+            int externalAccountCreationResult = DBConnectionManager.insertData(externalAccountInsertionCommand);
 
-            if (executionResult > 0) {
-                String successMessage = String.Format("The account named '{0}' was successfully created!", paramContainer.ItemName);
+            int accountBalanceStorageRecordCreationResult = accountUtils.createAccountBalanceStorageRecordForAccount(null, userID, AccountType.CUSTOM_ACCOUNT, paramContainer.ItemName);
+
+            String successMessage;
+            String errorMessage;
+            if (externalAccountCreationResult > 0 && accountBalanceStorageRecordCreationResult > 0) {
+                successMessage = String.Format("The account named '{0}' was successfully created!", paramContainer.ItemName);
                 MessageBox.Show(successMessage, "External account creation", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 //Resets the form fields
                 UserControlsManager.clearActiveControls(allFormControls);
+            } else if (externalAccountCreationResult > 0 && accountBalanceStorageRecordCreationResult == -1) {
+                errorMessage = String.Format("Unable to create the balance storage record for the account named '{0}'! Please contact the application administrator for fixing this issue", paramContainer.ItemName);
+                MessageBox.Show(errorMessage, "External account creation", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } else {
-                String errorMessage = String.Format("The account named '{0}' could not be created!", paramContainer.ItemName);
+                errorMessage = String.Format("The account named '{0}' could not be created!", paramContainer.ItemName);
                 MessageBox.Show(errorMessage, "External account creation", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }
-
 
         private void fillComboBoxesWithData() {
             DataTable accountTypeComboBoxData = retrieveComboBoxData(sqlStatementRetrieveAccountTypes);
@@ -77,9 +82,6 @@ namespace BudgetManager.non_mvc {
             accountCurrencyComboBox.SelectedIndex = -1;
             accountBankComboBox.SelectedIndex = -1;
         }
-
-
-
 
         private void fillComboBox(ComboBox targetComboBox, DataTable sourceDataTable, String displayMember) {
             Guard.notNull(targetComboBox, "comboBox");
@@ -99,7 +101,6 @@ namespace BudgetManager.non_mvc {
 
             return comboBoxDataTable;
         }
-
 
         private QueryData getDataForInsertion() {
             String accountName = externalAccountNameTextField.Text;

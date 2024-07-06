@@ -16,7 +16,7 @@ namespace BudgetManager.utils.data_insertion {
                                                                             FROM saving_accounts sa
                                                                             INNER JOIN users usr ON sa.user_ID = usr.userID
                                                                             INNER JOIN saving_account_types sat ON sa.type_ID = sat.typeID
-                                                                            WHERE usr.username = @paramUsername AND sat.typeName = @paramTypeName AND sa.accountName = @paramAccountName";
+                                                                            WHERE (usr.username = @paramUsername OR usr.userID = @paramID) AND sat.typeName = @paramTypeName AND sa.accountName = @paramAccountName";
         private String sqlStatementInsertAccountBalanceStorageRecord = @"INSERT INTO account_balance_storage(account_ID, currentBalance, createdDate) VALUES(@paramAccountId, 0, CURRENT_TIMESTAMP())";
 
         public double getSavingAccountCurrentBalance(String accountName, int userID) {
@@ -83,11 +83,14 @@ namespace BudgetManager.utils.data_insertion {
             return accountID;
         }
 
-        public int createAccountBalanceStorageRecordForAccount(String userName, AccountType accountType, String accountName) {
+        /*Method used to create the account balance storage record for a specified account. 
+          It uses the username/user ID for retrieving the account ID of that respective account*/
+        public int createAccountBalanceStorageRecordForAccount(String userName, int? userId,  AccountType accountType, String accountName) {
             String accountTypeName = EnumExtensions.getEnumDescription(accountType);
 
             MySqlCommand getAccountIdForStorageRecordCreationCommand = new MySqlCommand(sqlStatementGetAccountIdForStorageRecordCreation);
             getAccountIdForStorageRecordCreationCommand.Parameters.AddWithValue("@paramUsername", userName);
+            getAccountIdForStorageRecordCreationCommand.Parameters.AddWithValue("@paramID", userId);
             getAccountIdForStorageRecordCreationCommand.Parameters.AddWithValue("@paramTypeName", accountTypeName);
             getAccountIdForStorageRecordCreationCommand.Parameters.AddWithValue("@paramAccountName", accountName);
 
