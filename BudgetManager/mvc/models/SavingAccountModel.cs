@@ -23,15 +23,16 @@ namespace BudgetManager.mvc.models {
         private String sqlStatementSingleMonthSavingAccountExpenses = @"SELECT expenseID AS 'ID', name AS 'Name', (SELECT categoryName FROM expense_types WHERE categoryID = type) AS 'Expense type', value AS 'Value', date AS 'Date' FROM saving_accounts_expenses WHERE user_ID = @paramID AND (MONTH(date) = @paramMonth AND YEAR(date) = @paramYear) ORDER BY date ASC";
         private String sqlStatementMultipleMonthsSavingAccountExpenses = @"SELECT expenseID AS 'ID', name AS 'Name', (SELECT categoryName FROM expense_types WHERE categoryID = type) AS 'Expense type', value AS 'Value', date AS 'Date' FROM saving_accounts_expenses WHERE user_ID = @paramID AND date BETWEEN @paramStartDate AND @paramEndDate ORDER BY date ASC";
 
-        //SQL statement for calculating the current total balance of the saving account(up to the current month of the current year)
-        private String sqlStatementSavingAccountCurrentBalance = @"SELECT SUM(value) FROM
-                (SELECT sab.value, sab.account_ID, sat.typeID, sab.month, sab.year FROM saving_accounts_balance sab
-                  INNER JOIN saving_accounts sa on sab.account_ID = sa.accountID
-                  INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
-                  WHERE sab.user_ID = @paramID
-                  AND sat.typeID = 1
-                  AND year <= year(CURDATE())) AS subquery
-                WHERE (subquery.month <= MONTH(CURDATE()) AND subquery.year <= YEAR(CURDATE())) OR (subquery.month > MONTH(CURDATE()) AND subquery.year < YEAR(CURDATE()))";
+        //SQL statement for retrieving the current total balance of the saving account
+        private String sqlStatementSavingAccountCurrentBalance = @"SELECT
+	                                                                   abs.currentBalance
+                                                                   FROM
+	                                                                   account_balance_storage abs
+                                                                   INNER JOIN saving_accounts sa ON
+	                                                                   abs.account_ID = sa.accountID
+                                                                   INNER JOIN saving_account_types sat ON
+	                                                                   sa.type_ID = sat.typeID
+                                                                   WHERE sat.typeName = 'SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT' AND sa.user_ID = @paramID";
 
         //SQL statement for retrieving the data showing the yearly saving account balance evolution
         private String sqlStatementFullYearBalanceEvolution = @"SELECT * FROM
