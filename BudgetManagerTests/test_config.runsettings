@@ -68,5 +68,17 @@
     <!--Test saving account interest update data-->
     <Parameter name="newLowerInterestValue" value="395.75"/>
     <Parameter name="newHigherInterestValue" value="487.75"/>
+    
+    <!--TEST EXTERNAL ACCOUNT BANKING FEES-->
+    <!--Test external account banking fees insertion data-->
+    <Parameter name="bankingFeeAccountId" value="24"/>
+    <Parameter name="bankingFeeName" value="AUTOMATED_TEST_BANKING_FEE_1"/>
+    <Parameter name="bankingFeeAccountName" value="Cont economii 01"/>
+    <Parameter name="bankingFeeValue" value="100.78"/>
+    <Parameter name="bankingFeeCreationDate" value="2024-08-02"/>
+
+    <!--Test external account banking fees insertion data-->
+    <Parameter name="newLowerBankingFeeValue" value ="85.86"/>
+    <Parameter name="newHigherBankingFeeValue" value ="133.99"/>
   </TestRunParameters>
 </RunSettings>

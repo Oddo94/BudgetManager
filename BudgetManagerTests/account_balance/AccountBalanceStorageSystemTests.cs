@@ -66,6 +66,15 @@ namespace BudgetManagerTests.account_balance {
         private static String interestTransactionId;
         private static String interestCreationDate;
 
+        //Test external account banking fee variables
+        private static int bankingFeeAccountId;
+        private static String bankingFeeName;
+        private static String bankingFeeAccountName;
+        private static double bankingFeeValue;
+        private static double newLowerBankingFeeValue;
+        private static double newHigherBankingFeeValue;
+        private static String bankingFeeCreationDate; 
+
 
         private string sqlStatementGetSavingAccountCurrentBalance = @"SELECT currentBalance FROM account_balance_storage WHERE account_ID = @paramId";
 
@@ -77,6 +86,7 @@ namespace BudgetManagerTests.account_balance {
         private static TestTransferUtils testTransferUtils;
         private static TestPartialPaymentUtils testPartialPaymentUtils;
         private static TestSavingAccountInterestUtils testSavingAccountInterestUtils;
+        private static TestExternalAccountBankingFeeUtils testExternalAccountBankingFeeUtils;
 
         [ClassInitialize]
         public static void setupTestData(TestContext testContext) {
@@ -134,11 +144,20 @@ namespace BudgetManagerTests.account_balance {
             interestTransactionId = testContext.Properties["interestTransactionId"].ToString();
             interestCreationDate = testContext.Properties["interestCreationDate"].ToString();
 
+            bankingFeeAccountId = Convert.ToInt32(testContext.Properties["bankingFeeAccountId"].ToString());
+            bankingFeeName = testContext.Properties["bankingFeeName"].ToString();
+            bankingFeeAccountName = testContext.Properties["bankingFeeAccountName"].ToString();
+            bankingFeeValue = Convert.ToDouble(testContext.Properties["bankingFeeValue"].ToString());
+            newLowerBankingFeeValue = Convert.ToDouble(testContext.Properties["newLowerBankingFeeValue"].ToString());
+            newHigherBankingFeeValue = Convert.ToDouble(testContext.Properties["newHigherBankingFeeValue"].ToString());
+            bankingFeeCreationDate = testContext.Properties["bankingFeeCreationDate"].ToString();
+
             testSavingUtils = new TestSavingUtils(savingName, savingValue, savingDate);
             testReceivableUtils = new TestReceivableUtils(receivableName, receivableValue, totalPaidAmount, debtorName, sourceAccountName, receivableStatus, createdDate, dueDate, userId);
             testTransferUtils = new TestTransferUtils(sourceAccountId, destinationAccountId, transferName, sentValue, receivedValue, exchangeRate, transactionId, transferObservations, transferDate, userId);
             testPartialPaymentUtils = new TestPartialPaymentUtils(partialPaymentName, receivableName, partialPaymentValue);
             testSavingAccountInterestUtils = new TestSavingAccountInterestUtils(interestAccountId, interestName, interestType, interestPaymentType, interestRate, interestValue, interestTransactionId, interestCreationDate);
+            testExternalAccountBankingFeeUtils = new TestExternalAccountBankingFeeUtils(bankingFeeName, bankingFeeAccountName, bankingFeeValue, null, bankingFeeCreationDate, userId);
         }
 
         [TestMethod]
@@ -756,6 +775,112 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
+        [TestMethod]
+        public void testBalanceAfterExternalAccountBankingFeeInsertion() {
+            double initialBalance = getAccountBalanceFromSelect(bankingFeeAccountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testExternalAccountBankingFeeUtils.insertTestExternalAccountBankingFeeIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test external account banking fee {0} into the database", bankingFeeName));
+            }
+
+            double expectedBalance = initialBalance - bankingFeeValue;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER EXTERNAL ACCOUNT BANKING FEE INSERTION: {0}", expectedBalance));
+
+            double actualBalance = getAccountBalanceFromSelect(bankingFeeAccountId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER EXTERNAL ACCOUNT BANKING FEE INSERTION: {0}", actualBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterUpdatingExternalAccountBankingFeeToLowerValue() {
+            double initialBalance = getAccountBalanceFromSelect(bankingFeeAccountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testExternalAccountBankingFeeUtils.insertTestExternalAccountBankingFeeIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test external account banking fee {0} into the database", bankingFeeName));
+            }
+
+            double currentBalanceAfterInsert = getAccountBalanceFromSelect(bankingFeeAccountId);
+            Console.WriteLine(String.Format("CURRENT BALANCE AFTER EXTERNAL ACCOUNT BANKING FEE INSERTION: {0}", currentBalanceAfterInsert));
+
+            int updateExecutionResult = testExternalAccountBankingFeeUtils.updateTestExternalAccountBankingFeeFromDb(bankingFeeName, newLowerBankingFeeValue);
+            if (updateExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to update the test external account banking fee {0}", bankingFeeName));
+            }
+
+            double amountDifference = bankingFeeValue - newLowerBankingFeeValue;
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE: {0}", amountDifference));
+
+            double expectedBalance = currentBalanceAfterInsert + amountDifference;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER EXTERNAL ACCOUNT BANKING FEE UPDATE: {0}", expectedBalance));
+
+            double actualBalance = getAccountBalanceFromSelect(bankingFeeAccountId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER EXTERNAL ACCOUNT BANKING FEE UPDATE: {0}", actualBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterUpdatingExternalAccountBankingFeeToHigherValue() {
+            double initialBalance = getAccountBalanceFromSelect(bankingFeeAccountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testExternalAccountBankingFeeUtils.insertTestExternalAccountBankingFeeIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test external account banking fee {0} into the database", bankingFeeName));
+            }
+
+            double currentBalanceAfterInsert = getAccountBalanceFromSelect(bankingFeeAccountId);
+            Console.WriteLine(String.Format("CURRENT BALANCE AFTER EXTERNAL ACCOUNT BANKING FEE INSERTION: {0}", currentBalanceAfterInsert));
+
+            int updateExecutionResult = testExternalAccountBankingFeeUtils.updateTestExternalAccountBankingFeeFromDb(bankingFeeName, newHigherBankingFeeValue);
+            if (updateExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to update the test external account banking fee {0}", bankingFeeName));
+            }
+
+            double amountDifference = newHigherBankingFeeValue - bankingFeeValue;
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE: {0}", amountDifference));
+
+            double expectedBalance = currentBalanceAfterInsert - amountDifference;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER EXTERNAL ACCOUNT BANKING FEE UPDATE: {0}", expectedBalance));
+
+            double actualBalance = getAccountBalanceFromSelect(bankingFeeAccountId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER EXTERNAL ACCOUNT BANKING FEE UPDATE: {0}", actualBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterExternalAccountBankingFeeDeletion() {
+            double initialBalance = getAccountBalanceFromSelect(bankingFeeAccountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testExternalAccountBankingFeeUtils.insertTestExternalAccountBankingFeeIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test external account banking fee {0} into the database", bankingFeeName));
+            }
+
+            double currentBalanceAfterInsert = getAccountBalanceFromSelect(bankingFeeAccountId);
+            Console.WriteLine(String.Format("CURRENT BALANCE AFTER EXTERNAL ACCOUNT BANKING FEE INSERTION: {0}", currentBalanceAfterInsert));
+
+            int deleteExecutionResult = testExternalAccountBankingFeeUtils.deleteTestExternalAccountBankingFeeFromDb(bankingFeeName);
+            if (deleteExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to delete the test external account banking fee {0} from the database", bankingFeeName));
+            }
+
+            double expectedBalance = initialBalance;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER EXTERNAL ACCOUNT BANKING FEE DELETION: {0}", expectedBalance));
+
+            double actualBalance = getAccountBalanceFromSelect(bankingFeeAccountId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER EXTERNAL ACCOUNT BANKING FEE DELETION: {0}", actualBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
         [TestCleanup]
         public void performTestCleanup() {
             //Retrieves the current test name which will be used to decide the correct cleanup method to be executed
@@ -769,6 +894,8 @@ namespace BudgetManagerTests.account_balance {
                 removeTestTransferFromDb();
             } else if (testName.Contains("Saving")) {
                 removeTestSavingFromDb();              
+            } else if (testName.Contains("BankingFee")) {
+                removeTestExternalAccountBankingFeeFromDb();
             }
         }
 
@@ -831,6 +958,21 @@ namespace BudgetManagerTests.account_balance {
             }
 
             double finalBalance = getAccountBalanceFromSelect(interestAccountId); ;
+            Console.WriteLine(String.Format("FINAL BALANCE AFTER DELETION: {0}", finalBalance));
+        }
+
+        public void removeTestExternalAccountBankingFeeFromDb() {
+            Console.WriteLine("\n======RemoveTestExternalAccountBankingFeeFromDb======");
+            double initialBalance = getAccountBalanceFromSelect(bankingFeeAccountId);
+            Console.WriteLine(String.Format("INITIAL BALANCE BEFORE DELETION: {0}", initialBalance));
+
+            int executionResult = testSavingAccountInterestUtils.deleteSavingAccountInterestFromDb(bankingFeeName);
+
+            if (executionResult == -1) {
+                Console.WriteLine(String.Format("Unable to delete the test external account banking fee {0}", bankingFeeName));
+            }
+
+            double finalBalance = getAccountBalanceFromSelect(bankingFeeAccountId); ;
             Console.WriteLine(String.Format("FINAL BALANCE AFTER DELETION: {0}", finalBalance));
         }
 
