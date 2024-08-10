@@ -77,7 +77,7 @@
     <Parameter name="bankingFeeValue" value="100.78"/>
     <Parameter name="bankingFeeCreationDate" value="2024-08-02"/>
 
-    <!--Test external account banking fees insertion data-->
+    <!--Test external account banking fees update data-->
     <Parameter name="newLowerBankingFeeValue" value ="85.86"/>
     <Parameter name="newHigherBankingFeeValue" value ="133.99"/>
   </TestRunParameters>
