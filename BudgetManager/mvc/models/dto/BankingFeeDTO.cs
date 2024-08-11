@@ -2,7 +2,7 @@
 using System;
 
 namespace BudgetManager.mvc.models.dto {
-    internal class BankingFeeDTO : IDataInsertionDTO {
+    public class BankingFeeDTO : IDataInsertionDTO {
         private String accountName;
         private String name;
         private double value;
