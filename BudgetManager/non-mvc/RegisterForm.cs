@@ -24,7 +24,6 @@ namespace BudgetManager {
                                                                         ,@paramCreationDate)";
         private LoginForm loginForm;
         private AccountUtils accountUtils;
-        private LoginForm loginForm;
         
 
         public RegisterForm(LoginForm loginForm) {
