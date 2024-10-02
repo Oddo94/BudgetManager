@@ -80,5 +80,17 @@
     <!--Test external account banking fees update data-->
     <Parameter name="newLowerBankingFeeValue" value ="85.86"/>
     <Parameter name="newHigherBankingFeeValue" value ="133.99"/>
+
+    <!--TEST SAVING ACCOUNT EXPENSES-->
+    <!--Test saving account expenses insertion data-->
+    <Parameter name="savingAccountExpenseAccountId" value="8"/>
+    <Parameter name="savingAccountExpenseName" value="AUTOMATED_TEST_SAVING_ACCOUNT_EXPENSE_1"/>
+    <Parameter name="savingAccountExpenseTypeName" value="Utilities"/>
+    <Parameter name="savingAccountExpenseValue" value="768"/>
+    <Parameter name="savingAccountExpenseCreationDate" value="2024-09-14"/>
+
+    <!--Test saving account expenses update data-->
+    <Parameter name="newLowerSavingAccountExpenseValue" value="552"/>
+    <Parameter name="newHigherSavingAccountExpenseValue" value="883"/>
   </TestRunParameters>
 </RunSettings>

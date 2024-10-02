@@ -45,6 +45,15 @@ namespace BudgetManagerTests.account_balance {
         private static String transferObservations;
         private static String transferDate;
 
+        //Test saving account expense variables
+        private static int savingAccountExpenseAccountId;
+        private static String savingAccountExpenseName;
+        private static String savingAccountExpenseTypeName;
+        private static int savingAccountExpenseValue;
+        private static int newLowerSavingAccountExpenseValue;
+        private static int newHigherSavingAccountExpenseValue;
+        private static String savingAccountExpenseCreationDate;
+
         private string sqlStatementSavingAccountCurrentBalance = @"SELECT SUM(value) FROM
                 (SELECT sab.value, sab.account_ID, sat.typeID, sab.month, sab.year FROM saving_accounts_balance sab
                   INNER JOIN saving_accounts sa on sab.account_ID = sa.accountID
@@ -59,6 +68,7 @@ namespace BudgetManagerTests.account_balance {
         private static TestSavingUtils testSavingUtils;
         private static TestReceivableUtils testReceivableUtils;
         private static TestTransferUtils testTransferUtils;
+        private static TestSavingAccountExpenseUtils testSavingAccountExpenseUtils;
 
         [ClassInitialize]
         public static void setupTestData(TestContext testContext) {
@@ -101,6 +111,15 @@ namespace BudgetManagerTests.account_balance {
             testSavingUtils = new TestSavingUtils(savingName, savingValue, savingDate);
             testReceivableUtils = new TestReceivableUtils(receivableName, receivableValue, totalPaidAmount, debtorName, sourceAccountName, receivableStatus, createdDate, dueDate, userId);
             testTransferUtils = new TestTransferUtils(sourceAccountId, destinationAccountId, transferName, sentValue, receivedValue, exchangeRate, transactionId, transferObservations, transferDate, userId);
+
+            savingAccountExpenseAccountId = Convert.ToInt32(testContext.Properties["savingAccountExpenseAccountId"].ToString());
+            savingAccountExpenseName = testContext.Properties["savingAccountExpenseName"].ToString();
+            savingAccountExpenseTypeName = testContext.Properties["savingAccountExpenseTypeName"].ToString();
+            savingAccountExpenseValue = Convert.ToInt32(testContext.Properties["savingAccountExpenseValue"].ToString());
+            newLowerSavingAccountExpenseValue = Convert.ToInt32(testContext.Properties["newLowerSavingAccountExpenseValue"].ToString());
+            newHigherSavingAccountExpenseValue = Convert.ToInt32(testContext.Properties["newHigherSavingAccountExpenseValue"].ToString());
+            savingAccountExpenseCreationDate = testContext.Properties["savingAccountExpenseCreationDate"].ToString();
+            testSavingAccountExpenseUtils = new TestSavingAccountExpenseUtils(userId, savingAccountExpenseName, savingAccountExpenseTypeName, savingAccountExpenseValue, savingAccountExpenseCreationDate);
         }
 
         [TestMethod]
@@ -419,12 +438,120 @@ namespace BudgetManagerTests.account_balance {
             Assert.AreEqual(expectedBalance, actualBalance);
         }
 
+        [TestMethod]
+        public void testBalanceAfterSavingAccountExpenseInsertion() {
+            double initialBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testSavingAccountExpenseUtils.insertTestSavingAccountExpenseIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test saving account expense {0} into the database", savingAccountExpenseName));
+            }
+
+            double expectedBalance = initialBalance - savingAccountExpenseValue;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER SAVING ACCOUNT EXPENSE INSERTION: {0}", expectedBalance));
+
+            double actualBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER SAVING ACCOUNT EXPENSE INSERTION: {0}", actualBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterUpdatingSavingAccountExpenseToLowerValue() {
+            double initialBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testSavingAccountExpenseUtils.insertTestSavingAccountExpenseIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test saving account expense {0} into the database", savingAccountExpenseName));
+            }
+
+            double currentBalanceAfterInsert = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("CURRENT BALANCE AFTER SAVING ACCOUNT EXPENSE INSERTION: {0}", currentBalanceAfterInsert));
+
+            int updateExecutionResult = testSavingAccountExpenseUtils.updateTestSavingAccountExpenseFromDb(savingAccountExpenseName, newLowerSavingAccountExpenseValue);
+            if (updateExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to update the test saving account expense {0}", savingAccountExpenseName));
+            }
+
+            double amountDifference = savingAccountExpenseValue - newLowerSavingAccountExpenseValue;
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE: {0}", amountDifference));
+
+            double expectedBalance = currentBalanceAfterInsert + amountDifference;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER SAVING ACCOUNT EXPENSE UPDATE: {0}", expectedBalance));
+
+            double actualBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER SAVING ACCOUNT EXPENSE UPDATE: {0}", actualBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterUpdatingSavingAccountExpenseToHigherValue() {
+            double initialBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testSavingAccountExpenseUtils.insertTestSavingAccountExpenseIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test saving account expense {0} into the database", savingAccountExpenseName));
+            }
+
+            double currentBalanceAfterInsert = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("CURRENT BALANCE AFTER SAVING ACCOUNT EXPENSE INSERTION: {0}", currentBalanceAfterInsert));
+
+            int updateExecutionResult = testSavingAccountExpenseUtils.updateTestSavingAccountExpenseFromDb(savingAccountExpenseName, newHigherSavingAccountExpenseValue);
+            if (updateExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to update the test saving account expense {0}", savingAccountExpenseName));
+            }
+
+            double amountDifference = savingAccountExpenseValue - newHigherSavingAccountExpenseValue;
+            Console.WriteLine(String.Format("AMOUNT DIFFERENCE: {0}", amountDifference));
+
+            double expectedBalance = currentBalanceAfterInsert + amountDifference;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER SAVING ACCOUNT EXPENSE UPDATE: {0}", expectedBalance));
+
+            double actualBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER SAVING ACCOUNT EXPENSE UPDATE: {0}", actualBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
+        [TestMethod]
+        public void testBalanceAfterSavingAccountExpenseDeletion() {
+            double initialBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("INITIAL BALANCE: {0}", initialBalance));
+
+            int insertExecutionResult = testSavingAccountExpenseUtils.insertTestSavingAccountExpenseIntoDb();
+            if (insertExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to insert the test saving account expense {0} into the database", savingAccountExpenseName));
+            }
+
+            double currentBalanceAfterInsert = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("CURRENT BALANCE AFTER SAVING ACCOUNT EXPENSE INSERTION: {0}", currentBalanceAfterInsert));
+
+            int deleteExecutionResult = testSavingAccountExpenseUtils.deleteTestSavingAccountExpenseFromDb(savingAccountExpenseName);
+            if (deleteExecutionResult == -1) {
+                Assert.Fail(String.Format("Unable to delete the saving account expense {0} from the database", savingAccountExpenseName));
+            }
+
+            double expectedBalance = initialBalance;
+            Console.WriteLine(String.Format("EXPECTED BALANCE AFTER SAVING ACCOUNT EXPENSE DELETION: {0}", expectedBalance));
+
+            double actualBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("ACTUAL BALANCE AFTER SAVING ACCOUNT EXPENSE DELETION: {0}", actualBalance));
+
+            Assert.AreEqual(expectedBalance, actualBalance);
+        }
+
         [TestCleanup]
         public void performTestCleanup() {
             //Retrieves the current test name which will be used to decide the correct cleanup method to be executed
             String testName = TestContext.TestName;
 
-            if (testName.Contains("Saving")) {
+            if (testName.Contains("SavingAccountExpense")) {
+                removeTestSavingAccountExpenseFromDb();
+            } else if (testName.Contains("Saving")) {
                 removeTestSavingFromDb();
             } else if (testName.Contains("Receivable")) {
                 removeTestReceivableFromDb();
@@ -478,6 +605,21 @@ namespace BudgetManagerTests.account_balance {
 
             double finalBalance = getAccountBalanceFromSelect(userId); ;
             Console.WriteLine("FINAL BALANCE AFTER DELETION: " + finalBalance);
+        }
+
+        public void removeTestSavingAccountExpenseFromDb() {
+            Console.WriteLine("\n======RemoveTestSavingAccountExpenseFromDb======");
+            double initialBalance = getAccountBalanceFromSelect(userId);
+            Console.WriteLine(String.Format("INITIAL BALANCE BEFORE DELETION: {0}", initialBalance));
+
+            int executionResult = testSavingAccountExpenseUtils.deleteTestSavingAccountExpenseFromDb(savingAccountExpenseName);
+
+            if (executionResult == -1) {
+                Console.WriteLine(String.Format("Unable to delete the test saving account expense {0}", savingAccountExpenseName));
+            }
+
+            double finalBalance = getAccountBalanceFromSelect(userId); ;
+            Console.WriteLine(String.Format("FINAL BALANCE AFTER DELETION: {0}", finalBalance));
         }
 
         private double getAccountBalanceFromProcedure(int testAccountId) {
