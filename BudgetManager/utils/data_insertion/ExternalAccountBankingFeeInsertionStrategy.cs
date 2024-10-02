@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BudgetManager.utils.data_insertion {
-    internal class ExternalAccountBankingFeeInsertionStrategy : DataInsertionStrategy {
+    public class ExternalAccountBankingFeeInsertionStrategy : DataInsertionStrategy {
         private String sqlStatementInsertExternalAccountBankingFee = @"INSERT
 	                                                                       INTO
 	                                                                       external_accounts_banking_fees (account_ID,

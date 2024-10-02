@@ -794,7 +794,7 @@ namespace BudgetManager.non_mvc {
 
                 case 3:
                     return BudgetItemType.RECEIVABLE;
-                
+                    
                 case 4:
                     return BudgetItemType.SAVING;
 

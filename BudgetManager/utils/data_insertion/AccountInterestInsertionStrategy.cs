@@ -8,7 +8,7 @@ using MySql.Data.MySqlClient;
 
 namespace BudgetManager.non_mvc {
     class AccountInterestInsertionStrategy : DataInsertionStrategy {
-        private string sqlStatementInsertSavingAccountInterest = @"INSERT INTO saving_accounts_interest(account_id, interestName, interestType, paymentType, interestRate, value, transactionID, creationDate, updatedDate)
+        private string sqlStatementInsertSavingAccountInterest = @"INSERT INTO saving_accounts_interest(account_ID, interestName, interestType, paymentType, interestRate, value, transactionID, creationDate, updatedDate)
                                                                    VALUES(
                                                                    (SELECT accountID FROM saving_accounts WHERE accountName = @paramAccountName and user_ID = @paramUserId),
                                                                    @paramInterestName,

@@ -7,7 +7,7 @@
     <Parameter name="userId" value="3"/>
     <Parameter name="savingName" value="AUTOMATED_TEST_SAVING-1"/>
     <Parameter name="savingValue" value="200"/>
-    <Parameter name="savingDate" value="2024-01-18"/>
+    <Parameter name="savingDate" value="2024-04-16"/>
 
     <!-- Test saving update parameters-->
     <Parameter name="newLowerSavingValue" value="100"/>
@@ -17,7 +17,7 @@
     <!--TEST RECEIVABLE DATA-->
     <!--Test receivable insertion parameters-->
     <Parameter name="receivableName" value="AUTOMATED_TEST_RECEIVABLE-1"/>
-    <Parameter name="receivableValue" value="200"/>
+    <Parameter name="receivableValue" value="500"/>
     <Parameter name="debtorName" value="John"/>
     <Parameter name="sourceAccountName" value="SYSTEM_DEFINED_SAVING_ACCOUNT"/>
     <Parameter name="totalPaidAmount" value="0"/>
@@ -28,6 +28,13 @@
     <!--Test receivable update parameters-->
     <Parameter name="newLowerReceivableValue" value="100"/>
     <Parameter name="newHigherReceivableValue" value="300"/>
+    
+    <!--TEST PARTIAL PAYMENT DATA-->
+    <!--Test partial payment insertion parameters-->
+    <Parameter name="partialPaymentName" value="AUTOMATED_TEST_PARTIAL_PAYMENT_1"/>
+    <Parameter name="partialPaymentValue" value="200"/>
+    <Parameter name="newLowerPartialPaymentValue" value="100"/>
+    <Parameter name="newHigherPartialPaymentValue" value="300"/>
 
     <!--TEST TRANSFER DATA-->
     <!--Test transfer insertion parameters-->
@@ -46,5 +53,44 @@
     <Parameter name="newHigherSentValue" value="600.94"/>
     <Parameter name="newLowerReceivedValue" value="400.89"/>
     <Parameter name="newHigherReceivedValue" value="600.94"/>
+    
+    <!--TEST SAVING ACCOUNT INTEREST DATA-->
+    <!--Test saving account interest insertion data-->
+    <Parameter name="interestAccountId" value="24"/>
+    <Parameter name="interestName" value="AUTOMATED_TEST_SAVING ACCOUNT_INTEREST_1"/>
+    <Parameter name="interestType" value="1"/>
+    <Parameter name="interestPaymentType" value="1"/>
+    <Parameter name="interestRate" value="4"/>
+    <Parameter name="interestValue" value="436.75"/>
+    <Parameter name="interestTransactionId" value="TST1234TRN5413"/>
+    <Parameter name="interestCreationDate" value="2024-06-01"/>
+  
+    <!--Test saving account interest update data-->
+    <Parameter name="newLowerInterestValue" value="395.75"/>
+    <Parameter name="newHigherInterestValue" value="487.75"/>
+    
+    <!--TEST EXTERNAL ACCOUNT BANKING FEES-->
+    <!--Test external account banking fees insertion data-->
+    <Parameter name="bankingFeeAccountId" value="24"/>
+    <Parameter name="bankingFeeName" value="AUTOMATED_TEST_BANKING_FEE_1"/>
+    <Parameter name="bankingFeeAccountName" value="Cont economii 01"/>
+    <Parameter name="bankingFeeValue" value="100.78"/>
+    <Parameter name="bankingFeeCreationDate" value="2024-08-02"/>
+
+    <!--Test external account banking fees update data-->
+    <Parameter name="newLowerBankingFeeValue" value ="85.86"/>
+    <Parameter name="newHigherBankingFeeValue" value ="133.99"/>
+
+    <!--TEST SAVING ACCOUNT EXPENSES-->
+    <!--Test saving account expenses insertion data-->
+    <Parameter name="savingAccountExpenseAccountId" value="8"/>
+    <Parameter name="savingAccountExpenseName" value="AUTOMATED_TEST_SAVING_ACCOUNT_EXPENSE_1"/>
+    <Parameter name="savingAccountExpenseTypeName" value="Utilities"/>
+    <Parameter name="savingAccountExpenseValue" value="768"/>
+    <Parameter name="savingAccountExpenseCreationDate" value="2024-09-14"/>
+
+    <!--Test saving account expenses update data-->
+    <Parameter name="newLowerSavingAccountExpenseValue" value="552"/>
+    <Parameter name="newHigherSavingAccountExpenseValue" value="883"/>
   </TestRunParameters>
 </RunSettings>
