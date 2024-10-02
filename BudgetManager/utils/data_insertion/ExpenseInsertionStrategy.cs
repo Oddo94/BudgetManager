@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BudgetManager.non_mvc {
-    class ExpenseInsertionStrategy : DataInsertionStrategy {
+    public class ExpenseInsertionStrategy : DataInsertionStrategy {
 
         //SQL statements for inserting the two different types of expenses(general incomes expenses(having the salary as income source) and saving account expenses(having the saving account as income source))
         private String sqlStatementInsertGeneralIncomesExpense = @"INSERT INTO expenses(user_ID, name, type, value, date) VALUES(@paramID, @paramItemName, @paramTypeID, @paramItemValue, @paramItemDate)";

@@ -1,17 +1,23 @@
 ﻿using BudgetManager.utils.exceptions;
+using BudgetManager.utils.enums;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BudgetManager.utils.data_insertion {
     //Class that provides utility methods for retrieving data about the user accounts
     internal class AccountUtils {
         //SQL query used for retrieving the account ID for which the balance check is performed
         private String sqlStatementGetAccountID = @"SELECT accountID FROM saving_accounts WHERE accountName LIKE CONCAT('%', @paramRecordName,'%') AND user_ID = @paramID";
+
+        private String sqlStatementGetAccountIdForStorageRecordCreation = @"SELECT sa.accountID
+                                                                            FROM saving_accounts sa
+                                                                            INNER JOIN users usr ON sa.user_ID = usr.userID
+                                                                            INNER JOIN saving_account_types sat ON sa.type_ID = sat.typeID
+                                                                            WHERE (usr.username = @paramUsername OR usr.userID = @paramID) AND sat.typeName = @paramTypeName AND sa.accountName = @paramAccountName";
+        private String sqlStatementInsertAccountBalanceStorageRecord = @"INSERT INTO account_balance_storage(account_ID, currentBalance, createdDate) VALUES(@paramAccountId, 0, CURRENT_TIMESTAMP())";
 
         public double getSavingAccountCurrentBalance(String accountName, int userID) {
             double currentBalance = 0;
@@ -75,6 +81,46 @@ namespace BudgetManager.utils.data_insertion {
             }
 
             return accountID;
+        }
+
+        /*Method used to create the account balance storage record for a specified account. 
+          It uses the username/user ID for retrieving the account ID of that respective account*/
+        public int createAccountBalanceStorageRecordForAccount(String userName, int? userId,  AccountType accountType, String accountName) {
+            String accountTypeName = EnumExtensions.getEnumDescription(accountType);
+
+            MySqlCommand getAccountIdForStorageRecordCreationCommand = new MySqlCommand(sqlStatementGetAccountIdForStorageRecordCreation);
+            getAccountIdForStorageRecordCreationCommand.Parameters.AddWithValue("@paramUsername", userName);
+            getAccountIdForStorageRecordCreationCommand.Parameters.AddWithValue("@paramID", userId);
+            getAccountIdForStorageRecordCreationCommand.Parameters.AddWithValue("@paramTypeName", accountTypeName);
+            getAccountIdForStorageRecordCreationCommand.Parameters.AddWithValue("@paramAccountName", accountName);
+
+            DataTable accountIdDataTable = DBConnectionManager.getData(getAccountIdForStorageRecordCreationCommand);
+
+            int accountID = -1;
+            if (accountIdDataTable != null && accountIdDataTable.Rows.Count > 0) {
+                Object result = accountIdDataTable.Rows[0].ItemArray[0];
+
+                if (result == DBNull.Value) {
+                    return -1;
+                }
+
+                accountID = Convert.ToInt32(result);
+
+            } else {
+                return -1;
+            }
+
+
+            MySqlCommand insertAccountBalanceStorageRecordCommand = new MySqlCommand(sqlStatementInsertAccountBalanceStorageRecord);
+            insertAccountBalanceStorageRecordCommand.Parameters.AddWithValue("@paramAccountId", accountID);
+
+            int executionResult = DBConnectionManager.insertData(insertAccountBalanceStorageRecordCommand); 
+
+            if(executionResult > 0) {
+                return executionResult;
+            }
+
+            return -1;
         }
     }
 }
