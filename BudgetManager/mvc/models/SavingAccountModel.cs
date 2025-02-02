@@ -28,20 +28,20 @@ namespace BudgetManager.mvc.models {
 	                                                                   abs.currentBalance
                                                                    FROM
 	                                                                   account_balance_storage abs
-                                                                   INNER JOIN saving_accounts sa ON
-	                                                                   abs.account_ID = sa.accountID
-                                                                   INNER JOIN saving_account_types sat ON
-	                                                                   sa.type_ID = sat.typeID
-                                                                   WHERE sat.typeName = 'SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT' AND sa.user_ID = @paramID";
+                                                                   INNER JOIN accounts acc ON
+	                                                                   abs.account_ID = acc.accountID
+                                                                   INNER JOIN account_types at ON
+	                                                                   acc.type_ID = at.typeID
+                                                                   WHERE at.typeName = 'SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT' AND acc.user_ID = @paramID";
 
         //SQL statement for retrieving the data showing the yearly saving account balance evolution
         private String sqlStatementFullYearBalanceEvolution = @"SELECT * FROM
                 (SELECT sab.year, sab.month, SUM(sab.value) OVER(PARTITION BY sab.user_ID ORDER BY sab.year, sab.month) AS 'Running total'
                   FROM saving_accounts_balance sab
-                  INNER JOIN saving_accounts sa on sab.account_ID = sa.accountID
-                  INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
+                  INNER JOIN accounts acc on sab.account_ID = acc.accountID
+                  INNER JOIN account_types at on acc.type_ID = at.typeID
                   WHERE sab.user_ID = @paramID
-                  AND sat.typeID = 1
+                  AND at.typeID = 1
                ) AS subquery
                 WHERE year = @paramYear";
 

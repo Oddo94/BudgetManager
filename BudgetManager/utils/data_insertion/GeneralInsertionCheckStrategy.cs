@@ -24,13 +24,13 @@ namespace BudgetManager.utils {
         //SQL query to get the saving account current balance value in order to allow further checks when the user selects the saving account as the income source for the inserted expense
         //Currently the check is made to allow the balance retrieval only for the default saving account(typeName = SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT)
         private String sqlStatementGetSavingAccountBalance = @"SELECT SUM(value) FROM saving_accounts_balance sab
-                                                               INNER JOIN saving_accounts sa on sab.account_ID = sa.accountID
-                                                               INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
+                                                               INNER JOIN accounts acc ON sab.account_ID = acc.accountID
+                                                               INNER JOIN account_types at ON acc.type_ID = at.typeID
                                                                WHERE sab.user_ID = @paramID 
-                                                               AND sat.typeName LIKE '%SYSTEM_DEFINED%'";
+                                                               AND at.typeName LIKE '%SYSTEM_DEFINED%'";
 
         //SQL query used for retrieving the account ID for which the balance check is performed
-        private String sqlStatementGetAccountID = @"SELECT accountID FROM saving_accounts WHERE accountName LIKE CONCAT('%', @paramRecordName,'%') AND user_ID = @paramID";
+        private String sqlStatementGetAccountID = @"SELECT accountID FROM accounts WHERE accountName LIKE CONCAT('%', @paramRecordName,'%') AND user_ID = @paramID";
 
         public DataCheckResponse performCheck(QueryData paramContainer, String selectedItemName, int valueToInsert) {
             DataCheckResponse dataCheckResponse = new DataCheckResponse();

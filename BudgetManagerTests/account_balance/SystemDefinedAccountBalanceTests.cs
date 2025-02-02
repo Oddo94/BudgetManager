@@ -55,11 +55,11 @@ namespace BudgetManagerTests.account_balance {
         private static String savingAccountExpenseCreationDate;
 
         private string sqlStatementSavingAccountCurrentBalance = @"SELECT SUM(value) FROM
-                (SELECT sab.value, sab.account_ID, sat.typeID, sab.month, sab.year FROM saving_accounts_balance sab
-                  INNER JOIN saving_accounts sa on sab.account_ID = sa.accountID
-                  INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID
+                (SELECT sab.value, sab.account_ID, at.typeID, sab.month, sab.year FROM saving_accounts_balance sab
+                  INNER JOIN accounts acc on sab.account_ID = acc.accountID
+                  INNER JOIN account_types at on acc.type_ID = at.typeID
                   WHERE sab.user_ID = @paramID
-                  AND sat.typeID = 1
+                  AND at.typeID = 1
                   AND year <= year(CURDATE())) AS subquery
                 WHERE (subquery.month <= MONTH(CURDATE()) AND subquery.year <= YEAR(CURDATE())) OR (subquery.month > MONTH(CURDATE()) AND subquery.year < YEAR(CURDATE()))";
 
