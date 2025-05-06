@@ -59,7 +59,7 @@ namespace BudgetManagerTests.account_balance {
                   INNER JOIN accounts acc on sab.account_ID = acc.accountID
                   INNER JOIN account_types at on acc.type_ID = at.typeID
                   WHERE sab.user_ID = @paramID
-                  AND at.typeID = 1
+                  AND at.typeName = 'SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT'
                   AND year <= year(CURDATE())) AS subquery
                 WHERE (subquery.month <= MONTH(CURDATE()) AND subquery.year <= YEAR(CURDATE())) OR (subquery.month > MONTH(CURDATE()) AND subquery.year < YEAR(CURDATE()))";
 

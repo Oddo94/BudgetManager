@@ -41,7 +41,7 @@ namespace BudgetManager.mvc.models {
                   INNER JOIN accounts acc on sab.account_ID = acc.accountID
                   INNER JOIN account_types at on acc.type_ID = at.typeID
                   WHERE sab.user_ID = @paramID
-                  AND at.typeID = 1
+                  AND at.typeName = 'SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT'
                ) AS subquery
                 WHERE year = @paramYear";
 
