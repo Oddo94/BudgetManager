@@ -170,6 +170,10 @@
             this.budgetPlannerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editDeleteExistingPlansToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.displayedExpensesCountLabel = new System.Windows.Forms.Label();
+            this.displayedIncomesCountLabel = new System.Windows.Forms.Label();
+            this.displayedDebtsCountLabel = new System.Windows.Forms.Label();
+            this.displayedSavingsCountLabel = new System.Windows.Forms.Label();
             this.mainTabControl.SuspendLayout();
             this.tabPageBS.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pieChartBS)).BeginInit();
@@ -1191,14 +1195,14 @@
             // logoutToolStripMenuItem
             // 
             this.logoutToolStripMenuItem.Name = "logoutToolStripMenuItem";
-            this.logoutToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.logoutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.logoutToolStripMenuItem.Text = "Logout";
             this.logoutToolStripMenuItem.Click += new System.EventHandler(this.logoutToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -1311,6 +1315,38 @@
             this.editDeleteExistingPlansToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.editDeleteExistingPlansToolStripMenuItem.Text = "Edit/Delete budget plans";
             this.editDeleteExistingPlansToolStripMenuItem.Click += new System.EventHandler(this.editDeleteExistingPlansToolStripMenuItem_Click);
+            // 
+            // displayedExpensesCountLabel
+            // 
+            this.displayedExpensesCountLabel.AutoSize = true;
+            this.displayedExpensesCountLabel.Location = new System.Drawing.Point(23, 450);
+            this.displayedExpensesCountLabel.Name = "displayedExpensesCountLabel";
+            this.displayedExpensesCountLabel.Size = new System.Drawing.Size(0, 13);
+            this.displayedExpensesCountLabel.TabIndex = 13;
+            // 
+            // displayedIncomesCountLabel
+            // 
+            this.displayedIncomesCountLabel.AutoSize = true;
+            this.displayedIncomesCountLabel.Location = new System.Drawing.Point(32, 432);
+            this.displayedIncomesCountLabel.Name = "displayedIncomesCountLabel";
+            this.displayedIncomesCountLabel.Size = new System.Drawing.Size(0, 13);
+            this.displayedIncomesCountLabel.TabIndex = 11;
+            // 
+            // displayedDebtsCountLabel
+            // 
+            this.displayedDebtsCountLabel.AutoSize = true;
+            this.displayedDebtsCountLabel.Location = new System.Drawing.Point(29, 447);
+            this.displayedDebtsCountLabel.Name = "displayedDebtsCountLabel";
+            this.displayedDebtsCountLabel.Size = new System.Drawing.Size(0, 13);
+            this.displayedDebtsCountLabel.TabIndex = 13;
+            // 
+            // displayedSavingsCountLabel
+            // 
+            this.displayedSavingsCountLabel.AutoSize = true;
+            this.displayedSavingsCountLabel.Location = new System.Drawing.Point(25, 464);
+            this.displayedSavingsCountLabel.Name = "displayedSavingsCountLabel";
+            this.displayedSavingsCountLabel.Size = new System.Drawing.Size(0, 13);
+            this.displayedSavingsCountLabel.TabIndex = 13;
             // 
             // UserDashboard
             // 

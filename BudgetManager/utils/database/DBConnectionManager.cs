@@ -251,7 +251,7 @@ namespace BudgetManager {
 
                     //Adds the primary key parameter 
                     dataAdapter.UpdateCommand.Parameters.Add(primaryKey);
-
+                    
                     //Executes the update
                     executionResult = dataAdapter.Update(sourceDataTable);
 

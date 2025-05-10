@@ -2,6 +2,6 @@ BudgetManager/Properties/*
 BudgetManager/App.config
 BudgetManager/bin/*
 BudgetManager/obj/*
+.vs/*
 BudgetManagerTests/bin/*
 BudgetManagerTests/obj/*
-.vs/*

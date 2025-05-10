@@ -15,15 +15,15 @@ namespace BudgetManager {
         private int minimumPasswordLength;
         private String sqlStatementCheckUserExistence = "SELECT userID, username FROM users WHERE username = @paramUserName";
         private String sqlStatementCreateNewUser = @"INSERT INTO users(username, salt, password, email) VALUES(@paramUserName, @paramSalt, @paramHashCode, @paramEmailAddress)";
-        private String sqlStatementCreateDefaultSavingAccount = @"INSERT INTO saving_accounts(accountName, user_ID, type_ID, bank_ID, currency_ID, creationDate) 
+        private String sqlStatementCreateDefaultSavingAccount = @"INSERT INTO accounts(accountName, user_ID, type_ID, bank_ID, currency_ID, creationDate) 
                                                                   VALUES(@paramAccountName, 
                                                                         (SELECT userID FROM users WHERE username = @paramUserName), 
-                                                                        (SELECT typeID FROM saving_account_types WHERE typeName = @paramAccountTypeName), 
+                                                                        (SELECT typeID FROM account_types WHERE typeName = @paramAccountTypeName), 
                                                                         (SELECT bankID FROM banks WHERE bankName = @paramBankName), 
                                                                         (SELECT currencyID FROM currencies WHERE currencyName = @paramCurrencyName)
                                                                         ,@paramCreationDate)";
-        private AccountUtils accountUtils;
         private LoginForm loginForm;
+        private AccountUtils accountUtils;
         
 
         public RegisterForm(LoginForm loginForm) {

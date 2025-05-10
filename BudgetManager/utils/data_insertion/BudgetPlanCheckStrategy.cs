@@ -127,7 +127,6 @@ namespace BudgetManager.utils {
 
         //private void checkInsertedValueAgainstBudgetPlan(BudgetPlanChecker planChecker) {
         //    int checkResult = -1;
-
         //    //If the plan doesn't contain an alarm a check is made to see if the future total value for the item (user input value + sum of existing database records for the selected item) is greater than the max limit for the selected item(as calculated based on the percentage set in the budget plan)
         //    if (planChecker.exceedsItemLimitValue(entryValue, limitValueForSelectedItem, getSelectedType(budgetItemComboBox), budgetPlanBoundaries[0], budgetPlanBoundaries[1])) {
         //        MessageBox.Show(String.Format("Cannot insert the provided {0} since it would exceed the {1}% limit imposed by the currently applicable budget plan! Please revise the plan or insert a lower value.", selectedItem.ToLower(), percentageLimitForItem), "Insert data form", MessageBoxButtons.OK, MessageBoxIcon.Warning);

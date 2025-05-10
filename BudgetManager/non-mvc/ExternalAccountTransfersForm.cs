@@ -16,10 +16,10 @@ namespace BudgetManager.non_mvc {
         private int userID;
 
         //Data retrieval SQL statements
-        private String sqlStatementGetUserAccounts = @"SELECT sa.accountName, ccy.currencyName FROM saving_accounts sa                                                        
-                                                         INNER JOIN currencies ccy ON sa.currency_ID = ccy.currencyID 
-                                                         WHERE sa.user_ID = @paramID";
-        private String sqlStatementGetAccountID = @"SELECT accountID FROM saving_accounts WHERE user_ID = @paramID AND accountName = @paramRecordName";
+        private String sqlStatementGetUserAccounts = @"SELECT acc.accountName, ccy.currencyName FROM accounts acc                                                        
+                                                         INNER JOIN currencies ccy ON acc.currency_ID = ccy.currencyID 
+                                                         WHERE acc.user_ID = @paramID";
+        private String sqlStatementGetAccountID = @"SELECT accountID FROM accounts WHERE user_ID = @paramID AND accountName = @paramRecordName";
         private string sqlStatementInsertTransfer = @"INSERT INTO saving_accounts_transfers(senderAccountID, receivingAccountID, transferName, sentValue, receivedValue, exchangeRate, transactionID, observations, transferDate) 
                                                     VALUES(@paramSenderAccountId, @paramReceivingAccountId, @paramTransferName, @paramSentValue, @paramReceivedValue, @paramExchangeRate, @paramTransactionID, @paramObservations, @paramTransferDate)";
 
@@ -391,7 +391,7 @@ namespace BudgetManager.non_mvc {
             String exchangeRateData = String.Format("{0, -10}: {1, -10}\n", "Exchange rate", paramContainer.ExchangeRate);
             String transactionIDData = String.Format("{0, -10}: {1, 10}\n", "Transfer ID", paramContainer.GenericID);
             String transferDateData = String.Format("{0, -10}: {1, -10}\n", "Transfer date", paramContainer.ItemCreationDate);
-            String transferObservationsData = String.Format("{0, -10}: {1, 10}\n\n", "Transfer observations", paramContainer.AdditionalData);
+            String transferObservationsData = String.Format("{0, -10}: {1, 10}\n\n", "Transfer observations", paramContainer.AdditionalData);         
             String hintData = String.Format("{0, -10}", "Press Ctrl + C to copy the transfer details information.");
 
             List<String> dataList = new List<String>();

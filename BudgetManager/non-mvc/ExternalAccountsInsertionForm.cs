@@ -18,12 +18,12 @@ namespace BudgetManager.non_mvc {
         //Boolean flag used to determine if the controls was changes as a result of user action or code execution(e.g: when creating and populating controls with data)
         private bool isEditedByUser = false;
 
-        private String sqlStatementRetrieveAccountTypes = @"SELECT typeName FROM saving_account_types WHERE typeName != 'SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT'";
+        private String sqlStatementRetrieveAccountTypes = @"SELECT typeName FROM account_types WHERE typeName != 'SYSTEM_DEFINED-DEFAULT_SAVING_ACCOUNT'";
         private String sqlStatementRetrieveAvailableBanks = @"SELECT bankName FROM banks ORDER BY bankName";
         private String sqlStatementRetrieveAvailableCurrencies = @"SELECT currencyName FROM currencies ORDER BY currencyName";
-        private String sqlStatementInsertExternalAccount = @"INSERT INTO saving_accounts(accountName, accountNumber, user_ID, type_ID, bank_ID, currency_ID, creationDate) VALUES(@paramAccountName, @paramAccountNumber, @paramUserId, @paramAccountTypeId, @paramBankId, @paramCurrencyId, @paramCreationDate)";
+        private String sqlStatementInsertExternalAccount = @"INSERT INTO accounts(accountName, accountNumber, user_ID, type_ID, bank_ID, currency_ID, creationDate) VALUES(@paramAccountName, @paramAccountNumber, @paramUserId, @paramAccountTypeId, @paramBankId, @paramCurrencyId, @paramCreationDate)";
 
-        private String sqlStatementGetAccountTypeId = @"SELECT typeID FROM saving_account_types WHERE typeName = @paramTypeName";
+        private String sqlStatementGetAccountTypeId = @"SELECT typeID FROM account_types WHERE typeName = @paramTypeName";
         private String sqlStatementGetCurrencyId = @"SELECT currencyID FROM currencies WHERE currencyName = @paramTypeName";
         private String sqlStatementGetBankId = @"SELECT bankID FROM banks where bankName = @paramTypeName";
 
