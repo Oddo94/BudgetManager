@@ -9,7 +9,7 @@ namespace BudgetManager.non_mvc {
                                                         @paramName, 
                                                         @paramValue, 
                                                         (SELECT debtorID FROM debtors WHERE debtorName = @paramDebtorName),
-                                                        (SELECT accountID FROM saving_accounts WHERE user_ID = @paramUserID AND accountName = @paramAccountName),
+                                                        (SELECT accountID FROM accounts WHERE user_ID = @paramUserID AND accountName = @paramAccountName),
                                                         @paramTotalPaidAmount,
                                                         (SELECT statusID FROM receivable_status WHERE statusDescription = @paramStatusDescription),
                                                         @paramCreatedDate,

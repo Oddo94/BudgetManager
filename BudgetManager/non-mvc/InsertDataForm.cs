@@ -334,7 +334,7 @@ namespace BudgetManager.non_mvc {
             if (userOptionConfirmInsertion == DialogResult.No) {
                 return;
             }
-
+        
             String selectedItemName = itemTypeSelectionComboBox.Text;
             String specialItemName = "Saving account interest";
 
@@ -710,7 +710,6 @@ namespace BudgetManager.non_mvc {
         private IncomeSource getIncomeSource(BudgetItemType budgetItemType) {
             //Setting the default value for the income source
             IncomeSource incomeSource = IncomeSource.UNDEFINED;
-
             switch (budgetItemType) {
                 case BudgetItemType.GENERAL_EXPENSE:
                     if (generalIncomesRadioButton.Checked == true) {
@@ -795,7 +794,7 @@ namespace BudgetManager.non_mvc {
 
                 case 3:
                     return BudgetItemType.RECEIVABLE;
-
+                    
                 case 4:
                     return BudgetItemType.SAVING;
 
@@ -889,7 +888,7 @@ namespace BudgetManager.non_mvc {
                     DataInsertionStrategy creditorInsertionStrategy = new CreditorInsertionStrategy();
                     dataInsertionContext.setStrategy(creditorInsertionStrategy);
 
-                    executionResult = dataInsertionContext.invoke(paramContainer);
+                    executionResult = dataInsertionContext.invoke(paramContainer);                
                     break;
 
                 //New debtor insertion

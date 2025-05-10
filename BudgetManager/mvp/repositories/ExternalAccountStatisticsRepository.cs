@@ -8,18 +8,18 @@ namespace BudgetManager.mvp.repositories {
     internal class ExternalAccountStatisticsRepository : IExternalAccountStatisticsRepository {
         //SQL statement for retrieving ONLY the user defined saving accounts
         private String sqlStatementGetUserAccounts = @"SELECT
-	                                                       sa.accountName
+	                                                       acc.accountName
                                                        FROM
-	                                                       saving_accounts sa
-                                                       INNER JOIN saving_account_types sat ON
-	                                                       sa.type_ID = sat.typeID
+	                                                       accounts acc
+                                                       INNER JOIN account_types at ON
+	                                                       acc.type_ID = at.typeID
                                                        WHERE
-	                                                       sat.typeName LIKE '%USER_DEFINED%'
-	                                                       AND sa.user_ID = @paramID
+	                                                       at.typeName LIKE '%USER_DEFINED%'
+	                                                       AND acc.user_ID = @paramID
                                                        ORDER BY
-	                                                       accountName";
-        private String sqlStatementGetAccountId = "SELECT accountID FROM saving_accounts WHERE user_ID = @paramID AND accountName = @paramAccountName";
-        private String sqlStatementGetAccountTransfers = @"WITH account_details AS (SELECT accountID FROM saving_accounts WHERE user_ID = @paramID AND accountName = @paramAccountName)
+	                                                       acc.accountName";
+        private String sqlStatementGetAccountId = "SELECT accountID FROM accounts WHERE user_ID = @paramID AND accountName = @paramAccountName";
+        private String sqlStatementGetAccountTransfers = @"WITH account_details AS (SELECT accountID FROM accounts WHERE user_ID = @paramID AND accountName = @paramAccountName)
                                                            
                                                            SELECT
 	                                                           sat.transferID AS 'Transfer ID',
@@ -38,9 +38,9 @@ namespace BudgetManager.mvp.repositories {
 	                                                           sat.transferDate AS 'Transfer date'
                                                            FROM
 	                                                           saving_accounts_transfers sat
-                                                           INNER JOIN saving_accounts snd ON
+                                                           INNER JOIN accounts snd ON
 	                                                           sat.senderAccountID = snd.accountID
-                                                           INNER JOIN saving_accounts rec ON
+                                                           INNER JOIN accounts rec ON
 	                                                           sat.receivingAccountID = rec.accountID
                                                            WHERE
 	                                                           (senderAccountID = (SELECT accountID FROM account_details)
@@ -60,15 +60,15 @@ namespace BudgetManager.mvp.repositories {
 	                                                           sai.updatedDate AS 'Updated date'
                                                            FROM
 	                                                           saving_accounts_interest sai
-                                                           INNER JOIN saving_accounts sa ON
-	                                                           sai.account_ID = sa.accountID
+                                                           INNER JOIN accounts acc ON
+	                                                           sai.account_ID = acc.accountID
                                                            INNER JOIN interest_types it ON
 	                                                           sai.interestType = it.typeID
                                                            INNER JOIN interest_payment_type ipt ON
 	                                                           sai.paymentType = ipt.typeID
                                                            WHERE
-	                                                           sa.user_ID = @paramUserId
-	                                                           AND sa.accountName = @paramAccountName
+	                                                           acc.user_ID = @paramUserId
+	                                                           AND acc.accountName = @paramAccountName
 	                                                           AND sai.creationDate BETWEEN @paramStartDate AND @paramEndDate";
 
         private String sqlStatementGetAccountTransfersActivity = @"WITH months_list AS (
@@ -76,7 +76,7 @@ namespace BudgetManager.mvp.repositories {
                                                                    SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11
                                                                    UNION SELECT 12),
 
-                                                                   account_details AS ( SELECT accountID FROM saving_accounts WHERE accountName = @paramAccountName AND user_ID = @paramUserId)
+                                                                   account_details AS ( SELECT accountID FROM accounts WHERE accountName = @paramAccountName AND user_ID = @paramUserId)
 
                                                                    SELECT
 	                                                                   CASE 
@@ -154,7 +154,7 @@ namespace BudgetManager.mvp.repositories {
 	                                                                        SELECT
 		                                                                        accountID
 	                                                                        FROM
-		                                                                        saving_accounts
+		                                                                        accounts
 	                                                                        WHERE
 		                                                                        accountName = @paramAccountName AND user_ID = @paramUserId)
 	                                                                        AND YEAR(createdDate) <= @paramYear
