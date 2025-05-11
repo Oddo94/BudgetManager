@@ -19,7 +19,7 @@ namespace BudgetManager.non_mvc {
                                                                          type, 
                                                                          value, 
                                                                          date) 
-                                                                  VALUES((SELECT accountID FROM saving_accounts WHERE accountName LIKE '%SYSTEM_DEFINED%' AND user_ID = @paramID),               
+                                                                  VALUES((SELECT accountID FROM accounts WHERE accountName LIKE '%SYSTEM_DEFINED%' AND user_ID = @paramID),               
                                                                          @paramItemName, 
                                                                          @paramTypeID, 
                                                                          @paramItemValue, 

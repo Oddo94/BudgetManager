@@ -10,13 +10,13 @@ namespace BudgetManager.utils.data_insertion {
     //Class that provides utility methods for retrieving data about the user accounts
     internal class AccountUtils {
         //SQL query used for retrieving the account ID for which the balance check is performed
-        private String sqlStatementGetAccountID = @"SELECT accountID FROM saving_accounts WHERE accountName LIKE CONCAT('%', @paramRecordName,'%') AND user_ID = @paramID";
+        private String sqlStatementGetAccountID = @"SELECT accountID FROM accounts WHERE accountName LIKE CONCAT('%', @paramRecordName,'%') AND user_ID = @paramID";
 
-        private String sqlStatementGetAccountIdForStorageRecordCreation = @"SELECT sa.accountID
-                                                                            FROM saving_accounts sa
-                                                                            INNER JOIN users usr ON sa.user_ID = usr.userID
-                                                                            INNER JOIN saving_account_types sat ON sa.type_ID = sat.typeID
-                                                                            WHERE (usr.username = @paramUsername OR usr.userID = @paramID) AND sat.typeName = @paramTypeName AND sa.accountName = @paramAccountName";
+        private String sqlStatementGetAccountIdForStorageRecordCreation = @"SELECT acc.accountID
+                                                                            FROM accounts acc
+                                                                            INNER JOIN users usr ON acc.user_ID = usr.userID
+                                                                            INNER JOIN account_types at ON acc.type_ID = at.typeID
+                                                                            WHERE (usr.username = @paramUsername OR usr.userID = @paramID) AND at.typeName = @paramTypeName AND acc.accountName = @paramAccountName";
         private String sqlStatementInsertAccountBalanceStorageRecord = @"INSERT INTO account_balance_storage(account_ID, currentBalance, createdDate) VALUES(@paramAccountId, 0, CURRENT_TIMESTAMP())";
 
         public double getSavingAccountCurrentBalance(String accountName, int userID) {

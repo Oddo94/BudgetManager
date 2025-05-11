@@ -21,7 +21,7 @@ namespace BudgetManager.utils.data_insertion {
                                                                         SELECT
 	                                                                         accountID
                                                                         FROM
-	                                                                         saving_accounts
+	                                                                         accounts
                                                                         WHERE
 	                                                                         accountName = @paramAccountName
 	                                                                         AND user_ID = @paramUserId),

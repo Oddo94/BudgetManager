@@ -30,10 +30,10 @@ namespace BudgetManager.mvc.models {
 	                                                        rcs.debtor_ID = dbs.debtorID
                                                         INNER JOIN receivable_status rst ON
 	                                                        rcs.status_ID = rst.statusID	
-                                                        INNER JOIN saving_accounts sac ON
-	                                                        rcs.account_ID = sac.accountID
+                                                        INNER JOIN accounts acc ON
+	                                                        rcs.account_ID = acc.accountID
                                                         INNER JOIN users usr ON
-	                                                        usr.userID = sac.user_ID
+	                                                        usr.userID = acc.user_ID
                                                         WHERE
 	                                                        usr.userID = @paramID
                                                         AND

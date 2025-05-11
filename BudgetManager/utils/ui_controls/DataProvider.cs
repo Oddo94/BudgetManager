@@ -49,11 +49,11 @@ namespace BudgetManager.utils {
                 WHERE ud.user_ID = @paramUserID
                 ORDER BY dbs.debtorName;";
 
-        private String sqlStatementSelectSavingAccounts = @"SELECT sa.accountName 
-                FROM saving_accounts sa 
-                INNER JOIN saving_account_types sat on sa.type_ID = sat.typeID 
-                WHERE sa.user_ID = @paramUserID
-                ORDER BY sa.accountName";
+        private String sqlStatementSelectSavingAccounts = @"SELECT acc.accountName 
+                FROM accounts acc 
+                INNER JOIN account_types at ON acc.type_ID = at.typeID 
+                WHERE acc.user_ID = @paramUserID
+                ORDER BY acc.accountName";
 
         private String sqlStatementSelectInterestTypes = @"SELECT typeName FROM interest_types ORDER BY typeName";
 
