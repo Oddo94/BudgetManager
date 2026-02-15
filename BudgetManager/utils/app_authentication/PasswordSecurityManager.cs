@@ -1,11 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BudgetManager {
     class PasswordSecurityManager {
@@ -68,7 +65,7 @@ namespace BudgetManager {
 
             StringBuilder resultArray = new StringBuilder(inputArray.Length * 2);
 
-            foreach(byte currentByte in inputArray) {
+            foreach (byte currentByte in inputArray) {
                 resultArray.AppendFormat("{0:x2}", currentByte);
             }
 
