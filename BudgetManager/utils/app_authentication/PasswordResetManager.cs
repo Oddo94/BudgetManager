@@ -1,13 +1,9 @@
-﻿using Microsoft.VisualBasic;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BudgetManager {
@@ -17,7 +13,7 @@ namespace BudgetManager {
         private String sqlStatementUpdatePassword = @"UPDATE users SET users.salt = @paramSalt, users.password = @paramHashCode WHERE users.userID = @paramID";
         private String sqlStatementRetrieveUserEmail = @"SELECT email FROM users WHERE username = @paramUserName";
         private PasswordSecurityManager securityManager;
-        
+
         public PasswordResetManager() {
             this.securityManager = new PasswordSecurityManager();
         }
@@ -85,18 +81,19 @@ namespace BudgetManager {
         //Creaza un sir de bytes nou si un hashcode pt parola nou introdusa folosind functiile puse la dispozitie de clasa PasswordSecurityManager
         public int resetPassword(String newPassword, int userID) {
             //Creare salt nou
-            byte[] newSalt = securityManager.getSalt(16);
+            //byte[] newSalt = securityManager.getSalt(16);
+            byte[] newSalt = securityManager.getSalt(32);
             //Generare hashcode pe baza salt
             String hashedPassword = securityManager.createPasswordHash(newPassword, newSalt);
 
-           int executionResult = updatePassword(newSalt, hashedPassword, userID);
+            int executionResult = updatePassword(newSalt, hashedPassword, userID);
 
             return executionResult;
 
         }
 
         //Creaza comanda SQL de actualizarea a datelor in baza de date utilizand ca parametri un sir de bytes, hashcode-ul parolei si id-ul usrrului care cere resetarea parolei
-        private int updatePassword(byte[] inputSalt, String inputHash, int userID) {                 
+        private int updatePassword(byte[] inputSalt, String inputHash, int userID) {
             MySqlCommand updatePasswordCommand = SQLCommandBuilder.getUpdatePasswordCommand(sqlStatementUpdatePassword, inputSalt, inputHash, userID);
 
             //Trimite comanda pt a fi executata de metoda specializata a clasei DBConnectionManager

@@ -24,7 +24,7 @@ namespace BudgetManager {
                                                                         ,@paramCreationDate)";
         private LoginForm loginForm;
         private AccountUtils accountUtils;
-        
+
 
         public RegisterForm(LoginForm loginForm) {
             InitializeComponent();
@@ -75,7 +75,7 @@ namespace BudgetManager {
             if (password.Length < minimumPasswordLength) {
                 MessageBox.Show("Your password should be at least 10 characters long! Please try again.", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
-            }         
+            }
 
             if (!isValidPassword(password)) {
                 MessageBox.Show("Invalid password! Your password must contain:\n1.Lowercase and uppercase letters (a-zA-z) \n2.Digits (0-9) \n3.Special characters (@#$%<>?)\n4.No whitespaces", "User registration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -99,7 +99,7 @@ namespace BudgetManager {
             string emailBody = "A user creation request was made for an account that will be associated to this email address.\nPlease enter the following code to finish the user creation process and confirm your email: {0} \nIf you haven't made such a request please ignore this email and delete it.";
             string onSuccessMessage = "An email containing the confirmation code for the new user creation was sent to the specified email address.";
             string parentWindowName = "Register";
-            
+
             string generatedConfirmationCode = emailSender.generateConfirmationCode();
             emailSender.sendConfirmationEmail(emailAddress, emailSubject, emailBody, generatedConfirmationCode, onSuccessMessage, parentWindowName);
 
@@ -108,14 +108,15 @@ namespace BudgetManager {
             if (emailSender.confirmationCodesMatch(generatedConfirmationCode, userInputConfirmationCode)) {
                 //User creation
                 PasswordSecurityManager securityManager = new PasswordSecurityManager();
-                byte[] salt = securityManager.getSalt(16);
+                //byte[] salt = securityManager.getSalt(16);
+                byte[] salt = securityManager.getSalt(32);
                 string hashCode = securityManager.createPasswordHash(password, salt);
                 MySqlCommand userCreationCommand = SQLCommandBuilder.getNewUserCreationCommand(sqlStatementCreateNewUser, userName, salt, hashCode, emailAddress);
                 int userCreationResult = DBConnectionManager.insertData(userCreationCommand);
 
                 //Default saving account creation
                 String defaultAccountName = "SYSTEM_DEFINED_SAVING_ACCOUNT";
-                int savingAccountCreationResult = createDefaultSavingAccount(sqlStatementCreateDefaultSavingAccount, defaultAccountName, userName); 
+                int savingAccountCreationResult = createDefaultSavingAccount(sqlStatementCreateDefaultSavingAccount, defaultAccountName, userName);
 
                 if (userCreationResult == -1) {
                     MessageBox.Show("Could not create the requested user!", "Register", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -143,7 +144,7 @@ namespace BudgetManager {
             } else {
                 MessageBox.Show("Invalid confirmation code! Please try again.", "Register", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-         
+
         }
 
         private void loginRedirectButton_Click(object sender, EventArgs e) {
@@ -151,7 +152,7 @@ namespace BudgetManager {
             new LoginForm().Visible = true;
         }
 
-        
+
 
 
         private void toggleButtonState(Button targetButton, TextBox[] textBoxes) {
@@ -229,12 +230,12 @@ namespace BudgetManager {
                 //Compares the email address of the newly created object with the provided email address and returns the corresponding boolean value            
                 return address.Address.Equals(inputEmailAddress);
 
-              //Handles the exception generated when the email address is represented by an empty string            
+                //Handles the exception generated when the email address is represented by an empty string            
             } catch (ArgumentException ex) {
                 Console.WriteLine(ex.Message);
                 return false;
 
-            //Handles the exception generated when the email address has an invalid format
+                //Handles the exception generated when the email address has an invalid format
             } catch (FormatException ex) {
                 Console.WriteLine(ex.Message);
                 return false;
@@ -242,7 +243,7 @@ namespace BudgetManager {
         }
 
         private int createDefaultSavingAccount(String sqlStatement, String defaultAccountName, String userName) {
-            if(userName == null) {
+            if (userName == null) {
                 return -1;
             }
 
@@ -265,7 +266,7 @@ namespace BudgetManager {
             int executionResult = DBConnectionManager.insertData(getAccountCreationCommand);
 
             //If a value greater than 0 is returned by the data insertion method it means that the operation was successful
-            if(executionResult > 0) {
+            if (executionResult > 0) {
                 return 0;
             }
 
@@ -300,5 +301,5 @@ namespace BudgetManager {
         private void RegisterForm_FormClosed(object sender, FormClosedEventArgs e) {
             loginForm.Show();
         }
-    }    
+    }
 }
