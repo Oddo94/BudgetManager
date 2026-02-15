@@ -81,7 +81,6 @@ namespace BudgetManager {
         //Creaza un sir de bytes nou si un hashcode pt parola nou introdusa folosind functiile puse la dispozitie de clasa PasswordSecurityManager
         public int resetPassword(String newPassword, int userID) {
             //Creare salt nou
-            //byte[] newSalt = securityManager.getSalt(16);
             byte[] newSalt = securityManager.getSalt(32);
             //Generare hashcode pe baza salt
             String hashedPassword = securityManager.createPasswordHash(newPassword, newSalt);

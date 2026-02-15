@@ -108,7 +108,6 @@ namespace BudgetManager {
             if (emailSender.confirmationCodesMatch(generatedConfirmationCode, userInputConfirmationCode)) {
                 //User creation
                 PasswordSecurityManager securityManager = new PasswordSecurityManager();
-                //byte[] salt = securityManager.getSalt(16);
                 byte[] salt = securityManager.getSalt(32);
                 string hashCode = securityManager.createPasswordHash(password, salt);
                 MySqlCommand userCreationCommand = SQLCommandBuilder.getNewUserCreationCommand(sqlStatementCreateNewUser, userName, salt, hashCode, emailAddress);
